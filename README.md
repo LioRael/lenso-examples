@@ -83,6 +83,10 @@ generated `.lenso/module-catalog.json`, `.env`, and console package install
 plan. By default it uses a sibling `../lenso-runtime-console` checkout; set
 `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another one.
 
+To run the example through a real host API and call its remote HTTP route via
+`/modules/hello-action/http/greetings`, follow
+[docs/hello-action-host-run.md](docs/hello-action-host-run.md).
+
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso

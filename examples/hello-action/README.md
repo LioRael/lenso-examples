@@ -93,3 +93,9 @@ By default the smoke uses a sibling `../lenso-runtime-console` checkout. Set
 `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another
 checkout. Set `LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for
 inspection.
+
+## Host Proxy Run
+
+For the full local host path, including `just api` and a `curl` request to
+`/modules/hello-action/http/greetings`, see
+[../../docs/hello-action-host-run.md](../../docs/hello-action-host-run.md).
