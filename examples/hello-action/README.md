@@ -67,3 +67,23 @@ same manifest install path as a fuller third-party module.
 
 The optional catalog record is `catalog-entry.json`; it mirrors the local
 server's default manifest URL for discovery flows.
+
+## Host Install Smoke
+
+Run the host-side integration smoke from this package:
+
+```sh
+pnpm host-smoke
+```
+
+It starts this module, creates a temporary host repo, runs the real `lenso`
+CLI, and verifies:
+
+- `.lenso/module-catalog.json` from `lenso module catalog add`;
+- `.env` from `lenso module add`;
+- `.lenso/console-package-install-plan.json` with zero console packages.
+
+By default the smoke uses a sibling `../lenso-runtime-console` checkout. Set
+`LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another
+checkout. Set `LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for
+inspection.
