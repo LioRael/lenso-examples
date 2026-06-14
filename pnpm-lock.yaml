@@ -6,7 +6,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  examples/hello-action:
     dependencies:
       '@lenso/remote-module-kit':
         specifier: 0.1.0

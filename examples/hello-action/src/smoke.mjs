@@ -1,26 +1,52 @@
 #!/usr/bin/env node
+import { readFile } from "node:fs/promises";
+
 import { createClient } from "@lenso/ts-sdk";
 
 import { serveHelloActionModule } from "./module.mjs";
 
+const fetchJson = async (url, init) => {
+  const response = await fetch(url, init);
+  if (!response.ok) {
+    throw new Error(`${url} returned HTTP ${response.status}`);
+  }
+  return response.json();
+};
+
 const server = await serveHelloActionModule({ port: 0 });
 
 try {
-  const manifest = await fetch(server.manifestUrl).then((response) =>
-    response.json()
+  const catalogEntry = JSON.parse(
+    await readFile(new URL("../catalog-entry.json", import.meta.url), "utf8")
   );
-  if (manifest.name !== "hello-action") {
-    throw new Error("manifest did not return hello-action");
+  if (
+    catalogEntry.name !== "hello-action" ||
+    catalogEntry.source !== "remote" ||
+    catalogEntry.baseUrl !== "http://127.0.0.1:4100/lenso/module/v1"
+  ) {
+    throw new Error("catalog entry does not describe hello-action");
   }
 
-  const hello = await fetch(`${server.baseUrl}/hello/Ada`).then((response) =>
-    response.json()
-  );
+  const manifest = await fetchJson(server.manifestUrl);
+  if (
+    manifest.name !== "hello-action" ||
+    manifest.source !== "remote" ||
+    manifest.version !== catalogEntry.version
+  ) {
+    throw new Error("manifest did not return hello-action");
+  }
+  for (const capability of catalogEntry.capabilities) {
+    if (!manifest.capabilities.includes(capability)) {
+      throw new Error(`manifest is missing catalog capability ${capability}`);
+    }
+  }
+
+  const hello = await fetchJson(`${server.baseUrl}/hello/Ada`);
   if (hello.message !== "Hello, Ada.") {
     throw new Error("HTTP route did not return the expected greeting");
   }
 
-  const runtime = await fetch(
+  const runtime = await fetchJson(
     `${server.baseUrl}/runtime/functions/hello-action.say-hello.v1/invoke`,
     {
       body: JSON.stringify({
@@ -36,14 +62,12 @@ try {
       headers: { "content-type": "application/json" },
       method: "POST",
     }
-  ).then((response) => response.json());
+  );
   if (runtime.output?.message !== "Hello, Runtime.") {
     throw new Error("runtime function did not return the expected greeting");
   }
 
-  const admin = await fetch(`${server.baseUrl}/admin/greetings`).then(
-    (response) => response.json()
-  );
+  const admin = await fetchJson(`${server.baseUrl}/admin/greetings`);
   if (admin.records?.[0]?.recipient !== "example-user") {
     throw new Error("schema-admin endpoint did not return greetings");
   }

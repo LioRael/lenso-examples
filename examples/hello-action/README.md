@@ -1,20 +1,69 @@
 # Hello Action Remote Module
 
-This is the smallest remote module example for Lenso. It exposes:
+This is a starter remote module package for Lenso. It uses the published
+`@lenso/remote-module-kit` and `@lenso/ts-sdk` packages, so it can run without
+a sibling framework checkout.
+
+It exposes:
 
 - a manifest at `/lenso/module/v1/manifest`;
 - one HTTP route, `GET /hello/{name}`;
 - one runtime function, `hello-action.say-hello.v1`;
 - one schema-admin entity, `greetings`.
 
-Run it from the repository root:
+## Local Development
+
+Install dependencies from the repository root:
 
 ```sh
-pnpm start:hello-action
+pnpm install
 ```
 
-Run its non-interactive smoke:
+Run the module server:
+
+```sh
+pnpm dev
+```
+
+The server reads `PORT` from the shell environment. The default
+`.env.example` value is:
+
+```text
+PORT=4100
+```
+
+The server prints a manifest URL:
+
+```text
+http://127.0.0.1:4100/lenso/module/v1/manifest
+```
+
+Run the non-interactive smoke:
 
 ```sh
 pnpm smoke
 ```
+
+Change the starter by editing:
+
+- `src/module.mjs` for manifest declarations, handlers, and seed data;
+- `src/server.mjs` for local startup behavior;
+- `src/smoke.mjs` for executable expectations;
+- `catalog-entry.json` for optional discovery metadata.
+
+## Install Into A Lenso Host
+
+From a local Lenso host checkout, install the running module:
+
+```sh
+lenso module add http://127.0.0.1:4100/lenso/module/v1/manifest
+lenso console-package apply-plan
+pnpm install
+```
+
+This example does not publish a Runtime Console package, so the generated
+install plan should not request frontend dependencies. It still exercises the
+same manifest install path as a fuller third-party module.
+
+The optional catalog record is `catalog-entry.json`; it mirrors the local
+server's default manifest URL for discovery flows.
