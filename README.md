@@ -7,20 +7,46 @@ This repository uses published packages instead of sibling workspace paths:
 - `@lenso/remote-module-kit`
 - `@lenso/ts-sdk`
 
-## Hello Action Remote Module
+## Quick Start
 
-Install dependencies and run the smoke test:
+Install dependencies and run the full example smoke:
 
 ```sh
 pnpm install
 pnpm smoke
 ```
 
-Start the module server:
+## Examples
+
+### Hello Action Remote Module
+
+`examples/hello-action` is a starter remote module package. It exposes:
+
+- a manifest at `/lenso/module/v1/manifest`;
+- one HTTP route, `GET /hello/{name}`;
+- one runtime function, `hello-action.say-hello.v1`;
+- one schema-admin entity, `greetings`.
+
+Start the module from the repository root:
 
 ```sh
 pnpm start:hello-action
 ```
+
+Or work inside the example package directly:
+
+```sh
+cd examples/hello-action
+pnpm dev
+pnpm smoke
+```
+
+Change the module by editing:
+
+- `src/module.mjs` for the manifest, handlers, and seed data;
+- `src/server.mjs` for local startup behavior;
+- `src/smoke.mjs` for executable expectations as the module grows;
+- `catalog-entry.json` for optional discovery metadata.
 
 The server prints a manifest URL like:
 
@@ -28,12 +54,20 @@ The server prints a manifest URL like:
 http://127.0.0.1:4100/lenso/module/v1/manifest
 ```
 
-Use that URL with a local Lenso checkout:
+Use that URL with a local Lenso host checkout:
 
 ```sh
 lenso module add http://127.0.0.1:4100/lenso/module/v1/manifest
 lenso console-package apply-plan
+pnpm install
 ```
+
+The example does not ship a Runtime Console package, so `apply-plan` is still
+safe to run and should leave no frontend package to install for this module.
+
+The server reads `PORT` from the shell environment. The optional discovery
+record lives at `examples/hello-action/catalog-entry.json` and matches the
+default `PORT=4100` documented in `examples/hello-action/.env.example`.
 
 ## Repositories
 
