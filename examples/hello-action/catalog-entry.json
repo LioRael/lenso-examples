@@ -1,0 +1,6 @@
+{
+  "name": "hello-action",
+  "version": "0.1.0",
+  "summary": "Tiny remote action module for Lenso examples",
+  "manifestReference": "http://127.0.0.1:4100/lenso/module/v1/manifest"
+}

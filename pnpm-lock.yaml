@@ -1,0 +1,30 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@lenso/remote-module-kit':
+        specifier: 0.1.0
+        version: 0.1.0
+      '@lenso/ts-sdk':
+        specifier: 0.1.0
+        version: 0.1.0
+
+packages:
+
+  '@lenso/remote-module-kit@0.1.0':
+    resolution: {integrity: sha512-kyfwkzw63WVJyfldFGmw1z+57nLIgIgo2lLj6mvOwNBjexGbYHnibczvSbHlfQmtsf2CeIBxe5Y+3VvimHBDOg==}
+
+  '@lenso/ts-sdk@0.1.0':
+    resolution: {integrity: sha512-yNz9jZ2tw7hYB/JLvSLb2n3bNOLeGizbA1B86Tbqjokkl90VuIJWBok23NUuN7viIkktrcBbF9iI8leUBiqnCA==}
+
+snapshots:
+
+  '@lenso/remote-module-kit@0.1.0': {}
+
+  '@lenso/ts-sdk@0.1.0': {}
