@@ -7,6 +7,7 @@
   "scripts": {
     "check": "pnpm smoke",
     "dev": "node src/server.mjs",
+    "host-smoke": "node src/host-smoke.mjs",
     "smoke": "node src/smoke.mjs",
     "start": "node src/server.mjs"
   },

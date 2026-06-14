@@ -69,6 +69,19 @@ The server reads `PORT` from the shell environment. The optional discovery
 record lives at `examples/hello-action/catalog-entry.json` and matches the
 default `PORT=4100` documented in `examples/hello-action/.env.example`.
 
+To verify the host-side install path without mutating a real Lenso checkout,
+run the integration smoke from this repository root:
+
+```sh
+pnpm host-smoke
+```
+
+It starts `hello-action`, creates a temporary host repo, runs the real
+`lenso module catalog add` and `lenso module add` commands, and checks the
+generated `.lenso/module-catalog.json`, `.env`, and console package install
+plan. By default it uses a sibling `../lenso-runtime-console` checkout; set
+`LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another one.
+
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso
