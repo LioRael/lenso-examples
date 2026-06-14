@@ -46,6 +46,19 @@ try {
     throw new Error("HTTP route did not return the expected greeting");
   }
 
+  const recordedByHttp = await fetchJson(`${server.baseUrl}/greetings`, {
+    body: JSON.stringify({
+      message: "Hello from HTTP mutation.",
+      recipient: "http-user",
+      sent_at: "2026-06-14T01:00:00Z",
+    }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  if (recordedByHttp.record?.recipient !== "http-user") {
+    throw new Error("HTTP mutation did not record the expected greeting");
+  }
+
   const runtime = await fetchJson(
     `${server.baseUrl}/runtime/functions/hello-action.say-hello.v1/invoke`,
     {
@@ -67,8 +80,41 @@ try {
     throw new Error("runtime function did not return the expected greeting");
   }
 
+  const runtimeMutation = await fetchJson(
+    `${server.baseUrl}/runtime/functions/hello-action.record-greeting.v1/invoke`,
+    {
+      body: JSON.stringify({
+        actor: { id: "example-smoke", kind: "service", scopes: [] },
+        attempt: 1,
+        correlation_id: "corr_example_mutation_smoke",
+        function_name: "hello-action.record-greeting.v1",
+        function_run_id: "fnrun_example_mutation_smoke",
+        input: {
+          message: "Hello from runtime mutation.",
+          recipient: "runtime-user",
+          sent_at: "2026-06-14T02:00:00Z",
+        },
+        request_id: "req_example_mutation_smoke",
+        trace: {
+          span_id: "span_example_mutation_smoke",
+          trace_id: "trace_example_mutation_smoke",
+        },
+      }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    }
+  );
+  if (runtimeMutation.output?.recipient !== "runtime-user") {
+    throw new Error("runtime mutation did not record the expected greeting");
+  }
+
   const admin = await fetchJson(`${server.baseUrl}/admin/greetings`);
-  if (admin.records?.[0]?.recipient !== "example-user") {
+  const recipients = admin.records?.map((record) => record.recipient) ?? [];
+  if (
+    !recipients.includes("example-user") ||
+    !recipients.includes("http-user") ||
+    !recipients.includes("runtime-user")
+  ) {
     throw new Error("schema-admin endpoint did not return greetings");
   }
 
