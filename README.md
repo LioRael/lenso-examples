@@ -23,8 +23,9 @@ pnpm smoke
 `examples/hello-action` is a starter remote module package. It exposes:
 
 - a manifest at `/lenso/module/v1/manifest`;
-- one HTTP route, `GET /hello/{name}`;
-- one runtime function, `hello-action.say-hello.v1`;
+- two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
+- two runtime functions, `hello-action.say-hello.v1` and
+  `hello-action.record-greeting.v1`;
 - one schema-admin entity, `greetings`.
 
 Start the module from the repository root:

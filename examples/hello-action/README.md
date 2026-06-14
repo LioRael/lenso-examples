@@ -7,8 +7,9 @@ a sibling framework checkout.
 It exposes:
 
 - a manifest at `/lenso/module/v1/manifest`;
-- one HTTP route, `GET /hello/{name}`;
-- one runtime function, `hello-action.say-hello.v1`;
+- two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
+- two runtime functions, `hello-action.say-hello.v1` and
+  `hello-action.record-greeting.v1`;
 - one schema-admin entity, `greetings`.
 
 ## Local Development
@@ -50,6 +51,11 @@ Change the starter by editing:
 - `src/server.mjs` for local startup behavior;
 - `src/smoke.mjs` for executable expectations;
 - `catalog-entry.json` for optional discovery metadata.
+
+`POST /greetings` and `hello-action.record-greeting.v1` both append to the
+same in-memory greeting list. The schema-admin `greetings` entity then shows
+the new records, which makes the example useful for testing a write path
+without adding a database.
 
 ## Install Into A Lenso Host
 
