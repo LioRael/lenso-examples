@@ -1,10 +1,17 @@
 import {
+  actionTextField,
+  actionTimestampField,
+  adminAction,
+  adminSchema,
+  declarativeCustom,
+  declarativePage,
+  declarativeSection,
   defineRemoteModule,
   defineSchemaEntity,
+  entityTable,
   getRoute,
   postRoute,
   runtimeFunction,
-  schemaAdmin,
   serveRemoteModule,
   textField,
   timestampField,
@@ -21,20 +28,51 @@ const greetings = [
 
 const writeCapability = "hello-action:greetings:write";
 
+const greetingsEntity = defineSchemaEntity({
+  fields: [
+    textField("id", { label: "ID" }),
+    textField("recipient", { label: "Recipient" }),
+    textField("message", { label: "Message" }),
+    timestampField("sent_at", { label: "Sent At" }),
+  ],
+  label: "Greetings",
+  name: "greetings",
+  readCapability: "hello-action:greetings:read",
+});
+
 export const manifest = defineRemoteModule({
-  admin: schemaAdmin([
-    defineSchemaEntity({
-      fields: [
-        textField("id", { label: "ID" }),
-        textField("recipient", { label: "Recipient" }),
-        textField("message", { label: "Message" }),
-        timestampField("sent_at", { label: "Sent At" }),
-      ],
-      label: "Greetings",
-      name: "greetings",
-      readCapability: "hello-action:greetings:read",
-    }),
-  ]),
+  admin: declarativeCustom({
+    actions: [
+      adminAction("seed_greeting", {
+        capability: writeCapability,
+        inputFields: [
+          actionTextField("recipient", {
+            description: "Who should receive the seeded greeting.",
+            label: "Recipient",
+            required: true,
+          }),
+          actionTextField("message", {
+            description: "Greeting message to store.",
+            label: "Message",
+            required: true,
+          }),
+          actionTimestampField("sent_at", { label: "Sent At" }),
+        ],
+        label: "Seed greeting",
+      }),
+    ],
+    fallbackSchema: adminSchema([greetingsEntity]),
+    pages: [
+      declarativePage("greetings", {
+        sections: [
+          declarativeSection("records", {
+            component: entityTable("greetings"),
+            label: "Greeting records",
+          }),
+        ],
+      }),
+    ],
+  }),
   capabilities: [
     "hello-action:greetings:read",
     "hello-action:hello:read",
@@ -102,6 +140,9 @@ export const serveHelloActionModule = async (options = {}) =>
         body: { record: recordGreeting(body) },
         statusCode: 201,
       }),
+    },
+    actions: {
+      seed_greeting: ({ input }) => ({ record: recordGreeting(input) }),
     },
     onReady: options.onReady,
     port: options.port ?? 4100,

@@ -40,6 +40,15 @@ try {
       throw new Error(`manifest is missing catalog capability ${capability}`);
     }
   }
+  if (
+    manifest.admin?.kind !== "declarative_custom" ||
+    !manifest.admin.actions?.some((action) => action.name === "seed_greeting")
+  ) {
+    throw new Error("manifest did not declare the seed_greeting admin action");
+  }
+  if (!manifest.admin.fallback_schema?.entities?.length) {
+    throw new Error("manifest did not expose a fallback schema");
+  }
 
   const hello = await fetchJson(`${server.baseUrl}/hello/Ada`);
   if (hello.message !== "Hello, Ada.") {
@@ -108,12 +117,29 @@ try {
     throw new Error("runtime mutation did not record the expected greeting");
   }
 
+  const seededByAction = await fetchJson(
+    `${server.baseUrl}/admin/actions/seed_greeting`,
+    {
+      body: JSON.stringify({
+        message: "Hello from admin action.",
+        recipient: "admin-action-user",
+        sent_at: "2026-06-14T03:00:00Z",
+      }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    }
+  );
+  if (seededByAction.result?.record?.recipient !== "admin-action-user") {
+    throw new Error("admin action did not record the expected greeting");
+  }
+
   const admin = await fetchJson(`${server.baseUrl}/admin/greetings`);
   const recipients = admin.records?.map((record) => record.recipient) ?? [];
   if (
     !recipients.includes("example-user") ||
     !recipients.includes("http-user") ||
-    !recipients.includes("runtime-user")
+    !recipients.includes("runtime-user") ||
+    !recipients.includes("admin-action-user")
   ) {
     throw new Error("schema-admin endpoint did not return greetings");
   }

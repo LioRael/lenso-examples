@@ -106,6 +106,42 @@ Expected shape:
 }
 ```
 
+Seed another greeting through the host-owned admin action endpoint:
+
+```sh
+curl -sS -X POST http://127.0.0.1:3000/admin/data/hello-action/actions/seed_greeting \
+  -H 'authorization: Bearer dev-service:admin:hello-action:greetings:write' \
+  -H 'content-type: application/json' \
+  -H 'x-correlation-id: corr_hello_action_admin_action' \
+  -d '{
+    "input": {
+      "recipient": "host-admin-action-user",
+      "message": "Hello through the Lenso admin action.",
+      "sent_at": "2026-06-14T04:00:00Z"
+    }
+  }' | jq .
+```
+
+Expected shape:
+
+```json
+{
+  "data": {
+    "record": {
+      "id": "greeting_3",
+      "recipient": "host-admin-action-user",
+      "message": "Hello through the Lenso admin action.",
+      "sent_at": "2026-06-14T04:00:00Z"
+    }
+  },
+  "invocation": {
+    "request_id": "...",
+    "correlation_id": "corr_hello_action_admin_action",
+    "story_node_id": "..."
+  }
+}
+```
+
 Read the same module state back through schema-admin:
 
 ```sh
@@ -113,7 +149,8 @@ curl -sS 'http://127.0.0.1:3000/admin/data/hello-action/greetings?limit=10' \
   -H 'authorization: Bearer dev-service:admin' | jq '.data'
 ```
 
-The response should include both the seed record and `host-proxy-user`.
+The response should include the seed record, `host-proxy-user`, and
+`host-admin-action-user`.
 
 ## Inspect Operations
 

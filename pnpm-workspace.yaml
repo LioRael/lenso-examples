@@ -2,5 +2,5 @@ packages:
   - examples/*
 
 minimumReleaseAgeExclude:
-  - '@lenso/remote-module-kit@0.1.0'
-  - '@lenso/ts-sdk@0.1.0'
+  - '@lenso/remote-module-kit'
+  - '@lenso/ts-sdk'

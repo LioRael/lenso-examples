@@ -10,7 +10,8 @@ It exposes:
 - two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
 - two runtime functions, `hello-action.say-hello.v1` and
   `hello-action.record-greeting.v1`;
-- one schema-admin entity, `greetings`.
+- one declarative admin surface with a `seed_greeting` action and a fallback
+  `greetings` schema-admin entity.
 
 ## Local Development
 
@@ -52,10 +53,10 @@ Change the starter by editing:
 - `src/smoke.mjs` for executable expectations;
 - `catalog-entry.json` for optional discovery metadata.
 
-`POST /greetings` and `hello-action.record-greeting.v1` both append to the
-same in-memory greeting list. The schema-admin `greetings` entity then shows
-the new records, which makes the example useful for testing a write path
-without adding a database.
+`POST /greetings`, `hello-action.record-greeting.v1`, and the
+`seed_greeting` admin action all append to the same in-memory greeting list.
+The fallback schema-admin `greetings` entity then shows the new records, which
+makes the example useful for testing write paths without adding a database.
 
 ## Install Into A Lenso Host
 
