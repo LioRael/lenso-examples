@@ -26,7 +26,8 @@ pnpm smoke
 - two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
 - two runtime functions, `hello-action.say-hello.v1` and
   `hello-action.record-greeting.v1`;
-- one schema-admin entity, `greetings`.
+- one declarative admin surface with a `seed_greeting` action and a fallback
+  `greetings` schema-admin entity.
 
 Start the module from the repository root:
 

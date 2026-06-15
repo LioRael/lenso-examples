@@ -12,7 +12,7 @@
     "start": "node src/server.mjs"
   },
   "dependencies": {
-    "@lenso/remote-module-kit": "0.1.0",
+    "@lenso/remote-module-kit": "0.1.1",
     "@lenso/ts-sdk": "0.1.0"
   }
 }
