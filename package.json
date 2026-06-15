@@ -8,6 +8,7 @@
     "check": "pnpm smoke",
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke",
     "host-smoke:hello-action": "pnpm --filter @lenso/example-hello-action host-smoke",
+    "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
     "smoke": "pnpm --filter @lenso/example-hello-action smoke",
     "smoke:hello-action": "pnpm --filter @lenso/example-hello-action smoke",
     "start:hello-action": "pnpm --filter @lenso/example-hello-action start"
