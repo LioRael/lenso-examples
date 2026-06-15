@@ -1,0 +1,9 @@
+[package]
+name = "lenso-example-rust-manifest"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+lenso = "0.1.0"
+serde_json = "1"

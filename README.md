@@ -4,6 +4,7 @@ Runnable examples for Lenso module authors and API consumers.
 
 This repository uses published packages instead of sibling workspace paths:
 
+- `lenso`
 - `@lenso/remote-module-kit`
 - `@lenso/ts-sdk`
 
@@ -17,6 +18,16 @@ pnpm smoke
 ```
 
 ## Examples
+
+### Rust Manifest
+
+`examples/rust-manifest` is a minimal Rust package using the published
+`lenso` facade. It declares a schema-admin manifest, runs manifest lints, and
+prints the manifest JSON:
+
+```sh
+pnpm rust-manifest
+```
 
 ### Hello Action Remote Module
 
