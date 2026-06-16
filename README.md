@@ -117,6 +117,32 @@ To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
 [docs/hello-action-host-run.md](docs/hello-action-host-run.md).
 
+### gRPC Notes Remote Module
+
+`examples/grpc-notes` is the native gRPC remote module starter. It exposes a
+manifest, schema-admin `notes`, `GET /notes` through the host proxy, and
+`grpc-notes.summarize.v1` through the runtime function lane.
+
+Start it from the repository root:
+
+```sh
+pnpm start:grpc-notes
+```
+
+Verify the gRPC protocol path:
+
+```sh
+pnpm smoke:grpc-notes
+```
+
+Install it into a local host with the checked-in manifest and a gRPC base URL:
+
+```sh
+lenso module catalog add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051 --summary "Native gRPC notes module"
+lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051
+lenso console-package apply-plan
+```
+
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso
