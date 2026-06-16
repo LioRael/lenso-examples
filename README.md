@@ -17,6 +17,24 @@ pnpm install
 pnpm smoke
 ```
 
+## Blank Host Starter
+
+Use the backend framework repository's transitional starter when you want a
+blank Rust host before installing remote modules:
+
+```sh
+cp -R ../lenso/templates/starter-host ../my-lenso-host
+cd ../my-lenso-host
+cp .env.example .env
+docker compose up -d postgres
+cargo run --bin migrate
+cargo run --bin api
+```
+
+The starter serves `GET /v1/app/status`, `/openapi.json`, and the admin APIs.
+Keep this repository for runnable module examples; keep the host template in
+`../lenso/templates/starter-host`.
+
 ## Examples
 
 ### Rust Manifest
