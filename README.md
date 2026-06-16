@@ -31,7 +31,8 @@ cargo run --bin migrate
 cargo run --bin api
 ```
 
-The starter serves `GET /v1/app/status`, `/openapi.json`, and the admin APIs.
+The starter serves `GET /v1/app/status`, `GET`/`POST /v1/app/items`,
+`/openapi.json`, and the admin APIs.
 Keep this repository for runnable module examples; keep the host template in
 `../lenso/templates/starter-host`.
 
