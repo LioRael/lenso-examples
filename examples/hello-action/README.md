@@ -1,8 +1,8 @@
 # Hello Action Remote Module
 
 This is a starter remote module package for Lenso. It uses the published
-`@lenso/remote-module-kit` and `@lenso/ts-sdk` packages, so it can run without
-a sibling framework checkout.
+`@lenso/remote-module-kit` package, so it can run without a sibling framework
+checkout.
 
 It exposes:
 
