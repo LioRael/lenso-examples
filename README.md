@@ -1,12 +1,11 @@
 # Lenso Examples
 
-Runnable examples for Lenso module authors and API consumers.
+Runnable examples for Lenso module authors.
 
 This repository uses published packages instead of sibling workspace paths:
 
 - `lenso`
 - `@lenso/remote-module-kit`
-- `@lenso/ts-sdk`
 
 ## Quick Start
 

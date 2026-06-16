@@ -3,4 +3,3 @@ packages:
 
 minimumReleaseAgeExclude:
   - '@lenso/remote-module-kit'
-  - '@lenso/ts-sdk'

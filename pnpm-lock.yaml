@@ -13,20 +13,12 @@ importers:
       '@lenso/remote-module-kit':
         specifier: 0.1.1
         version: 0.1.1
-      '@lenso/ts-sdk':
-        specifier: 0.1.0
-        version: 0.1.0
 
 packages:
 
   '@lenso/remote-module-kit@0.1.1':
     resolution: {integrity: sha512-eKCFKw48Wys28vg2pV/U0/BW/C7DvGn+MdDYN7BKmuFSqr3wavsxkFzvxts7XwsWno4/QdzBJDmVrqWtScPcqw==}
 
-  '@lenso/ts-sdk@0.1.0':
-    resolution: {integrity: sha512-yNz9jZ2tw7hYB/JLvSLb2n3bNOLeGizbA1B86Tbqjokkl90VuIJWBok23NUuN7viIkktrcBbF9iI8leUBiqnCA==}
-
 snapshots:
 
   '@lenso/remote-module-kit@0.1.1': {}
-
-  '@lenso/ts-sdk@0.1.0': {}

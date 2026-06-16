@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 
-import { createClient } from "@lenso/ts-sdk";
-
 import { serveHelloActionModule } from "./module.mjs";
 
 const fetchJson = async (url, init) => {
@@ -142,11 +140,6 @@ try {
     !recipients.includes("admin-action-user")
   ) {
     throw new Error("schema-admin endpoint did not return greetings");
-  }
-
-  const client = createClient({ baseUrl: "http://127.0.0.1:3000" });
-  if (typeof client.identity.createUser !== "function") {
-    throw new Error("@lenso/ts-sdk did not expose createClient");
   }
 
   console.log("Hello Action remote module smoke passed");
