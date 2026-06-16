@@ -1,0 +1,63 @@
+{
+  "admin": {
+    "entities": [
+      {
+        "fields": [
+          {
+            "field_type": {
+              "kind": "string"
+            },
+            "label": "ID",
+            "name": "id",
+            "nullable": false
+          },
+          {
+            "field_type": {
+              "kind": "string"
+            },
+            "label": "Title",
+            "name": "title",
+            "nullable": false
+          },
+          {
+            "field_type": {
+              "kind": "string"
+            },
+            "label": "Body",
+            "name": "body",
+            "nullable": false
+          }
+        ],
+        "label": "Notes",
+        "name": "notes",
+        "read_capability": "grpc-notes:notes:read"
+      }
+    ]
+  },
+  "capabilities": [
+    "grpc-notes:notes:read",
+    "grpc-notes:notes:write"
+  ],
+  "console": [],
+  "http_routes": [
+    {
+      "capability": "grpc-notes:notes:read",
+      "display_name": "List notes",
+      "method": "GET",
+      "path": "/notes",
+      "story_title": "gRPC notes listed"
+    }
+  ],
+  "name": "grpc-notes",
+  "runtime": {
+    "functions": [
+      {
+        "queue": "grpc-notes",
+        "name": "grpc-notes.summarize.v1",
+        "version": 1
+      }
+    ]
+  },
+  "source": "remote",
+  "version": "0.1.0"
+}

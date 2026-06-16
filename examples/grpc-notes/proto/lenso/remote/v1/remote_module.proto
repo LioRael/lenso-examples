@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package lenso.remote.v1;
+
+service RemoteModule {
+  rpc GetManifest(JsonEnvelope) returns (JsonEnvelope);
+  rpc ListAdminRecords(JsonEnvelope) returns (JsonEnvelope);
+  rpc GetAdminRecord(JsonEnvelope) returns (JsonEnvelope);
+  rpc InvokeAdminAction(JsonEnvelope) returns (JsonEnvelope);
+  rpc ProxyHttpRoute(JsonEnvelope) returns (JsonEnvelope);
+  rpc InvokeFunction(JsonEnvelope) returns (JsonEnvelope);
+  rpc HandleEvent(JsonEnvelope) returns (JsonEnvelope);
+}
+
+message JsonEnvelope {
+  string payload_json = 1;
+}

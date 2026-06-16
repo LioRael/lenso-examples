@@ -9,8 +9,10 @@
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke",
     "host-smoke:hello-action": "pnpm --filter @lenso/example-hello-action host-smoke",
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
-    "smoke": "pnpm --filter @lenso/example-hello-action smoke",
+    "smoke": "pnpm smoke:hello-action && pnpm smoke:grpc-notes",
+    "smoke:grpc-notes": "pnpm --filter @lenso/example-grpc-notes smoke",
     "smoke:hello-action": "pnpm --filter @lenso/example-hello-action smoke",
+    "start:grpc-notes": "pnpm --filter @lenso/example-grpc-notes start",
     "start:hello-action": "pnpm --filter @lenso/example-hello-action start"
   },
   "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1"
