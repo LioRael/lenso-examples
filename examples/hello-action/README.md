@@ -63,14 +63,12 @@ makes the example useful for testing write paths without adding a database.
 From a local Lenso host checkout, install the running module:
 
 ```sh
-lenso module add http://127.0.0.1:4100/lenso/module/v1/manifest
-lenso console-package apply-plan
-pnpm install
+lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
 ```
 
 This example does not publish a Runtime Console package, so the generated
-install plan should not request frontend dependencies. It still exercises the
-same manifest install path as a fuller third-party module.
+install receipt should not request frontend dependencies. It still exercises
+the same manifest install path as a fuller third-party module.
 
 The optional catalog record is `catalog-entry.json`; it mirrors the local
 server's default manifest URL for discovery flows.
@@ -87,13 +85,13 @@ It starts this module, creates a temporary host repo, runs the real `lenso`
 CLI, and verifies:
 
 - `.lenso/module-catalog.json` from `lenso module catalog add`;
-- `.env` from `lenso module add`;
+- `.env` from `lenso module install`;
 - `.lenso/console-package-install-plan.json` with zero console packages.
 
-By default the smoke uses a sibling `../lenso-runtime-console` checkout. Set
-`LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another
-checkout. Set `LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for
-inspection.
+By default the smoke uses a sibling `../lenso-runtime-console` checkout with the
+Runtime Console CLI already built. Run `pnpm --dir ../lenso-runtime-console build`
+first, or set `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console`. Set
+`LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for inspection.
 
 ## Host Proxy Run
 

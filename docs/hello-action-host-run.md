@@ -18,10 +18,9 @@ The host commands below assume the backend repository's local defaults:
 
 - API on `http://127.0.0.1:3000`;
 - `APP_ENV=local`, so development bearer tokens are accepted;
-- the `lenso` CLI is available through the sibling Runtime Console checkout.
+- the `lenso` CLI is installed on `PATH`.
 
-If `lenso` is already on your `PATH`, you can use `lenso ...` instead of
-`pnpm --dir ../lenso-runtime-console exec lenso ...`.
+When testing an unpublished CLI build, use that checkout's binary explicitly.
 
 ## Start The Remote Module
 
@@ -47,13 +46,12 @@ From the sibling `lenso` backend checkout:
 
 ```sh
 test -f .env || cp .env.example .env
-pnpm --dir ../lenso-runtime-console exec lenso module add \
-  http://127.0.0.1:4100/lenso/module/v1/manifest
+lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
 ```
 
 `hello-action` does not publish a Runtime Console package, so no frontend
 dependency install is required for this module. If the API is already running,
-restart it after `module add`; `REMOTE_MODULES` is loaded on startup.
+restart it after `module install`; `REMOTE_MODULES` is loaded on startup.
 
 Start the host services:
 
