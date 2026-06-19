@@ -18,22 +18,21 @@ pnpm smoke
 
 ## Blank Host Starter
 
-Use the backend framework repository's transitional starter when you want a
-blank Rust host before installing remote modules:
+Use the standalone CLI when you want a blank Rust host before installing remote
+modules:
 
 ```sh
-cp -R ../lenso/templates/starter-host ../my-lenso-host
+cargo install lenso-cli
+lenso host init ../my-lenso-host
 cd ../my-lenso-host
 cp .env.example .env
-docker compose up -d postgres
-cargo run --bin migrate
-cargo run --bin api
+lenso serve
 ```
 
 The starter serves `GET /v1/app/status`, `GET`/`POST /v1/app/items`,
 `/openapi.json`, and the admin APIs.
-Keep this repository for runnable module examples; keep the host template in
-`../lenso/templates/starter-host`.
+Keep this repository for runnable module examples; the host starter template is
+owned by the standalone `lenso-cli` repository.
 
 ## Examples
 
@@ -88,13 +87,11 @@ http://127.0.0.1:4100/lenso/module/v1/manifest
 Use that URL with a local Lenso host checkout:
 
 ```sh
-lenso module add http://127.0.0.1:4100/lenso/module/v1/manifest
-lenso console-package apply-plan
-pnpm install
+lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
 ```
 
-The example does not ship a Runtime Console package, so `apply-plan` is still
-safe to run and should leave no frontend package to install for this module.
+The example does not ship a Runtime Console package, so there is no frontend
+package install step for this module.
 
 The server reads `PORT` from the shell environment. The optional discovery
 record lives at `examples/hello-action/catalog-entry.json` and matches the
@@ -108,10 +105,11 @@ pnpm host-smoke
 ```
 
 It starts `hello-action`, creates a temporary host repo, runs the real
-`lenso module catalog add` and `lenso module add` commands, and checks the
+`lenso module catalog add` and `lenso module install` commands, and checks the
 generated `.lenso/module-catalog.json`, `.env`, and console package install
-plan. By default it uses a sibling `../lenso-runtime-console` checkout; set
-`LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console` to use another one.
+plan. By default it uses a sibling `../lenso-runtime-console` checkout with the
+Runtime Console CLI already built; run `pnpm --dir ../lenso-runtime-console build`
+first, or set `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console`.
 
 To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
