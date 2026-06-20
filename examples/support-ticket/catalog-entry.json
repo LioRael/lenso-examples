@@ -7,8 +7,8 @@
   "summary": "Support ticket module for Lenso agent-ready demos",
   "version": "0.1.0",
   "capabilities": [
-    "support-ticket:tickets:read",
-    "support-ticket:tickets:write",
-    "support-ticket:tickets:escalate"
+    "support_ticket.tickets.read",
+    "support_ticket.tickets.write",
+    "support_ticket.tickets.escalate"
   ]
 }

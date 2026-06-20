@@ -30,9 +30,9 @@ const tickets = [
   },
 ];
 
-const readCapability = "support-ticket:tickets:read";
-const writeCapability = "support-ticket:tickets:write";
-const escalateCapability = "support-ticket:tickets:escalate";
+const readCapability = "support_ticket.tickets.read";
+const writeCapability = "support_ticket.tickets.write";
+const escalateCapability = "support_ticket.tickets.escalate";
 
 const ticketsEntity = defineSchemaEntity({
   fields: [
