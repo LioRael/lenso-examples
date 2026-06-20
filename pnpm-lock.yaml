@@ -26,6 +26,12 @@ importers:
         specifier: 0.1.1
         version: 0.1.1
 
+  examples/support-ticket:
+    dependencies:
+      '@lenso/remote-module-kit':
+        specifier: 0.1.1
+        version: 0.1.1
+
 packages:
 
   '@grpc/grpc-js@1.14.4':

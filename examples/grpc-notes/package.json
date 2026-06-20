@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "check": "pnpm smoke",
-    "dev": "node src/server.mjs",
-    "smoke": "node src/smoke.mjs",
-    "start": "node src/server.mjs"
+    "dev": "node src/server.ts",
+    "smoke": "node src/smoke.ts",
+    "start": "node src/server.ts"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.1",

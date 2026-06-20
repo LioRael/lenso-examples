@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 
-import { serveHelloActionModule } from "./module.mjs";
+import { serveHelloActionModule } from "./module.ts";
 
 const fetchJson = async (url, init) => {
   const response = await fetch(url, init);
