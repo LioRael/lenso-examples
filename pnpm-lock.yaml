@@ -8,6 +8,12 @@ importers:
 
   .: {}
 
+  examples/account-profile:
+    dependencies:
+      '@lenso/remote-module-kit':
+        specifier: 0.1.1
+        version: 0.1.1
+
   examples/grpc-notes:
     dependencies:
       '@grpc/grpc-js':

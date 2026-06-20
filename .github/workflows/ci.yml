@@ -27,7 +27,7 @@ jobs:
         run: pnpm smoke
       - name: Install lenso CLI
         run: cargo install lenso-cli --locked
-      - name: Run support-ticket host API smoke
-        run: pnpm host-api-smoke:support-ticket
+      - name: Run host API smokes
+        run: pnpm host-api-smoke
         env:
           LENSO_CLI: lenso
