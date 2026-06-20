@@ -12,6 +12,9 @@ const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
 const token =
   "dev-service:admin:runtime.stories.read,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
+const hostReadyTimeoutMs = Number(
+  process.env.LENSO_HOST_API_SMOKE_READY_TIMEOUT_MS ?? "240000"
+);
 
 const assertEqual = (actual, expected, message) => {
   if (actual !== expected) {
@@ -128,6 +131,9 @@ const waitFor = async (description, fn, { timeoutMs = 90_000 } = {}) => {
   );
 };
 
+const tail = (value, maxLength = 8000) =>
+  value.length > maxLength ? value.slice(-maxLength) : value;
+
 const stopChild = (child) =>
   new Promise((resolve) => {
     if (!child || child.exitCode !== null) {
@@ -199,9 +205,18 @@ try {
   });
 
   const apiBaseUrl = `http://127.0.0.1:${httpPort}`;
-  await waitFor("host readiness", async () => {
-    const response = await fetch(`${apiBaseUrl}/readyz`);
-    return response.ok;
+  await waitFor(
+    "host readiness",
+    async () => {
+      if (hostProcess.exitCode !== null || hostProcess.signalCode) {
+        throw new Error(`host exited before ready\n${tail(hostLog)}`);
+      }
+      const response = await fetch(`${apiBaseUrl}/readyz`);
+      return response.ok;
+    },
+    { timeoutMs: hostReadyTimeoutMs }
+  ).catch((error) => {
+    throw new Error(`${error.message}\nHost log:\n${tail(hostLog)}`);
   });
 
   const modules = await fetchJson(`${apiBaseUrl}/admin/data/modules`);
