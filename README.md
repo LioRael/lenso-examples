@@ -73,9 +73,9 @@ pnpm smoke
 
 Change the module by editing:
 
-- `src/module.mjs` for the manifest, handlers, and seed data;
-- `src/server.mjs` for local startup behavior;
-- `src/smoke.mjs` for executable expectations as the module grows;
+- `src/module.ts` for the manifest, handlers, and seed data;
+- `src/server.ts` for local startup behavior;
+- `src/smoke.ts` for executable expectations as the module grows;
 - `catalog-entry.json` for optional discovery metadata.
 
 The server prints a manifest URL like:
@@ -104,12 +104,9 @@ run the integration smoke from this repository root:
 pnpm host-smoke
 ```
 
-It starts `hello-action`, creates a temporary host repo, runs the real
+It starts the remote examples, creates temporary host repos, runs the real
 `lenso module catalog add` and `lenso module install` commands, and checks the
-generated `.lenso/module-catalog.json`, `.env`, and console package install
-plan. By default it uses a sibling `../lenso-runtime-console` checkout with the
-Runtime Console CLI already built; run `pnpm --dir ../lenso-runtime-console build`
-first, or set `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console`.
+generated `.lenso/module-catalog.json`, `.env`, and install receipts.
 
 To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
@@ -139,6 +136,34 @@ Install it into a local host with the checked-in manifest and a gRPC base URL:
 lenso module catalog add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051 --summary "Native gRPC notes module"
 lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051
 lenso console-package apply-plan
+```
+
+### Support Ticket Remote Module
+
+`examples/support-ticket` is the agent-ready module demo. It turns a concrete
+business prompt into a remote module with tickets data, HTTP routes, an admin
+action, a runtime escalation function, and Console-visible metadata:
+
+```text
+Build a support ticket module for a Lenso app.
+```
+
+Run it from the repository root:
+
+```sh
+pnpm start:support-ticket
+```
+
+Smoke the module directly:
+
+```sh
+pnpm smoke:support-ticket
+```
+
+Install its manifest into a local Lenso host:
+
+```sh
+lenso module install http://127.0.0.1:4110/lenso/module/v1/manifest
 ```
 
 ## Repositories

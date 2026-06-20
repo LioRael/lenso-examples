@@ -1,0 +1,14 @@
+{
+  "baseUrl": "http://127.0.0.1:4110/lenso/module/v1",
+  "consolePackages": [],
+  "manifestReference": "http://127.0.0.1:4110/lenso/module/v1/manifest",
+  "name": "support-ticket",
+  "source": "remote",
+  "summary": "Support ticket module for Lenso agent-ready demos",
+  "version": "0.1.0",
+  "capabilities": [
+    "support-ticket:tickets:read",
+    "support-ticket:tickets:write",
+    "support-ticket:tickets:escalate"
+  ]
+}

@@ -5,7 +5,7 @@ import {
   createGrpcNotesClient,
   manifest,
   serveGrpcNotesModule,
-} from "./module.mjs";
+} from "./module.ts";
 
 const assert = (condition, message) => {
   if (!condition) {
@@ -34,7 +34,7 @@ const checkedInManifest = JSON.parse(
 );
 assert(
   JSON.stringify(checkedInManifest) === JSON.stringify(manifest),
-  "lenso.module.json drifted from src/module.mjs"
+  "lenso.module.json drifted from src/module.ts"
 );
 
 const server = await serveGrpcNotesModule({ port: 0 });

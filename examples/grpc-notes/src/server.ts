@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { serveGrpcNotesModule } from "./module.mjs";
+import { serveGrpcNotesModule } from "./module.ts";
 
 await serveGrpcNotesModule({
   port: Number(process.env.GRPC_PORT ?? "50051"),

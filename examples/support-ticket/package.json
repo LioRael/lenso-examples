@@ -1,13 +1,13 @@
 {
-  "name": "@lenso/example-hello-action",
+  "name": "@lenso/example-support-ticket",
   "version": "0.1.0",
   "private": true,
-  "description": "Starter remote action module for Lenso.",
+  "description": "Agent-ready support ticket remote module for Lenso.",
   "type": "module",
   "scripts": {
     "check": "pnpm smoke",
     "dev": "node src/server.ts",
-    "host-smoke": "node ../../scripts/host-install-smoke.ts hello-action",
+    "host-smoke": "node ../../scripts/host-install-smoke.ts support-ticket",
     "smoke": "node src/smoke.ts",
     "start": "node src/server.ts"
   },

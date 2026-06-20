@@ -48,9 +48,9 @@ pnpm smoke
 
 Change the starter by editing:
 
-- `src/module.mjs` for manifest declarations, handlers, and seed data;
-- `src/server.mjs` for local startup behavior;
-- `src/smoke.mjs` for executable expectations;
+- `src/module.ts` for manifest declarations, handlers, and seed data;
+- `src/server.ts` for local startup behavior;
+- `src/smoke.ts` for executable expectations;
 - `catalog-entry.json` for optional discovery metadata.
 
 `POST /greetings`, `hello-action.record-greeting.v1`, and the

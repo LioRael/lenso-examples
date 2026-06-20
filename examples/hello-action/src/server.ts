@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { serveHelloActionModule } from "./module.mjs";
+import { serveHelloActionModule } from "./module.ts";
 
 await serveHelloActionModule({
   port: Number(process.env.PORT ?? "4100"),
