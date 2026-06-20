@@ -112,6 +112,30 @@ To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
 [docs/hello-action-host-run.md](docs/hello-action-host-run.md).
 
+### Account Profile Remote Module
+
+`examples/account-profile` keeps product profile data outside the first-party
+auth anchor. It declares an `auth` dependency, profile records, organizations,
+memberships, HTTP routes, an admin action, and schema-admin pages.
+
+Start it from the repository root:
+
+```sh
+pnpm start:account-profile
+```
+
+Smoke the module directly:
+
+```sh
+pnpm smoke:account-profile
+```
+
+Install its manifest into a local Lenso host:
+
+```sh
+lenso module install http://127.0.0.1:4120/lenso/module/v1/manifest
+```
+
 ### gRPC Notes Remote Module
 
 `examples/grpc-notes` is the native gRPC remote module starter. It exposes a

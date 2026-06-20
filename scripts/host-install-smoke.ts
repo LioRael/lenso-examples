@@ -6,12 +6,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { serveHelloActionModule } from "../examples/hello-action/src/module.ts";
+import { serveAccountProfileModule } from "../examples/account-profile/src/module.ts";
 import { serveSupportTicketModule } from "../examples/support-ticket/src/module.ts";
 
 const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
 
 const examples = {
+  "account-profile": {
+    catalogSummary: "Account Profile auth boundary module",
+    serve: serveAccountProfileModule,
+  },
   "hello-action": {
     catalogSummary: "Hello Action starter module",
     serve: serveHelloActionModule,

@@ -1,0 +1,17 @@
+{
+  "name": "@lenso/example-account-profile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Account profile remote module for Lenso auth boundary demos.",
+  "type": "module",
+  "scripts": {
+    "check": "pnpm smoke",
+    "dev": "node src/server.ts",
+    "host-smoke": "node ../../scripts/host-install-smoke.ts account-profile",
+    "smoke": "node src/smoke.ts",
+    "start": "node src/server.ts"
+  },
+  "dependencies": {
+    "@lenso/remote-module-kit": "0.1.1"
+  }
+}

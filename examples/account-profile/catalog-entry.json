@@ -1,0 +1,15 @@
+{
+  "baseUrl": "http://127.0.0.1:4120/lenso/module/v1",
+  "consolePackages": [],
+  "manifestReference": "http://127.0.0.1:4120/lenso/module/v1/manifest",
+  "name": "account-profile",
+  "source": "remote",
+  "summary": "Account profiles and organization memberships for auth boundary demos",
+  "version": "0.1.0",
+  "capabilities": [
+    "account_profile.profiles.read",
+    "account_profile.profiles.write",
+    "account_profile.organizations.read",
+    "account_profile.organizations.write"
+  ]
+}
