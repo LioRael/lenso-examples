@@ -9,6 +9,7 @@
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke && pnpm --filter @lenso/example-support-ticket host-smoke",
     "host-smoke:hello-action": "pnpm --filter @lenso/example-hello-action host-smoke",
     "host-smoke:support-ticket": "pnpm --filter @lenso/example-support-ticket host-smoke",
+    "host-api-smoke:support-ticket": "node scripts/support-ticket-host-api-smoke.ts",
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
     "smoke": "pnpm smoke:hello-action && pnpm smoke:grpc-notes && pnpm smoke:support-ticket",
     "smoke:grpc-notes": "pnpm --filter @lenso/example-grpc-notes smoke",
