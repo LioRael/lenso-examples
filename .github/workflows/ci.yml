@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v6
         with:
           run_install: false
@@ -23,3 +25,9 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run examples smoke
         run: pnpm smoke
+      - name: Install lenso CLI
+        run: cargo install lenso-cli --locked
+      - name: Run support-ticket host API smoke
+        run: pnpm host-api-smoke:support-ticket
+        env:
+          LENSO_CLI: lenso
