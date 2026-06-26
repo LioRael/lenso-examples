@@ -41,7 +41,7 @@ pass the running gRPC endpoint as the remote base URL:
 ```sh
 lenso module catalog add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051 --summary "Native gRPC notes module"
 lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051
-lenso console-package apply-plan
+lenso console package apply-plan
 ```
 
 This example has no Runtime Console package, so `apply-plan` should not install
