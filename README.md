@@ -159,7 +159,7 @@ Install it into a local host with the checked-in manifest and a gRPC base URL:
 ```sh
 lenso module catalog add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051 --summary "Native gRPC notes module"
 lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051
-lenso console-package apply-plan
+lenso console package apply-plan
 ```
 
 ### Support Ticket Remote Module
