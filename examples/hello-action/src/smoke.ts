@@ -142,7 +142,7 @@ try {
     throw new Error("schema-admin endpoint did not return greetings");
   }
 
-  console.log("Hello Action remote module smoke passed");
+  console.log("Hello Action service module smoke passed");
 } finally {
   await server.close();
 }

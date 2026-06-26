@@ -2,7 +2,7 @@
   "name": "@lenso/example-support-ticket",
   "version": "0.1.0",
   "private": true,
-  "description": "Agent-ready support ticket remote module for Lenso.",
+  "description": "Agent-ready support ticket service module for Lenso.",
   "type": "module",
   "scripts": {
     "check": "pnpm smoke",

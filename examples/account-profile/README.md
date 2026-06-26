@@ -1,4 +1,4 @@
-# Account Profile Remote Module
+# Account Profile Service Module
 
 This example keeps product profile data outside Lenso's auth module. It depends
 on `auth`, then stores profiles, organizations, and memberships in its own

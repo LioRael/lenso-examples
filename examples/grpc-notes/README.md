@@ -1,6 +1,6 @@
-# gRPC Notes Remote Module
+# gRPC Notes Service Module
 
-This is the smallest native gRPC remote module example for Lenso. It exposes:
+This is the smallest native gRPC service module example for Lenso. It exposes:
 
 - `GetManifest` for the module manifest;
 - schema-admin list/detail reads for `notes`;

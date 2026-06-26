@@ -1,6 +1,6 @@
-# Hello Action Remote Module
+# Hello Action Service Module
 
-This is a starter remote module package for Lenso. It uses the published
+This is a starter service module package for Lenso. It uses the published
 `@lenso/remote-module-kit` package, so it can run without a sibling framework
 checkout.
 

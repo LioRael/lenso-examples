@@ -46,9 +46,9 @@ prints the manifest JSON:
 pnpm rust-manifest
 ```
 
-### Hello Action Remote Module
+### Hello Action Service Module
 
-`examples/hello-action` is a starter remote module package. It exposes:
+`examples/hello-action` is a starter service module package. It exposes:
 
 - a manifest at `/lenso/module/v1/manifest`;
 - two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
@@ -112,7 +112,7 @@ To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
 [docs/hello-action-host-run.md](docs/hello-action-host-run.md).
 
-### Account Profile Remote Module
+### Account Profile Service Module
 
 `examples/account-profile` keeps product profile data outside the first-party
 auth anchor. It declares an `auth` dependency, profile records, organizations,
@@ -136,9 +136,9 @@ Install its manifest into a local Lenso host:
 lenso module install http://127.0.0.1:4120/lenso/module/v1/manifest
 ```
 
-### gRPC Notes Remote Module
+### gRPC Notes Service Module
 
-`examples/grpc-notes` is the native gRPC remote module starter. It exposes a
+`examples/grpc-notes` is the native gRPC service module starter. It exposes a
 manifest, schema-admin `notes`, `GET /notes` through the host proxy, and
 `grpc-notes.summarize.v1` through the runtime function lane.
 
@@ -162,10 +162,10 @@ lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-
 lenso console package apply-plan
 ```
 
-### Support Ticket Remote Module
+### Support Ticket Service Module
 
 `examples/support-ticket` is the agent-ready module demo. It turns a concrete
-business prompt into a remote module with tickets data, HTTP routes, an admin
+business prompt into a service module with tickets data, HTTP routes, an admin
 action, a runtime escalation function, and Console-visible metadata:
 
 ```text
@@ -190,7 +190,18 @@ Install its manifest into a local Lenso host:
 lenso module install http://127.0.0.1:4110/lenso/module/v1/manifest
 ```
 
+Run the full service-module host path:
+
+```sh
+pnpm host-api-smoke:support-ticket
+```
+
+That starts the service module, installs it into a temporary host, exercises the
+host-owned HTTP proxy and runtime path, and verifies Runtime Story evidence.
+For the manual walkthrough, see
+[docs/support-ticket-service-module-run.md](docs/support-ticket-service-module-run.md).
+
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso
-- Runtime Console and remote module kit: https://github.com/LioRael/lenso-runtime-console
+- Runtime Console and service module kit: https://github.com/LioRael/lenso-runtime-console

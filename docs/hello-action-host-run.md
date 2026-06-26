@@ -22,7 +22,7 @@ The host commands below assume the backend repository's local defaults:
 
 When testing an unpublished CLI build, use that checkout's binary explicitly.
 
-## Start The Remote Module
+## Start The Service Module
 
 From `lenso-examples`:
 

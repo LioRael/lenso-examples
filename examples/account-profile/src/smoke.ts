@@ -98,7 +98,7 @@ try {
     throw new Error("schema-admin endpoint did not return memberships");
   }
 
-  console.log("Account Profile remote module smoke passed");
+  console.log("Account Profile service module smoke passed");
 } finally {
   await server.close();
 }

@@ -69,6 +69,19 @@ try {
   if (!manifest.admin.fallback_schema?.entities?.length) {
     throw new Error("manifest did not expose tickets as fallback schema");
   }
+  if (manifest.service?.status_path !== "/lenso/module/v1/status") {
+    throw new Error("manifest did not declare the service status path");
+  }
+
+  const statusUrl = server.statusUrl ?? `${server.baseUrl}/status`;
+  const status = await fetchJson(statusUrl);
+  if (
+    status.moduleName !== "support-ticket" ||
+    status.serviceName !== "api" ||
+    status.state !== "ready"
+  ) {
+    throw new Error("status endpoint did not return support-ticket readiness");
+  }
 
   const created = await fetchJson(`${server.baseUrl}/tickets`, {
     body: JSON.stringify({
@@ -124,7 +137,7 @@ try {
     throw new Error("schema-admin endpoint did not return tickets");
   }
 
-  console.log("Support Ticket remote module smoke passed");
+  console.log("Support Ticket service module smoke passed");
 } finally {
   await server.close();
 }

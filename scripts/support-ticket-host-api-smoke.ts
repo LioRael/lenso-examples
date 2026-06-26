@@ -10,18 +10,33 @@ import { serveSupportTicketModule } from "../examples/support-ticket/src/module.
 
 const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
+const lensoWorkspaceRoot = path.resolve(repoRoot, "../lenso");
+const lensoCrateRoot = path.resolve(repoRoot, "../lenso/crates/lenso");
+const localLensoPatchToml = () =>
+  [
+    "",
+    "[patch.crates-io]",
+    `lenso-contracts = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-contracts")}" }`,
+    `lenso-platform-core = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-core")}" }`,
+    `lenso-platform-http = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-http")}" }`,
+    `lenso-platform-module = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-module")}" }`,
+    `lenso-platform-runtime = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-runtime")}" }`,
+    `lenso-platform-testing = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-testing")}" }`,
+    `lenso-module-story = { path = "${path.join(lensoWorkspaceRoot, "modules/story")}" }`,
+    "",
+  ].join("\n");
 const token =
   "dev-service:admin:runtime.stories.read,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
 const hostReadyTimeoutMs = Number(
-  process.env.LENSO_HOST_API_SMOKE_READY_TIMEOUT_MS ?? "240000"
+  process.env.LENSO_HOST_API_SMOKE_READY_TIMEOUT_MS ?? "240000",
 );
 
 const assertEqual = (actual, expected, message) => {
   if (actual !== expected) {
     throw new Error(
       `${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(
-        actual
-      )}`
+        actual,
+      )}`,
     );
   }
 };
@@ -68,8 +83,8 @@ const run = ({ args, cwd, env = {} }) =>
           [`${args.join(" ")} failed with exit code ${code}`, stdout, stderr]
             .map((part) => part.trim())
             .filter(Boolean)
-            .join("\n")
-        )
+            .join("\n"),
+        ),
       );
     });
   });
@@ -107,7 +122,9 @@ const fetchJson = async (url, init = {}) => {
     },
   });
   if (!response.ok) {
-    throw new Error(`${url} returned HTTP ${response.status}: ${await response.text()}`);
+    throw new Error(
+      `${url} returned HTTP ${response.status}: ${await response.text()}`,
+    );
   }
   return response.json();
 };
@@ -127,7 +144,7 @@ const waitFor = async (description, fn, { timeoutMs = 90_000 } = {}) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error(
-    `${description} timed out${lastError ? `: ${lastError.message}` : ""}`
+    `${description} timed out${lastError ? `: ${lastError.message}` : ""}`,
   );
 };
 
@@ -163,6 +180,7 @@ try {
   const postgresPort = await freePort();
   // ponytail: free-port probes can race; expose env overrides if this ever flakes.
   const hostEnv = {
+    CARGO_NET_OFFLINE: "true",
     COMPOSE_PROJECT_NAME: composeProjectName,
     HTTP_PORT: String(httpPort),
     POSTGRES_HOST_PORT: String(postgresPort),
@@ -173,16 +191,35 @@ try {
     cwd: repoRoot,
   });
 
-  const envExample = await readFile(path.join(hostRoot, ".env.example"), "utf8");
+  const cargoTomlPath = path.join(hostRoot, "Cargo.toml");
+  const cargoToml = await readFile(cargoTomlPath, "utf8");
+  await writeFile(
+    cargoTomlPath,
+    cargoToml.replace(
+      'lenso = { version = "0.3.16", features = ["host"] }',
+      `lenso = { path = "${lensoCrateRoot}", features = ["host"] }`,
+    ) + localLensoPatchToml(),
+  );
+
+  const envExample = await readFile(
+    path.join(hostRoot, ".env.example"),
+    "utf8",
+  );
   await writeFile(
     path.join(hostRoot, ".env"),
     envExample
       .replace("POSTGRES_HOST_PORT=5432", `POSTGRES_HOST_PORT=${postgresPort}`)
-      .replace("HTTP_PORT=3000", `HTTP_PORT=${httpPort}`)
+      .replace("HTTP_PORT=3000", `HTTP_PORT=${httpPort}`),
   );
 
   await runLenso({
-    args: ["module", "install", supportServer.manifestUrl, "--repo-root", hostRoot],
+    args: [
+      "module",
+      "install",
+      supportServer.manifestUrl,
+      "--repo-root",
+      hostRoot,
+    ],
     cwd: hostRoot,
   });
 
@@ -214,50 +251,88 @@ try {
       const response = await fetch(`${apiBaseUrl}/readyz`);
       return response.ok;
     },
-    { timeoutMs: hostReadyTimeoutMs }
+    { timeoutMs: hostReadyTimeoutMs },
   ).catch((error) => {
     throw new Error(`${error.message}\nHost log:\n${tail(hostLog)}`);
   });
 
   const modules = await fetchJson(`${apiBaseUrl}/admin/data/modules`);
   const supportTicket = modules.modules?.find(
-    (module) => module.module_name === "support-ticket"
+    (module) => module.module_name === "support-ticket",
   );
   assert(supportTicket, "support-ticket module was not listed");
   assertEqual(supportTicket.status, "loaded", "support-ticket load status");
   assertEqual(
     supportTicket.governance?.activation_state,
     "active",
-    "support-ticket activation state"
+    "support-ticket activation state",
   );
   assert(
     supportTicket.manifest_lints?.every((lint) => lint.severity === "ok"),
-    "support-ticket manifest lints were not all ok"
+    "support-ticket manifest lints were not all ok",
+  );
+
+  const serviceModules = await fetchJson(
+    `${apiBaseUrl}/admin/data/service-modules`,
+  );
+  const serviceLifecycle = serviceModules.modules?.find(
+    (module) => module.moduleName === "support-ticket",
+  );
+  assert(serviceLifecycle, "support-ticket service lifecycle was not listed");
+  assertEqual(
+    serviceLifecycle.status,
+    "ready",
+    "support-ticket service lifecycle status",
+  );
+  assertEqual(
+    serviceLifecycle.manifestStatus,
+    "reachable",
+    "support-ticket service lifecycle manifest status",
+  );
+  assertEqual(
+    serviceLifecycle.statusUrl,
+    supportServer.statusUrl ?? `${supportServer.baseUrl}/status`,
+    "support-ticket service status URL",
+  );
+  assertEqual(
+    serviceLifecycle.serviceStatus?.state,
+    "ready",
+    "support-ticket service status endpoint state",
+  );
+  assertEqual(
+    serviceLifecycle.compatibility?.state,
+    "compatible",
+    "support-ticket service compatibility state",
   );
 
   const list = await fetchJson(
-    `${apiBaseUrl}/admin/data/support-ticket/tickets?limit=5`
+    `${apiBaseUrl}/admin/data/support-ticket/tickets?limit=5`,
   );
   assertEqual(list.data?.[0]?.id, "ticket_1", "admin data first ticket");
 
-  const created = await fetchJson(`${apiBaseUrl}/modules/support-ticket/http/tickets`, {
-    body: JSON.stringify({
-      assignee: "api-smoke",
-      priority: "high",
-      title: "Smoke-created ticket",
-    }),
-    headers: { "content-type": "application/json" },
-    method: "POST",
-  });
+  const created = await fetchJson(
+    `${apiBaseUrl}/modules/support-ticket/http/tickets`,
+    {
+      body: JSON.stringify({
+        assignee: "api-smoke",
+        priority: "high",
+        title: "Smoke-created ticket",
+      }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    },
+  );
   assertEqual(created.data?.ticket?.id, "ticket_2", "proxy-created ticket id");
 
   await waitFor("support-ticket runtime story", async () => {
-    const stories = await fetchJson(`${apiBaseUrl}/admin/runtime/stories?limit=5`);
+    const stories = await fetchJson(
+      `${apiBaseUrl}/admin/runtime/stories?limit=5`,
+    );
     return stories.data?.some(
       (story) =>
         story.title === "Support ticket created" &&
         story.status === "completed" &&
-        story.services?.includes("support-ticket")
+        story.services?.includes("support-ticket"),
     );
   });
 
