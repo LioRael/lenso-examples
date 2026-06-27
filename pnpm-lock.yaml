@@ -4,15 +4,19 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@lenso/remote-module-kit': link:../lenso-runtime-console/packages/remote-module-kit
+  '@lenso/service-kit': link:../lenso-runtime-console/packages/service-kit
+
 importers:
 
   .: {}
 
   examples/account-profile:
     dependencies:
-      '@lenso/remote-module-kit':
-        specifier: 0.1.1
-        version: 0.1.1
+      '@lenso/service-kit':
+        specifier: link:../../../lenso-runtime-console/packages/service-kit
+        version: link:../../../lenso-runtime-console/packages/service-kit
 
   examples/grpc-notes:
     dependencies:
@@ -23,20 +27,20 @@ importers:
         specifier: ^0.8.0
         version: 0.8.1
       '@lenso/remote-module-kit':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: link:../../../lenso-runtime-console/packages/remote-module-kit
+        version: link:../../../lenso-runtime-console/packages/remote-module-kit
 
   examples/hello-action:
     dependencies:
-      '@lenso/remote-module-kit':
-        specifier: 0.1.1
-        version: 0.1.1
+      '@lenso/service-kit':
+        specifier: link:../../../lenso-runtime-console/packages/service-kit
+        version: link:../../../lenso-runtime-console/packages/service-kit
 
   examples/support-ticket:
     dependencies:
-      '@lenso/remote-module-kit':
-        specifier: 0.1.1
-        version: 0.1.1
+      '@lenso/service-kit':
+        specifier: link:../../../lenso-runtime-console/packages/service-kit
+        version: link:../../../lenso-runtime-console/packages/service-kit
 
 packages:
 
@@ -51,9 +55,6 @@ packages:
 
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
-
-  '@lenso/remote-module-kit@0.1.1':
-    resolution: {integrity: sha512-eKCFKw48Wys28vg2pV/U0/BW/C7DvGn+MdDYN7BKmuFSqr3wavsxkFzvxts7XwsWno4/QdzBJDmVrqWtScPcqw==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -175,8 +176,6 @@ snapshots:
       yargs: 17.7.2
 
   '@js-sdsl/ordered-map@4.4.2': {}
-
-  '@lenso/remote-module-kit@0.1.1': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
