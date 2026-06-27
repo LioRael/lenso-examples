@@ -2,11 +2,16 @@
 
 Runnable examples for Lenso module authors.
 
-This repository uses published packages instead of sibling workspace paths:
+This repository uses published packages instead of sibling workspace paths for
+released contracts:
 
 - `lenso`
 - `@lenso/service-kit`
 - `@lenso/remote-module-kit` for the gRPC legacy transport example
+
+The Rust V8 service-operation proof is the temporary exception:
+`examples/rust-service` points at the sibling `../lenso` crate until the V8
+contract crates are published.
 
 ## Quick Start
 
