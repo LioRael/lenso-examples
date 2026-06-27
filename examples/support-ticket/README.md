@@ -1,14 +1,14 @@
-# Support Ticket Service Module
+# Support Ticket Service
 
-This example is the agent-ready proof point for Lenso: a business module with
-routes, schema-admin data, actions, a runtime function, and Console-visible
-metadata.
+This example is the agent-ready proof point for Lenso: an independently running
+service that provides the `support-ticket` module to a host.
 
 It exposes:
 
-- a manifest at `/lenso/module/v1/manifest`;
-- service status at `/lenso/module/v1/status`;
-- `GET /tickets/{id}` and `POST /tickets`;
+- a service manifest at `/lenso/service/v1/manifest`;
+- service status at `/lenso/service/v1/status`;
+- a `support-ticket` module under `/lenso/service/v1/modules/support-ticket`;
+- `GET /tickets/{id}` and `POST /tickets` on the module path;
 - `support-ticket.escalate-ticket.v1`;
 - one declarative admin surface for `tickets`;
 - an `assign_ticket` admin action.
@@ -28,15 +28,15 @@ pnpm smoke:support-ticket
 Install into a local Lenso host:
 
 ```sh
-lenso module install http://127.0.0.1:4110/lenso/module/v1/manifest
-lenso module service list
-lenso module service export --module support-ticket --format compose
-lenso module doctor support-ticket --json
+lenso service install http://127.0.0.1:4110/lenso/service/v1/manifest
+lenso service list
+lenso service export --module support-service --format compose
+lenso service doctor support-ticket --json
 ```
 
 Restart the API and worker after install. Open `/console` and check Modules:
 
-- service lifecycle shows installed / configured / ready;
+- service lifecycle shows support-service installed / configured / ready;
 - service status, compatibility, deployment, and health history are visible in
   Operations;
 - the `tickets` data surface and `assign_ticket` action are available;

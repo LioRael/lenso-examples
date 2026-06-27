@@ -6,17 +6,18 @@ import {
   declarativeCustom,
   declarativePage,
   declarativeSection,
-  defineRemoteModule,
+  defineModule,
+  defineService,
   defineSchemaEntity,
   entityTable,
   getRoute,
   patchRoute,
   postRoute,
   runtimeFunction,
-  serveRemoteModule,
+  serveService,
   textField,
   timestampField,
-} from "@lenso/remote-module-kit";
+} from "@lenso/service-kit";
 
 const tickets = [
   {
@@ -33,7 +34,6 @@ const tickets = [
 const readCapability = "support_ticket.tickets.read";
 const writeCapability = "support_ticket.tickets.write";
 const escalateCapability = "support_ticket.tickets.escalate";
-const statusCapability = "support_ticket.service.status";
 
 const ticketsEntity = defineSchemaEntity({
   fields: [
@@ -56,97 +56,84 @@ const serviceCompatibility = {
   required_host_features: ["service.status"],
 };
 
-const serviceMetadata = {
-  deployment: {
-    commands: ["pnpm --dir examples/support-ticket start"],
-    target: "container-paas",
-  },
-  name: "api",
-  required_env: ["PORT"],
-  status_path: "/lenso/module/v1/status",
-  transports: ["http"],
-  version: "0.1.0",
+const serviceDeployment = {
+  commands: ["pnpm --dir examples/support-ticket start"],
+  target: "container-paas",
 };
 
-const serviceStatus = (baseUrl = "http://127.0.0.1:4110/lenso/module/v1") => ({
-  checks: [{ name: "service", status: "ok" }],
-  manifestUrl: `${baseUrl}/manifest`,
-  moduleName: "support-ticket",
-  protocolVersion: "1",
-  serviceName: "api",
-  state: "ready",
-  transports: ["http"],
+export const supportTicketModule = defineModule({
+  admin: declarativeCustom({
+    actions: [
+      adminAction("assign_ticket", {
+        capability: writeCapability,
+        inputFields: [
+          actionTextField("ticket_id", {
+            label: "Ticket ID",
+            required: true,
+          }),
+          actionTextField("assignee", { label: "Assignee", required: true }),
+          actionTimestampField("updated_at", { label: "Updated At" }),
+        ],
+        label: "Assign ticket",
+      }),
+    ],
+    fallbackSchema: adminSchema([ticketsEntity]),
+    pages: [
+      declarativePage("tickets", {
+        sections: [
+          declarativeSection("records", {
+            component: entityTable("tickets"),
+            label: "Support tickets",
+          }),
+        ],
+      }),
+    ],
+  }),
+  capabilities: [readCapability, writeCapability, escalateCapability],
+  httpRoutes: [
+    getRoute("/tickets/{id}", {
+      capability: readCapability,
+      displayName: "Get ticket",
+      storyTitle: "Support ticket viewed",
+    }),
+    postRoute("/tickets", {
+      capability: writeCapability,
+      displayName: "Create ticket",
+      storyTitle: "Support ticket created",
+    }),
+    patchRoute("/tickets/{id}", {
+      capability: writeCapability,
+      displayName: "Update ticket",
+      storyTitle: "Support ticket updated",
+    }),
+  ],
+  name: "support-ticket",
+  runtimeFunctions: [
+    runtimeFunction("support-ticket.escalate-ticket.v1", {
+      queue: "support-ticket",
+    }),
+  ],
   version: "0.1.0",
 });
 
-export const manifest = {
-  ...defineRemoteModule({
-    admin: declarativeCustom({
-      actions: [
-        adminAction("assign_ticket", {
-          capability: writeCapability,
-          inputFields: [
-            actionTextField("ticket_id", {
-              label: "Ticket ID",
-              required: true,
-            }),
-            actionTextField("assignee", { label: "Assignee", required: true }),
-            actionTimestampField("updated_at", { label: "Updated At" }),
-          ],
-          label: "Assign ticket",
-        }),
-      ],
-      fallbackSchema: adminSchema([ticketsEntity]),
-      pages: [
-        declarativePage("tickets", {
-          sections: [
-            declarativeSection("records", {
-              component: entityTable("tickets"),
-              label: "Support tickets",
-            }),
-          ],
-        }),
-      ],
-    }),
-    capabilities: [
-      readCapability,
-      writeCapability,
-      escalateCapability,
-      statusCapability,
-    ],
-    httpRoutes: [
-      getRoute("/status", {
-        capability: statusCapability,
-        displayName: "Service status",
-        storyTitle: "Support ticket service status",
-      }),
-      getRoute("/tickets/{id}", {
-        capability: readCapability,
-        displayName: "Get ticket",
-        storyTitle: "Support ticket viewed",
-      }),
-      postRoute("/tickets", {
-        capability: writeCapability,
-        displayName: "Create ticket",
-        storyTitle: "Support ticket created",
-      }),
-      patchRoute("/tickets/{id}", {
-        capability: writeCapability,
-        displayName: "Update ticket",
-        storyTitle: "Support ticket updated",
-      }),
-    ],
-    name: "support-ticket",
-    runtimeFunctions: [
-      runtimeFunction("support-ticket.escalate-ticket.v1", {
-        queue: "support-ticket",
-      }),
-    ],
-    version: "0.1.0",
-  }),
+export const manifest = defineService({
   compatibility: serviceCompatibility,
-  service: serviceMetadata,
-};
+  deployment: serviceDeployment,
+  install: {
+    services: [
+      {
+        command: "pnpm --dir examples/support-ticket start",
+        name: "support-service",
+      },
+    ],
+  },
+  modules: [supportTicketModule],
+  name: "support-service",
+  requiredEnv: ["PORT"],
+  statusPath: "/lenso/service/v1/status",
+  transports: ["http"],
+  version: "0.1.0",
+});
 
 const now = () => new Date().toISOString();
 
@@ -205,29 +192,36 @@ const ticketDataSource = {
 };
 
 export const serveSupportTicketModule = async (options = {}) =>
-  serveRemoteModule(manifest, {
-    actions: {
-      assign_ticket: ({ input }) => ({ ticket: assignTicket(input) }),
-    },
-    data: {
-      tickets: ticketDataSource,
-    },
-    http: {
-      "GET /status": ({ url }) =>
-        serviceStatus(`${url.origin}/lenso/module/v1`),
-      "GET /tickets/{id}": ({ params }) => ({ ticket: findTicket(params.id) }),
-      "PATCH /tickets/{id}": ({ body, params }) => ({
-        ticket: updateTicket(params.id, body),
-      }),
-      "POST /tickets": ({ body }) => ({
-        body: { ticket: createTicket(body) },
-        statusCode: 201,
-      }),
+  serveService(manifest, {
+    modules: {
+      "support-ticket": {
+        actions: {
+          assign_ticket: ({ input }) => ({ ticket: assignTicket(input) }),
+        },
+        data: {
+          tickets: ticketDataSource,
+        },
+        http: {
+          "GET /tickets/{id}": ({ params }) => ({
+            ticket: findTicket(params.id),
+          }),
+          "PATCH /tickets/{id}": ({ body, params }) => ({
+            ticket: updateTicket(params.id, body),
+          }),
+          "POST /tickets": ({ body }) => ({
+            body: { ticket: createTicket(body) },
+            statusCode: 201,
+          }),
+        },
+        runtime: {
+          "support-ticket.escalate-ticket.v1": ({ input }) =>
+            escalateTicket(input),
+        },
+      },
     },
     onReady: options.onReady,
     port: options.port ?? 4110,
-    runtime: {
-      "support-ticket.escalate-ticket.v1": ({ input }) =>
-        escalateTicket(input),
+    status: {
+      checks: [{ name: "support-ticket", status: "ok" }],
     },
   });

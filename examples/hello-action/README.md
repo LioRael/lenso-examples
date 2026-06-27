@@ -1,12 +1,13 @@
-# Hello Action Service Module
+# Hello Action Service
 
-This is a starter service module package for Lenso. It uses the published
-`@lenso/remote-module-kit` package, so it can run without a sibling framework
-checkout.
+This starter service provider uses `@lenso/service-kit`. The service is named
+`hello-service`; it provides the `hello-action` module.
 
 It exposes:
 
-- a manifest at `/lenso/module/v1/manifest`;
+- a service manifest at `/lenso/service/v1/manifest`;
+- service status at `/lenso/service/v1/status`;
+- the `hello-action` module below `/lenso/service/v1/modules/hello-action`;
 - two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
 - two runtime functions, `hello-action.say-hello.v1` and
   `hello-action.record-greeting.v1`;
@@ -21,23 +22,24 @@ Install dependencies from the repository root:
 pnpm install
 ```
 
-Run the module server:
+Run the service:
 
 ```sh
 pnpm dev
 ```
 
-The server reads `PORT` from the shell environment. The default
-`.env.example` value is:
+The server reads `PORT` from the shell environment. The default `.env.example`
+value is:
 
 ```text
 PORT=4100
 ```
 
-The server prints a manifest URL:
+The server prints:
 
 ```text
-http://127.0.0.1:4100/lenso/module/v1/manifest
+http://127.0.0.1:4100/lenso/service/v1/manifest
+http://127.0.0.1:4100/lenso/service/v1/status
 ```
 
 Run the non-interactive smoke:
@@ -46,32 +48,19 @@ Run the non-interactive smoke:
 pnpm smoke
 ```
 
-Change the starter by editing:
-
-- `src/module.ts` for manifest declarations, handlers, and seed data;
-- `src/server.ts` for local startup behavior;
-- `src/smoke.ts` for executable expectations;
-- `catalog-entry.json` for optional discovery metadata.
-
-`POST /greetings`, `hello-action.record-greeting.v1`, and the
-`seed_greeting` admin action all append to the same in-memory greeting list.
-The fallback schema-admin `greetings` entity then shows the new records, which
-makes the example useful for testing write paths without adding a database.
-
 ## Install Into A Lenso Host
 
-From a local Lenso host checkout, install the running module:
+From a local Lenso host checkout, install the running service:
 
 ```sh
-lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4100/lenso/service/v1/manifest
 ```
 
 This example does not publish a Runtime Console package, so the generated
-install receipt should not request frontend dependencies. It still exercises
-the same manifest install path as a fuller third-party module.
+install receipt should not request frontend dependencies.
 
 The optional catalog record is `catalog-entry.json`; it mirrors the local
-server's default manifest URL for discovery flows.
+server's default service manifest URL for discovery flows.
 
 ## Host Install Smoke
 
@@ -81,17 +70,16 @@ Run the host-side integration smoke from this package:
 pnpm host-smoke
 ```
 
-It starts this module, creates a temporary host repo, runs the real `lenso`
+It starts this service, creates a temporary host repo, runs the real `lenso`
 CLI, and verifies:
 
 - `.lenso/module-catalog.json` from `lenso module catalog add`;
-- `.env` from `lenso module install`;
+- `.env` from `lenso service install`;
+- `.lenso/module-installs.json` records `hello-action` as a module provided by
+  `hello-service`;
 - `.lenso/console-package-install-plan.json` with zero console packages.
 
-By default the smoke uses a sibling `../lenso-runtime-console` checkout with the
-Runtime Console CLI already built. Run `pnpm --dir ../lenso-runtime-console build`
-first, or set `LENSO_RUNTIME_CONSOLE_DIR=/path/to/lenso-runtime-console`. Set
-`LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for inspection.
+Set `LENSO_KEEP_HOST_SMOKE=1` to keep the temporary host repo for inspection.
 
 ## Host Proxy Run
 

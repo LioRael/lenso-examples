@@ -2,7 +2,7 @@
   "name": "@lenso/example-account-profile",
   "version": "0.1.0",
   "private": true,
-  "description": "Account profile service module for Lenso auth boundary demos.",
+  "description": "Account profile service provider for Lenso auth boundary demos.",
   "type": "module",
   "scripts": {
     "check": "pnpm smoke",
@@ -12,6 +12,6 @@
     "start": "node src/server.ts"
   },
   "dependencies": {
-    "@lenso/remote-module-kit": "0.1.1"
+    "@lenso/service-kit": "0.1.0"
   }
 }

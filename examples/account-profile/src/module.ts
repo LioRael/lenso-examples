@@ -5,15 +5,16 @@ import {
   declarativeCustom,
   declarativePage,
   declarativeSection,
-  defineRemoteModule,
+  defineModule,
   defineSchemaEntity,
+  defineService,
   entityTable,
   getRoute,
   postRoute,
-  serveRemoteModule,
+  serveService,
   textField,
   timestampField,
-} from "@lenso/remote-module-kit";
+} from "@lenso/service-kit";
 
 const profiles = [
   {
@@ -89,7 +90,18 @@ const membershipEntity = defineSchemaEntity({
   readCapability: organizationReadCapability,
 });
 
-const baseManifest = defineRemoteModule({
+const serviceCompatibility = {
+  console_package_api: "1",
+  remote_protocol_version: "1",
+  required_host_features: ["service.status"],
+};
+
+const serviceDeployment = {
+  commands: ["pnpm --dir examples/account-profile start"],
+  target: "local-node",
+};
+
+export const accountProfileModule = defineModule({
   admin: declarativeCustom({
     actions: [
       adminAction("upsert_profile", {
@@ -142,6 +154,7 @@ const baseManifest = defineRemoteModule({
     organizationReadCapability,
     organizationWriteCapability,
   ],
+  dependencies: ["auth"],
   httpRoutes: [
     getRoute("/profiles/{id}", {
       capability: profileReadCapability,
@@ -168,12 +181,24 @@ const baseManifest = defineRemoteModule({
   version: "0.1.0",
 });
 
-export const manifest = {
-  ...baseManifest,
-  dependencies: ["auth"],
-  // ponytail: kit 0.1.1 emits an empty runtime surface; omit it until a function exists.
-  runtime: undefined,
-};
+export const manifest = defineService({
+  compatibility: serviceCompatibility,
+  deployment: serviceDeployment,
+  install: {
+    services: [
+      {
+        command: "pnpm --dir examples/account-profile start",
+        name: "account-profile-service",
+      },
+    ],
+  },
+  modules: [accountProfileModule],
+  name: "account-profile-service",
+  requiredEnv: ["PORT"],
+  statusPath: "/lenso/service/v1/status",
+  transports: ["http"],
+  version: "0.1.0",
+});
 
 const now = () => new Date().toISOString();
 
@@ -254,24 +279,30 @@ const data = {
 };
 
 export const serveAccountProfileModule = async (options = {}) =>
-  serveRemoteModule(manifest, {
-    actions: {
-      upsert_profile: ({ input }) => ({ profile: upsertProfile(input) }),
-    },
-    data,
-    http: {
-      "GET /organizations/{id}": ({ params }) => ({
-        organization: findOrganization(params.id),
-      }),
-      "GET /profiles/{id}": ({ params }) => ({ profile: findProfile(params.id) }),
-      "POST /organizations/{id}/memberships": ({ body, params }) => ({
-        body: { membership: addMembership(params.id, body) },
-        statusCode: 201,
-      }),
-      "POST /profiles": ({ body }) => ({
-        body: { profile: upsertProfile(body) },
-        statusCode: 201,
-      }),
+  serveService(manifest, {
+    modules: {
+      "account-profile": {
+        actions: {
+          upsert_profile: ({ input }) => ({ profile: upsertProfile(input) }),
+        },
+        data,
+        http: {
+          "GET /organizations/{id}": ({ params }) => ({
+            organization: findOrganization(params.id),
+          }),
+          "GET /profiles/{id}": ({ params }) => ({
+            profile: findProfile(params.id),
+          }),
+          "POST /organizations/{id}/memberships": ({ body, params }) => ({
+            body: { membership: addMembership(params.id, body) },
+            statusCode: 201,
+          }),
+          "POST /profiles": ({ body }) => ({
+            body: { profile: upsertProfile(body) },
+            statusCode: 201,
+          }),
+        },
+      },
     },
     onReady: options.onReady,
     port: options.port ?? 4120,

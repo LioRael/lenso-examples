@@ -2,7 +2,7 @@
   "name": "@lenso/example-hello-action",
   "version": "0.1.0",
   "private": true,
-  "description": "Starter remote action module for Lenso.",
+  "description": "Starter Lenso service provider for action and runtime examples.",
   "type": "module",
   "scripts": {
     "check": "pnpm smoke",
@@ -12,6 +12,6 @@
     "start": "node src/server.ts"
   },
   "dependencies": {
-    "@lenso/remote-module-kit": "0.1.1"
+    "@lenso/service-kit": "0.1.0"
   }
 }

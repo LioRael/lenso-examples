@@ -214,7 +214,7 @@ try {
 
   await runLenso({
     args: [
-      "module",
+      "service",
       "install",
       supportServer.manifestUrl,
       "--repo-root",

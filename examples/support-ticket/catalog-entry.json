@@ -1,26 +1,43 @@
 {
-  "baseUrl": "http://127.0.0.1:4110/lenso/module/v1",
+  "baseUrl": "http://127.0.0.1:4110/lenso/service/v1",
   "compatibility": {
     "consolePackageApi": "1",
     "remoteProtocolVersion": "1",
     "requiredHostFeatures": ["service.status"]
   },
-  "consolePackages": [],
   "deployment": {
     "commands": ["pnpm --dir examples/support-ticket start"],
     "target": "container-paas"
   },
-  "manifestReference": "http://127.0.0.1:4110/lenso/module/v1/manifest",
-  "name": "support-ticket",
-  "service": {
-    "name": "api",
-    "requiredEnv": ["PORT"],
-    "statusUrl": "http://127.0.0.1:4110/lenso/module/v1/status",
-    "transports": ["http"],
-    "version": "0.1.0"
+  "install": {
+    "services": [
+      {
+        "command": "pnpm --dir examples/support-ticket start",
+        "name": "support-service"
+      }
+    ]
   },
-  "source": "remote",
-  "summary": "Support ticket module for Lenso agent-ready demos",
+  "manifestReference": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+  "modules": [
+    {
+      "capabilities": [
+        "support_ticket.tickets.read",
+        "support_ticket.tickets.write",
+        "support_ticket.tickets.escalate"
+      ],
+      "name": "support-ticket",
+      "version": "0.1.0"
+    }
+  ],
+  "name": "support-service",
+  "service": {
+    "requiredEnv": ["PORT"],
+    "statusPath": "/lenso/service/v1/status",
+    "statusUrl": "http://127.0.0.1:4110/lenso/service/v1/status",
+    "transports": ["http"]
+  },
+  "source": "service",
+  "summary": "Support ticket service provider for Lenso agent-ready demos",
   "version": "0.1.0",
   "capabilities": [
     "support_ticket.tickets.read",
