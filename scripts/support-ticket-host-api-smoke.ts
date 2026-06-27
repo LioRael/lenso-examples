@@ -26,10 +26,15 @@ const localLensoPatchToml = () =>
     "",
   ].join("\n");
 const token =
-  "dev-service:admin:runtime.stories.read,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
+  "dev-service:admin:runtime.stories.read,support_knowledge_base.articles.read,support_notification.notifications.send,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
 const hostReadyTimeoutMs = Number(
   process.env.LENSO_HOST_API_SMOKE_READY_TIMEOUT_MS ?? "240000",
 );
+const expectedModuleNames = [
+  "support-knowledge-base",
+  "support-notification",
+  "support-ticket",
+];
 
 const assertEqual = (actual, expected, message) => {
   if (actual !== expected) {
@@ -45,6 +50,46 @@ const assert = (condition, message) => {
   if (!condition) {
     throw new Error(message);
   }
+};
+
+const expectLoadedModule = (modules, name) => {
+  const module = modules.modules?.find((item) => item.module_name === name);
+  assert(module, `${name} module was not listed`);
+  assertEqual(module.status, "loaded", `${name} load status`);
+  assertEqual(
+    module.governance?.activation_state,
+    "active",
+    `${name} activation state`,
+  );
+  return module;
+};
+
+const expectServiceLifecycle = (serviceModules, name, supportServer) => {
+  const module = serviceModules.modules?.find((item) => item.moduleName === name);
+  assert(module, `${name} service lifecycle was not listed`);
+  assertEqual(module.providerName, "support-suite-provider", `${name} provider`);
+  assertEqual(module.status, "ready", `${name} service lifecycle status`);
+  assertEqual(
+    module.manifestStatus,
+    "reachable",
+    `${name} service lifecycle manifest status`,
+  );
+  assertEqual(
+    module.statusUrl,
+    supportServer.statusUrl ?? `${supportServer.baseUrl}/status`,
+    `${name} service status URL`,
+  );
+  assertEqual(
+    module.serviceStatus?.state,
+    "ready",
+    `${name} service status endpoint state`,
+  );
+  assertEqual(
+    module.compatibility?.state,
+    "compatible",
+    `${name} service compatibility state`,
+  );
+  return module;
 };
 
 const lensoCommand = () => {
@@ -257,52 +302,34 @@ try {
   });
 
   const modules = await fetchJson(`${apiBaseUrl}/admin/data/modules`);
-  const supportTicket = modules.modules?.find(
-    (module) => module.module_name === "support-ticket",
+  const loadedModules = expectedModuleNames.map((name) =>
+    expectLoadedModule(modules, name),
   );
-  assert(supportTicket, "support-ticket module was not listed");
-  assertEqual(supportTicket.status, "loaded", "support-ticket load status");
-  assertEqual(
-    supportTicket.governance?.activation_state,
-    "active",
-    "support-ticket activation state",
+  const supportTicket = loadedModules.find(
+    (module) => module.module_name === "support-ticket",
   );
   assert(
     supportTicket.manifest_lints?.every((lint) => lint.severity === "ok"),
     "support-ticket manifest lints were not all ok",
   );
+  assert(
+    loadedModules
+      .find((module) => module.module_name === "support-notification")
+      ?.capabilities?.includes("support_notification.notifications.send"),
+    "support-notification capability was not listed",
+  );
+  assert(
+    loadedModules
+      .find((module) => module.module_name === "support-knowledge-base")
+      ?.capabilities?.includes("support_knowledge_base.articles.read"),
+    "support-knowledge-base capability was not listed",
+  );
 
   const serviceModules = await fetchJson(
     `${apiBaseUrl}/admin/data/service-modules`,
   );
-  const serviceLifecycle = serviceModules.modules?.find(
-    (module) => module.moduleName === "support-ticket",
-  );
-  assert(serviceLifecycle, "support-ticket service lifecycle was not listed");
-  assertEqual(
-    serviceLifecycle.status,
-    "ready",
-    "support-ticket service lifecycle status",
-  );
-  assertEqual(
-    serviceLifecycle.manifestStatus,
-    "reachable",
-    "support-ticket service lifecycle manifest status",
-  );
-  assertEqual(
-    serviceLifecycle.statusUrl,
-    supportServer.statusUrl ?? `${supportServer.baseUrl}/status`,
-    "support-ticket service status URL",
-  );
-  assertEqual(
-    serviceLifecycle.serviceStatus?.state,
-    "ready",
-    "support-ticket service status endpoint state",
-  );
-  assertEqual(
-    serviceLifecycle.compatibility?.state,
-    "compatible",
-    "support-ticket service compatibility state",
+  expectedModuleNames.forEach((name) =>
+    expectServiceLifecycle(serviceModules, name, supportServer),
   );
 
   const list = await fetchJson(
@@ -323,6 +350,15 @@ try {
     },
   );
   assertEqual(created.data?.ticket?.id, "ticket_2", "proxy-created ticket id");
+
+  const article = await fetchJson(
+    `${apiBaseUrl}/modules/support-knowledge-base/http/articles/invite-teammates`,
+  );
+  assertEqual(
+    article.data?.article?.title,
+    "Invite teammates",
+    "support knowledge-base article title",
+  );
 
   await waitFor("support-ticket runtime story", async () => {
     const stories = await fetchJson(

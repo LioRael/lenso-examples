@@ -11,15 +11,24 @@ const fetchJson = async (url, init) => {
   return response.json();
 };
 
-const invokeRuntime = (server, input) =>
+function expectModuleNames(manifest, expected) {
+  const names = manifest.modules.map((module) => module.name).sort();
+  if (JSON.stringify(names) !== JSON.stringify(expected)) {
+    throw new Error(
+      `Expected modules ${expected.join(", ")}, got ${names.join(", ")}`
+    );
+  }
+}
+
+const invokeRuntime = (server, moduleName, functionName, input) =>
   fetchJson(
-    `${server.baseUrl}/modules/support-ticket/runtime/functions/support-ticket.escalate-ticket.v1/invoke`,
+    `${server.baseUrl}/modules/${moduleName}/runtime/functions/${functionName}/invoke`,
     {
       body: JSON.stringify({
         actor: { id: "support-smoke", kind: "service", scopes: [] },
         attempt: 1,
         correlation_id: "corr_support_ticket_smoke",
-        function_name: "support-ticket.escalate-ticket.v1",
+        function_name: functionName,
         function_run_id: "fnrun_support_ticket_smoke",
         input,
         request_id: "req_support_ticket_smoke",
@@ -40,21 +49,29 @@ try {
     await readFile(new URL("../catalog-entry.json", import.meta.url), "utf8")
   );
   if (
-    catalogEntry.name !== "support-service" ||
+    catalogEntry.name !== "support-ticket" ||
     catalogEntry.source !== "service" ||
+    catalogEntry.providedBy !== "support-suite-provider" ||
+    catalogEntry.serviceManifest !==
+      "http://127.0.0.1:4110/lenso/service/v1/manifest" ||
     catalogEntry.baseUrl !== "http://127.0.0.1:4110/lenso/service/v1"
   ) {
-    throw new Error("catalog entry does not describe support-service");
+    throw new Error("catalog entry does not describe support-ticket");
   }
 
   const manifest = await fetchJson(server.manifestUrl);
   if (
-    manifest.name !== "support-service" ||
+    manifest.name !== "support-suite-provider" ||
     manifest.protocol !== "lenso.service.v1" ||
     manifest.version !== catalogEntry.version
   ) {
-    throw new Error("manifest did not return support-service");
+    throw new Error("manifest did not return support-suite-provider");
   }
+  expectModuleNames(manifest, [
+    "support-knowledge-base",
+    "support-notification",
+    "support-ticket",
+  ]);
   const moduleManifest = manifest.modules?.find(
     (module) => module.name === "support-ticket"
   );
@@ -86,12 +103,18 @@ try {
   const statusUrl = server.statusUrl ?? `${server.baseUrl}/status`;
   const status = await fetchJson(statusUrl);
   if (
-    status.serviceName !== "support-service" ||
-    status.state !== "ready" ||
-    !status.modules?.some((module) => module.name === "support-ticket")
+    status.serviceName !== "support-suite-provider" ||
+    status.state !== "ready"
   ) {
-    throw new Error("status endpoint did not return support-service readiness");
+    throw new Error(
+      "status endpoint did not return support-suite-provider readiness"
+    );
   }
+  expectModuleNames(status, [
+    "support-knowledge-base",
+    "support-notification",
+    "support-ticket",
+  ]);
 
   const moduleBaseUrl = `${server.baseUrl}/modules/support-ticket`;
   const created = await fetchJson(`${moduleBaseUrl}/tickets`, {
@@ -123,10 +146,15 @@ try {
     throw new Error("admin action did not assign ticket_2");
   }
 
-  const escalated = await invokeRuntime(server, {
-    ticket_id: "ticket_2",
-    updated_at: "2026-06-20T02:00:00Z",
-  });
+  const escalated = await invokeRuntime(
+    server,
+    "support-ticket",
+    "support-ticket.escalate-ticket.v1",
+    {
+      ticket_id: "ticket_2",
+      updated_at: "2026-06-20T02:00:00Z",
+    }
+  );
   if (
     escalated.output?.priority !== "high" ||
     escalated.output?.status !== "escalated"
@@ -140,6 +168,26 @@ try {
     ticket.ticket?.assignee !== "alex"
   ) {
     throw new Error("HTTP detail route did not return ticket_2");
+  }
+
+  const notification = await invokeRuntime(
+    server,
+    "support-notification",
+    "support-notification.send-ticket-update.v1",
+    { ticket_id: "ticket_2" }
+  );
+  if (
+    notification.output?.delivered !== true ||
+    notification.output?.ticket_id !== "ticket_2"
+  ) {
+    throw new Error("support-notification did not send ticket update");
+  }
+
+  const article = await fetchJson(
+    `${server.baseUrl}/modules/support-knowledge-base/articles/invite-teammates`
+  );
+  if (article.article?.title !== "Invite teammates") {
+    throw new Error("support-knowledge-base did not return article");
   }
 
   const admin = await fetchJson(`${moduleBaseUrl}/admin/tickets`);

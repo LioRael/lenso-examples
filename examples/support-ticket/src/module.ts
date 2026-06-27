@@ -116,6 +116,30 @@ export const supportTicketModule = defineModule({
   version: "0.1.0",
 });
 
+export const supportNotificationModule = defineModule({
+  capabilities: ["support_notification.notifications.send"],
+  name: "support-notification",
+  runtimeFunctions: [
+    runtimeFunction("support-notification.send-ticket-update.v1", {
+      queue: "support-ticket",
+    }),
+  ],
+  version: "0.1.0",
+});
+
+export const supportKnowledgeBaseModule = defineModule({
+  capabilities: ["support_knowledge_base.articles.read"],
+  httpRoutes: [
+    getRoute("/articles/{id}", {
+      capability: "support_knowledge_base.articles.read",
+      displayName: "Get article",
+      storyTitle: "Support article viewed",
+    }),
+  ],
+  name: "support-knowledge-base",
+  version: "0.1.0",
+});
+
 export const manifest = defineService({
   compatibility: serviceCompatibility,
   deployment: serviceDeployment,
@@ -123,12 +147,16 @@ export const manifest = defineService({
     services: [
       {
         command: "pnpm --dir examples/support-ticket start",
-        name: "support-service",
+        name: "support-suite-provider",
       },
     ],
   },
-  modules: [supportTicketModule],
-  name: "support-service",
+  modules: [
+    supportTicketModule,
+    supportNotificationModule,
+    supportKnowledgeBaseModule,
+  ],
+  name: "support-suite-provider",
   requiredEnv: ["PORT"],
   statusPath: "/lenso/service/v1/status",
   transports: ["http"],
@@ -194,6 +222,24 @@ const ticketDataSource = {
 export const serveSupportTicketModule = async (options = {}) =>
   serveService(manifest, {
     modules: {
+      "support-knowledge-base": {
+        http: {
+          "GET /articles/{id}": ({ params }) => ({
+            article: {
+              id: params.id,
+              title: "Invite teammates",
+            },
+          }),
+        },
+      },
+      "support-notification": {
+        runtime: {
+          "support-notification.send-ticket-update.v1": ({ input }) => ({
+            delivered: true,
+            ticket_id: input.ticket_id,
+          }),
+        },
+      },
       "support-ticket": {
         actions: {
           assign_ticket: ({ input }) => ({ ticket: assignTicket(input) }),
@@ -222,6 +268,10 @@ export const serveSupportTicketModule = async (options = {}) =>
     onReady: options.onReady,
     port: options.port ?? 4110,
     status: {
-      checks: [{ name: "support-ticket", status: "ok" }],
+      checks: [
+        { name: "support-knowledge-base", status: "ok" },
+        { name: "support-notification", status: "ok" },
+        { name: "support-ticket", status: "ok" },
+      ],
     },
   });
