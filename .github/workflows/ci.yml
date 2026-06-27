@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Check out Runtime Console SDK
+        run: |
+          ref="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-main}}"
+          if ! git clone --depth 1 --branch "$ref" https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console; then
+            git clone --depth 1 https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console
+          fi
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v6

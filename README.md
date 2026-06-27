@@ -2,16 +2,27 @@
 
 Runnable examples for Lenso module authors.
 
-This repository uses published packages instead of sibling workspace paths for
-released contracts:
+This repository uses published packages for released contracts where available:
 
 - `lenso`
-- `@lenso/service-kit`
 - `@lenso/remote-module-kit` for the gRPC legacy transport example
 
-The Rust V8 service-operation proof is the temporary exception:
-`examples/rust-service` points at the sibling `../lenso` crate until the V8
-contract crates are published.
+The V8 proofs currently have two temporary sibling-repository dependencies
+until the matching contracts are published:
+
+- TypeScript service examples resolve `@lenso/service-kit` and the V8
+  `@lenso/remote-module-kit` build from `../lenso-runtime-console`.
+- `examples/rust-service` points at the sibling `../lenso` crate.
+
+For local V8 verification, clone the repositories next to each other:
+
+```sh
+git clone https://github.com/LioRael/lenso-examples.git
+git clone https://github.com/LioRael/lenso-runtime-console.git
+git clone https://github.com/LioRael/lenso.git
+cd lenso-examples
+pnpm install
+```
 
 ## Quick Start
 
