@@ -14,12 +14,12 @@ until the matching contracts are published:
   `@lenso/remote-module-kit` build from `../lenso-runtime-console`.
 - `examples/rust-service` points at the sibling `../lenso` crate.
 
-For local V8 verification, clone the repositories next to each other:
+For local V8 verification, clone the matching V8 branches next to each other:
 
 ```sh
-git clone https://github.com/LioRael/lenso-examples.git
-git clone https://github.com/LioRael/lenso-runtime-console.git
-git clone https://github.com/LioRael/lenso.git
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-examples.git
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-runtime-console.git
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso.git
 pnpm --dir lenso-runtime-console install
 pnpm --dir lenso-runtime-console --filter @lenso/remote-module-kit build
 pnpm --dir lenso-runtime-console --filter @lenso/service-kit build

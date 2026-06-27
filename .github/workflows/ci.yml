@@ -14,9 +14,11 @@ jobs:
       - name: Check out Runtime Console SDK
         run: |
           ref="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-main}}"
-          if ! git clone --depth 1 --branch "$ref" https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console; then
-            git clone --depth 1 https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console
-          fi
+          git clone --depth 1 --branch "$ref" https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console
+      - name: Verify Runtime Console SDK checkout
+        run: |
+          test -f ../lenso-runtime-console/packages/remote-module-kit/package.json
+          test -f ../lenso-runtime-console/packages/service-kit/package.json
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v6
