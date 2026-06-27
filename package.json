@@ -14,6 +14,7 @@
     "host-api-smoke:account-profile": "node scripts/account-profile-host-api-smoke.ts",
     "host-api-smoke:support-ticket": "node scripts/support-ticket-host-api-smoke.ts",
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
+    "rust-service:check": "cargo run --manifest-path examples/rust-service/Cargo.toml -- --check",
     "smoke": "pnpm smoke:hello-action && pnpm smoke:grpc-notes && pnpm smoke:support-ticket && pnpm smoke:account-profile",
     "smoke:account-profile": "pnpm --filter @lenso/example-account-profile smoke",
     "smoke:grpc-notes": "pnpm --filter @lenso/example-grpc-notes smoke",
@@ -22,6 +23,7 @@
     "start:account-profile": "pnpm --filter @lenso/example-account-profile start",
     "start:grpc-notes": "pnpm --filter @lenso/example-grpc-notes start",
     "start:hello-action": "pnpm --filter @lenso/example-hello-action start",
+    "start:rust-service": "cargo run --manifest-path examples/rust-service/Cargo.toml",
     "start:support-ticket": "pnpm --filter @lenso/example-support-ticket start"
   },
   "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1"

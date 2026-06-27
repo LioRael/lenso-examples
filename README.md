@@ -47,6 +47,35 @@ prints the manifest JSON:
 pnpm rust-manifest
 ```
 
+### Rust Service Provider
+
+`examples/rust-service` is a standalone Axum service provider. It exposes the
+`rust-audit-log` module through a service manifest, status endpoint, module
+manifest endpoint, and a direct HTTP route:
+
+```sh
+pnpm start:rust-service
+```
+
+Install its manifest into a local Lenso host:
+
+```sh
+lenso service install http://127.0.0.1:4130/lenso/service/v1/manifest
+```
+
+Print the manifest without starting the server:
+
+```sh
+pnpm rust-service:check
+```
+
+The example README includes the matching `lenso service check`, install, diff,
+upgrade preview, rollback preview, and deployment export commands.
+
+The Rust and TypeScript examples intentionally expose the same service contract
+shape: a remote process provides one or more modules, while the Host owns auth,
+runtime queues, retries, outbox, and observability.
+
 ### Hello Action Service
 
 `examples/hello-action` is a starter service provider. It exposes:
