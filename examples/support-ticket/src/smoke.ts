@@ -99,6 +99,40 @@ try {
   if (manifest.status_path !== "/lenso/service/v1/status") {
     throw new Error("manifest did not declare the service status path");
   }
+  const listRoute = moduleManifest.http_routes?.find(
+    (route) => route.method === "GET" && route.path === "/tickets"
+  );
+  if (
+    listRoute?.operation?.operationId !== "support-ticket/http/GET:/tickets"
+  ) {
+    throw new Error("support-ticket did not declare the tickets HTTP operation");
+  }
+  if (
+    listRoute.operation.safeProbe?.method !== "GET" ||
+    listRoute.operation.safeProbe?.path !== "/tickets" ||
+    listRoute.operation.safeProbe?.expectStatus !== 200
+  ) {
+    throw new Error("tickets HTTP operation did not declare a safe probe");
+  }
+  const assignAction = moduleManifest.admin.actions.find(
+    (action) => action.name === "assign_ticket"
+  );
+  if (
+    assignAction?.operation?.operationId !==
+    "support-ticket/action/assign_ticket"
+  ) {
+    throw new Error("assign_ticket did not declare operation metadata");
+  }
+  const escalateFunction = moduleManifest.runtime?.functions?.find(
+    (runtimeFunction) =>
+      runtimeFunction.name === "support-ticket.escalate-ticket.v1"
+  );
+  if (
+    escalateFunction?.operation?.operationId !==
+    "support-ticket/runtime/support-ticket.escalate-ticket.v1"
+  ) {
+    throw new Error("escalate runtime function did not declare operation metadata");
+  }
 
   const statusUrl = server.statusUrl ?? `${server.baseUrl}/status`;
   const status = await fetchJson(statusUrl);
@@ -117,6 +151,11 @@ try {
   ]);
 
   const moduleBaseUrl = `${server.baseUrl}/modules/support-ticket`;
+  const listed = await fetchJson(`${moduleBaseUrl}/tickets`);
+  if (!listed.records?.some((record) => record.id === "ticket_1")) {
+    throw new Error("HTTP list route did not return ticket_1");
+  }
+
   const created = await fetchJson(`${moduleBaseUrl}/tickets`, {
     body: JSON.stringify({
       assignee: "triage",

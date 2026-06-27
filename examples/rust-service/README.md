@@ -11,6 +11,11 @@ It serves:
 - `GET /lenso/service/v1/ready`
 - `GET /lenso/service/v1/modules/rust-audit-log/manifest`
 - `GET /lenso/service/v1/modules/rust-audit-log/events`
+- `POST /lenso/service/v1/modules/rust-audit-log/runtime/functions/rust-audit-log.summarize-events.v1/invoke`
+
+The manifest declares service operation metadata for the `/events` HTTP route
+and the `rust-audit-log.summarize-events.v1` runtime function, so V8 service
+checks can prove both HTTP probing and runtime operation discovery.
 
 Run it from the repository root:
 

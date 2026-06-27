@@ -328,8 +328,6 @@ dependencies = [
 [[package]]
 name = "lenso"
 version = "0.3.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "762aa97723efa92de4f7c44f919b3b3f4ef03b8025ccb0c3e37b02bf8ef75f3a"
 dependencies = [
  "lenso-contracts",
 ]
@@ -337,8 +335,6 @@ dependencies = [
 [[package]]
 name = "lenso-contracts"
 version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c75a660969046c815112a8bebb1939c9b9e29f2268faf8b4812b19faa8b90fa9"
 dependencies = [
  "chrono",
  "serde",

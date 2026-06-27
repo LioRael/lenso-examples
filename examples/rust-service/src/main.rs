@@ -1,7 +1,12 @@
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{
+    Json, Router,
+    extract::State,
+    routing::{get, post},
+};
 use lenso::{
     ModuleHttpMethod, ModuleHttpRoute, ModuleManifest, ModuleManifestLintSeverity, ModuleSource,
-    lint_module_manifest,
+    RuntimeFunctionDeclaration, RuntimeSurface, ServiceOperationMetadata,
+    ServiceOperationSafeProbe, lint_module_manifest,
 };
 use serde_json::{Value, json};
 
@@ -9,6 +14,9 @@ const DEFAULT_PORT: u16 = 4130;
 const SERVICE_NAME: &str = "rust-audit-service";
 const MODULE_NAME: &str = "rust-audit-log";
 const READ_CAPABILITY: &str = "rust_audit_log.events.read";
+const EVENTS_OPERATION_ID: &str = "rust-audit-log/http/GET:/events";
+const SUMMARIZE_FUNCTION_NAME: &str = "rust-audit-log.summarize-events.v1";
+const SUMMARIZE_OPERATION_ID: &str = "rust-audit-log/runtime/rust-audit-log.summarize-events.v1";
 
 #[derive(Clone)]
 struct AppState {
@@ -42,6 +50,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route(
             "/lenso/service/v1/modules/rust-audit-log/events",
             get(audit_events),
+        )
+        .route(
+            "/lenso/service/v1/modules/rust-audit-log/runtime/functions/rust-audit-log.summarize-events.v1/invoke",
+            post(summarize_events),
         )
         .with_state(state);
     let listener = tokio::net::TcpListener::bind(("127.0.0.1", port)).await?;
@@ -103,6 +115,15 @@ async fn audit_events() -> Json<Value> {
     }))
 }
 
+async fn summarize_events() -> Json<Value> {
+    Json(json!({
+        "output": {
+            "count": 2,
+            "summary": "2 audit events available",
+        },
+    }))
+}
+
 fn audit_log_module() -> ModuleManifest {
     ModuleManifest::builder(MODULE_NAME)
         .capabilities(vec![READ_CAPABILITY.to_owned()])
@@ -111,8 +132,34 @@ fn audit_log_module() -> ModuleManifest {
             path: "/events".to_owned(),
             capability: Some(READ_CAPABILITY.to_owned()),
             display_name: Some("List audit events".to_owned()),
+            operation: Some(ServiceOperationMetadata {
+                operation_id: Some(EVENTS_OPERATION_ID.to_owned()),
+                safe_probe: Some(ServiceOperationSafeProbe {
+                    method: Some("GET".to_owned()),
+                    path: Some("/events".to_owned()),
+                    input: None,
+                    expect_status: Some(200),
+                }),
+                summary: Some("List audit events".to_owned()),
+                ..ServiceOperationMetadata::default()
+            }),
             story_title: Some("Audit events listed".to_owned()),
         }])
+        .runtime(RuntimeSurface {
+            functions: vec![RuntimeFunctionDeclaration {
+                name: SUMMARIZE_FUNCTION_NAME.to_owned(),
+                version: 1,
+                queue: MODULE_NAME.to_owned(),
+                input_schema: None,
+                retry_policy: None,
+                operation: Some(ServiceOperationMetadata {
+                    operation_id: Some(SUMMARIZE_OPERATION_ID.to_owned()),
+                    summary: Some("Summarize audit events".to_owned()),
+                    ..ServiceOperationMetadata::default()
+                }),
+            }],
+            schedules: vec![],
+        })
         .build()
 }
 
@@ -204,6 +251,22 @@ mod tests {
         assert_eq!(manifest["modules"][0]["name"], MODULE_NAME);
         assert_eq!(manifest["modules"][0]["http_routes"][0]["method"], "GET");
         assert_eq!(manifest["modules"][0]["http_routes"][0]["path"], "/events");
+        assert_eq!(
+            manifest["modules"][0]["http_routes"][0]["operation"]["operationId"],
+            EVENTS_OPERATION_ID
+        );
+        assert_eq!(
+            manifest["modules"][0]["http_routes"][0]["operation"]["safeProbe"]["path"],
+            "/events"
+        );
+        assert_eq!(
+            manifest["modules"][0]["runtime"]["functions"][0]["name"],
+            SUMMARIZE_FUNCTION_NAME
+        );
+        assert_eq!(
+            manifest["modules"][0]["runtime"]["functions"][0]["operation"]["operationId"],
+            SUMMARIZE_OPERATION_ID
+        );
     }
 
     #[test]

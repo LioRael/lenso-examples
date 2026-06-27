@@ -6,6 +6,6 @@ publish = false
 
 [dependencies]
 axum = "0.8"
-lenso = "0.3.16"
+lenso = { path = "../../../lenso/crates/lenso" }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread"] }

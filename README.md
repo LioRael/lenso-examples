@@ -75,6 +75,9 @@ upgrade preview, rollback preview, and deployment export commands.
 The Rust and TypeScript examples intentionally expose the same service contract
 shape: a remote process provides one or more modules, while the Host owns auth,
 runtime queues, retries, outbox, and observability.
+The V8 proof path uses service operation metadata and checks across both TS
+services and the Rust Axum provider, including safe HTTP probes and runtime
+function declarations.
 
 ### Hello Action Service
 

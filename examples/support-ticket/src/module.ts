@@ -64,18 +64,23 @@ const serviceDeployment = {
 export const supportTicketModule = defineModule({
   admin: declarativeCustom({
     actions: [
-      adminAction("assign_ticket", {
-        capability: writeCapability,
-        inputFields: [
-          actionTextField("ticket_id", {
-            label: "Ticket ID",
-            required: true,
-          }),
-          actionTextField("assignee", { label: "Assignee", required: true }),
-          actionTimestampField("updated_at", { label: "Updated At" }),
-        ],
-        label: "Assign ticket",
-      }),
+      {
+        ...adminAction("assign_ticket", {
+          capability: writeCapability,
+          inputFields: [
+            actionTextField("ticket_id", {
+              label: "Ticket ID",
+              required: true,
+            }),
+            actionTextField("assignee", { label: "Assignee", required: true }),
+            actionTimestampField("updated_at", { label: "Updated At" }),
+          ],
+          label: "Assign ticket",
+        }),
+        operation: {
+          operationId: "support-ticket/action/assign_ticket",
+        },
+      },
     ],
     fallbackSchema: adminSchema([ticketsEntity]),
     pages: [
@@ -91,6 +96,21 @@ export const supportTicketModule = defineModule({
   }),
   capabilities: [readCapability, writeCapability, escalateCapability],
   httpRoutes: [
+    {
+      ...getRoute("/tickets", {
+        capability: readCapability,
+        displayName: "List tickets",
+        storyTitle: "Support tickets listed",
+      }),
+      operation: {
+        operationId: "support-ticket/http/GET:/tickets",
+        safeProbe: {
+          expectStatus: 200,
+          method: "GET",
+          path: "/tickets",
+        },
+      },
+    },
     getRoute("/tickets/{id}", {
       capability: readCapability,
       displayName: "Get ticket",
@@ -109,9 +129,15 @@ export const supportTicketModule = defineModule({
   ],
   name: "support-ticket",
   runtimeFunctions: [
-    runtimeFunction("support-ticket.escalate-ticket.v1", {
-      queue: "support-ticket",
-    }),
+    {
+      ...runtimeFunction("support-ticket.escalate-ticket.v1", {
+        queue: "support-ticket",
+      }),
+      operation: {
+        operationId:
+          "support-ticket/runtime/support-ticket.escalate-ticket.v1",
+      },
+    },
   ],
   version: "0.1.0",
 });
@@ -248,6 +274,10 @@ export const serveSupportTicketModule = async (options = {}) =>
           tickets: ticketDataSource,
         },
         http: {
+          "GET /tickets": () => ({
+            next_cursor: null,
+            records: tickets,
+          }),
           "GET /tickets/{id}": ({ params }) => ({
             ticket: findTicket(params.id),
           }),
