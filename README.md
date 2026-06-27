@@ -20,6 +20,9 @@ For local V8 verification, clone the repositories next to each other:
 git clone https://github.com/LioRael/lenso-examples.git
 git clone https://github.com/LioRael/lenso-runtime-console.git
 git clone https://github.com/LioRael/lenso.git
+pnpm --dir lenso-runtime-console install
+pnpm --dir lenso-runtime-console --filter @lenso/remote-module-kit build
+pnpm --dir lenso-runtime-console --filter @lenso/service-kit build
 cd lenso-examples
 pnpm install
 ```
