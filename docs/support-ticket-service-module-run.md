@@ -47,10 +47,11 @@ From the sibling `lenso` backend checkout:
 
 ```sh
 test -f .env || cp .env.example .env
+lenso module catalog add http://127.0.0.1:4110/lenso/service/v1/manifest --summary "Ticket intake, triage, and operations"
 lenso module install support-ticket
 lenso service list
 lenso service check support-suite-provider
-lenso service doctor support-ticket --json
+lenso service doctor support-suite-provider --json
 ```
 
 Use `lenso service export --module support-suite-provider --format compose`
@@ -78,13 +79,13 @@ lenso service check support-suite-provider
 lenso service status support-suite-provider support-suite-provider
 lenso service start support-suite-provider support-suite-provider
 lenso service stop support-suite-provider support-suite-provider
-lenso service doctor support-ticket --json
+lenso service doctor support-suite-provider --json
 ```
 
 `lenso service check` is the provider-level check command. In the current CLI it
-shares the same diagnostic engine as `service doctor`; use
-`lenso service doctor support-ticket --json` when you need the business module
-report. The important statuses are:
+shares the same diagnostic engine as `service doctor`; use the provider name
+when diagnosing service state. Console still shows `support-ticket` as the
+business module. The important statuses are:
 
 | Status                  | Meaning                                                                            | Next action                                                                   |
 | ----------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -164,8 +165,8 @@ admin/runtime paths, and verifies Runtime Story evidence.
 
 | Symptom                                                                                                | Check                                                                                    | Fix                                                                                                      |
 | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-ticket --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service check support-suite-provider`. |
+| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-suite-provider --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service check support-suite-provider`. |
 | `service_not_ready`                                                                                    | `.lenso/module-services.json` has a service entry, but its `readyUrl` is not responding. | Start the command shown by doctor or restart the API/worker when `autoStart` is enabled.                 |
 | `stale_state`                                                                                          | A host-started service left `.lock` or `.pid` files behind.                              | Restart the API/worker; remove the stale files only if doctor still reports them.                        |
 | `404` from `/modules/support-ticket/http/*`                                                            | The host did not load the module provided by the configured provider.                    | Restart the API and worker after installing or changing `REMOTE_MODULES`.                                |
-| `403` from host APIs                                                                                   | The development service token lacks a `support_ticket.*` scope.                          | Use a `dev-service:admin:support_ticket.tickets.read:support_ticket.tickets.write` token for this guide. |
+| `403` from host APIs                                                                                   | The development service token lacks a `support_ticket.*` scope.                          | Use a `dev-service:admin:support_ticket.tickets.read,support_ticket.tickets.write` token for this guide. |

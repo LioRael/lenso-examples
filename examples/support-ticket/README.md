@@ -32,9 +32,10 @@ pnpm --filter @lenso/example-support-ticket smoke
 Install and check the suite from a local Lenso host:
 
 ```sh
+lenso module catalog add http://127.0.0.1:4110/lenso/service/v1/manifest --summary "Ticket intake, triage, and operations"
 lenso module install support-ticket
 lenso service check support-suite-provider
-lenso service doctor support-ticket --json
+lenso service doctor support-suite-provider --json
 ```
 
 Restart the API and worker after install. Open `/console` and check Modules:
@@ -48,13 +49,15 @@ Restart the API and worker after install. Open `/console` and check Modules:
 - the `tickets` data surface and `assign_ticket` action are available.
 
 The host still owns Runtime Story, Remote Calls, queue, outbox, and retry
-evidence after the modules are used through the host.
+evidence after the modules are used through the host. Console shows
+`support-ticket` as the installed business module.
 
-If check or doctor reports `restart_pending`, restart the host. If it reports
-`manifest_unreachable` or `service_not_ready`, start the provider again and
-recheck:
+If service check or doctor reports `restart_pending`, restart the host. If it
+reports `manifest_unreachable` or `service_not_ready`, start the provider again
+and recheck:
 
 ```sh
 pnpm --filter @lenso/example-support-ticket start
 lenso service check support-suite-provider
+lenso service doctor support-suite-provider --json
 ```
