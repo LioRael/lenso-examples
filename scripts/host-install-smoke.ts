@@ -30,7 +30,7 @@ const examples = {
   "support-ticket": {
     catalogSummary: "Support Ticket agent-ready module",
     installCommand: "service",
-    installName: "support-service",
+    installName: "support-suite-provider",
     providedModuleName: "support-ticket",
     serve: serveSupportTicketModule,
   },
