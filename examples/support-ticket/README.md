@@ -42,10 +42,18 @@ lenso service install dist/lenso-service/support-suite-provider/lenso.service-pa
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
-Install and check the suite from a local Lenso host:
+Install the business module through the V10 module release artifact:
 
 ```sh
-lenso module catalog add http://127.0.0.1:4110/lenso/service/v1/manifest --summary "Ticket intake, triage, and operations"
+lenso module install examples/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Or add the release artifact to a local Lenso host catalog, then install by
+module name:
+
+```sh
+lenso module catalog add examples/support-ticket/lenso.module-release.json
 lenso module install support-ticket
 lenso service check support-suite-provider
 lenso service doctor support-suite-provider --json

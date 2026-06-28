@@ -271,10 +271,18 @@ lenso service install dist/lenso-service/support-suite-provider/lenso.service-pa
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
-Install its manifest into a local Lenso host:
+Install the business module through the checked-in V10 module release artifact:
 
 ```sh
-lenso service install http://127.0.0.1:4110/lenso/service/v1/manifest
+lenso module install examples/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Or add that release to the local catalog and install by module name:
+
+```sh
+lenso module catalog add examples/support-ticket/lenso.module-release.json
+lenso module install support-ticket
 ```
 
 Run the full service host path:

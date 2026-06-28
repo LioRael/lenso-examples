@@ -1,0 +1,17 @@
+{
+  "protocol": "lenso.module-release.v1",
+  "name": "support-ticket",
+  "version": "0.1.0",
+  "source": "service",
+  "summary": "Ticket intake, triage, and operations",
+  "provider": {
+    "name": "support-suite-provider",
+    "serviceManifest": "http://127.0.0.1:4110/lenso/service/v1/manifest"
+  },
+  "capabilities": [
+    "support_ticket.tickets.read",
+    "support_ticket.tickets.write",
+    "support_ticket.tickets.escalate"
+  ],
+  "dependencies": []
+}
