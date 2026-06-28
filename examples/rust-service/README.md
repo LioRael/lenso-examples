@@ -81,3 +81,9 @@ Print the manifest without starting the server:
 ```sh
 pnpm rust-service:check
 ```
+
+With the service running, package its manifest for handoff:
+
+```sh
+pnpm service-package:rust-service
+```

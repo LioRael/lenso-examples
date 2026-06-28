@@ -88,6 +88,13 @@ Print the manifest without starting the server:
 pnpm rust-service:check
 ```
 
+With the service running, emit a V9 service package artifact from its manifest
+URL:
+
+```sh
+pnpm service-package:rust-service
+```
+
 The example README includes the matching `lenso service check`, install, diff,
 upgrade preview, rollback preview, and deployment export commands.
 
@@ -241,6 +248,13 @@ Smoke the module directly:
 
 ```sh
 pnpm smoke:support-ticket
+```
+
+With the service running, emit a V9 service package artifact from its manifest
+URL:
+
+```sh
+pnpm service-package:support-ticket
 ```
 
 Install its manifest into a local Lenso host:

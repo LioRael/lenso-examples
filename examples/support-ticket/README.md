@@ -29,6 +29,12 @@ Run the smoke:
 pnpm --filter @lenso/example-support-ticket smoke
 ```
 
+Package the running service manifest for handoff:
+
+```sh
+pnpm service-package:support-ticket
+```
+
 Install and check the suite from a local Lenso host:
 
 ```sh
