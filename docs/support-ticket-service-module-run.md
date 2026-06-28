@@ -47,7 +47,8 @@ From the sibling `lenso` backend checkout:
 
 ```sh
 test -f .env || cp .env.example .env
-lenso module catalog add ../lenso-examples/examples/support-ticket/lenso.module-release.json
+lenso module catalog add ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 lenso service list
 lenso service check support-suite-provider
@@ -57,9 +58,14 @@ lenso service doctor support-suite-provider --json
 You can also install the release artifact directly:
 
 ```sh
-lenso module install ../lenso-examples/examples/support-ticket/lenso.module-release.json \
+lenso module install ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
+
+Run `pnpm service-package:support-ticket` from `lenso-examples` first if the
+`dist/lenso-service` artifact is not present. The checked-in
+`examples/support-ticket/lenso.module-release.json` is a local dev shortcut
+that points at the running provider manifest.
 
 Use `lenso service export --module support-suite-provider --format compose`
 when you need a deployment fragment for the provider process.

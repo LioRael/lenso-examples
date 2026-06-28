@@ -88,8 +88,8 @@ Print the manifest without starting the server:
 pnpm rust-service:check
 ```
 
-With the service running, emit a V9 service package artifact from its manifest
-URL:
+With the service running, emit a service package plus module release artifacts
+from its manifest URL:
 
 ```sh
 pnpm service-package:rust-service
@@ -271,17 +271,18 @@ lenso service install dist/lenso-service/support-suite-provider/lenso.service-pa
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
-Install the business module through the checked-in V10 module release artifact:
+Install the business module through the generated V10 module release artifact:
 
 ```sh
-lenso module install examples/support-ticket/lenso.module-release.json \
+lenso module install dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
 Or add that release to the local catalog and install by module name:
 
 ```sh
-lenso module catalog add examples/support-ticket/lenso.module-release.json
+lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 ```
 
