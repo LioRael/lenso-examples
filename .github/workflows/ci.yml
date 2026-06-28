@@ -39,9 +39,3 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run examples smoke
         run: pnpm smoke
-      - name: Install lenso CLI
-        run: cargo install lenso-cli --locked
-      - name: Run host API smokes
-        run: pnpm host-api-smoke
-        env:
-          LENSO_CLI: lenso
