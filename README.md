@@ -2,10 +2,30 @@
 
 Runnable examples for Lenso module authors.
 
-This repository uses published packages instead of sibling workspace paths:
+This repository uses published packages for released contracts where available:
 
 - `lenso`
-- `@lenso/remote-module-kit`
+- `@lenso/remote-module-kit` for the gRPC legacy transport example
+
+The V8 proofs currently have two temporary sibling-repository dependencies
+until the matching contracts are published:
+
+- TypeScript service examples resolve `@lenso/service-kit` and the V8
+  `@lenso/remote-module-kit` build from `../lenso-runtime-console`.
+- `examples/rust-service` points at the sibling `../lenso` crate.
+
+For local V8 verification, clone the matching V8 branches next to each other:
+
+```sh
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-examples.git
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-runtime-console.git
+git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso.git
+pnpm --dir lenso-runtime-console install
+pnpm --dir lenso-runtime-console --filter @lenso/remote-module-kit build
+pnpm --dir lenso-runtime-console --filter @lenso/service-kit build
+cd lenso-examples
+pnpm install
+```
 
 ## Quick Start
 
@@ -18,8 +38,8 @@ pnpm smoke
 
 ## Blank Host Starter
 
-Use the standalone CLI when you want a blank Rust host before installing remote
-modules:
+Use the standalone CLI when you want a blank Rust host before installing
+services:
 
 ```sh
 cargo install lenso-cli
@@ -46,11 +66,45 @@ prints the manifest JSON:
 pnpm rust-manifest
 ```
 
-### Hello Action Remote Module
+### Rust Service Provider
 
-`examples/hello-action` is a starter remote module package. It exposes:
+`examples/rust-service` is a standalone Axum service provider. It exposes the
+`rust-audit-log` module through a service manifest, status endpoint, module
+manifest endpoint, and a direct HTTP route:
 
-- a manifest at `/lenso/module/v1/manifest`;
+```sh
+pnpm start:rust-service
+```
+
+Install its manifest into a local Lenso host:
+
+```sh
+lenso service install http://127.0.0.1:4130/lenso/service/v1/manifest
+```
+
+Print the manifest without starting the server:
+
+```sh
+pnpm rust-service:check
+```
+
+The example README includes the matching `lenso service check`, install, diff,
+upgrade preview, rollback preview, and deployment export commands.
+
+The Rust and TypeScript examples intentionally expose the same service contract
+shape: a remote process provides one or more modules, while the Host owns auth,
+runtime queues, retries, outbox, and observability.
+The V8 proof path uses service operation metadata and checks across both TS
+services and the Rust Axum provider, including safe HTTP probes and runtime
+function declarations.
+
+### Hello Action Service
+
+`examples/hello-action` is a starter service provider. It exposes:
+
+- a service manifest at `/lenso/service/v1/manifest`;
+- service status at `/lenso/service/v1/status`;
+- the `hello-action` module below `/lenso/service/v1/modules/hello-action`;
 - two HTTP routes, `GET /hello/{name}` and `POST /greetings`;
 - two runtime functions, `hello-action.say-hello.v1` and
   `hello-action.record-greeting.v1`;
@@ -81,13 +135,13 @@ Change the module by editing:
 The server prints a manifest URL like:
 
 ```text
-http://127.0.0.1:4100/lenso/module/v1/manifest
+http://127.0.0.1:4100/lenso/service/v1/manifest
 ```
 
 Use that URL with a local Lenso host checkout:
 
 ```sh
-lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4100/lenso/service/v1/manifest
 ```
 
 The example does not ship a Runtime Console package, so there is no frontend
@@ -104,19 +158,21 @@ run the integration smoke from this repository root:
 pnpm host-smoke
 ```
 
-It starts the remote examples, creates temporary host repos, runs the real
-`lenso module catalog add` and `lenso module install` commands, and checks the
+It starts the service examples, creates temporary host repos, runs the real
+`lenso module catalog add` and `lenso service install` commands, and checks the
 generated `.lenso/module-catalog.json`, `.env`, and install receipts.
 
 To run the example through a real host API and call its remote HTTP route via
 `/modules/hello-action/http/greetings`, follow
 [docs/hello-action-host-run.md](docs/hello-action-host-run.md).
 
-### Account Profile Remote Module
+### Account Profile Service
 
 `examples/account-profile` keeps product profile data outside the first-party
-auth anchor. It declares an `auth` dependency, profile records, organizations,
-memberships, HTTP routes, an admin action, and schema-admin pages.
+auth anchor. The service provider is `account-profile-service`; it provides the
+`account-profile` module with an `auth` dependency, profile records,
+organizations, memberships, HTTP routes, an admin action, and schema-admin
+pages.
 
 Start it from the repository root:
 
@@ -133,14 +189,16 @@ pnpm smoke:account-profile
 Install its manifest into a local Lenso host:
 
 ```sh
-lenso module install http://127.0.0.1:4120/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4120/lenso/service/v1/manifest
 ```
 
-### gRPC Notes Remote Module
+### gRPC Notes Legacy Transport
 
-`examples/grpc-notes` is the native gRPC remote module starter. It exposes a
-manifest, schema-admin `notes`, `GET /notes` through the host proxy, and
-`grpc-notes.summarize.v1` through the runtime function lane.
+`examples/grpc-notes` is the native gRPC compatibility example for the older
+remote-module transport. It exposes a module manifest over gRPC, schema-admin
+`notes`, `GET /notes` through the host proxy, and `grpc-notes.summarize.v1`
+through the runtime function lane. The V5 HTTP service manifest path is shown
+by the HTTP examples above.
 
 Start it from the repository root:
 
@@ -162,11 +220,12 @@ lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-
 lenso console package apply-plan
 ```
 
-### Support Ticket Remote Module
+### Support Ticket Service
 
-`examples/support-ticket` is the agent-ready module demo. It turns a concrete
-business prompt into a remote module with tickets data, HTTP routes, an admin
-action, a runtime escalation function, and Console-visible metadata:
+`examples/support-ticket` is the agent-ready service demo. It turns a concrete
+business prompt into an independently running service that provides the
+`support-ticket` module with tickets data, HTTP routes, an admin action, a
+runtime escalation function, and Console-visible metadata:
 
 ```text
 Build a support ticket module for a Lenso app.
@@ -187,10 +246,22 @@ pnpm smoke:support-ticket
 Install its manifest into a local Lenso host:
 
 ```sh
-lenso module install http://127.0.0.1:4110/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4110/lenso/service/v1/manifest
 ```
+
+Run the full service host path:
+
+```sh
+pnpm host-api-smoke:support-ticket
+```
+
+That starts the service, installs it into a temporary host, exercises the
+host-owned HTTP proxy and runtime path for its module, and verifies Runtime
+Story evidence.
+For the manual walkthrough, see
+[docs/support-ticket-service-module-run.md](docs/support-ticket-service-module-run.md).
 
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso
-- Runtime Console and remote module kit: https://github.com/LioRael/lenso-runtime-console
+- Runtime Console and service kit: https://github.com/LioRael/lenso-runtime-console

@@ -1,10 +1,45 @@
 {
-  "baseUrl": "http://127.0.0.1:4120/lenso/module/v1",
-  "consolePackages": [],
-  "manifestReference": "http://127.0.0.1:4120/lenso/module/v1/manifest",
-  "name": "account-profile",
-  "source": "remote",
-  "summary": "Account profiles and organization memberships for auth boundary demos",
+  "baseUrl": "http://127.0.0.1:4120/lenso/service/v1",
+  "compatibility": {
+    "consolePackageApi": "1",
+    "remoteProtocolVersion": "1",
+    "requiredHostFeatures": ["service.status"]
+  },
+  "deployment": {
+    "commands": ["pnpm --dir examples/account-profile start"],
+    "target": "local-node"
+  },
+  "install": {
+    "services": [
+      {
+        "command": "pnpm --dir examples/account-profile start",
+        "name": "account-profile-service"
+      }
+    ]
+  },
+  "manifestReference": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+  "modules": [
+    {
+      "capabilities": [
+        "account_profile.profiles.read",
+        "account_profile.profiles.write",
+        "account_profile.organizations.read",
+        "account_profile.organizations.write"
+      ],
+      "dependencies": ["auth"],
+      "name": "account-profile",
+      "version": "0.1.0"
+    }
+  ],
+  "name": "account-profile-service",
+  "service": {
+    "requiredEnv": ["PORT"],
+    "statusPath": "/lenso/service/v1/status",
+    "statusUrl": "http://127.0.0.1:4120/lenso/service/v1/status",
+    "transports": ["http"]
+  },
+  "source": "service",
+  "summary": "Account profile service provider for auth boundary demos",
   "version": "0.1.0",
   "capabilities": [
     "account_profile.profiles.read",

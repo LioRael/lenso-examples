@@ -1,10 +1,43 @@
 {
-  "baseUrl": "http://127.0.0.1:4100/lenso/module/v1",
-  "consolePackages": [],
-  "manifestReference": "http://127.0.0.1:4100/lenso/module/v1/manifest",
-  "name": "hello-action",
-  "source": "remote",
-  "summary": "Tiny remote action module for Lenso examples",
+  "baseUrl": "http://127.0.0.1:4100/lenso/service/v1",
+  "compatibility": {
+    "consolePackageApi": "1",
+    "remoteProtocolVersion": "1",
+    "requiredHostFeatures": ["service.status"]
+  },
+  "deployment": {
+    "commands": ["pnpm --dir examples/hello-action start"],
+    "target": "local-node"
+  },
+  "install": {
+    "services": [
+      {
+        "command": "pnpm --dir examples/hello-action start",
+        "name": "hello-service"
+      }
+    ]
+  },
+  "manifestReference": "http://127.0.0.1:4100/lenso/service/v1/manifest",
+  "modules": [
+    {
+      "capabilities": [
+        "hello-action:greetings:read",
+        "hello-action:hello:read",
+        "hello-action:greetings:write"
+      ],
+      "name": "hello-action",
+      "version": "0.1.0"
+    }
+  ],
+  "name": "hello-service",
+  "service": {
+    "requiredEnv": ["PORT"],
+    "statusPath": "/lenso/service/v1/status",
+    "statusUrl": "http://127.0.0.1:4100/lenso/service/v1/status",
+    "transports": ["http"]
+  },
+  "source": "service",
+  "summary": "Hello service provider for action and runtime examples",
   "version": "0.1.0",
   "capabilities": [
     "hello-action:greetings:read",

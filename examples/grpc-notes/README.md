@@ -1,6 +1,7 @@
-# gRPC Notes Remote Module
+# gRPC Notes Legacy Transport
 
-This is the smallest native gRPC remote module example for Lenso. It exposes:
+This is the smallest native gRPC compatibility example for Lenso's older
+remote-module transport. It exposes:
 
 - `GetManifest` for the module manifest;
 - schema-admin list/detail reads for `notes`;
@@ -15,7 +16,7 @@ Install dependencies from the repository root:
 pnpm install
 ```
 
-Start the gRPC module:
+Start the gRPC service process:
 
 ```sh
 pnpm start:grpc-notes

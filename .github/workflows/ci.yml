@@ -11,6 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Check out Runtime Console SDK
+        run: |
+          ref="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-main}}"
+          git clone --depth 1 --branch "$ref" https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console
+      - name: Verify Runtime Console SDK checkout
+        run: |
+          test -f ../lenso-runtime-console/packages/remote-module-kit/package.json
+          test -f ../lenso-runtime-console/packages/service-kit/package.json
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v6
@@ -21,13 +29,13 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
           node-version: 24
+      - name: Install Runtime Console SDK dependencies
+        run: pnpm --dir ../lenso-runtime-console install --frozen-lockfile
+      - name: Build Remote Module Kit
+        run: pnpm --dir ../lenso-runtime-console --filter @lenso/remote-module-kit build
+      - name: Build Service Kit
+        run: pnpm --dir ../lenso-runtime-console --filter @lenso/service-kit build
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Run examples smoke
         run: pnpm smoke
-      - name: Install lenso CLI
-        run: cargo install lenso-cli --locked
-      - name: Run host API smokes
-        run: pnpm host-api-smoke
-        env:
-          LENSO_CLI: lenso

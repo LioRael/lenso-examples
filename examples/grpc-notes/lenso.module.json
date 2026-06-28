@@ -39,6 +39,7 @@
     "grpc-notes:notes:write"
   ],
   "console": [],
+  "dependencies": [],
   "http_routes": [
     {
       "capability": "grpc-notes:notes:read",
@@ -59,5 +60,6 @@
     ]
   },
   "source": "remote",
+  "story_display": [],
   "version": "0.1.0"
 }

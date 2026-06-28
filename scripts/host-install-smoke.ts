@@ -15,14 +15,23 @@ const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
 const examples = {
   "account-profile": {
     catalogSummary: "Account Profile auth boundary module",
+    installCommand: "service",
+    installName: "account-profile-service",
+    providedModuleName: "account-profile",
     serve: serveAccountProfileModule,
   },
   "hello-action": {
     catalogSummary: "Hello Action starter module",
+    installCommand: "service",
+    installName: "hello-service",
+    providedModuleName: "hello-action",
     serve: serveHelloActionModule,
   },
   "support-ticket": {
     catalogSummary: "Support Ticket agent-ready module",
+    installCommand: "service",
+    installName: "support-suite-provider",
+    providedModuleName: "support-ticket",
     serve: serveSupportTicketModule,
   },
 };
@@ -105,6 +114,9 @@ let passed = false;
 
 try {
   const manifestUrl = server.manifestUrl;
+  const installCommand = example.installCommand ?? "module";
+  const installName = example.installName ?? exampleName;
+  const receiptModuleName = example.providedModuleName ?? exampleName;
   await runLenso({
     args: [
       "module",
@@ -124,17 +136,21 @@ try {
   );
   assertEqual(catalog.version, 1, "catalog version");
   assertEqual(catalog.modules?.length, 1, "catalog module count");
-  assertEqual(catalog.modules[0]?.name, exampleName, "catalog module name");
-  assertEqual(catalog.modules[0]?.source, "remote", "catalog source");
+  assertEqual(catalog.modules[0]?.name, installName, "catalog module name");
+  assertEqual(
+    catalog.modules[0]?.source,
+    installCommand === "service" ? "service" : "remote",
+    "catalog source"
+  );
   assertEqual(catalog.modules[0]?.baseUrl, server.baseUrl, "catalog base URL");
 
   await runLenso({
-    args: ["module", "install", manifestUrl, "--repo-root", hostRoot],
+    args: [installCommand, "install", manifestUrl, "--repo-root", hostRoot],
     cwd: hostRoot,
   });
 
   const envFile = await readFile(path.join(hostRoot, ".env"), "utf8");
-  assertEqual(envFile, `REMOTE_MODULES=${exampleName}=${server.baseUrl}\n`, ".env");
+  assertEqual(envFile, `REMOTE_MODULES=${installName}=${server.baseUrl}\n`, ".env");
 
   const installReceipt = await readJson(
     path.join(hostRoot, ".lenso/module-installs.json")
@@ -142,12 +158,14 @@ try {
   assertEqual(installReceipt.version, 1, "install receipt version");
   assertEqual(
     installReceipt.modules?.[0]?.moduleName,
-    exampleName,
+    receiptModuleName,
     "install receipt module"
   );
   assertEqual(
     installReceipt.modules?.[0]?.baseUrl,
-    server.baseUrl,
+    installCommand === "service"
+      ? `${server.baseUrl}/modules/${receiptModuleName}`
+      : server.baseUrl,
     "install receipt base URL"
   );
 

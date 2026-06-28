@@ -1,8 +1,13 @@
 packages:
   - examples/*
 
+overrides:
+  '@lenso/remote-module-kit': link:../lenso-runtime-console/packages/remote-module-kit
+  '@lenso/service-kit': link:../lenso-runtime-console/packages/service-kit
+
 allowBuilds:
   protobufjs: true
 
 minimumReleaseAgeExclude:
   - '@lenso/remote-module-kit'
+  - '@lenso/service-kit'

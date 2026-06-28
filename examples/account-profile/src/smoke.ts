@@ -18,34 +18,52 @@ try {
     await readFile(new URL("../catalog-entry.json", import.meta.url), "utf8")
   );
   if (
-    catalogEntry.name !== "account-profile" ||
-    catalogEntry.source !== "remote" ||
-    catalogEntry.baseUrl !== "http://127.0.0.1:4120/lenso/module/v1"
+    catalogEntry.name !== "account-profile-service" ||
+    catalogEntry.source !== "service" ||
+    catalogEntry.baseUrl !== "http://127.0.0.1:4120/lenso/service/v1"
   ) {
-    throw new Error("catalog entry does not describe account-profile");
+    throw new Error("catalog entry does not describe account-profile-service");
   }
 
   const manifest = await fetchJson(server.manifestUrl);
   if (
-    manifest.name !== "account-profile" ||
-    manifest.version !== catalogEntry.version ||
-    !manifest.dependencies.includes("auth")
+    manifest.name !== "account-profile-service" ||
+    manifest.protocol !== "lenso.service.v1" ||
+    manifest.version !== catalogEntry.version
   ) {
-    throw new Error("manifest did not return the account-profile auth contract");
+    throw new Error("manifest did not return account-profile-service");
+  }
+  const moduleManifest = manifest.modules?.find(
+    (module) => module.name === "account-profile"
+  );
+  if (!moduleManifest || !moduleManifest.dependencies.includes("auth")) {
+    throw new Error("service manifest did not provide the account-profile auth contract");
   }
   for (const capability of catalogEntry.capabilities) {
-    if (!manifest.capabilities.includes(capability)) {
+    if (!moduleManifest.capabilities.includes(capability)) {
       throw new Error(`manifest is missing catalog capability ${capability}`);
     }
   }
-  const entities = manifest.admin?.fallback_schema?.entities ?? [];
+  const entities = moduleManifest.admin?.fallback_schema?.entities ?? [];
   for (const entityName of ["profiles", "organizations", "memberships"]) {
     if (!entities.some((entity) => entity.name === entityName)) {
       throw new Error(`manifest did not expose ${entityName}`);
     }
   }
 
-  const created = await fetchJson(`${server.baseUrl}/profiles`, {
+  const status = await fetchJson(server.statusUrl ?? `${server.baseUrl}/status`);
+  if (
+    status.serviceName !== "account-profile-service" ||
+    status.state !== "ready" ||
+    !status.modules?.some((module) => module.name === "account-profile")
+  ) {
+    throw new Error(
+      "status endpoint did not return account-profile-service readiness"
+    );
+  }
+
+  const moduleBaseUrl = `${server.baseUrl}/modules/account-profile`;
+  const created = await fetchJson(`${moduleBaseUrl}/profiles`, {
     body: JSON.stringify({
       auth_user_id: "auth_user_2",
       contact_email: "sam@example.com",
@@ -58,20 +76,23 @@ try {
     throw new Error("HTTP profile route did not create profile_auth_user_2");
   }
 
-  const updated = await fetchJson(`${server.baseUrl}/admin/actions/upsert_profile`, {
-    body: JSON.stringify({
-      auth_user_id: "auth_user_2",
-      display_name: "Sam Operations",
-    }),
-    headers: { "content-type": "application/json" },
-    method: "POST",
-  });
+  const updated = await fetchJson(
+    `${moduleBaseUrl}/admin/actions/upsert_profile`,
+    {
+      body: JSON.stringify({
+        auth_user_id: "auth_user_2",
+        display_name: "Sam Operations",
+      }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    }
+  );
   if (updated.result?.profile?.display_name !== "Sam Operations") {
     throw new Error("admin action did not update profile_auth_user_2");
   }
 
   const membership = await fetchJson(
-    `${server.baseUrl}/organizations/org_1/memberships`,
+    `${moduleBaseUrl}/organizations/org_1/memberships`,
     {
       body: JSON.stringify({
         profile_id: "profile_auth_user_2",
@@ -86,19 +107,19 @@ try {
   }
 
   const profile = await fetchJson(
-    `${server.baseUrl}/profiles/profile_auth_user_2`
+    `${moduleBaseUrl}/profiles/profile_auth_user_2`
   );
   if (profile.profile?.display_name !== "Sam Operations") {
     throw new Error("HTTP detail route did not return updated profile");
   }
 
-  const admin = await fetchJson(`${server.baseUrl}/admin/memberships`);
+  const admin = await fetchJson(`${moduleBaseUrl}/admin/memberships`);
   const roles = admin.records?.map((record) => record.role) ?? [];
   if (!roles.includes("owner") || !roles.includes("admin")) {
     throw new Error("schema-admin endpoint did not return memberships");
   }
 
-  console.log("Account Profile remote module smoke passed");
+  console.log("Account Profile service smoke passed");
 } finally {
   await server.close();
 }

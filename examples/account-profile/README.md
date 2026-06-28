@@ -1,8 +1,9 @@
-# Account Profile Remote Module
+# Account Profile Service
 
-This example keeps product profile data outside Lenso's auth module. It depends
-on `auth`, then stores profiles, organizations, and memberships in its own
-module-owned records.
+This service keeps product profile data outside Lenso's auth module. The
+service provider is `account-profile-service`; it provides the
+`account-profile` module, which depends on `auth` and owns profiles,
+organizations, and memberships.
 
 Run it from the repository root:
 
@@ -10,7 +11,7 @@ Run it from the repository root:
 pnpm start:account-profile
 ```
 
-Smoke the module directly:
+Smoke the service directly:
 
 ```sh
 pnpm smoke:account-profile
@@ -19,5 +20,5 @@ pnpm smoke:account-profile
 Install its manifest into a local Lenso host:
 
 ```sh
-lenso module install http://127.0.0.1:4120/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4120/lenso/service/v1/manifest
 ```

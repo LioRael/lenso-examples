@@ -1,34 +1,63 @@
-# Support Ticket Remote Module
+# Support Ticket Service Suite
 
-This example is the agent-ready proof point for Lenso: a business module with
-routes, schema-admin data, actions, a runtime function, and Console-visible
-metadata.
+This example is the agent-ready service-suite proof for Lenso:
+`support-ticket` is the business module, and `support-suite-provider` is the
+provider service process that also exposes `support-notification` and
+`support-knowledge-base`.
 
 It exposes:
 
-- a manifest at `/lenso/module/v1/manifest`;
-- `GET /tickets/{id}` and `POST /tickets`;
-- `support-ticket.escalate-ticket.v1`;
-- one declarative admin surface for `tickets`;
-- an `assign_ticket` admin action.
+- a service manifest at `/lenso/service/v1/manifest`;
+- service status at `/lenso/service/v1/status`;
+- `support-ticket` under `/lenso/service/v1/modules/support-ticket`;
+- `support-notification` under `/lenso/service/v1/modules/support-notification`;
+- `support-knowledge-base` under `/lenso/service/v1/modules/support-knowledge-base`;
+- ticket HTTP routes, `support-ticket.escalate-ticket.v1`, the `tickets`
+  admin surface, and `assign_ticket`;
+- `support-notification.send-ticket-update.v1`;
+- `GET /articles/{id}` for knowledge-base articles.
 
 Run it from the repository root:
 
 ```sh
-pnpm start:support-ticket
+pnpm --filter @lenso/example-support-ticket start
 ```
 
 Run the smoke:
 
 ```sh
-pnpm smoke:support-ticket
+pnpm --filter @lenso/example-support-ticket smoke
 ```
 
-Install into a local Lenso host:
+Install and check the suite from a local Lenso host:
 
 ```sh
-lenso module install http://127.0.0.1:4110/lenso/module/v1/manifest
+lenso module catalog add http://127.0.0.1:4110/lenso/service/v1/manifest --summary "Ticket intake, triage, and operations"
+lenso module install support-ticket
+lenso service check support-suite-provider
+lenso service doctor support-suite-provider --json
 ```
 
-Open `/console` after restarting the host. The `tickets` data surface and
-`assign_ticket` action should be available through the module admin views.
+Restart the API and worker after install. Open `/console` and check Modules:
+
+- `support-ticket` is the installed business module;
+- `support-suite-provider` is the configured service provider;
+- `support-notification` and `support-knowledge-base` appear as sibling modules
+  from the same provider;
+- service status, compatibility, deployment, and health history are visible in
+  Operations;
+- the `tickets` data surface and `assign_ticket` action are available.
+
+The host still owns Runtime Story, Remote Calls, queue, outbox, and retry
+evidence after the modules are used through the host. Console shows
+`support-ticket` as the installed business module.
+
+If service check or doctor reports `restart_pending`, restart the host. If it
+reports `manifest_unreachable` or `service_not_ready`, start the provider again
+and recheck:
+
+```sh
+pnpm --filter @lenso/example-support-ticket start
+lenso service check support-suite-provider
+lenso service doctor support-suite-provider --json
+```

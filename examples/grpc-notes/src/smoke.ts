@@ -89,7 +89,7 @@ try {
     "runtime input echo mismatch"
   );
 
-  console.log("gRPC Notes remote module smoke passed");
+  console.log("gRPC Notes legacy transport smoke passed");
 } finally {
   client.close();
   await server.close();

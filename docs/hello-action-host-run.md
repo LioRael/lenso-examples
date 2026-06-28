@@ -1,7 +1,7 @@
 # Hello Action Host Run
 
 Run this guide when you want to verify the `hello-action` example through a
-real Lenso host API instead of calling the module server directly.
+real Lenso host API instead of calling the service directly.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ The host commands below assume the backend repository's local defaults:
 
 When testing an unpublished CLI build, use that checkout's binary explicitly.
 
-## Start The Remote Module
+## Start The Service
 
 From `lenso-examples`:
 
@@ -31,14 +31,15 @@ pnpm install
 pnpm start:hello-action
 ```
 
-The module prints:
+The service prints:
 
 ```text
-Hello Action manifest: http://127.0.0.1:4100/lenso/module/v1/manifest
+Hello service manifest: http://127.0.0.1:4100/lenso/service/v1/manifest
+Hello service status: http://127.0.0.1:4100/lenso/service/v1/status
 ```
 
 Keep this process running. The example stores greetings in memory, so restarting
-the module clears records created during this guide.
+the service clears records created during this guide.
 
 ## Install Into The Host
 
@@ -46,12 +47,12 @@ From the sibling `lenso` backend checkout:
 
 ```sh
 test -f .env || cp .env.example .env
-lenso module install http://127.0.0.1:4100/lenso/module/v1/manifest
+lenso service install http://127.0.0.1:4100/lenso/service/v1/manifest
 ```
 
 `hello-action` does not publish a Runtime Console package, so no frontend
 dependency install is required for this module. If the API is already running,
-restart it after `module install`; `REMOTE_MODULES` is loaded on startup.
+restart it after `service install`; `REMOTE_MODULES` is loaded on startup.
 
 Start the host services:
 
@@ -168,7 +169,7 @@ Story for `corr_hello_action_host_run`.
 
 - `401`: the request is missing an `authorization` header.
 - `403`: the service token is missing `hello-action:greetings:write`.
-- `404`: the API was started before `REMOTE_MODULES` was updated, or the module
+- `404`: the API was started before `REMOTE_MODULES` was updated, or the service
   process is not running.
 - `400 validation_failed`: the proxy write request is missing
   `content-type: application/json` or has invalid JSON.

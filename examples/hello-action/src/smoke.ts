@@ -18,42 +18,58 @@ try {
     await readFile(new URL("../catalog-entry.json", import.meta.url), "utf8")
   );
   if (
-    catalogEntry.name !== "hello-action" ||
-    catalogEntry.source !== "remote" ||
-    catalogEntry.baseUrl !== "http://127.0.0.1:4100/lenso/module/v1"
+    catalogEntry.name !== "hello-service" ||
+    catalogEntry.source !== "service" ||
+    catalogEntry.baseUrl !== "http://127.0.0.1:4100/lenso/service/v1"
   ) {
-    throw new Error("catalog entry does not describe hello-action");
+    throw new Error("catalog entry does not describe hello-service");
   }
 
   const manifest = await fetchJson(server.manifestUrl);
   if (
-    manifest.name !== "hello-action" ||
-    manifest.source !== "remote" ||
+    manifest.name !== "hello-service" ||
+    manifest.protocol !== "lenso.service.v1" ||
     manifest.version !== catalogEntry.version
   ) {
-    throw new Error("manifest did not return hello-action");
+    throw new Error("manifest did not return hello-service");
+  }
+  const moduleManifest = manifest.modules?.find(
+    (module) => module.name === "hello-action"
+  );
+  if (!moduleManifest) {
+    throw new Error("service manifest did not provide hello-action");
   }
   for (const capability of catalogEntry.capabilities) {
-    if (!manifest.capabilities.includes(capability)) {
-      throw new Error(`manifest is missing catalog capability ${capability}`);
+    if (!moduleManifest.capabilities.includes(capability)) {
+      throw new Error(`hello-action is missing catalog capability ${capability}`);
     }
   }
   if (
-    manifest.admin?.kind !== "declarative_custom" ||
-    !manifest.admin.actions?.some((action) => action.name === "seed_greeting")
+    moduleManifest.admin?.kind !== "declarative_custom" ||
+    !moduleManifest.admin.actions?.some((action) => action.name === "seed_greeting")
   ) {
-    throw new Error("manifest did not declare the seed_greeting admin action");
+    throw new Error("hello-action did not declare the seed_greeting admin action");
   }
-  if (!manifest.admin.fallback_schema?.entities?.length) {
-    throw new Error("manifest did not expose a fallback schema");
+  if (!moduleManifest.admin.fallback_schema?.entities?.length) {
+    throw new Error("hello-action did not expose a fallback schema");
   }
 
-  const hello = await fetchJson(`${server.baseUrl}/hello/Ada`);
+  const status = await fetchJson(server.statusUrl ?? `${server.baseUrl}/status`);
+  if (
+    status.serviceName !== "hello-service" ||
+    status.state !== "ready" ||
+    !status.modules?.some((module) => module.name === "hello-action")
+  ) {
+    throw new Error("status endpoint did not return hello-service readiness");
+  }
+
+  const moduleBaseUrl = `${server.baseUrl}/modules/hello-action`;
+  const hello = await fetchJson(`${moduleBaseUrl}/hello/Ada`);
   if (hello.message !== "Hello, Ada.") {
     throw new Error("HTTP route did not return the expected greeting");
   }
 
-  const recordedByHttp = await fetchJson(`${server.baseUrl}/greetings`, {
+  const recordedByHttp = await fetchJson(`${moduleBaseUrl}/greetings`, {
     body: JSON.stringify({
       message: "Hello from HTTP mutation.",
       recipient: "http-user",
@@ -67,7 +83,7 @@ try {
   }
 
   const runtime = await fetchJson(
-    `${server.baseUrl}/runtime/functions/hello-action.say-hello.v1/invoke`,
+    `${moduleBaseUrl}/runtime/functions/hello-action.say-hello.v1/invoke`,
     {
       body: JSON.stringify({
         actor: { id: "example-smoke", kind: "service", scopes: [] },
@@ -88,7 +104,7 @@ try {
   }
 
   const runtimeMutation = await fetchJson(
-    `${server.baseUrl}/runtime/functions/hello-action.record-greeting.v1/invoke`,
+    `${moduleBaseUrl}/runtime/functions/hello-action.record-greeting.v1/invoke`,
     {
       body: JSON.stringify({
         actor: { id: "example-smoke", kind: "service", scopes: [] },
@@ -116,7 +132,7 @@ try {
   }
 
   const seededByAction = await fetchJson(
-    `${server.baseUrl}/admin/actions/seed_greeting`,
+    `${moduleBaseUrl}/admin/actions/seed_greeting`,
     {
       body: JSON.stringify({
         message: "Hello from admin action.",
@@ -131,7 +147,7 @@ try {
     throw new Error("admin action did not record the expected greeting");
   }
 
-  const admin = await fetchJson(`${server.baseUrl}/admin/greetings`);
+  const admin = await fetchJson(`${moduleBaseUrl}/admin/greetings`);
   const recipients = admin.records?.map((record) => record.recipient) ?? [];
   if (
     !recipients.includes("example-user") ||
@@ -142,7 +158,7 @@ try {
     throw new Error("schema-admin endpoint did not return greetings");
   }
 
-  console.log("Hello Action remote module smoke passed");
+  console.log("Hello Action service smoke passed");
 } finally {
   await server.close();
 }

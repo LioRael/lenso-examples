@@ -187,7 +187,7 @@ try {
   });
   await runLenso({
     args: [
-      "module",
+      "service",
       "install",
       accountProfileServer.manifestUrl,
       "--repo-root",
