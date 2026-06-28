@@ -35,6 +35,13 @@ Package the running service manifest for handoff:
 pnpm service-package:support-ticket
 ```
 
+Install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
 Install and check the suite from a local Lenso host:
 
 ```sh

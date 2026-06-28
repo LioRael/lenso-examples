@@ -95,6 +95,13 @@ URL:
 pnpm service-package:rust-service
 ```
 
+Then install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/rust-audit-service/lenso.service-package.json \
+  --base-url http://127.0.0.1:4130/lenso/service/v1
+```
+
 The example README includes the matching `lenso service check`, install, diff,
 upgrade preview, rollback preview, and deployment export commands.
 
@@ -255,6 +262,13 @@ URL:
 
 ```sh
 pnpm service-package:support-ticket
+```
+
+Then install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
 Install its manifest into a local Lenso host:
