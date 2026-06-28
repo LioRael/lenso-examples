@@ -46,6 +46,7 @@ lenso service install dist/lenso-service/support-suite-provider/lenso.service-pa
 Install the business module through the generated V10 module release artifact:
 
 ```sh
+lenso module release inspect dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
 lenso module install dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
