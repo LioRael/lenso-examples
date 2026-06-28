@@ -81,3 +81,16 @@ Print the manifest without starting the server:
 ```sh
 pnpm rust-service:check
 ```
+
+With the service running, package its manifest for handoff:
+
+```sh
+pnpm service-package:rust-service
+```
+
+Install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/rust-audit-service/lenso.service-package.json \
+  --base-url http://127.0.0.1:4130/lenso/service/v1
+```

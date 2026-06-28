@@ -48,6 +48,12 @@ try {
   const catalogEntry = JSON.parse(
     await readFile(new URL("../catalog-entry.json", import.meta.url), "utf8")
   );
+  const moduleRelease = JSON.parse(
+    await readFile(
+      new URL("../lenso.module-release.json", import.meta.url),
+      "utf8"
+    )
+  );
   if (
     catalogEntry.name !== "support-ticket" ||
     catalogEntry.source !== "service" ||
@@ -57,6 +63,16 @@ try {
     catalogEntry.baseUrl !== "http://127.0.0.1:4110/lenso/service/v1"
   ) {
     throw new Error("catalog entry does not describe support-ticket");
+  }
+  if (
+    moduleRelease.protocol !== "lenso.module-release.v1" ||
+    moduleRelease.name !== "support-ticket" ||
+    moduleRelease.version !== catalogEntry.version ||
+    moduleRelease.source !== "service" ||
+    moduleRelease.provider?.name !== "support-suite-provider" ||
+    moduleRelease.provider?.serviceManifest !== catalogEntry.serviceManifest
+  ) {
+    throw new Error("module release does not describe support-ticket");
   }
 
   const manifest = await fetchJson(server.manifestUrl);

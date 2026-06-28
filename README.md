@@ -88,6 +88,20 @@ Print the manifest without starting the server:
 pnpm rust-service:check
 ```
 
+With the service running, emit a service package plus module release artifacts
+from its manifest URL:
+
+```sh
+pnpm service-package:rust-service
+```
+
+Then install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/rust-audit-service/lenso.service-package.json \
+  --base-url http://127.0.0.1:4130/lenso/service/v1
+```
+
 The example README includes the matching `lenso service check`, install, diff,
 upgrade preview, rollback preview, and deployment export commands.
 
@@ -243,10 +257,36 @@ Smoke the module directly:
 pnpm smoke:support-ticket
 ```
 
-Install its manifest into a local Lenso host:
+With the service running, emit a V9 service package artifact from its manifest
+URL:
 
 ```sh
-lenso service install http://127.0.0.1:4110/lenso/service/v1/manifest
+pnpm service-package:support-ticket
+```
+
+Then install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Install the business module through the generated V10 module release artifact:
+
+```sh
+lenso module release inspect dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
+lenso module release check dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+lenso module install dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Or add that release to the local catalog and install by module name:
+
+```sh
+lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+lenso module install support-ticket
 ```
 
 Run the full service host path:

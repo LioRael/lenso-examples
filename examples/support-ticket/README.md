@@ -29,14 +29,41 @@ Run the smoke:
 pnpm --filter @lenso/example-support-ticket smoke
 ```
 
-Install and check the suite from a local Lenso host:
+Package the running service manifest for handoff. This writes the service
+package and one module release artifact per provided module:
 
 ```sh
-lenso module catalog add http://127.0.0.1:4110/lenso/service/v1/manifest --summary "Ticket intake, triage, and operations"
+pnpm service-package:support-ticket
+```
+
+Install the package artifact:
+
+```sh
+lenso service install dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Install the business module through the generated V10 module release artifact:
+
+```sh
+lenso module release inspect dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
+lenso module install dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
+```
+
+Or add the release artifact to a local Lenso host catalog, then install by
+module name:
+
+```sh
+lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+  --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 lenso service check support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
+
+`examples/support-ticket/lenso.module-release.json` is kept as a local dev
+shortcut that points at the running provider manifest.
 
 Restart the API and worker after install. Open `/console` and check Modules:
 
