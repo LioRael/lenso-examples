@@ -117,7 +117,14 @@ lenso service dev --workspace-file ../lenso-examples/lenso.workspace.json
 ```
 
 Use the second command from a generated host repo when you want the host and
-example services to start together.
+example services to start together. After the services are running,
+`workspace check` verifies each example service directory, manifest, and status
+endpoint:
+
+```sh
+lenso service workspace check --workspace-file lenso.workspace.json
+```
+
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
 business-capability entrypoint and service install remains the provider/process
