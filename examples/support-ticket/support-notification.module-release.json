@@ -1,0 +1,13 @@
+{
+  "protocol": "lenso.module-release.v1",
+  "name": "support-notification",
+  "version": "0.1.0",
+  "source": "service",
+  "summary": "Ticket notification runtime functions",
+  "provider": {
+    "name": "support-suite-provider",
+    "serviceManifest": "http://127.0.0.1:4110/lenso/service/v1/manifest"
+  },
+  "capabilities": ["support_ticket.notifications.send"],
+  "dependencies": ["support-ticket"]
+}

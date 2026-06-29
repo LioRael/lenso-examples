@@ -106,8 +106,12 @@ The example README includes the matching `lenso service check`, install, diff,
 upgrade preview, rollback preview, and deployment export commands.
 
 The Rust and TypeScript examples intentionally expose the same service contract
-shape: a remote process provides one or more modules, while the Host owns auth,
-runtime queues, retries, outbox, and observability.
+shape: a service process provides one or more independently installed modules,
+while the Host owns auth, runtime queues, retries, outbox, and observability.
+V11 examples keep `lenso.module.v1` module contracts next to
+`lenso.module-release.v1` release artifacts so module install remains the
+business-capability entrypoint and service install remains the provider/process
+entrypoint.
 The V8 proof path uses service operation metadata and checks across both TS
 services and the Rust Axum provider, including safe HTTP probes and runtime
 function declarations.

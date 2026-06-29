@@ -30,7 +30,8 @@ pnpm --filter @lenso/example-support-ticket smoke
 ```
 
 Package the running service manifest for handoff. This writes the service
-package and one module release artifact per provided module:
+package, one module contract, and one module release artifact per provided
+module:
 
 ```sh
 pnpm service-package:support-ticket
@@ -43,7 +44,7 @@ lenso service install dist/lenso-service/support-suite-provider/lenso.service-pa
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
-Install the business module through the generated V10 module release artifact:
+Install one business module through the generated module release artifact:
 
 ```sh
 lenso module release inspect dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
@@ -63,7 +64,16 @@ lenso service doctor support-suite-provider --json
 ```
 
 `examples/support-ticket/lenso.module-release.json` is kept as a local dev
-shortcut that points at the running provider manifest.
+shortcut that points at the running provider manifest. V11 also keeps
+`examples/support-ticket/lenso.module.json` as the standalone module contract:
+it names the business capability before provider/release concerns. Sibling
+module release shortcuts show that the same provider can be installed once
+while modules remain independent install targets:
+
+```sh
+lenso module install examples/support-ticket/support-notification.module-release.json
+lenso module install examples/support-ticket/support-knowledge-base.module-release.json
+```
 
 Restart the API and worker after install. Open `/console` and check Modules:
 
