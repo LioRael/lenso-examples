@@ -1,0 +1,13 @@
+{
+  "protocol": "lenso.module.v1",
+  "name": "support-ticket",
+  "version": "0.1.0",
+  "source": "service",
+  "summary": "Ticket intake, triage, and operations",
+  "capabilities": [
+    "support_ticket.tickets.read",
+    "support_ticket.tickets.write",
+    "support_ticket.tickets.escalate"
+  ],
+  "dependencies": []
+}

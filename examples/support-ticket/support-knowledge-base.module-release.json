@@ -1,0 +1,13 @@
+{
+  "protocol": "lenso.module-release.v1",
+  "name": "support-knowledge-base",
+  "version": "0.1.0",
+  "source": "service",
+  "summary": "Support knowledge-base article lookups",
+  "provider": {
+    "name": "support-suite-provider",
+    "serviceManifest": "http://127.0.0.1:4110/lenso/service/v1/manifest"
+  },
+  "capabilities": ["support_ticket.knowledge.read"],
+  "dependencies": []
+}
