@@ -140,6 +140,11 @@ lenso service deploy status support-suite-provider \
   --env staging \
   --source operator \
   --write-state
+
+lenso service deploy wait support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
 ```
 
 The Host still reads local Lenso state and runtime evidence. It does not need
