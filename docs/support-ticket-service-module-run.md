@@ -98,20 +98,40 @@ lenso service stop support-suite-provider support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
-For a package upgrade, use the V14 service release control plane from the host
+For a package upgrade, use the V15 service release control plane from the host
 repository:
 
 ```sh
+lenso service env add staging \
+  --service support-suite-provider \
+  --target kubernetes \
+  --namespace lenso-staging \
+  --image ghcr.io/acme/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com
+
 lenso service release plan support-suite-provider \
   ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
-  --output .lenso/support-suite-provider.release-plan.json
-lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
-lenso service release apply .lenso/support-suite-provider.release-plan.json
+  --env staging \
+  --output .lenso/support-suite-provider.staging.release-plan.json
+lenso service policy check .lenso/support-suite-provider.staging.release-plan.json --fail-on breaking
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target kubernetes \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/staging
+lenso service release apply .lenso/support-suite-provider.staging.release-plan.json --env staging
 ```
 
 This keeps the service package/module release install path separate from the
 operator release path. The release ledger is `.lenso/service-releases.json`, and
-Console Services renders the latest risk plus recent release history.
+Console Services renders the latest risk, recent release history, deployment
+environments, Kubernetes rollout observations, and drift.
+
+After applying manifests in a cluster, refresh the local deployment observation:
+
+```sh
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/staging
+lenso service deploy status support-suite-provider --env staging --write-state
+```
 
 `lenso service verify` is the release-readiness entrypoint. With a provider
 name it shares the same diagnostic engine as `service doctor`; use doctor when

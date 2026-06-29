@@ -64,21 +64,35 @@ lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
-After the provider is installed, generate a V14 release plan before applying a
-new package candidate:
+After the provider is installed, generate an environment-aware release plan
+before applying a new package candidate:
 
 ```sh
+lenso service env add staging \
+  --service support-suite-provider \
+  --target kubernetes \
+  --namespace lenso-staging \
+  --image ghcr.io/acme/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com
+
 lenso service release plan support-suite-provider \
   dist/lenso-service/support-suite-provider/lenso.service-package.json \
-  --output .lenso/support-suite-provider.release-plan.json
-lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
-lenso service release apply .lenso/support-suite-provider.release-plan.json
+  --env staging \
+  --output .lenso/support-suite-provider.staging.release-plan.json
+lenso service policy check .lenso/support-suite-provider.staging.release-plan.json --fail-on breaking
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target kubernetes \
+  --output-dir examples/support-ticket/kubernetes/staging
+lenso service release apply .lenso/support-suite-provider.staging.release-plan.json --env staging
 ```
 
 `release plan` compares the installed manifest snapshot with the candidate
 service package, `policy check` turns removed modules/capabilities/operations
 and required env/config into an operator risk, and `apply` records the result in
-`.lenso/service-releases.json` for Console Services.
+`.lenso/service-releases.json` for Console Services. `deploy export` writes
+reviewable Kubernetes manifests; apply them with `kubectl apply -k` when you are
+ready to run the provider in a cluster.
 
 `examples/support-ticket/lenso.module-release.json` is kept as a local dev
 shortcut that points at the running provider manifest. V11 also keeps

@@ -6,6 +6,7 @@ import {
   declarativeCustom,
   declarativePage,
   declarativeSection,
+  defineKubernetesDeployment,
   defineModule,
   defineService,
   defineSchemaEntity,
@@ -58,7 +59,12 @@ const serviceCompatibility = {
 
 const serviceDeployment = {
   commands: ["pnpm --dir examples/support-ticket start"],
-  target: "container-paas",
+  ...defineKubernetesDeployment({
+    ingressHost: "support-staging.example.com",
+    port: 4110,
+    replicas: 2,
+    secrets: ["SUPPORT_TICKET_TOKEN"],
+  }),
 };
 
 export const supportTicketModule = defineModule({
