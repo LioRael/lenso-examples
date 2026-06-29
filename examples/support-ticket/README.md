@@ -64,6 +64,22 @@ lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
+After the provider is installed, generate a V14 release plan before applying a
+new package candidate:
+
+```sh
+lenso service release plan support-suite-provider \
+  dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --output .lenso/support-suite-provider.release-plan.json
+lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.release-plan.json
+```
+
+`release plan` compares the installed manifest snapshot with the candidate
+service package, `policy check` turns removed modules/capabilities/operations
+and required env/config into an operator risk, and `apply` records the result in
+`.lenso/service-releases.json` for Console Services.
+
 `examples/support-ticket/lenso.module-release.json` is kept as a local dev
 shortcut that points at the running provider manifest. V11 also keeps
 `examples/support-ticket/lenso.module.json` as the standalone module contract:

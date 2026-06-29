@@ -98,6 +98,21 @@ lenso service stop support-suite-provider support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
+For a package upgrade, use the V14 service release control plane from the host
+repository:
+
+```sh
+lenso service release plan support-suite-provider \
+  ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --output .lenso/support-suite-provider.release-plan.json
+lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.release-plan.json
+```
+
+This keeps the service package/module release install path separate from the
+operator release path. The release ledger is `.lenso/service-releases.json`, and
+Console Services renders the latest risk plus recent release history.
+
 `lenso service verify` is the release-readiness entrypoint. With a provider
 name it shares the same diagnostic engine as `service doctor`; use doctor when
 diagnosing service state. Console still shows `support-ticket` as the business

@@ -324,6 +324,20 @@ lenso module catalog add dist/lenso-service/support-suite-provider/modules/suppo
 lenso module install support-ticket
 ```
 
+Plan and apply the next provider release from the host repository after the
+service has an install receipt:
+
+```sh
+lenso service release plan support-suite-provider \
+  ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --output .lenso/support-suite-provider.release-plan.json
+lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.release-plan.json
+```
+
+The apply step updates `.lenso/service-releases.json`; Console Services shows
+the latest release risk and recent release history for the provider.
+
 Run the full service host path:
 
 ```sh
