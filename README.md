@@ -131,6 +131,14 @@ From a generated host repo, install a workspace provider by name:
 lenso service install support-suite-provider --workspace-file ../lenso-examples/lenso.workspace.json
 ```
 
+Or export the whole example workspace into the host service-start state shape:
+
+```sh
+lenso service workspace export \
+  --workspace-file ../lenso-examples/lenso.workspace.json \
+  --output .lenso/module-services.json
+```
+
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
 business-capability entrypoint and service install remains the provider/process
