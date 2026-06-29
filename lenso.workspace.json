@@ -1,0 +1,53 @@
+{
+  "protocol": "lenso.service-workspace.v1",
+  "services": [
+    {
+      "name": "account-profile-service",
+      "lang": "ts",
+      "cwd": "examples/account-profile",
+      "manifest": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+      "command": "pnpm start",
+      "readyUrl": "http://127.0.0.1:4120/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": ["account-profile"]
+    },
+    {
+      "name": "hello-service",
+      "lang": "ts",
+      "cwd": "examples/hello-action",
+      "manifest": "http://127.0.0.1:4100/lenso/service/v1/manifest",
+      "command": "pnpm start",
+      "readyUrl": "http://127.0.0.1:4100/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": ["hello-action"]
+    },
+    {
+      "name": "rust-audit-service",
+      "lang": "rust",
+      "cwd": ".",
+      "manifest": "http://127.0.0.1:4130/lenso/service/v1/manifest",
+      "command": "cargo run --manifest-path examples/rust-service/Cargo.toml",
+      "readyUrl": "http://127.0.0.1:4130/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": ["rust-audit-log"]
+    },
+    {
+      "name": "support-suite-provider",
+      "lang": "ts",
+      "cwd": "examples/support-ticket",
+      "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+      "command": "pnpm start",
+      "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": [
+        "support-ticket",
+        "support-notification",
+        "support-knowledge-base"
+      ]
+    }
+  ]
+}

@@ -108,6 +108,16 @@ upgrade preview, rollback preview, and deployment export commands.
 The Rust and TypeScript examples intentionally expose the same service contract
 shape: a service process provides one or more independently installed modules,
 while the Host owns auth, runtime queues, retries, outbox, and observability.
+V12 adds `lenso.workspace.json` at the repo root so the examples can also be
+treated as one local service workspace:
+
+```sh
+lenso service workspace list --workspace-file lenso.workspace.json
+lenso service dev --workspace-file ../lenso-examples/lenso.workspace.json
+```
+
+Use the second command from a generated host repo when you want the host and
+example services to start together.
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
 business-capability entrypoint and service install remains the provider/process
