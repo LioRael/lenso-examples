@@ -31,7 +31,7 @@
   ],
   "name": "hello-service",
   "service": {
-    "requiredEnv": ["PORT"],
+    "requiredEnv": [],
     "statusPath": "/lenso/service/v1/status",
     "statusUrl": "http://127.0.0.1:4100/lenso/service/v1/status",
     "transports": ["http"]

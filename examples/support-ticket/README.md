@@ -27,6 +27,7 @@ Run the smoke:
 
 ```sh
 pnpm --filter @lenso/example-support-ticket smoke
+pnpm --filter @lenso/example-support-ticket service:verify
 ```
 
 Package the running service manifest for handoff. This writes the service

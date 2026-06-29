@@ -194,7 +194,7 @@ export const manifest = defineService({
   },
   modules: [accountProfileModule],
   name: "account-profile-service",
-  requiredEnv: ["PORT"],
+  requiredEnv: [],
   statusPath: "/lenso/service/v1/status",
   transports: ["http"],
   version: "0.1.0",

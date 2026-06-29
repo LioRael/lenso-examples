@@ -110,6 +110,7 @@ module. The important statuses are:
 | `configured_not_loaded` | The source exists, but the host metadata does not include the module.              | Restart first; then inspect manifest errors.                                  |
 | `manifest_unreachable`  | Host cannot fetch `/lenso/service/v1/manifest`.                                    | Start the provider or fix `REMOTE_MODULES`.                                   |
 | `service_not_ready`     | `.lenso/module-services.json` has a service entry whose `readyUrl` fails.          | Start the service or inspect its logs.                                        |
+| `missing_config`        | A host-started service declares required env that is absent from `.env`.           | Set the missing env and restart API/worker.                                   |
 | `stale_state`           | A lock or pid file exists but readiness failed.                                    | Stop/restart the service; remove stale files only after checking the process. |
 | `unreachable`           | The standard service status endpoint failed.                                       | Start the service or fix `/lenso/service/v1/status`.                          |
 

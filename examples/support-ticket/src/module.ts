@@ -183,7 +183,7 @@ export const manifest = defineService({
     supportKnowledgeBaseModule,
   ],
   name: "support-suite-provider",
-  requiredEnv: ["PORT"],
+  requiredEnv: [],
   statusPath: "/lenso/service/v1/status",
   transports: ["http"],
   version: "0.1.0",

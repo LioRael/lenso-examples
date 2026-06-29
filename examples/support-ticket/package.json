@@ -8,7 +8,7 @@
     "check": "pnpm smoke",
     "dev": "node src/server.ts",
     "host-smoke": "node ../../scripts/host-install-smoke.ts support-ticket",
-    "service:verify": "lenso service verify ./lenso.service.json --serve-command \"pnpm start\"",
+    "service:verify": "lenso service verify http://127.0.0.1:4110/lenso/service/v1/manifest --serve-command \"pnpm start\"",
     "smoke": "node src/smoke.ts",
     "start": "node src/server.ts"
   },
