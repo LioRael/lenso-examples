@@ -122,16 +122,16 @@ lenso service env add staging \
   --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
   --public-base-url https://support-staging.example.com \
   --manifest-reference https://support-staging.example.com/lenso/service/v1/manifest \
-  --config port=4110 \
-  --config replicas=2 \
-  --config ingressHost=support-staging.example.com \
-  --config autoscaling=true \
-  --config disruptionBudget=true \
-  --config networkPolicy=true
+  --port 4110 \
+  --replicas 2 \
+  --ingress-host support-staging.example.com
 
 lenso service deploy export support-suite-provider \
   --env staging \
   --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
   --output-dir dist/lenso-service/support-suite-provider/operator/staging
 
 kubectl apply -k dist/lenso-service/support-suite-provider/operator/staging
@@ -149,6 +149,40 @@ lenso service deploy wait support-suite-provider \
 
 The Host still reads local Lenso state and runtime evidence. It does not need
 kubeconfig.
+
+Promote the staged release to production after the staging release has been
+applied and observed:
+
+```sh
+lenso service env add prod \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-prod \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support.example.com \
+  --manifest-reference https://support.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 3 \
+  --ingress-host support.example.com
+
+lenso service release promote support-suite-provider \
+  --from staging \
+  --to prod \
+  --output .lenso/support-suite-provider.prod.release-plan.json
+lenso service policy check .lenso/support-suite-provider.prod.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.prod.release-plan.json --env prod
+
+lenso service deploy export support-suite-provider \
+  --env prod \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir dist/lenso-service/support-suite-provider/operator/prod
+
+kubectl apply -k dist/lenso-service/support-suite-provider/operator/prod
+lenso service deploy wait support-suite-provider --env prod --source operator --write-state
+```
 
 Restart the API and worker after install. Open `/console` and check Modules:
 

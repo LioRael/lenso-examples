@@ -17,6 +17,7 @@
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
     "rust-service:check": "cargo run --manifest-path examples/rust-service/Cargo.toml -- --check",
     "service-deploy-export:support-ticket": "lenso service deploy export support-suite-provider --env staging --target kubernetes --output-dir examples/support-ticket/kubernetes/staging",
+    "service-deploy-export:support-ticket:operator-prod": "lenso service deploy export support-suite-provider --env prod --target operator --hpa --pdb --network-policy --output-dir examples/support-ticket/kubernetes/operator/prod",
     "service-package:rust-service": "lenso service package --manifest http://127.0.0.1:4130/lenso/service/v1/manifest --output-dir dist/lenso-service",
     "service-package:support-ticket": "lenso service package --manifest http://127.0.0.1:4110/lenso/service/v1/manifest --output-dir dist/lenso-service",
     "smoke": "pnpm smoke:hello-action && pnpm smoke:grpc-notes && pnpm smoke:support-ticket && pnpm smoke:account-profile",

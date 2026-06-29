@@ -140,20 +140,35 @@ Use this path when the service provider should stay in Kubernetes and be
 reconciled continuously.
 
 1. Export and apply the operator bundle.
-2. Export the provider `LensoServiceProvider`.
-3. Apply the provider CR with `kubectl apply -k`.
-4. Read CRD status with `lenso service deploy status --source operator --write-state`.
-5. Wait for readiness with `lenso service deploy wait --source operator --write-state`.
-6. Open Runtime Console and inspect Services, Remote Calls, Runtime Story, and
+2. Configure the service environment as operator-managed.
+3. Export the provider `LensoServiceProvider`.
+4. Apply the provider CR with `kubectl apply -k`.
+5. Read CRD status with `lenso service deploy status --source operator --write-state`.
+6. Wait for readiness with `lenso service deploy wait --source operator --write-state`.
+7. Open Runtime Console and inspect Services, Remote Calls, Runtime Story, and
    Technical Operations.
 
 ```sh
 lenso operator export-crd --output dist/lenso-operator/crds
 kubectl apply -k dist/lenso-operator/crds
 
+lenso service env add staging \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-staging \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com \
+  --manifest-reference https://support-staging.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 2 \
+  --ingress-host support-staging.example.com
+
 lenso service deploy export support-suite-provider \
   --env staging \
   --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
   --output-dir ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
 
 kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
@@ -173,6 +188,48 @@ The example fixture lives at:
 
 ```sh
 examples/support-ticket/kubernetes/operator/staging/lensoserviceprovider.yaml
+```
+
+## V17 Promotion Delivery
+
+The production path keeps Kubernetes optional at install time but first-class
+when a service provider needs cluster rollout and promotion evidence.
+
+```sh
+lenso service env add prod \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-prod \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support.example.com \
+  --manifest-reference https://support.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 3 \
+  --ingress-host support.example.com
+
+lenso service release promote support-suite-provider \
+  --from staging \
+  --to prod \
+  --output .lenso/support-suite-provider.prod.release-plan.json
+lenso service policy check .lenso/support-suite-provider.prod.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.prod.release-plan.json --env prod
+
+lenso service deploy export support-suite-provider \
+  --env prod \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/operator/prod
+
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/operator/prod
+lenso service deploy wait support-suite-provider --env prod --source operator --write-state
+```
+
+The production fixture lives at:
+
+```sh
+examples/support-ticket/kubernetes/operator/prod/lensoserviceprovider.yaml
 ```
 
 `lenso service verify` is the release-readiness entrypoint. With a provider
