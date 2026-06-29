@@ -52,7 +52,7 @@ lenso module catalog add ../lenso-examples/dist/lenso-service/support-suite-prov
   --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 lenso service list
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
@@ -91,17 +91,17 @@ expected:
 
 ```sh
 lenso service list
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service status support-suite-provider support-suite-provider
 lenso service start support-suite-provider support-suite-provider
 lenso service stop support-suite-provider support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
-`lenso service check` is the provider-level check command. In the current CLI it
-shares the same diagnostic engine as `service doctor`; use the provider name
-when diagnosing service state. Console still shows `support-ticket` as the
-business module. The important statuses are:
+`lenso service verify` is the release-readiness entrypoint. With a provider
+name it shares the same diagnostic engine as `service doctor`; use doctor when
+diagnosing service state. Console still shows `support-ticket` as the business
+module. The important statuses are:
 
 | Status                  | Meaning                                                                            | Next action                                                                   |
 | ----------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -181,7 +181,7 @@ admin/runtime paths, and verifies Runtime Story evidence.
 
 | Symptom                                                                                                         | Check                                                                                    | Fix                                                                                                               |
 | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-suite-provider --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service check support-suite-provider`. |
+| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-suite-provider --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service verify support-suite-provider`. |
 | `service_not_ready`                                                                                             | `.lenso/module-services.json` has a service entry, but its `readyUrl` is not responding. | Start the command shown by doctor or restart the API/worker when `autoStart` is enabled.                          |
 | `stale_state`                                                                                                   | A host-started service left `.lock` or `.pid` files behind.                              | Restart the API/worker; remove the stale files only if doctor still reports them.                                 |
 | `404` from `/modules/support-ticket/http/*`                                                                     | The host did not load the module provided by the configured provider.                    | Restart the API and worker after installing or changing `REMOTE_MODULES`.                                         |

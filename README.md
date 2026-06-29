@@ -102,8 +102,8 @@ lenso service install dist/lenso-service/rust-audit-service/lenso.service-packag
   --base-url http://127.0.0.1:4130/lenso/service/v1
 ```
 
-The example README includes the matching `lenso service check`, install, diff,
-upgrade preview, rollback preview, and deployment export commands.
+The example README includes the matching `lenso service verify`, install,
+upgrade-plan, rollback preview, and deployment export commands.
 
 The Rust and TypeScript examples intentionally expose the same service contract
 shape: a service process provides one or more independently installed modules,

@@ -59,7 +59,7 @@ module name:
 lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
@@ -89,12 +89,12 @@ The host still owns Runtime Story, Remote Calls, queue, outbox, and retry
 evidence after the modules are used through the host. Console shows
 `support-ticket` as the installed business module.
 
-If service check or doctor reports `restart_pending`, restart the host. If it
+If service verify or doctor reports `restart_pending`, restart the host. If it
 reports `manifest_unreachable` or `service_not_ready`, start the provider again
 and recheck:
 
 ```sh
 pnpm --filter @lenso/example-support-ticket start
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
