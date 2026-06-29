@@ -106,6 +106,45 @@ lenso module install examples/support-ticket/support-notification.module-release
 lenso module install examples/support-ticket/support-knowledge-base.module-release.json
 ```
 
+## Kubernetes Operator Path
+
+Use the Lenso Operator when Kubernetes should continuously reconcile the
+provider process from a `LensoServiceProvider` custom resource:
+
+```sh
+lenso operator export-crd --output dist/lenso-operator/crds
+kubectl apply -k dist/lenso-operator/crds
+
+lenso service env add staging \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-staging \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com \
+  --manifest-reference https://support-staging.example.com/lenso/service/v1/manifest \
+  --config port=4110 \
+  --config replicas=2 \
+  --config ingressHost=support-staging.example.com \
+  --config autoscaling=true \
+  --config disruptionBudget=true \
+  --config networkPolicy=true
+
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target operator \
+  --output-dir dist/lenso-service/support-suite-provider/operator/staging
+
+kubectl apply -k dist/lenso-service/support-suite-provider/operator/staging
+
+lenso service deploy status support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+```
+
+The Host still reads local Lenso state and runtime evidence. It does not need
+kubeconfig.
+
 Restart the API and worker after install. Open `/console` and check Modules:
 
 - `support-ticket` is the installed business module;

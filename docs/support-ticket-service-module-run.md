@@ -133,6 +133,41 @@ kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/staging
 lenso service deploy status support-suite-provider --env staging --write-state
 ```
 
+## V16 Operator Managed Delivery
+
+Use this path when the service provider should stay in Kubernetes and be
+reconciled continuously.
+
+1. Export and apply the operator bundle.
+2. Export the provider `LensoServiceProvider`.
+3. Apply the provider CR with `kubectl apply -k`.
+4. Read CRD status with `lenso service deploy status --source operator --write-state`.
+5. Open Runtime Console and inspect Services, Remote Calls, Runtime Story, and
+   Technical Operations.
+
+```sh
+lenso operator export-crd --output dist/lenso-operator/crds
+kubectl apply -k dist/lenso-operator/crds
+
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target operator \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
+
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
+
+lenso service deploy status support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+```
+
+The example fixture lives at:
+
+```sh
+examples/support-ticket/kubernetes/operator/staging/lensoserviceprovider.yaml
+```
+
 `lenso service verify` is the release-readiness entrypoint. With a provider
 name it shares the same diagnostic engine as `service doctor`; use doctor when
 diagnosing service state. Console still shows `support-ticket` as the business
