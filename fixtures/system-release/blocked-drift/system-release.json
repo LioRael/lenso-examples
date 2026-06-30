@@ -1,0 +1,163 @@
+{
+  "commands": [
+    "lenso service release plan support-suite-provider <manifest-or-package> --env prod --output release-plan-support-suite-provider.json",
+    "lenso service deploy status support-suite-provider --env prod --source operator --write-state"
+  ],
+  "createdAtUnixMs": 1782828653417,
+  "driftStatus": "drifted",
+  "drifts": [
+    {
+      "code": "service_not_configured",
+      "command": "lenso service workspace add account-profile-service --cwd examples/account-profile --lang ts --command 'pnpm start' --ready-url http://127.0.0.1:4120/lenso/service/v1/status --manifest http://127.0.0.1:4120/lenso/service/v1/manifest --module account-profile",
+      "message": "Service `account-profile-service` is declared but not configured.",
+      "name": "account-profile-service",
+      "resource": "service",
+      "severity": "warning"
+    },
+    {
+      "code": "service_not_configured",
+      "command": "lenso service workspace add support-suite-provider --cwd examples/support-ticket --lang ts --command 'pnpm start' --ready-url http://127.0.0.1:4110/lenso/service/v1/status --manifest http://127.0.0.1:4110/lenso/service/v1/manifest --module support-ticket --module support-notification --module support-knowledge-base",
+      "message": "Service `support-suite-provider` is declared but not configured.",
+      "name": "support-suite-provider",
+      "resource": "service",
+      "severity": "warning"
+    },
+    {
+      "code": "service_env_missing",
+      "command": "lenso service env add prod --service support-suite-provider --target operator",
+      "message": "Service `support-suite-provider` has no `prod` environment state.",
+      "name": "support-suite-provider/prod",
+      "resource": "environment",
+      "severity": "warning"
+    },
+    {
+      "code": "release_state_missing",
+      "command": "lenso service release plan support-suite-provider <manifest-or-package> --env prod --output release-plan.json",
+      "message": "Service `support-suite-provider` has no `prod` release record.",
+      "name": "support-suite-provider/prod",
+      "resource": "release",
+      "severity": "info"
+    },
+    {
+      "code": "module_not_installed",
+      "command": "lenso module install auth",
+      "message": "Module `auth` is declared but not installed.",
+      "name": "auth",
+      "resource": "module",
+      "severity": "warning"
+    },
+    {
+      "code": "module_not_installed",
+      "command": "lenso module install account-profile",
+      "message": "Module `account-profile` is declared but not installed.",
+      "name": "account-profile",
+      "resource": "module",
+      "severity": "warning"
+    },
+    {
+      "code": "module_not_installed",
+      "command": "lenso module install support-ticket",
+      "message": "Module `support-ticket` is declared but not installed.",
+      "name": "support-ticket",
+      "resource": "module",
+      "severity": "warning"
+    },
+    {
+      "code": "module_not_installed",
+      "command": "lenso module install support-notification",
+      "message": "Module `support-notification` is declared but not installed.",
+      "name": "support-notification",
+      "resource": "module",
+      "severity": "warning"
+    },
+    {
+      "code": "module_not_installed",
+      "command": "lenso module install support-knowledge-base",
+      "message": "Module `support-knowledge-base` is declared but not installed.",
+      "name": "support-knowledge-base",
+      "resource": "module",
+      "severity": "warning"
+    }
+  ],
+  "environment": "prod",
+  "graphIssues": [],
+  "id": "sysrel_prod_019f18de5b687d20be4e805c4cd09660",
+  "kind": "release",
+  "modules": [
+    "auth",
+    "account-profile",
+    "support-ticket",
+    "support-notification",
+    "support-knowledge-base"
+  ],
+  "policy": {
+    "issues": [
+      {
+        "code": "service_not_configured",
+        "level": "error",
+        "message": "Service `account-profile-service` is declared but not configured."
+      },
+      {
+        "code": "service_not_configured",
+        "level": "error",
+        "message": "Service `support-suite-provider` is declared but not configured."
+      },
+      {
+        "code": "service_env_missing",
+        "level": "error",
+        "message": "Service `support-suite-provider` has no `prod` environment state."
+      },
+      {
+        "code": "module_not_installed",
+        "level": "error",
+        "message": "Module `auth` is declared but not installed."
+      },
+      {
+        "code": "module_not_installed",
+        "level": "error",
+        "message": "Module `account-profile` is declared but not installed."
+      },
+      {
+        "code": "module_not_installed",
+        "level": "error",
+        "message": "Module `support-ticket` is declared but not installed."
+      },
+      {
+        "code": "module_not_installed",
+        "level": "error",
+        "message": "Module `support-notification` is declared but not installed."
+      },
+      {
+        "code": "module_not_installed",
+        "level": "error",
+        "message": "Module `support-knowledge-base` is declared but not installed."
+      }
+    ],
+    "risk": "blocked"
+  },
+  "protocol": "lenso.system-release.v1",
+  "rollbackAvailable": false,
+  "services": [
+    {
+      "manifest": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+      "modules": [
+        "account-profile"
+      ],
+      "name": "account-profile-service",
+      "target": "local"
+    },
+    {
+      "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+      "modules": [
+        "support-ticket",
+        "support-notification",
+        "support-knowledge-base"
+      ],
+      "name": "support-suite-provider",
+      "target": "operator"
+    }
+  ],
+  "status": "blocked",
+  "systemFile": "lenso.system.json",
+  "systemName": "support-platform"
+}

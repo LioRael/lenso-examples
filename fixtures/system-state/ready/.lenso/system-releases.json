@@ -1,0 +1,55 @@
+{
+  "releases": [
+    {
+      "appliedAtUnixMs": 1782828653063,
+      "commands": [
+        "lenso service release plan support-suite-provider <manifest-or-package> --env staging --output release-plan-support-suite-provider.json",
+        "lenso service deploy status support-suite-provider --env staging --source operator --write-state"
+      ],
+      "createdAtUnixMs": 1782828652848,
+      "driftStatus": "ready",
+      "drifts": [],
+      "environment": "staging",
+      "graphIssues": [],
+      "id": "sysrel_staging_019f18de59307450b01eb71efc6d6dc0",
+      "kind": "release",
+      "modules": [
+        "auth",
+        "account-profile",
+        "support-ticket",
+        "support-notification",
+        "support-knowledge-base"
+      ],
+      "policy": {
+        "issues": [],
+        "risk": "safe"
+      },
+      "protocol": "lenso.system-release.v1",
+      "rollbackAvailable": false,
+      "services": [
+        {
+          "manifest": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+          "modules": [
+            "account-profile"
+          ],
+          "name": "account-profile-service",
+          "target": "local"
+        },
+        {
+          "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+          "modules": [
+            "support-ticket",
+            "support-notification",
+            "support-knowledge-base"
+          ],
+          "name": "support-suite-provider",
+          "target": "operator"
+        }
+      ],
+      "status": "ready",
+      "systemFile": "lenso.system.json",
+      "systemName": "support-platform"
+    }
+  ],
+  "version": 1
+}
