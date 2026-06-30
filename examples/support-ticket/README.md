@@ -27,6 +27,7 @@ Run the smoke:
 
 ```sh
 pnpm --filter @lenso/example-support-ticket smoke
+pnpm --filter @lenso/example-support-ticket service:verify
 ```
 
 Package the running service manifest for handoff. This writes the service
@@ -59,9 +60,39 @@ module name:
 lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
+
+After the provider is installed, generate an environment-aware release plan
+before applying a new package candidate:
+
+```sh
+lenso service env add staging \
+  --service support-suite-provider \
+  --target kubernetes \
+  --namespace lenso-staging \
+  --image ghcr.io/acme/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com
+
+lenso service release plan support-suite-provider \
+  dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --env staging \
+  --output .lenso/support-suite-provider.staging.release-plan.json
+lenso service policy check .lenso/support-suite-provider.staging.release-plan.json --fail-on breaking
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target kubernetes \
+  --output-dir examples/support-ticket/kubernetes/staging
+lenso service release apply .lenso/support-suite-provider.staging.release-plan.json --env staging
+```
+
+`release plan` compares the installed manifest snapshot with the candidate
+service package, `policy check` turns removed modules/capabilities/operations
+and required env/config into an operator risk, and `apply` records the result in
+`.lenso/service-releases.json` for Console Services. `deploy export` writes
+reviewable Kubernetes manifests; apply them with `kubectl apply -k` when you are
+ready to run the provider in a cluster.
 
 `examples/support-ticket/lenso.module-release.json` is kept as a local dev
 shortcut that points at the running provider manifest. V11 also keeps
@@ -73,6 +104,84 @@ while modules remain independent install targets:
 ```sh
 lenso module install examples/support-ticket/support-notification.module-release.json
 lenso module install examples/support-ticket/support-knowledge-base.module-release.json
+```
+
+## Kubernetes Operator Path
+
+Use the Lenso Operator when Kubernetes should continuously reconcile the
+provider process from a `LensoServiceProvider` custom resource:
+
+```sh
+lenso operator export-crd --output dist/lenso-operator/crds
+kubectl apply -k dist/lenso-operator/crds
+
+lenso service env add staging \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-staging \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com \
+  --manifest-reference https://support-staging.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 2 \
+  --ingress-host support-staging.example.com
+
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir dist/lenso-service/support-suite-provider/operator/staging
+
+kubectl apply -k dist/lenso-service/support-suite-provider/operator/staging
+
+lenso service deploy status support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+
+lenso service deploy wait support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+```
+
+The Host still reads local Lenso state and runtime evidence. It does not need
+kubeconfig.
+
+Promote the staged release to production after the staging release has been
+applied and observed:
+
+```sh
+lenso service env add prod \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-prod \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support.example.com \
+  --manifest-reference https://support.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 3 \
+  --ingress-host support.example.com
+
+lenso service release promote support-suite-provider \
+  --from staging \
+  --to prod \
+  --output .lenso/support-suite-provider.prod.release-plan.json
+lenso service policy check .lenso/support-suite-provider.prod.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.prod.release-plan.json --env prod
+
+lenso service deploy export support-suite-provider \
+  --env prod \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir dist/lenso-service/support-suite-provider/operator/prod
+
+kubectl apply -k dist/lenso-service/support-suite-provider/operator/prod
+lenso service deploy wait support-suite-provider --env prod --source operator --write-state
 ```
 
 Restart the API and worker after install. Open `/console` and check Modules:
@@ -89,12 +198,12 @@ The host still owns Runtime Story, Remote Calls, queue, outbox, and retry
 evidence after the modules are used through the host. Console shows
 `support-ticket` as the installed business module.
 
-If service check or doctor reports `restart_pending`, restart the host. If it
+If service verify or doctor reports `restart_pending`, restart the host. If it
 reports `manifest_unreachable` or `service_not_ready`, start the provider again
 and recheck:
 
 ```sh
 pnpm --filter @lenso/example-support-ticket start
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```

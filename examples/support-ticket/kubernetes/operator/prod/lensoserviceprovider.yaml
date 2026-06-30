@@ -1,0 +1,37 @@
+apiVersion: lenso.dev/v1alpha1
+kind: LensoServiceProvider
+metadata:
+  name: support-suite-provider
+  namespace: lenso-prod
+  labels:
+    app.kubernetes.io/part-of: lenso
+    app.kubernetes.io/component: service-provider
+    lenso.dev/service-provider: support-suite-provider
+    lenso.dev/environment: prod
+spec:
+  serviceName: support-suite-provider
+  environment: prod
+  image: ghcr.io/lenso-dev/support-suite-provider:0.4.0
+  releaseId: rel_support_ticket_prod
+  manifestReference: https://support.example.com/lenso/service/v1/manifest
+  modules:
+    - support-ticket
+    - support-knowledge-base
+    - support-notification
+  replicas: 3
+  port: 4110
+  envFrom:
+    configMap: support-suite-provider-config
+    secret: support-suite-provider-secrets
+  ingress:
+    host: support.example.com
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 9
+    targetCpuUtilization: 70
+  disruptionBudget:
+    enabled: true
+    minAvailable: 1
+  networkPolicy:
+    enabled: true

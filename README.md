@@ -102,8 +102,8 @@ lenso service install dist/lenso-service/rust-audit-service/lenso.service-packag
   --base-url http://127.0.0.1:4130/lenso/service/v1
 ```
 
-The example README includes the matching `lenso service check`, install, diff,
-upgrade preview, rollback preview, and deployment export commands.
+The example README includes the matching `lenso service verify`, install,
+upgrade-plan, rollback preview, and deployment export commands.
 
 The Rust and TypeScript examples intentionally expose the same service contract
 shape: a service process provides one or more independently installed modules,
@@ -323,6 +323,20 @@ lenso module catalog add dist/lenso-service/support-suite-provider/modules/suppo
   --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 ```
+
+Plan and apply the next provider release from the host repository after the
+service has an install receipt:
+
+```sh
+lenso service release plan support-suite-provider \
+  ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --output .lenso/support-suite-provider.release-plan.json
+lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.release-plan.json
+```
+
+The apply step updates `.lenso/service-releases.json`; Console Services shows
+the latest release risk and recent release history for the provider.
 
 Run the full service host path:
 

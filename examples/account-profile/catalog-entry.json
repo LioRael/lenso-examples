@@ -33,7 +33,7 @@
   ],
   "name": "account-profile-service",
   "service": {
-    "requiredEnv": ["PORT"],
+    "requiredEnv": [],
     "statusPath": "/lenso/service/v1/status",
     "statusUrl": "http://127.0.0.1:4120/lenso/service/v1/status",
     "transports": ["http"]

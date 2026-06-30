@@ -52,7 +52,7 @@ lenso module catalog add ../lenso-examples/dist/lenso-service/support-suite-prov
   --base-url http://127.0.0.1:4110/lenso/service/v1
 lenso module install support-ticket
 lenso service list
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
@@ -91,17 +91,151 @@ expected:
 
 ```sh
 lenso service list
-lenso service check support-suite-provider
+lenso service verify support-suite-provider
 lenso service status support-suite-provider support-suite-provider
 lenso service start support-suite-provider support-suite-provider
 lenso service stop support-suite-provider support-suite-provider
 lenso service doctor support-suite-provider --json
 ```
 
-`lenso service check` is the provider-level check command. In the current CLI it
-shares the same diagnostic engine as `service doctor`; use the provider name
-when diagnosing service state. Console still shows `support-ticket` as the
-business module. The important statuses are:
+For a package upgrade, use the V15 service release control plane from the host
+repository:
+
+```sh
+lenso service env add staging \
+  --service support-suite-provider \
+  --target kubernetes \
+  --namespace lenso-staging \
+  --image ghcr.io/acme/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com
+
+lenso service release plan support-suite-provider \
+  ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
+  --env staging \
+  --output .lenso/support-suite-provider.staging.release-plan.json
+lenso service policy check .lenso/support-suite-provider.staging.release-plan.json --fail-on breaking
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target kubernetes \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/staging
+lenso service release apply .lenso/support-suite-provider.staging.release-plan.json --env staging
+```
+
+This keeps the service package/module release install path separate from the
+operator release path. The release ledger is `.lenso/service-releases.json`, and
+Console Services renders the latest risk, recent release history, deployment
+environments, Kubernetes rollout observations, and drift.
+
+After applying manifests in a cluster, refresh the local deployment observation:
+
+```sh
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/staging
+lenso service deploy status support-suite-provider --env staging --write-state
+lenso service deploy wait support-suite-provider --env staging --write-state
+```
+
+## V16 Operator Managed Delivery
+
+Use this path when the service provider should stay in Kubernetes and be
+reconciled continuously.
+
+1. Export and apply the operator bundle.
+2. Configure the service environment as operator-managed.
+3. Export the provider `LensoServiceProvider`.
+4. Apply the provider CR with `kubectl apply -k`.
+5. Read CRD status with `lenso service deploy status --source operator --write-state`.
+6. Wait for readiness with `lenso service deploy wait --source operator --write-state`.
+7. Open Runtime Console and inspect Services, Remote Calls, Runtime Story, and
+   Technical Operations.
+
+```sh
+lenso operator export-crd --output dist/lenso-operator/crds
+kubectl apply -k dist/lenso-operator/crds
+
+lenso service env add staging \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-staging \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support-staging.example.com \
+  --manifest-reference https://support-staging.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 2 \
+  --ingress-host support-staging.example.com
+
+lenso service deploy export support-suite-provider \
+  --env staging \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
+
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/operator/staging
+
+lenso service deploy status support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+
+lenso service deploy wait support-suite-provider \
+  --env staging \
+  --source operator \
+  --write-state
+```
+
+The example fixture lives at:
+
+```sh
+examples/support-ticket/kubernetes/operator/staging/lensoserviceprovider.yaml
+```
+
+## V17 Promotion Delivery
+
+The production path keeps Kubernetes optional at install time but first-class
+when a service provider needs cluster rollout and promotion evidence.
+
+```sh
+lenso service env add prod \
+  --service support-suite-provider \
+  --target operator \
+  --namespace lenso-prod \
+  --image ghcr.io/lenso-dev/support-suite-provider:0.4.0 \
+  --public-base-url https://support.example.com \
+  --manifest-reference https://support.example.com/lenso/service/v1/manifest \
+  --port 4110 \
+  --replicas 3 \
+  --ingress-host support.example.com
+
+lenso service release promote support-suite-provider \
+  --from staging \
+  --to prod \
+  --output .lenso/support-suite-provider.prod.release-plan.json
+lenso service policy check .lenso/support-suite-provider.prod.release-plan.json --fail-on breaking
+lenso service release apply .lenso/support-suite-provider.prod.release-plan.json --env prod
+
+lenso service deploy export support-suite-provider \
+  --env prod \
+  --target operator \
+  --hpa \
+  --pdb \
+  --network-policy \
+  --output-dir ../lenso-examples/examples/support-ticket/kubernetes/operator/prod
+
+kubectl apply -k ../lenso-examples/examples/support-ticket/kubernetes/operator/prod
+lenso service deploy wait support-suite-provider --env prod --source operator --write-state
+```
+
+The production fixture lives at:
+
+```sh
+examples/support-ticket/kubernetes/operator/prod/lensoserviceprovider.yaml
+```
+
+`lenso service verify` is the release-readiness entrypoint. With a provider
+name it shares the same diagnostic engine as `service doctor`; use doctor when
+diagnosing service state. Console still shows `support-ticket` as the business
+module. The important statuses are:
 
 | Status                  | Meaning                                                                            | Next action                                                                   |
 | ----------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -110,6 +244,7 @@ business module. The important statuses are:
 | `configured_not_loaded` | The source exists, but the host metadata does not include the module.              | Restart first; then inspect manifest errors.                                  |
 | `manifest_unreachable`  | Host cannot fetch `/lenso/service/v1/manifest`.                                    | Start the provider or fix `REMOTE_MODULES`.                                   |
 | `service_not_ready`     | `.lenso/module-services.json` has a service entry whose `readyUrl` fails.          | Start the service or inspect its logs.                                        |
+| `missing_config`        | A host-started service declares required env that is absent from `.env`.           | Set the missing env and restart API/worker.                                   |
 | `stale_state`           | A lock or pid file exists but readiness failed.                                    | Stop/restart the service; remove stale files only after checking the process. |
 | `unreachable`           | The standard service status endpoint failed.                                       | Start the service or fix `/lenso/service/v1/status`.                          |
 
@@ -181,7 +316,7 @@ admin/runtime paths, and verifies Runtime Story evidence.
 
 | Symptom                                                                                                         | Check                                                                                    | Fix                                                                                                               |
 | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-suite-provider --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service check support-suite-provider`. |
+| `manifest_unreachable` or `manifestStatus: unreachable` in `lenso service doctor support-suite-provider --json` | The provider process is stopped or `REMOTE_MODULES` points at the wrong base URL.        | Run `pnpm --filter @lenso/example-support-ticket start`, then rerun `lenso service verify support-suite-provider`. |
 | `service_not_ready`                                                                                             | `.lenso/module-services.json` has a service entry, but its `readyUrl` is not responding. | Start the command shown by doctor or restart the API/worker when `autoStart` is enabled.                          |
 | `stale_state`                                                                                                   | A host-started service left `.lock` or `.pid` files behind.                              | Restart the API/worker; remove the stale files only if doctor still reports them.                                 |
 | `404` from `/modules/support-ticket/http/*`                                                                     | The host did not load the module provided by the configured provider.                    | Restart the API and worker after installing or changing `REMOTE_MODULES`.                                         |

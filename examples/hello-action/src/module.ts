@@ -127,7 +127,7 @@ export const manifest = defineService({
   },
   modules: [helloActionModule],
   name: "hello-service",
-  requiredEnv: ["PORT"],
+  requiredEnv: [],
   statusPath: "/lenso/service/v1/status",
   transports: ["http"],
   version: "0.1.0",

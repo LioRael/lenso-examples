@@ -43,7 +43,7 @@ Technical Operations links.
 Check the service provider contract and direct HTTP route probe:
 
 ```sh
-lenso service check http://127.0.0.1:4130/lenso/service/v1/manifest \
+lenso service verify http://127.0.0.1:4130/lenso/service/v1/manifest \
   --serve-command "PORT=4130 cargo run --manifest-path examples/rust-service/Cargo.toml" \
   --ready-timeout-ms 30000
 ```
@@ -51,7 +51,7 @@ lenso service check http://127.0.0.1:4130/lenso/service/v1/manifest \
 Compare an installed provider with the running Rust manifest:
 
 ```sh
-lenso service diff rust-audit-service http://127.0.0.1:4130/lenso/service/v1/manifest
+lenso service upgrade-plan rust-audit-service http://127.0.0.1:4130/lenso/service/v1/manifest
 ```
 
 Preview an upgrade from the running manifest:

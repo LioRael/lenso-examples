@@ -200,7 +200,7 @@ fn service_manifest(port: u16) -> Result<Value, serde_json::Error> {
             "summary": "Rust audit log service provider",
             "vendor": "Lenso",
         },
-        "requiredEnv": ["PORT"],
+        "requiredEnv": [],
         "statusPath": "/lenso/service/v1/status",
         "transports": ["http"],
         "version": "0.1.0",
