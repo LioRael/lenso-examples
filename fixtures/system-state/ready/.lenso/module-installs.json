@@ -1,0 +1,10 @@
+{
+  "modules": [
+    { "moduleName": "account-profile", "source": "remote" },
+    { "moduleName": "auth", "source": "linked" },
+    { "moduleName": "support-knowledge-base", "source": "remote" },
+    { "moduleName": "support-notification", "source": "remote" },
+    { "moduleName": "support-ticket", "source": "remote" }
+  ],
+  "version": 1
+}

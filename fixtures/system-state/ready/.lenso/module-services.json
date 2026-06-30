@@ -1,0 +1,57 @@
+{
+  "modules": [
+    {
+      "moduleName": "account-profile",
+      "services": [
+        {
+          "autoStart": true,
+          "command": "pnpm start",
+          "cwd": "examples/account-profile",
+          "name": "account-profile-service",
+          "readyTimeoutMs": 10000,
+          "readyUrl": "http://127.0.0.1:4120/lenso/service/v1/status"
+        }
+      ]
+    },
+    {
+      "moduleName": "support-ticket",
+      "services": [
+        {
+          "autoStart": true,
+          "command": "pnpm start",
+          "cwd": "examples/support-ticket",
+          "name": "support-suite-provider",
+          "readyTimeoutMs": 10000,
+          "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status"
+        }
+      ]
+    },
+    {
+      "moduleName": "support-notification",
+      "services": [
+        {
+          "autoStart": true,
+          "command": "pnpm start",
+          "cwd": "examples/support-ticket",
+          "name": "support-suite-provider",
+          "readyTimeoutMs": 10000,
+          "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status"
+        }
+      ]
+    },
+    {
+      "moduleName": "support-knowledge-base",
+      "services": [
+        {
+          "autoStart": true,
+          "command": "pnpm start",
+          "cwd": "examples/support-ticket",
+          "name": "support-suite-provider",
+          "readyTimeoutMs": 10000,
+          "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status"
+        }
+      ]
+    }
+  ],
+  "version": 1
+}

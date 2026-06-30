@@ -1,0 +1,23 @@
+{
+  "environments": [
+    {
+      "name": "local",
+      "releaseTrack": "local",
+      "serviceName": "support-suite-provider",
+      "target": "operator"
+    },
+    {
+      "name": "prod",
+      "releaseTrack": "prod",
+      "serviceName": "support-suite-provider",
+      "target": "operator"
+    },
+    {
+      "name": "staging",
+      "releaseTrack": "staging",
+      "serviceName": "support-suite-provider",
+      "target": "operator"
+    }
+  ],
+  "version": 1
+}

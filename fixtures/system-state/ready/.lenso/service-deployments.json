@@ -1,0 +1,30 @@
+{
+  "history": [],
+  "observations": [
+    {
+      "drift": "in_sync",
+      "environment": "local",
+      "observedAtUnixMs": 1772300000000,
+      "serviceName": "support-suite-provider",
+      "state": "ready",
+      "target": "operator"
+    },
+    {
+      "drift": "in_sync",
+      "environment": "prod",
+      "observedAtUnixMs": 1772300000000,
+      "serviceName": "support-suite-provider",
+      "state": "ready",
+      "target": "operator"
+    },
+    {
+      "drift": "in_sync",
+      "environment": "staging",
+      "observedAtUnixMs": 1772300000000,
+      "serviceName": "support-suite-provider",
+      "state": "ready",
+      "target": "operator"
+    }
+  ],
+  "version": 2
+}

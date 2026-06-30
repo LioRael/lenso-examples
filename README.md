@@ -146,11 +146,17 @@ capabilities, and dependencies show cross-service capability consumption.
 ```sh
 lenso system graph --system-file lenso.system.json
 lenso system plan --system-file lenso.system.json --check
+lenso system diff --system-file lenso.system.json --repo-root fixtures/system-state/ready --check
+lenso system apply --system-file lenso.system.json --dry-run
+lenso system doctor --system-file lenso.system.json
 ```
 
 Copy `lenso.system.json` into a host repo when you want Console Services to show
 the system plane next to provider lifecycle, rollout, release, and Remote Calls
 evidence.
+V19 adds system drift checks and safe apply. `fixtures/system-state/ready`
+contains the minimum host-local `.lenso` state for a clean system diff; remove a
+file from that fixture to see the doctor output point at the missing state.
 
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
