@@ -1,0 +1,76 @@
+{
+  "protocol": "lenso.system.v1",
+  "name": "support-platform",
+  "environments": ["local", "staging", "prod"],
+  "services": [
+    {
+      "name": "account-profile-service",
+      "target": "local",
+      "modules": ["account-profile"],
+      "cwd": "examples/account-profile",
+      "manifest": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+      "command": "pnpm start",
+      "lang": "ts",
+      "readyUrl": "http://127.0.0.1:4120/lenso/service/v1/status"
+    },
+    {
+      "name": "support-suite-provider",
+      "target": "operator",
+      "modules": [
+        "support-ticket",
+        "support-notification",
+        "support-knowledge-base"
+      ],
+      "cwd": "examples/support-ticket",
+      "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+      "command": "pnpm start",
+      "lang": "ts",
+      "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status"
+    }
+  ],
+  "modules": [
+    {
+      "name": "auth",
+      "installTo": "host",
+      "capabilities": ["auth"]
+    },
+    {
+      "name": "account-profile",
+      "installTo": "service:account-profile-service",
+      "capabilities": [
+        "account_profile.profiles.read",
+        "account_profile.profiles.write",
+        "account_profile.organizations.read",
+        "account_profile.organizations.write"
+      ],
+      "dependencies": ["auth"]
+    },
+    {
+      "name": "support-ticket",
+      "installTo": "service:support-suite-provider",
+      "capabilities": [
+        "support_ticket.tickets.read",
+        "support_ticket.tickets.write",
+        "support_ticket.tickets.escalate"
+      ],
+      "dependencies": ["account_profile.profiles.read"]
+    },
+    {
+      "name": "support-notification",
+      "installTo": "service:support-suite-provider",
+      "capabilities": ["support_notification.notifications.send"]
+    },
+    {
+      "name": "support-knowledge-base",
+      "installTo": "service:support-suite-provider",
+      "capabilities": ["support_knowledge_base.articles.read"]
+    }
+  ],
+  "dependencies": [
+    {
+      "from": "support-suite-provider",
+      "to": "account-profile-service",
+      "capability": "account_profile.profiles.read"
+    }
+  ]
+}

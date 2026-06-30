@@ -139,6 +139,19 @@ lenso service workspace export \
   --output .lenso/module-services.json
 ```
 
+V18 adds `lenso.system.json` as the service system manifest. It describes the
+same examples as a business system: services own process targets, modules own
+capabilities, and dependencies show cross-service capability consumption.
+
+```sh
+lenso system graph --system-file lenso.system.json
+lenso system plan --system-file lenso.system.json --check
+```
+
+Copy `lenso.system.json` into a host repo when you want Console Services to show
+the system plane next to provider lifecycle, rollout, release, and Remote Calls
+evidence.
+
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
 business-capability entrypoint and service install remains the provider/process
