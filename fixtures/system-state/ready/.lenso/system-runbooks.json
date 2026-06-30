@@ -1,0 +1,56 @@
+{
+  "runbooks": [
+    {
+      "active": true,
+      "commands": [
+        "lenso system release check fixtures/system-release/staging/system-release.json",
+        "lenso service release plan support-suite-provider <manifest-or-package> --env staging --output release-plan-support-suite-provider.json",
+        "lenso service deploy status support-suite-provider --env staging --source operator --write-state",
+        "lenso system release apply fixtures/system-release/staging/system-release.json --repo-root ."
+      ],
+      "createdAtUnixMs": 1782834292430,
+      "environment": "staging",
+      "id": "sysrun_staging_019f193466ce74319c1c402301789824",
+      "protocol": "lenso.system-runbook.v1",
+      "recordedAtUnixMs": 1782834292600,
+      "releaseId": "sysrel_staging_019f18de59307450b01eb71efc6d6dc0",
+      "status": "ready",
+      "steps": [
+        {
+          "command": "lenso system release check fixtures/system-release/staging/system-release.json",
+          "id": "check-release",
+          "kind": "evidence",
+          "manual": false,
+          "status": "pending",
+          "title": "Check system release"
+        },
+        {
+          "command": "lenso service release plan support-suite-provider <manifest-or-package> --env staging --output release-plan-support-suite-provider.json",
+          "id": "step-1",
+          "kind": "service_release",
+          "manual": false,
+          "status": "pending",
+          "title": "Prepare service release"
+        },
+        {
+          "command": "lenso service deploy status support-suite-provider --env staging --source operator --write-state",
+          "id": "step-2",
+          "kind": "service_deploy",
+          "manual": false,
+          "status": "pending",
+          "title": "Record service deployment evidence"
+        },
+        {
+          "command": "lenso system release apply fixtures/system-release/staging/system-release.json --repo-root .",
+          "id": "record-release",
+          "kind": "evidence",
+          "manual": false,
+          "status": "pending",
+          "title": "Record system release"
+        }
+      ],
+      "systemName": "support-platform"
+    }
+  ],
+  "version": 1
+}

@@ -155,6 +155,10 @@ lenso system release plan \
   --repo-root fixtures/system-state/ready \
   --output fixtures/system-release/staging/system-release.json
 lenso system release check fixtures/system-release/staging/system-release.json
+lenso system runbook generate \
+  fixtures/system-release/staging/system-release.json \
+  --output fixtures/system-runbook/staging/system-runbook.json
+lenso system runbook check fixtures/system-runbook/staging/system-runbook.json
 ```
 
 Copy `lenso.system.json` into a host repo when you want Console Services to show
@@ -166,6 +170,9 @@ file from that fixture to see the doctor output point at the missing state.
 V20 adds system release train fixtures under `fixtures/system-release/`. The
 staging fixture is ready, the prod fixture is a promotion from staging, and
 `blocked-drift` shows the policy output when host-local state is missing.
+V21 adds generated system runbook fixtures under `fixtures/system-runbook/`.
+These are operator evidence artifacts generated from release plans, not module
+authoring inputs.
 
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the

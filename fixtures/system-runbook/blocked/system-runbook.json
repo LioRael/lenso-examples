@@ -1,0 +1,29 @@
+{
+  "commands": [
+    "lenso system release check fixtures/system-release/blocked-drift/system-release.json"
+  ],
+  "createdAtUnixMs": 1782834292932,
+  "environment": "prod",
+  "id": "sysrun_prod_019f193468c47381b4efd633a217ef4d",
+  "protocol": "lenso.system-runbook.v1",
+  "releaseId": "sysrel_prod_019f18de5b687d20be4e805c4cd09660",
+  "status": "blocked",
+  "steps": [
+    {
+      "command": "lenso system release check fixtures/system-release/blocked-drift/system-release.json",
+      "id": "check-release",
+      "kind": "evidence",
+      "manual": false,
+      "status": "pending",
+      "title": "Check system release"
+    },
+    {
+      "id": "resolve-policy",
+      "kind": "manual",
+      "manual": true,
+      "status": "blocked",
+      "title": "Resolve system release policy"
+    }
+  ],
+  "systemName": "support-platform"
+}
