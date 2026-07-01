@@ -31,6 +31,17 @@ const changePlanAgentTask = fs.readFileSync(
   path.join(changePlanRoot, "agent-task.md"),
   "utf8",
 );
+const composerRoot = path.join(
+  process.cwd(),
+  "fixtures/launchpad/support-desk-composer",
+);
+const composerPlan = JSON.parse(
+  fs.readFileSync(path.join(composerRoot, "app-change-plan.json"), "utf8"),
+);
+const composerAgentTask = fs.readFileSync(
+  path.join(composerRoot, "agent-task.md"),
+  "utf8",
+);
 
 function assert(condition, message) {
   if (!condition) {
@@ -106,6 +117,34 @@ assert(
 assert(
   changePlanAgentTask.includes("Generated control-plane files may be planned and applied."),
   "agent task includes app change plan generated boundary",
+);
+assert(
+  composerPlan.protocol === "lenso.app-change-plan.v1",
+  "composer fixture uses app change plan protocol",
+);
+assert(
+  composerPlan.composition?.protocol === "lenso.app-composition.v1",
+  "composer fixture includes app composition",
+);
+assert(
+  composerPlan.composition.requestedAddons.includes("support-sla"),
+  "composer fixture requests support-sla",
+);
+assert(
+  composerPlan.composition.requestedAddons.includes("customer-profile"),
+  "composer fixture requests customer-profile",
+);
+assert(
+  composerPlan.composition.appliedAddons.includes("customer-profile"),
+  "composer fixture applies customer-profile",
+);
+assert(
+  composerAgentTask.includes("## App Change Plan"),
+  "composer agent task includes app change plan",
+);
+assert(
+  composerAgentTask.includes("Services are out-of-process providers"),
+  "composer agent task includes service boundary",
 );
 
 console.log("launchpad fixtures ok");

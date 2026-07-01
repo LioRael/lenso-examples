@@ -48,6 +48,7 @@ lenso app inspect support-desk
 lenso app create ../support-desk --blueprint support-desk
 cd ../support-desk
 lenso app add support-sla
+lenso app compose --repo-root . --addon support-sla --addon customer-profile --write-plan
 lenso dev status
 lenso dev doctor --write-state
 lenso app plan --addon support-sla --write-plan
@@ -75,6 +76,11 @@ Launchpad files can be safely repaired.
 V25 adds App Change Plan before repair or addon application. The
 `support-desk-change-plan` fixture shows `.lenso/app-change-plan.json` for a
 safe `support-sla` addon apply, plus the matching agent handoff boundaries.
+
+V26 adds App Composer. The `support-desk-composer` fixture shows a
+`support-desk` app composed with `support-sla` and `customer-profile`, a
+composition-aware `.lenso/app-change-plan.json`, and an agent task generated
+with `lenso agent task --from-app-plan`.
 
 ```sh
 pnpm check:launchpad-fixtures
