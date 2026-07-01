@@ -157,6 +157,7 @@
 - Requested packs: support-sla
 - Pending packs: none
 - Capability pack: support-sla (applied) at ./capabilities/support-sla
+- Pack fit: support-sla (applied) issues: 0
 - Agent action: lenso agent task --from-app-plan "add the requested business behavior"
 - Generated control-plane files may be planned and applied.
 - Existing service source files are user code.

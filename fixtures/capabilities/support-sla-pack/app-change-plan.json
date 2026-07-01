@@ -36,6 +36,15 @@
         "nextCommand": "lenso capability check ./capabilities/support-sla"
       }
     ],
+    "packFit": [
+      {
+        "name": "support-sla",
+        "path": "./capabilities/support-sla",
+        "status": "applied",
+        "issues": [],
+        "command": null
+      }
+    ],
     "serviceActions": [],
     "agentActions": [
       {
