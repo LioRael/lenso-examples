@@ -43,9 +43,13 @@ host and services by hand:
 
 ```sh
 cargo install lenso-cli
+lenso app list
+lenso app inspect support-desk
 lenso app create ../support-desk --blueprint support-desk
 cd ../support-desk
+lenso app add support-sla
 lenso dev status
+lenso dev doctor --write-state
 lenso agent context
 ```
 
@@ -53,6 +57,13 @@ The generated app includes a TypeScript `support-api` service, a Rust
 `notification-worker` service, `lenso.system.json`, `lenso.workspace.json`, and
 `.lenso/launchpad.json`. This repository keeps representative generated output
 under `fixtures/launchpad/support-desk/`.
+V23 adds product blueprints and addons. The `support-desk-addon` fixture shows
+`support-sla` added to the app, `.lenso/dev-doctor.json` written by
+`lenso dev doctor --write-state`, and the matching `lenso agent task` handoff:
+
+```sh
+pnpm check:launchpad-fixtures
+```
 
 ## Blank Host Starter
 

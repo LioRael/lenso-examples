@@ -13,6 +13,7 @@
     "host-api-smoke": "pnpm host-api-smoke:support-ticket && pnpm host-api-smoke:account-profile",
     "host-api-smoke:account-profile": "node scripts/account-profile-host-api-smoke.ts",
     "host-api-smoke:support-ticket": "node scripts/support-ticket-host-api-smoke.ts",
+    "check:launchpad-fixtures": "node scripts/check-launchpad-fixtures.mjs",
     "check:operator-fixtures": "node scripts/check-operator-fixtures.mjs",
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
     "rust-service:check": "cargo run --manifest-path examples/rust-service/Cargo.toml -- --check",
