@@ -36,6 +36,24 @@ pnpm install
 pnpm smoke
 ```
 
+## Launchpad App
+
+Use Launchpad when you want a generated service-ready app instead of wiring a
+host and services by hand:
+
+```sh
+cargo install lenso-cli
+lenso app create ../support-desk --blueprint support-desk
+cd ../support-desk
+lenso dev status
+lenso agent context
+```
+
+The generated app includes a TypeScript `support-api` service, a Rust
+`notification-worker` service, `lenso.system.json`, `lenso.workspace.json`, and
+`.lenso/launchpad.json`. This repository keeps representative generated output
+under `fixtures/launchpad/support-desk/`.
+
 ## Blank Host Starter
 
 Use the standalone CLI when you want a blank Rust host before installing
