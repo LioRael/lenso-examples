@@ -1,0 +1,124 @@
+{
+  "protocol": "lenso.launchpad.v1",
+  "projectName": "acme-support",
+  "blueprint": "support-desk",
+  "status": "configured",
+  "summary": "Support desk app with one TypeScript API service and one Rust worker service.",
+  "services": [
+    {
+      "name": "support-api",
+      "role": "ticket intake and admin HTTP actions",
+      "language": "ts",
+      "cwd": "services/support-api",
+      "command": "pnpm start",
+      "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest",
+      "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status",
+      "modules": [
+        "support-api"
+      ]
+    },
+    {
+      "name": "notification-worker",
+      "role": "notification and background service functions",
+      "language": "rust",
+      "cwd": "services/notification-worker",
+      "command": "cargo run",
+      "manifest": "http://127.0.0.1:4120/lenso/service/v1/manifest",
+      "readyUrl": "http://127.0.0.1:4120/lenso/service/v1/status",
+      "modules": [
+        "notification-worker"
+      ]
+    },
+    {
+      "name": "support-sla",
+      "role": "ticket SLA and escalation policies",
+      "language": "ts",
+      "cwd": "services/support-sla",
+      "command": "pnpm start",
+      "manifest": "http://127.0.0.1:4150/lenso/service/v1/manifest",
+      "readyUrl": "http://127.0.0.1:4150/lenso/service/v1/status",
+      "modules": [
+        "support-sla"
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "name": "support-api",
+      "ownerService": "support-api",
+      "capability": "support.tickets.read"
+    },
+    {
+      "name": "notification-worker",
+      "ownerService": "notification-worker",
+      "capability": "support.notifications.send"
+    },
+    {
+      "name": "support-sla",
+      "ownerService": "support-sla",
+      "capability": "support.sla.read"
+    }
+  ],
+  "commands": {
+    "devUp": "lenso dev up",
+    "devStatus": "lenso dev status",
+    "agentContext": "lenso agent context",
+    "console": "http://127.0.0.1:3000/launchpad"
+  },
+  "checklist": [
+    {
+      "id": "app-created",
+      "label": "Host application scaffolded",
+      "status": "done",
+      "nextCommand": null
+    },
+    {
+      "id": "services-created",
+      "label": "TypeScript and Rust services scaffolded",
+      "status": "done",
+      "nextCommand": null
+    },
+    {
+      "id": "env-prepared",
+      "label": "Local environment file prepared",
+      "status": "done",
+      "nextCommand": null
+    },
+    {
+      "id": "dev-up",
+      "label": "Run services and host locally",
+      "status": "next",
+      "nextCommand": "lenso dev up"
+    },
+    {
+      "id": "console-open",
+      "label": "Open Runtime Console Launchpad",
+      "status": "pending",
+      "nextCommand": "open http://127.0.0.1:3000/launchpad"
+    },
+    {
+      "id": "addon-support-sla",
+      "label": "Addon Support SLA configured",
+      "status": "done",
+      "nextCommand": null
+    }
+  ],
+  "addons": [
+    {
+      "name": "support-sla",
+      "label": "Support SLA",
+      "status": "configured",
+      "services": [
+        "support-sla"
+      ],
+      "modules": [
+        "support-sla"
+      ]
+    }
+  ],
+  "supportedAddons": [
+    "support-sla",
+    "customer-profile",
+    "notifications"
+  ]
+}

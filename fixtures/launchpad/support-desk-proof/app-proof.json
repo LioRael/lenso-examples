@@ -1,0 +1,84 @@
+{
+  "protocol": "lenso.app-proof.v1",
+  "status": "ready",
+  "checkedAtUnixMs": 1782907219980,
+  "projectName": "support-desk",
+  "blueprint": "support-desk",
+  "addons": [
+    "support-sla"
+  ],
+  "checks": [
+    {
+      "id": "launchpad-service-support-api",
+      "label": "support-api in .lenso/launchpad.json",
+      "status": "passed",
+      "message": "support-api is present in .lenso/launchpad.json",
+      "command": null
+    },
+    {
+      "id": "workspace-service-support-api",
+      "label": "support-api in lenso.workspace.json",
+      "status": "passed",
+      "message": "support-api is present in lenso.workspace.json",
+      "command": null
+    },
+    {
+      "id": "system-service-support-api",
+      "label": "support-api in lenso.system.json",
+      "status": "passed",
+      "message": "support-api is present in lenso.system.json",
+      "command": null
+    },
+    {
+      "id": "launchpad-service-notification-worker",
+      "label": "notification-worker in .lenso/launchpad.json",
+      "status": "passed",
+      "message": "notification-worker is present in .lenso/launchpad.json",
+      "command": null
+    },
+    {
+      "id": "workspace-service-notification-worker",
+      "label": "notification-worker in lenso.workspace.json",
+      "status": "passed",
+      "message": "notification-worker is present in lenso.workspace.json",
+      "command": null
+    },
+    {
+      "id": "system-service-notification-worker",
+      "label": "notification-worker in lenso.system.json",
+      "status": "passed",
+      "message": "notification-worker is present in lenso.system.json",
+      "command": null
+    },
+    {
+      "id": "launchpad-service-support-sla",
+      "label": "support-sla in .lenso/launchpad.json",
+      "status": "passed",
+      "message": "support-sla is present in .lenso/launchpad.json",
+      "command": null
+    },
+    {
+      "id": "workspace-service-support-sla",
+      "label": "support-sla in lenso.workspace.json",
+      "status": "passed",
+      "message": "support-sla is present in lenso.workspace.json",
+      "command": null
+    },
+    {
+      "id": "system-service-support-sla",
+      "label": "support-sla in lenso.system.json",
+      "status": "passed",
+      "message": "support-sla is present in lenso.system.json",
+      "command": null
+    },
+    {
+      "id": "launchpad-doctor-state",
+      "label": "Launchpad doctor state",
+      "status": "passed",
+      "message": ".lenso/dev-doctor.json status is ready",
+      "command": null
+    }
+  ],
+  "drifts": [],
+  "nextCommand": null
+}
