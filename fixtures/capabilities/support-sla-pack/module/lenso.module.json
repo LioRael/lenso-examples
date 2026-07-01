@@ -1,0 +1,7 @@
+{
+  "capabilities": [
+    "support.sla.read"
+  ],
+  "name": "support-sla",
+  "protocol": "lenso.module.v1"
+}

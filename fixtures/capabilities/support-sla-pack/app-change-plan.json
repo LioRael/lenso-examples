@@ -1,0 +1,50 @@
+{
+  "protocol": "lenso.app-change-plan.v1",
+  "status": "ready",
+  "generatedAtUnixMs": 1782936916467,
+  "projectName": "acme-support",
+  "blueprint": "support-desk",
+  "addons": [],
+  "proofStatus": null,
+  "changes": [],
+  "blocked": [],
+  "nextCommand": "lenso app verify --write-proof",
+  "composition": {
+    "protocol": "lenso.app-composition.v1",
+    "intent": null,
+    "requestedAddons": [],
+    "appliedAddons": [],
+    "pendingAddons": [],
+    "requestedPacks": [
+      "support-sla"
+    ],
+    "appliedPacks": [
+      "support-sla"
+    ],
+    "pendingPacks": [],
+    "capabilityPacks": [
+      {
+        "name": "support-sla",
+        "path": "./capabilities/support-sla",
+        "status": "applied",
+        "modules": [
+          "support-sla"
+        ],
+        "services": [
+          "support-sla-provider/api"
+        ],
+        "nextCommand": "lenso capability check ./capabilities/support-sla"
+      }
+    ],
+    "serviceActions": [],
+    "agentActions": [
+      {
+        "id": "agent:task:from-app-plan",
+        "kind": "agent_task",
+        "label": "Generate agent task pack from the app plan",
+        "command": "lenso agent task --from-app-plan \"add the requested business behavior\"",
+        "status": "recommended"
+      }
+    ]
+  }
+}

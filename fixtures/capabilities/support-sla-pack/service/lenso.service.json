@@ -1,0 +1,10 @@
+{
+  "name": "support-sla-provider",
+  "protocol": "lenso.service.v1",
+  "services": [
+    {
+      "manifest": "lenso.service.json",
+      "name": "api"
+    }
+  ]
+}
