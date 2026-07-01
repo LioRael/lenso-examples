@@ -1,0 +1,26 @@
+{
+  "releases": [
+    {
+      "appliedAtUnixMs": 1772300000000,
+      "environment": { "name": "local", "target": "operator" },
+      "id": "rel_support_local",
+      "risk": "safe",
+      "serviceName": "support-suite-provider"
+    },
+    {
+      "appliedAtUnixMs": 1772300000000,
+      "environment": { "name": "prod", "target": "operator" },
+      "id": "rel_support_prod",
+      "risk": "safe",
+      "serviceName": "support-suite-provider"
+    },
+    {
+      "appliedAtUnixMs": 1772300000000,
+      "environment": { "name": "staging", "target": "operator" },
+      "id": "rel_support_staging",
+      "risk": "safe",
+      "serviceName": "support-suite-provider"
+    }
+  ],
+  "version": 1
+}

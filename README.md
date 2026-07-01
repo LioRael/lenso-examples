@@ -139,6 +139,41 @@ lenso service workspace export \
   --output .lenso/module-services.json
 ```
 
+V18 adds `lenso.system.json` as the service system manifest. It describes the
+same examples as a business system: services own process targets, modules own
+capabilities, and dependencies show cross-service capability consumption.
+
+```sh
+lenso system graph --system-file lenso.system.json
+lenso system plan --system-file lenso.system.json --check
+lenso system diff --system-file lenso.system.json --repo-root fixtures/system-state/ready --check
+lenso system apply --system-file lenso.system.json --dry-run
+lenso system doctor --system-file lenso.system.json
+lenso system release plan \
+  --env staging \
+  --system-file lenso.system.json \
+  --repo-root fixtures/system-state/ready \
+  --output fixtures/system-release/staging/system-release.json
+lenso system release check fixtures/system-release/staging/system-release.json
+lenso system runbook generate \
+  fixtures/system-release/staging/system-release.json \
+  --output fixtures/system-runbook/staging/system-runbook.json
+lenso system runbook check fixtures/system-runbook/staging/system-runbook.json
+```
+
+Copy `lenso.system.json` into a host repo when you want Console Services to show
+the system plane next to provider lifecycle, rollout, release, and Remote Calls
+evidence.
+V19 adds system drift checks and safe apply. `fixtures/system-state/ready`
+contains the minimum host-local `.lenso` state for a clean system diff; remove a
+file from that fixture to see the doctor output point at the missing state.
+V20 adds system release train fixtures under `fixtures/system-release/`. The
+staging fixture is ready, the prod fixture is a promotion from staging, and
+`blocked-drift` shows the policy output when host-local state is missing.
+V21 adds generated system runbook fixtures under `fixtures/system-runbook/`.
+These are operator evidence artifacts generated from release plans, not module
+authoring inputs.
+
 V11 examples keep `lenso.module.v1` module contracts next to
 `lenso.module-release.v1` release artifacts so module install remains the
 business-capability entrypoint and service install remains the provider/process
