@@ -20,6 +20,17 @@ const proofAgentTask = fs.readFileSync(
   path.join(proofRoot, "agent-task.md"),
   "utf8",
 );
+const changePlanRoot = path.join(
+  process.cwd(),
+  "fixtures/launchpad/support-desk-change-plan",
+);
+const appChangePlan = JSON.parse(
+  fs.readFileSync(path.join(changePlanRoot, "app-change-plan.json"), "utf8"),
+);
+const changePlanAgentTask = fs.readFileSync(
+  path.join(changePlanRoot, "agent-task.md"),
+  "utf8",
+);
 
 function assert(condition, message) {
   if (!condition) {
@@ -69,6 +80,32 @@ assert(proofAgentTask.includes("## App Proof"), "agent task includes app proof")
 assert(
   proofAgentTask.includes("Existing service source files are user code."),
   "agent task includes app proof source boundary",
+);
+assert(
+  appChangePlan.protocol === "lenso.app-change-plan.v1",
+  "app change plan protocol",
+);
+assert(appChangePlan.status === "changes", "app change plan status");
+assert(
+  appChangePlan.changes.some(
+    (change) =>
+      change.kind === "addon-apply" &&
+      change.name === "support-sla" &&
+      change.safe === true,
+  ),
+  "app change plan includes safe support-sla addon apply",
+);
+assert(
+  appChangePlan.nextCommand === "lenso app apply .lenso/app-change-plan.json",
+  "app change plan next command",
+);
+assert(
+  changePlanAgentTask.includes("## App Change Plan"),
+  "agent task includes app change plan",
+);
+assert(
+  changePlanAgentTask.includes("Generated control-plane files may be planned and applied."),
+  "agent task includes app change plan generated boundary",
 );
 
 console.log("launchpad fixtures ok");
