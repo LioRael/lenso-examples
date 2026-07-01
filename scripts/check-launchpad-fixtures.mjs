@@ -9,6 +9,17 @@ const doctor = JSON.parse(
   fs.readFileSync(path.join(root, "dev-doctor.json"), "utf8"),
 );
 const agentTask = fs.readFileSync(path.join(root, "agent-task.md"), "utf8");
+const proofRoot = path.join(
+  process.cwd(),
+  "fixtures/launchpad/support-desk-proof",
+);
+const appProof = JSON.parse(
+  fs.readFileSync(path.join(proofRoot, "app-proof.json"), "utf8"),
+);
+const proofAgentTask = fs.readFileSync(
+  path.join(proofRoot, "agent-task.md"),
+  "utf8",
+);
 
 function assert(condition, message) {
   if (!condition) {
@@ -48,5 +59,16 @@ assert(
 );
 assert(agentTask.includes("## Addons"), "agent task includes addons");
 assert(agentTask.includes("## Dev Doctor"), "agent task includes dev doctor");
+assert(appProof.protocol === "lenso.app-proof.v1", "app proof protocol");
+assert(appProof.status === "ready", "app proof status");
+assert(
+  appProof.addons.includes("support-sla"),
+  "app proof includes support-sla",
+);
+assert(proofAgentTask.includes("## App Proof"), "agent task includes app proof");
+assert(
+  proofAgentTask.includes("Existing service source files are user code."),
+  "agent task includes app proof source boundary",
+);
 
 console.log("launchpad fixtures ok");

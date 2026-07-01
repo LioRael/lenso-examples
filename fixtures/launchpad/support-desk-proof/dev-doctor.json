@@ -1,0 +1,92 @@
+{
+  "protocol": "lenso.dev-doctor.v1",
+  "status": "ready",
+  "checkedAtUnixMs": 1782907219970,
+  "live": false,
+  "checks": [
+    {
+      "id": "env",
+      "label": ".env file",
+      "status": "passed",
+      "message": ".env exists",
+      "command": null
+    },
+    {
+      "id": "launchpad-json",
+      "label": "Launchpad state",
+      "status": "passed",
+      "message": ".lenso/launchpad.json parses",
+      "command": null
+    },
+    {
+      "id": "lenso-system-json",
+      "label": "Service system manifest",
+      "status": "passed",
+      "message": "lenso.system.json parses",
+      "command": null
+    },
+    {
+      "id": "lenso-workspace-json",
+      "label": "Service workspace",
+      "status": "passed",
+      "message": "lenso.workspace.json parses",
+      "command": null
+    },
+    {
+      "id": "service-cwd-notification-worker",
+      "label": "notification-worker cwd",
+      "status": "passed",
+      "message": "services/notification-worker exists",
+      "command": null
+    },
+    {
+      "id": "service-manifest-notification-worker",
+      "label": "notification-worker manifest",
+      "status": "passed",
+      "message": "services/notification-worker/lenso.service.json exists",
+      "command": null
+    },
+    {
+      "id": "service-cwd-support-api",
+      "label": "support-api cwd",
+      "status": "passed",
+      "message": "services/support-api exists",
+      "command": null
+    },
+    {
+      "id": "service-manifest-support-api",
+      "label": "support-api manifest",
+      "status": "passed",
+      "message": "services/support-api/lenso.service.json exists",
+      "command": null
+    },
+    {
+      "id": "service-cwd-support-sla",
+      "label": "support-sla cwd",
+      "status": "passed",
+      "message": "services/support-sla exists",
+      "command": null
+    },
+    {
+      "id": "service-manifest-support-sla",
+      "label": "support-sla manifest",
+      "status": "passed",
+      "message": "services/support-sla/lenso.service.json exists",
+      "command": null
+    },
+    {
+      "id": "command-cargo",
+      "label": "cargo command",
+      "status": "passed",
+      "message": "cargo is available",
+      "command": null
+    },
+    {
+      "id": "command-pnpm",
+      "label": "pnpm command",
+      "status": "passed",
+      "message": "pnpm is available",
+      "command": null
+    }
+  ]
+}
