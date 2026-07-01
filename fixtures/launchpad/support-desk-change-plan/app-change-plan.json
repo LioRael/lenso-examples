@@ -1,0 +1,22 @@
+{
+  "protocol": "lenso.app-change-plan.v1",
+  "status": "changes",
+  "generatedAtUnixMs": 1782907319980,
+  "projectName": "support-desk",
+  "blueprint": "support-desk",
+  "addons": [],
+  "proofStatus": null,
+  "changes": [
+    {
+      "id": "addon-apply-support-sla",
+      "kind": "addon-apply",
+      "name": "support-sla",
+      "action": "apply-addon",
+      "safe": true,
+      "message": "Add Support SLA services, modules, workspace entries, system entries, and missing generated service scaffolds.",
+      "command": "lenso app apply .lenso/app-change-plan.json"
+    }
+  ],
+  "blocked": [],
+  "nextCommand": "lenso app apply .lenso/app-change-plan.json"
+}

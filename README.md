@@ -50,6 +50,8 @@ cd ../support-desk
 lenso app add support-sla
 lenso dev status
 lenso dev doctor --write-state
+lenso app plan --addon support-sla --write-plan
+lenso app apply .lenso/app-change-plan.json --dry-run
 lenso app verify --write-proof
 lenso app diff
 lenso app repair --dry-run
@@ -69,6 +71,10 @@ V24 adds App Proof for generated control-plane state. The `support-desk-proof`
 fixture shows `.lenso/app-proof.json`, a clean `lenso app diff`, and an agent
 handoff that marks service source files as user-owned code while generated
 Launchpad files can be safely repaired.
+
+V25 adds App Change Plan before repair or addon application. The
+`support-desk-change-plan` fixture shows `.lenso/app-change-plan.json` for a
+safe `support-sla` addon apply, plus the matching agent handoff boundaries.
 
 ```sh
 pnpm check:launchpad-fixtures
