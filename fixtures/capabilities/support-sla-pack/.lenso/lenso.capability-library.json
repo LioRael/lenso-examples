@@ -1,0 +1,20 @@
+{
+  "protocol": "lenso.capability-library.v1",
+  "packs": [
+    {
+      "name": "support-sla",
+      "path": ".",
+      "label": "Support Sla",
+      "summary": "Adds support-sla business behavior.",
+      "blueprints": [
+        "support-desk"
+      ],
+      "modules": [
+        "support-sla"
+      ],
+      "services": [
+        "support-sla-provider/api"
+      ]
+    }
+  ]
+}

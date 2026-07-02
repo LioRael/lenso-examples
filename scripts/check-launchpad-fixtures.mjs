@@ -31,6 +31,37 @@ const changePlanAgentTask = fs.readFileSync(
   path.join(changePlanRoot, "agent-task.md"),
   "utf8",
 );
+const composerRoot = path.join(
+  process.cwd(),
+  "fixtures/launchpad/support-desk-composer",
+);
+const composerPlan = JSON.parse(
+  fs.readFileSync(path.join(composerRoot, "app-change-plan.json"), "utf8"),
+);
+const composerAgentTask = fs.readFileSync(
+  path.join(composerRoot, "agent-task.md"),
+  "utf8",
+);
+const capabilityRoot = path.join(
+  process.cwd(),
+  "fixtures/capabilities/support-sla-pack",
+);
+const capabilityPack = JSON.parse(
+  fs.readFileSync(path.join(capabilityRoot, "lenso.capability.json"), "utf8"),
+);
+const capabilityLibrary = JSON.parse(
+  fs.readFileSync(
+    path.join(capabilityRoot, ".lenso/lenso.capability-library.json"),
+    "utf8",
+  ),
+);
+const capabilityPlan = JSON.parse(
+  fs.readFileSync(path.join(capabilityRoot, "app-change-plan.json"), "utf8"),
+);
+const capabilityAgentTask = fs.readFileSync(
+  path.join(capabilityRoot, "agent-task.md"),
+  "utf8",
+);
 
 function assert(condition, message) {
   if (!condition) {
@@ -106,6 +137,85 @@ assert(
 assert(
   changePlanAgentTask.includes("Generated control-plane files may be planned and applied."),
   "agent task includes app change plan generated boundary",
+);
+assert(
+  composerPlan.protocol === "lenso.app-change-plan.v1",
+  "composer fixture uses app change plan protocol",
+);
+assert(
+  composerPlan.composition?.protocol === "lenso.app-composition.v1",
+  "composer fixture includes app composition",
+);
+assert(
+  composerPlan.composition.requestedAddons.includes("support-sla"),
+  "composer fixture requests support-sla",
+);
+assert(
+  composerPlan.composition.requestedAddons.includes("customer-profile"),
+  "composer fixture requests customer-profile",
+);
+assert(
+  composerPlan.composition.appliedAddons.includes("customer-profile"),
+  "composer fixture applies customer-profile",
+);
+assert(
+  composerAgentTask.includes("## App Change Plan"),
+  "composer agent task includes app change plan",
+);
+assert(
+  composerAgentTask.includes("Services are out-of-process providers"),
+  "composer agent task includes service boundary",
+);
+assert(
+  capabilityPack.protocol === "lenso.capability-pack.v1",
+  "capability pack protocol",
+);
+assert(capabilityPack.name === "support-sla", "capability pack name");
+assert(
+  capabilityLibrary.protocol === "lenso.capability-library.v1",
+  "capability library protocol",
+);
+assert(
+  capabilityLibrary.packs.some(
+    (pack) => pack.name === "support-sla" && pack.path === ".",
+  ),
+  "capability library includes support-sla",
+);
+assert(
+  capabilityPack.supports.blueprints.includes("support-desk"),
+  "capability pack supports support-desk",
+);
+assert(
+  capabilityPlan.composition?.requestedPacks.includes("support-sla"),
+  "capability plan requests support-sla pack",
+);
+assert(
+  capabilityPlan.composition?.appliedPacks.includes("support-sla"),
+  "capability plan applies support-sla pack",
+);
+assert(
+  capabilityPlan.composition?.capabilityPacks.some(
+    (pack) => pack.name === "support-sla" && pack.status === "applied",
+  ),
+  "capability plan includes applied support-sla pack state",
+);
+assert(
+  capabilityPlan.composition?.packFit.some(
+    (fit) => fit.name === "support-sla" && fit.status === "applied",
+  ),
+  "capability plan includes applied support-sla fit state",
+);
+assert(
+  capabilityAgentTask.includes("## Capability Scope"),
+  "capability agent task includes capability scope",
+);
+assert(
+  capabilityAgentTask.includes("Pack fit: support-sla"),
+  "capability agent task includes pack fit",
+);
+assert(
+  capabilityAgentTask.includes("Runtime queues, retries, Outbox"),
+  "capability agent task includes host-owned runtime boundary",
 );
 
 console.log("launchpad fixtures ok");

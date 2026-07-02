@@ -1,0 +1,28 @@
+{
+  "protocol": "lenso.capability-pack.v1",
+  "name": "support-sla",
+  "label": "Support Sla",
+  "summary": "Adds support-sla business behavior.",
+  "supports": {
+    "blueprints": [
+      "support-desk"
+    ]
+  },
+  "modules": [
+    {
+      "name": "support-sla",
+      "manifest": "module/lenso.module.json"
+    }
+  ],
+  "services": [
+    {
+      "provider": "support-sla-provider",
+      "service": "api",
+      "language": "ts",
+      "manifest": "service/lenso.service.json"
+    }
+  ],
+  "agent": {
+    "defaultTask": "add or change support-sla behavior"
+  }
+}
