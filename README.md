@@ -82,6 +82,10 @@ V26 adds App Composer. The `support-desk-composer` fixture shows a
 composition-aware `.lenso/app-change-plan.json`, and an agent task generated
 with `lenso agent task --from-app-plan`.
 
+V27 adds local Capability Packs. The `fixtures/capabilities/support-sla-pack`
+fixture shows `lenso capability init`, `lenso capability check`, App Composer
+with `--pack`, and a capability-scoped agent handoff.
+
 ```sh
 pnpm check:launchpad-fixtures
 ```
