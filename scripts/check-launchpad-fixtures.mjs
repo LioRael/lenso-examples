@@ -49,6 +49,12 @@ const capabilityRoot = path.join(
 const capabilityPack = JSON.parse(
   fs.readFileSync(path.join(capabilityRoot, "lenso.capability.json"), "utf8"),
 );
+const capabilityLibrary = JSON.parse(
+  fs.readFileSync(
+    path.join(capabilityRoot, ".lenso/lenso.capability-library.json"),
+    "utf8",
+  ),
+);
 const capabilityPlan = JSON.parse(
   fs.readFileSync(path.join(capabilityRoot, "app-change-plan.json"), "utf8"),
 );
@@ -166,6 +172,16 @@ assert(
 );
 assert(capabilityPack.name === "support-sla", "capability pack name");
 assert(
+  capabilityLibrary.protocol === "lenso.capability-library.v1",
+  "capability library protocol",
+);
+assert(
+  capabilityLibrary.packs.some(
+    (pack) => pack.name === "support-sla" && pack.path === ".",
+  ),
+  "capability library includes support-sla",
+);
+assert(
   capabilityPack.supports.blueprints.includes("support-desk"),
   "capability pack supports support-desk",
 );
@@ -184,8 +200,18 @@ assert(
   "capability plan includes applied support-sla pack state",
 );
 assert(
+  capabilityPlan.composition?.packFit.some(
+    (fit) => fit.name === "support-sla" && fit.status === "applied",
+  ),
+  "capability plan includes applied support-sla fit state",
+);
+assert(
   capabilityAgentTask.includes("## Capability Scope"),
   "capability agent task includes capability scope",
+);
+assert(
+  capabilityAgentTask.includes("Pack fit: support-sla"),
+  "capability agent task includes pack fit",
 );
 assert(
   capabilityAgentTask.includes("Runtime queues, retries, Outbox"),
