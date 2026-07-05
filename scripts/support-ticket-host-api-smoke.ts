@@ -7,89 +7,76 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { serveSupportTicketModule } from "../examples/support-ticket/src/module.ts";
+import {
+  assert,
+  assertEqual,
+  expectAuditLogDataSurface,
+  expectLoadedModule,
+  expectServiceLifecycle,
+} from "./support-ticket-host-api-smoke-contract.ts";
 
 const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
 const lensoWorkspaceRoot = path.resolve(repoRoot, "../lenso");
 const lensoCrateRoot = path.resolve(repoRoot, "../lenso/crates/lenso");
+const lensoAuthModuleRoot = path.resolve(repoRoot, "../lenso-auth-module");
+const lensoAuditLogCrateRoot = path.resolve(
+  repoRoot,
+  "../lenso-audit-log-module/crates/audit-log",
+);
 const localLensoPatchToml = () =>
   [
     "",
     "[patch.crates-io]",
+    `lenso-api = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-api")}" }`,
+    `lenso-bootstrap = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-bootstrap")}" }`,
     `lenso-contracts = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-contracts")}" }`,
+    `lenso-migrate = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-migrate")}" }`,
+    `lenso-worker = { path = "${path.join(lensoWorkspaceRoot, "crates/lenso-worker")}" }`,
+    `lenso-platform-admin = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-admin")}" }`,
+    `lenso-platform-admin-data = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-admin-data")}" }`,
     `lenso-platform-core = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-core")}" }`,
     `lenso-platform-http = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-http")}" }`,
     `lenso-platform-module = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-module")}" }`,
+    `lenso-platform-module-remote = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-module-remote")}" }`,
     `lenso-platform-runtime = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-runtime")}" }`,
     `lenso-platform-testing = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-testing")}" }`,
+    `lenso-module-auth = { path = "${path.join(lensoAuthModuleRoot, "crates/auth")}" }`,
+    `lenso-module-auth-anonymous = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-anonymous")}" }`,
+    `lenso-module-auth-github = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-github")}" }`,
+    `lenso-module-auth-google = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-google")}" }`,
+    `lenso-module-auth-oauth = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-oauth")}" }`,
+    `lenso-module-auth-oidc = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-oidc")}" }`,
+    `lenso-module-auth-password = { path = "${path.join(lensoAuthModuleRoot, "crates/auth-password")}" }`,
     `lenso-module-story = { path = "${path.join(lensoWorkspaceRoot, "modules/story")}" }`,
+    `lenso-module-audit-log = { path = "${lensoAuditLogCrateRoot}" }`,
     "",
   ].join("\n");
 const token =
-  "dev-service:admin:runtime.stories.read,support_knowledge_base.articles.read,support_notification.notifications.send,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
+  "dev-service:admin:runtime.stories.read,audit_log.events.read,support_knowledge_base.articles.read,support_notification.notifications.send,support_ticket.tickets.read,support_ticket.tickets.write,support_ticket.tickets.escalate";
 const hostReadyTimeoutMs = Number(
   process.env.LENSO_HOST_API_SMOKE_READY_TIMEOUT_MS ?? "240000",
 );
-const expectedModuleNames = [
+const expectedServiceModuleNames = [
   "support-knowledge-base",
   "support-notification",
   "support-ticket",
 ];
+const expectedModuleNames = ["audit-log", ...expectedServiceModuleNames];
 
-const assertEqual = (actual, expected, message) => {
-  if (actual !== expected) {
-    throw new Error(
-      `${message}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(
-        actual,
-      )}`,
-    );
+const patchGeneratedHostForLocalLenso = async (root) => {
+  const modulePath = path.join(root, "src/modules/app/mod.rs");
+  const source = await readFile(modulePath, "utf8");
+  if (source.includes("operation: None,")) {
+    return;
   }
-};
-
-const assert = (condition, message) => {
-  if (!condition) {
-    throw new Error(message);
-  }
-};
-
-const expectLoadedModule = (modules, name) => {
-  const module = modules.modules?.find((item) => item.module_name === name);
-  assert(module, `${name} module was not listed`);
-  assertEqual(module.status, "loaded", `${name} load status`);
-  assertEqual(
-    module.governance?.activation_state,
-    "active",
-    `${name} activation state`,
+  await writeFile(
+    modulePath,
+    source.replaceAll(
+      /(\n            story_title: Some\("[^"]+"\.to_owned\(\)\),)/g,
+      "$1\n            operation: None,",
+    ),
   );
-  return module;
-};
-
-const expectServiceLifecycle = (serviceModules, name, supportServer) => {
-  const module = serviceModules.modules?.find((item) => item.moduleName === name);
-  assert(module, `${name} service lifecycle was not listed`);
-  assertEqual(module.providerName, "support-suite-provider", `${name} provider`);
-  assertEqual(module.status, "ready", `${name} service lifecycle status`);
-  assertEqual(
-    module.manifestStatus,
-    "reachable",
-    `${name} service lifecycle manifest status`,
-  );
-  assertEqual(
-    module.statusUrl,
-    supportServer.statusUrl ?? `${supportServer.baseUrl}/status`,
-    `${name} service status URL`,
-  );
-  assertEqual(
-    module.serviceStatus?.state,
-    "ready",
-    `${name} service status endpoint state`,
-  );
-  assertEqual(
-    module.compatibility?.state,
-    "compatible",
-    `${name} service compatibility state`,
-  );
-  return module;
 };
 
 const lensoCommand = () => {
@@ -256,6 +243,12 @@ try {
       .replace("POSTGRES_HOST_PORT=5432", `POSTGRES_HOST_PORT=${postgresPort}`)
       .replace("HTTP_PORT=3000", `HTTP_PORT=${httpPort}`),
   );
+  await patchGeneratedHostForLocalLenso(hostRoot);
+
+  await runLenso({
+    args: ["module", "install", "audit-log", "--repo-root", hostRoot],
+    cwd: hostRoot,
+  });
 
   await runLenso({
     args: [
@@ -305,6 +298,10 @@ try {
   const loadedModules = expectedModuleNames.map((name) =>
     expectLoadedModule(modules, name),
   );
+  const auditLog = loadedModules.find(
+    (module) => module.module_name === "audit-log",
+  );
+  expectAuditLogDataSurface(auditLog);
   const supportTicket = loadedModules.find(
     (module) => module.module_name === "support-ticket",
   );
@@ -328,9 +325,18 @@ try {
   const serviceModules = await fetchJson(
     `${apiBaseUrl}/admin/data/service-modules`,
   );
-  expectedModuleNames.forEach((name) =>
+  expectedServiceModuleNames.forEach((name) =>
     expectServiceLifecycle(serviceModules, name, supportServer),
   );
+
+  const auditEvents = await fetchJson(
+    `${apiBaseUrl}/admin/data/audit-log/events?limit=5`,
+  );
+  assert(
+    Array.isArray(auditEvents.data),
+    "audit-log events data surface did not return a data array",
+  );
+  assertEqual(auditEvents.page?.limit, 5, "audit-log events page limit");
 
   const list = await fetchJson(
     `${apiBaseUrl}/admin/data/support-ticket/tickets?limit=5`,

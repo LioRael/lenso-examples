@@ -94,6 +94,18 @@ try {
   if (!moduleManifest) {
     throw new Error("service manifest did not provide support-ticket");
   }
+  const notificationManifest = manifest.modules?.find(
+    (module) => module.name === "support-notification"
+  );
+  if (!notificationManifest) {
+    throw new Error("service manifest did not provide support-notification");
+  }
+  const knowledgeBaseManifest = manifest.modules?.find(
+    (module) => module.name === "support-knowledge-base"
+  );
+  if (!knowledgeBaseManifest) {
+    throw new Error("service manifest did not provide support-knowledge-base");
+  }
   for (const capability of catalogEntry.capabilities) {
     if (!moduleManifest.capabilities.includes(capability)) {
       throw new Error(
@@ -148,6 +160,28 @@ try {
     "support-ticket/runtime/support-ticket.escalate-ticket.v1"
   ) {
     throw new Error("escalate runtime function did not declare operation metadata");
+  }
+  const refreshIndexFunction = knowledgeBaseManifest.runtime?.functions?.find(
+    (runtimeFunction) =>
+      runtimeFunction.name === "support-knowledge-base.refresh-index.v1"
+  );
+  if (
+    refreshIndexFunction?.operation?.operationId !==
+    "support-knowledge-base/runtime/support-knowledge-base.refresh-index.v1"
+  ) {
+    throw new Error(
+      "knowledge-base refresh runtime function did not declare operation metadata"
+    );
+  }
+  const notificationRoute = notificationManifest.http_routes?.find(
+    (route) =>
+      route.method === "POST" && route.path === "/notifications/ticket-update"
+  );
+  if (
+    notificationRoute?.operation?.operationId !==
+    "support-notification/http/POST:/notifications/ticket-update"
+  ) {
+    throw new Error("support-notification did not declare the send HTTP operation");
   }
 
   const statusUrl = server.statusUrl ?? `${server.baseUrl}/status`;
@@ -237,12 +271,36 @@ try {
   ) {
     throw new Error("support-notification did not send ticket update");
   }
+  const notified = await fetchJson(
+    `${server.baseUrl}/modules/support-notification/notifications/ticket-update`,
+    {
+      body: JSON.stringify({ ticket_id: "ticket_2" }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    }
+  );
+  if (
+    notified.delivered !== true ||
+    notified.ticket_id !== "ticket_2"
+  ) {
+    throw new Error("support-notification HTTP route did not send ticket update");
+  }
 
   const article = await fetchJson(
     `${server.baseUrl}/modules/support-knowledge-base/articles/invite-teammates`
   );
   if (article.article?.title !== "Invite teammates") {
     throw new Error("support-knowledge-base did not return article");
+  }
+
+  const refreshed = await invokeRuntime(
+    server,
+    "support-knowledge-base",
+    "support-knowledge-base.refresh-index.v1",
+    {}
+  );
+  if (refreshed.output?.indexed !== true) {
+    throw new Error("support-knowledge-base did not refresh its index");
   }
 
   const admin = await fetchJson(`${moduleBaseUrl}/admin/tickets`);

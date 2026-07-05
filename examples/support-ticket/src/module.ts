@@ -150,6 +150,19 @@ export const supportTicketModule = defineModule({
 
 export const supportNotificationModule = defineModule({
   capabilities: ["support_notification.notifications.send"],
+  httpRoutes: [
+    {
+      ...postRoute("/notifications/ticket-update", {
+        capability: "support_notification.notifications.send",
+        displayName: "Send ticket update",
+        storyTitle: "Support notification sent",
+      }),
+      operation: {
+        operationId:
+          "support-notification/http/POST:/notifications/ticket-update",
+      },
+    },
+  ],
   name: "support-notification",
   runtimeFunctions: [
     runtimeFunction("support-notification.send-ticket-update.v1", {
@@ -169,6 +182,17 @@ export const supportKnowledgeBaseModule = defineModule({
     }),
   ],
   name: "support-knowledge-base",
+  runtimeFunctions: [
+    {
+      ...runtimeFunction("support-knowledge-base.refresh-index.v1", {
+        queue: "support-ticket",
+      }),
+      operation: {
+        operationId:
+          "support-knowledge-base/runtime/support-knowledge-base.refresh-index.v1",
+      },
+    },
+  ],
   version: "0.1.0",
 });
 
@@ -263,8 +287,19 @@ export const serveSupportTicketModule = async (options = {}) =>
             },
           }),
         },
+        runtime: {
+          "support-knowledge-base.refresh-index.v1": () => ({
+            indexed: true,
+          }),
+        },
       },
       "support-notification": {
+        http: {
+          "POST /notifications/ticket-update": ({ body }) => ({
+            delivered: true,
+            ticket_id: body?.ticket_id,
+          }),
+        },
         runtime: {
           "support-notification.send-ticket-update.v1": ({ input }) => ({
             delivered: true,
