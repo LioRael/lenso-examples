@@ -12,6 +12,8 @@ Keep these repositories checked out as siblings:
 ```text
 framework/
   lenso/
+  lenso-audit-log-module/
+  lenso-auth-module/
   lenso-examples/
   lenso-runtime-console/
 ```
@@ -47,6 +49,7 @@ From the sibling `lenso` backend checkout:
 
 ```sh
 test -f .env || cp .env.example .env
+lenso module install audit-log
 lenso module release inspect ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
 lenso module catalog add ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
@@ -296,7 +299,11 @@ Open `/console`, then check:
   `support-suite-provider` as the configured service provider.
 - Modules also shows `support-notification` and `support-knowledge-base` as
   sibling modules from the same provider.
+- Modules also shows the first-party `audit-log` linked module when you install
+  it beside the support suite.
 - Data shows the `tickets` surface and `assign_ticket` action.
+- Data shows the `audit-log` Audit Events surface. Support-ticket does not
+  create audit rows unless a module calls the audit-log writer API.
 - Remote Calls includes the support-ticket proxy call.
 - Runtime Story for the correlation id includes the service operation.
 
@@ -308,9 +315,10 @@ From `lenso-examples`, run the host API smoke:
 pnpm host-api-smoke:support-ticket
 ```
 
-It starts the provider, scaffolds a temporary host, installs the manifest,
-validates provider/module separation, calls the host-owned HTTP proxy and
-admin/runtime paths, and verifies Runtime Story evidence.
+It starts the provider, scaffolds a temporary host, installs `audit-log` by
+name, installs the support-ticket manifest, validates linked-vs-service module
+separation, calls the host-owned HTTP proxy and admin/runtime paths, verifies
+the Audit Events Data Surface, and verifies Runtime Story evidence.
 
 ## Troubleshooting
 

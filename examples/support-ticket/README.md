@@ -193,6 +193,8 @@ Restart the API and worker after install. Open `/console` and check Modules:
 - service status, compatibility, deployment, and health history are visible in
   Operations;
 - the `tickets` data surface and `assign_ticket` action are available.
+- if the first-party `audit-log` module is installed beside the support suite,
+  Data also shows Audit Events through `audit_log.events.read`.
 
 The host still owns Runtime Story, Remote Calls, queue, outbox, and retry
 evidence after the modules are used through the host. Console shows

@@ -434,8 +434,10 @@ pnpm host-api-smoke:support-ticket
 ```
 
 That starts the service, installs it into a temporary host, exercises the
-host-owned HTTP proxy and runtime path for its module, and verifies Runtime
-Story evidence.
+host-owned HTTP proxy and runtime path for its module, installs the first-party
+`audit-log` module by name, and verifies both support-ticket and Audit Events
+Data Surfaces. The smoke checks co-install visibility; support-ticket records
+do not create audit rows unless a module calls the audit-log writer API.
 For the manual walkthrough, see
 [docs/support-ticket-service-module-run.md](docs/support-ticket-service-module-run.md).
 
