@@ -13,6 +13,6 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.14.1",
     "@grpc/proto-loader": "^0.8.0",
-    "@lenso/remote-module-kit": "0.1.1"
+    "@lenso/remote-module-kit": "0.1.3"
   }
 }
