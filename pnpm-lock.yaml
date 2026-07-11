@@ -53,7 +53,7 @@ packages:
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
   '@lenso/remote-module-kit@0.1.3':
-    resolution: {integrity: sha512-cA96cAPcWSog7BUevDgICK/w9efRKX8fYzp1e7kSnFJC3QC6Kea4LZdXCY3nL1q++Ea5t8JEdv0/lwVaThygXQ==}
+    resolution: {integrity: sha512-Uwa20gO4caZWf3d6TyJfVwg1QiDVkpmYJB/+DirWzp9yPtM4ptfPYuE2s6Wh208sxJQPbO3lVV2FNxvyss1HwA==}
 
   '@lenso/service-kit@0.1.0':
     resolution: {integrity: sha512-DlMbs3jYd8bOxtSFkTkXyCgbEWcT/I9WUqNhRLXAuwpryCcRa3tXHklZ1IS6HnNhhbg8w0Fgs+N8hqFC3KyKcg==}
