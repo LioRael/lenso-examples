@@ -3,25 +3,23 @@ name: ci
 on:
   pull_request:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      integration_set_url:
+        description: Commit-addressed lenso.integration-set.v1 URL
+        required: false
+        type: string
+      integration_set_sha256:
+        description: Exact SHA-256 of the integration set bytes
+        required: false
+        type: string
 
 jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Check out Runtime Console SDK
-        run: |
-          ref="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-main}}"
-          if ! git ls-remote --exit-code --heads https://github.com/LioRael/lenso-runtime-console.git "$ref" >/dev/null; then
-            ref="main"
-          fi
-          git clone --depth 1 --branch "$ref" https://github.com/LioRael/lenso-runtime-console.git ../lenso-runtime-console
-      - name: Verify Runtime Console SDK checkout
-        run: |
-          test -f ../lenso-runtime-console/packages/remote-module-kit/package.json
-          test -f ../lenso-runtime-console/packages/service-kit/package.json
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - uses: pnpm/action-setup@v6
@@ -32,13 +30,25 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
           node-version: 24
-      - name: Install Runtime Console SDK dependencies
+      - name: Validate and materialize exact integration set
+        if: inputs.integration_set_url != '' || inputs.integration_set_sha256 != ''
+        env:
+          INTEGRATION_SET_URL: ${{ inputs.integration_set_url }}
+          INTEGRATION_SET_SHA256: ${{ inputs.integration_set_sha256 }}
+        run: npm run integration:prepare
+      - name: Install linked Runtime Console SDK dependencies
+        if: inputs.integration_set_url != ''
         run: pnpm --dir ../lenso-runtime-console install --frozen-lockfile
-      - name: Build Remote Module Kit
-        run: pnpm --dir ../lenso-runtime-console --filter @lenso/remote-module-kit build
-      - name: Build Service Kit
-        run: pnpm --dir ../lenso-runtime-console --filter @lenso/service-kit build
-      - name: Install dependencies
+      - name: Build exact linked Runtime Console SDKs
+        if: inputs.integration_set_url != ''
+        run: |
+          pnpm --dir ../lenso-runtime-console --filter @lenso/remote-module-kit build
+          pnpm --dir ../lenso-runtime-console --filter @lenso/service-kit build
+      - name: Install released dependencies
+        if: inputs.integration_set_url == '' && inputs.integration_set_sha256 == ''
         run: pnpm install --frozen-lockfile
+      - name: Install exact linked dependencies
+        if: inputs.integration_set_url != '' && inputs.integration_set_sha256 != ''
+        run: pnpm install --no-frozen-lockfile
       - name: Run examples checks
         run: pnpm check
