@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package lenso.services.support.v1;
+
+// lenso-contract-id: support-grpc
+// lenso-contract-version: v1
+service SupportService {
+  // lenso-idempotency: idempotent
+  rpc GetSla(GetSlaRequest) returns (SlaResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // lenso-idempotency: requires_key
+  rpc UpdateSla(UpdateSlaRequest) returns (SlaResponse);
+  rpc ProbeSla(ProbeSlaRequest) returns (SlaResponse);
+}
+
+message GetSlaRequest { bytes payload = 1; }
+message UpdateSlaRequest { bytes payload = 1; }
+message ProbeSlaRequest { bytes payload = 1; }
+message SlaResponse { bytes payload = 1; }

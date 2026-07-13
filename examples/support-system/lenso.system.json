@@ -1,0 +1,67 @@
+{
+  "protocol": "lenso.system.v2",
+  "systemId": "support-platform",
+  "host": {
+    "hostId": "support-compat-host",
+    "modules": ["auth"]
+  },
+  "providers": [
+    {
+      "providerId": "support-suite-provider",
+      "modules": ["support-notification"]
+    }
+  ],
+  "autonomousServices": [
+    {
+      "serviceId": "support-sla-service",
+      "modules": ["support-sla"],
+      "workloads": [
+        { "workloadId": "support-sla-service-api", "role": "api" },
+        { "workloadId": "support-sla-service-worker", "role": "worker" },
+        { "workloadId": "support-sla-service-migrate", "role": "migration" }
+      ]
+    },
+    {
+      "serviceId": "support-ticket-service",
+      "modules": ["support-ticket"],
+      "workloads": [
+        { "workloadId": "support-ticket-service-api", "role": "api" },
+        { "workloadId": "support-ticket-service-worker", "role": "worker" },
+        { "workloadId": "support-ticket-service-migrate", "role": "migration" }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "contractId": "support-http",
+      "version": "v1",
+      "producerKind": "autonomous_service",
+      "producerId": "support-ticket-service",
+      "artifact": {
+        "format": "openapi",
+        "path": "contracts/support-http.v1.yaml"
+      },
+      "tenancyMode": "none"
+    },
+    {
+      "contractId": "support-grpc",
+      "version": "v1",
+      "producerKind": "autonomous_service",
+      "producerId": "support-sla-service",
+      "artifact": {
+        "format": "protobuf",
+        "path": "contracts/support-grpc.v1.proto"
+      },
+      "tenancyMode": "none"
+    }
+  ],
+  "consumers": [
+    {
+      "consumerId": "support-ticket-support-sla",
+      "ownerKind": "autonomous_service",
+      "ownerId": "support-ticket-service",
+      "contractId": "support-grpc",
+      "tenancyMode": "none"
+    }
+  ]
+}
