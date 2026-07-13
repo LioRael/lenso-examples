@@ -1,0 +1,49 @@
+{
+  "protocol": "lenso.system-sandbox.v1",
+  "services": [
+    {
+      "serviceId": "support-sla-service",
+      "workloads": [
+        {
+          "workloadId": "support-sla-service-api",
+          "command": ["./target/debug/support-system-workload", "support-sla-service", "api"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-sla-store" },
+          "endpoint": "http://127.0.0.1:4211",
+          "healthUrl": "http://127.0.0.1:4212/health/ready"
+        },
+        {
+          "workloadId": "support-sla-service-worker",
+          "command": ["./target/debug/support-system-workload", "support-sla-service", "worker"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-sla-store" }
+        },
+        {
+          "workloadId": "support-sla-service-migrate",
+          "command": ["./target/debug/support-system-workload", "support-sla-service", "migrate"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-sla-store" }
+        }
+      ]
+    },
+    {
+      "serviceId": "support-ticket-service",
+      "workloads": [
+        {
+          "workloadId": "support-ticket-service-api",
+          "command": ["./target/debug/support-system-workload", "support-ticket-service", "api"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-ticket-store" },
+          "endpoint": "http://127.0.0.1:4210",
+          "healthUrl": "http://127.0.0.1:4210/health/ready"
+        },
+        {
+          "workloadId": "support-ticket-service-worker",
+          "command": ["./target/debug/support-system-workload", "support-ticket-service", "worker"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-ticket-store" }
+        },
+        {
+          "workloadId": "support-ticket-service-migrate",
+          "command": ["./target/debug/support-system-workload", "support-ticket-service", "migrate"],
+          "env": { "LENSO_SERVICE_STORE_ID": "support-ticket-store" }
+        }
+      ]
+    }
+  ]
+}

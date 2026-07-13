@@ -12,7 +12,8 @@ until the matching contracts are published:
 
 - TypeScript service examples resolve `@lenso/service-kit` and the V8
   `@lenso/remote-module-kit` build from `../lenso-runtime-console`.
-- `examples/rust-service` points at the sibling `../lenso` crate.
+- `examples/rust-service` and `examples/support-system` point at the sibling
+  `../lenso` crates.
 
 For local V8 verification, clone the matching V8 branches next to each other:
 
@@ -29,12 +30,16 @@ pnpm install
 
 ## Quick Start
 
-Install dependencies and run the full example smoke:
+Install dependencies and run the standard Provider example smokes:
 
 ```sh
 pnpm install
 pnpm smoke
 ```
+
+The communicating Autonomous Services proof is opt-in because it also requires
+the System Sandbox CLI and sibling `lenso` checkout; use
+`pnpm smoke:support-system` for that proof.
 
 ## Launchpad App
 
@@ -109,6 +114,30 @@ Keep this repository for runnable module examples; the host starter template is
 owned by the standalone `lenso-cli` repository.
 
 ## Examples
+
+### Communicating Support Services
+
+`examples/support-system` extracts the `support-ticket` and `support-sla`
+Modules into separate Autonomous Services. The clusterless System Sandbox
+starts API, Worker, and Migration Workloads with isolated Service Stores. A
+generated HTTP client calls support-ticket, which calls support-sla directly
+through the generated gRPC client without a Host or Provider in the Data Plane.
+
+With `lenso` CLI 0.1.30 or newer installed, run:
+
+```sh
+pnpm smoke:support-system:contract
+pnpm smoke:support-system
+```
+
+The existing Provider-mode proof remains separate and unchanged:
+
+```sh
+pnpm smoke:support-ticket
+```
+
+See [`examples/support-system/README.md`](examples/support-system/README.md)
+for the identities, evidence, and local CLI override.
 
 ### Rust Manifest
 

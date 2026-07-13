@@ -1,0 +1,27 @@
+openapi: 3.1.0
+info:
+  title: Support HTTP Service Contract
+  version: v1
+paths:
+  /v1/tickets/{ticket_id}:
+    get:
+      operationId: getTicket
+      x-lenso-idempotency: idempotent
+      responses:
+        '200':
+          description: Ticket
+    post:
+      operationId: updateTicket
+      x-lenso-idempotency: requires_key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+      responses:
+        '200':
+          description: Updated ticket
