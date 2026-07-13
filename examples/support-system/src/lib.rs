@@ -3,7 +3,8 @@ use axum::{Router, routing::get};
 use http::StatusCode;
 use lenso_service::{
     DirectGrpcBindings, DirectGrpcCallError, DirectGrpcClient, DirectHttpBindings, DirectHttpCall,
-    DirectHttpClient, DirectHttpResponse, DirectHttpServerBinding, Endpoint, EndpointState,
+    DirectHttpClient, DirectHttpResponse, DirectHttpServerBinding, Endpoint,
+    EndpointResolutionError, EndpointResolver, EndpointState, LastValidEndpointResolver,
     ServiceReference, StaticEndpointResolver, generate_direct_grpc_bindings,
     generate_direct_http_bindings,
     support_grpc_v1::{
@@ -27,6 +28,7 @@ const SLA_ENDPOINT: &str = "http://127.0.0.1:4211";
 const SLA_HEALTH_ENDPOINT: &str = "127.0.0.1:4212";
 const CONTRACT_DEADLINE_MS: u64 = 30_000;
 const IDEMPOTENCY_KEY: &str = "ticket-42:update";
+const SANDBOX_STATE: &str = ".lenso/system-sandbox/support-platform/state.json";
 const LOCAL_GRPC_DESCRIPTOR: &[u8] = tonic::include_file_descriptor_set!("support_descriptor");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -98,6 +100,11 @@ pub struct SmokeEvidence {
     pub grpc_decision: String,
     pub unsafe_retry_decision: String,
     pub unsafe_retry_attempts: u32,
+    pub calls_before_plane_withheld: u32,
+    pub calls_after_plane_withheld: u32,
+    pub system_plane_withheld: bool,
+    pub runtime_console_withheld: bool,
+    pub successful_story_segments: u32,
     pub ticket_workload_identity: String,
     pub sla_workload_identity: String,
     pub ticket_store_id: String,
@@ -116,6 +123,68 @@ struct WorkloadEvidence {
     kind: String,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct WorkloadScenarioObservation {
+    artifact_version: &'static str,
+    outcome: &'static str,
+    attempts: u32,
+    retry_attempted: bool,
+    retry_reason: &'static str,
+    controlled_time_end_ms: u64,
+    final_health: &'static str,
+    health_reason: &'static str,
+}
+
+#[derive(Debug, Clone)]
+struct SandboxEndpointResolver {
+    state_path: PathBuf,
+}
+
+impl SandboxEndpointResolver {
+    fn new(state_path: PathBuf) -> Self {
+        Self { state_path }
+    }
+}
+
+impl EndpointResolver for SandboxEndpointResolver {
+    fn resolve(
+        &self,
+        service: &ServiceReference,
+    ) -> Result<EndpointState, EndpointResolutionError> {
+        let source = std::fs::read(&self.state_path).map_err(|error| {
+            EndpointResolutionError::source_unavailable(
+                service,
+                format!("System Plane endpoint state is unavailable: {error}"),
+            )
+        })?;
+        let state: Value = serde_json::from_slice(&source).map_err(|error| {
+            EndpointResolutionError::source_unavailable(
+                service,
+                format!("System Plane endpoint state is invalid: {error}"),
+            )
+        })?;
+        let endpoint = state["endpoints"]
+            .as_array()
+            .and_then(|endpoints| {
+                endpoints
+                    .iter()
+                    .find(|endpoint| endpoint["serviceId"].as_str() == Some(service.as_str()))
+            })
+            .and_then(|endpoint| endpoint["endpoint"].as_str())
+            .ok_or_else(|| {
+                EndpointResolutionError::source_unavailable(
+                    service,
+                    "System Plane has no endpoint for the requested Service Reference",
+                )
+            })?;
+        Ok(EndpointState::new(
+            service.clone(),
+            vec![Endpoint::new(endpoint)],
+        ))
+    }
+}
+
 pub async fn run_workload(service: &str, role: &str) -> anyhow::Result<()> {
     let service = Service::parse(service)?;
     let role = WorkloadRole::parse(role)?;
@@ -126,6 +195,64 @@ pub async fn run_workload(service: &str, role: &str) -> anyhow::Result<()> {
         (Service::Ticket, WorkloadRole::Api) => ticket_api(environment).await,
         (Service::Sla, WorkloadRole::Api) => sla_api(environment).await,
     }
+}
+
+pub async fn run_scenario() -> anyhow::Result<()> {
+    let fault = std::env::var("LENSO_SANDBOX_FAULT_KIND")?;
+    ensure!(fault == "timeout", "unsupported support scenario fault");
+    let delay_ms = std::env::var("LENSO_SANDBOX_DELAY_MS")?.parse::<u64>()?;
+    let deadline_ms = std::env::var("LENSO_SANDBOX_DEADLINE_MS")?.parse::<u64>()?;
+    ensure!(delay_ms >= deadline_ms, "timeout must exhaust its Deadline");
+
+    let attempts = std::sync::Arc::new(std::sync::atomic::AtomicU32::new(0));
+    let observed_attempts = attempts.clone();
+    let server = DirectHttpServerBinding::new(http_bindings()?, move |_| {
+        let observed_attempts = observed_attempts.clone();
+        async move {
+            observed_attempts.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+            tokio::time::sleep(std::time::Duration::from_millis(delay_ms)).await;
+            DirectHttpResponse::json(StatusCode::OK, json!({"ok": true}))
+        }
+    });
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let endpoint = format!("http://{}", listener.local_addr()?);
+    let server = tokio::spawn(async move { axum::serve(listener, server.router()).await });
+    let error = DirectHttpClient::new(resolver(TICKET_SERVICE, &endpoint)?, http_bindings()?)
+        .call(
+            &ServiceReference::new(TICKET_SERVICE),
+            update_ticket_call(
+                "deadline-proof",
+                "Deadline proof",
+                now_ms() + deadline_ms,
+                "deadline-proof:update",
+            ),
+        )
+        .await
+        .expect_err("generated-client call must reach its Deadline");
+    server.abort();
+    ensure!(
+        error.to_string().contains("transport_failure_no_retry"),
+        "generated client did not report Deadline expiry"
+    );
+    let attempts = attempts.load(std::sync::atomic::Ordering::SeqCst);
+    ensure!(
+        attempts == 1,
+        "Deadline proof must observe exactly one attempt"
+    );
+    println!(
+        "{}",
+        serde_json::to_string(&WorkloadScenarioObservation {
+            artifact_version: "lenso.sandbox-workload-observation.v1",
+            outcome: "deadline_exceeded",
+            attempts,
+            retry_attempted: false,
+            retry_reason: "deadline_exhausted",
+            controlled_time_end_ms: delay_ms,
+            final_health: "ready",
+            health_reason: "generated_client_deadline_expired",
+        })?
+    );
+    Ok(())
 }
 
 fn workload_environment(service: Service, role: WorkloadRole) -> anyhow::Result<WorkloadEvidence> {
@@ -183,30 +310,29 @@ async fn ticket_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
     verify_store_owner(&environment).await?;
     let evidence_path = Path::new(&environment.store_path).join("operations.jsonl");
     let workload_identity = environment.workload_identity.clone();
+    let grpc = std::sync::Arc::new(DirectGrpcClient::new(
+        LastValidEndpointResolver::new(SandboxEndpointResolver::new(PathBuf::from(SANDBOX_STATE))),
+        grpc_bindings()?,
+    ));
     let binding = DirectHttpServerBinding::new(http_bindings()?, move |request| {
         let evidence_path = evidence_path.clone();
         let workload_identity = workload_identity.clone();
+        let grpc = grpc.clone();
         async move {
             let deadline = request.deadline_unix_ms.unwrap_or_default();
             let key = request.idempotency_key.clone().unwrap_or_default();
             let payload = request.body.to_vec();
-            let grpc = match resolver(SLA_SERVICE, SLA_ENDPOINT)
-                .and_then(|resolver| Ok(DirectGrpcClient::new(resolver, grpc_bindings()?)))
-            {
-                Ok(client) => client,
-                Err(error) => {
-                    return DirectHttpResponse::json(
-                        StatusCode::INTERNAL_SERVER_ERROR,
-                        json!({"error": error.to_string()}),
-                    );
-                }
-            };
             match grpc
                 .update_sla(&ServiceReference::new(SLA_SERVICE), payload, deadline, &key)
                 .await
             {
                 Ok(response) => {
                     let record = json!({
+                        "artifactVersion": "lenso.story-segment.v1",
+                        "storyId": format!("direct-call:{key}"),
+                        "segmentId": format!("{TICKET_SERVICE}:updateTicket:{key}"),
+                        "kind": "direct_service_call",
+                        "outcome": "succeeded",
                         "operation": "updateTicket",
                         "serviceReference": SLA_SERVICE,
                         "resolvedEndpoint": SLA_ENDPOINT,
@@ -279,6 +405,11 @@ impl SupportService for SlaApi {
         let deadline = metadata(&request, "x-lenso-deadline-unix-ms")?;
         let key = metadata(&request, "idempotency-key")?;
         let record = json!({
+            "artifactVersion": "lenso.story-segment.v1",
+            "storyId": format!("direct-call:{key}"),
+            "segmentId": format!("{SLA_SERVICE}:UpdateSla:{key}"),
+            "kind": "direct_service_call",
+            "outcome": "succeeded",
             "operation": "UpdateSla",
             "deadlineUnixMs": deadline.parse::<u64>().unwrap_or_default(),
             "idempotencyKey": key,
@@ -302,6 +433,10 @@ impl SupportService for SlaApi {
         append_json(
             &self.evidence_path,
             &json!({
+                "artifactVersion": "lenso.story-segment.v1",
+                "storyId": "direct-call:unsafe-probe",
+                "segmentId": format!("{SLA_SERVICE}:ProbeSla"),
+                "kind": "direct_service_call",
                 "operation": "ProbeSla",
                 "workloadIdentity": self.workload_identity,
                 "outcome": "unavailable",
@@ -345,22 +480,79 @@ async fn sla_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
 }
 
 pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
+    let sandbox_state: Value = serde_json::from_slice(&tokio::fs::read(SANDBOX_STATE).await?)?;
+    let workloads = sandbox_state["workloads"]
+        .as_array()
+        .context("Sandbox Workload state")?;
+    ensure!(
+        workloads.len() == 6,
+        "Sandbox started an unexpected process"
+    );
+    ensure!(
+        workloads.iter().all(|workload| matches!(
+            workload["serviceId"].as_str(),
+            Some(TICKET_SERVICE | SLA_SERVICE)
+        )),
+        "Host, Provider, Runtime Console, or another control-plane process entered the Data Plane"
+    );
+    let runtime_console_withheld = sandbox_state.get("runtimeConsole").is_none()
+        && workloads.iter().all(|workload| {
+            !workload["workloadId"]
+                .as_str()
+                .is_some_and(|id| id.contains("console"))
+        });
+    ensure!(
+        runtime_console_withheld,
+        "Runtime Console was not withheld from the acceptance proof"
+    );
     let deadline = now_ms() + CONTRACT_DEADLINE_MS;
-    let response =
-        DirectHttpClient::new(resolver(TICKET_SERVICE, TICKET_ENDPOINT)?, http_bindings()?)
-            .call(
-                &ServiceReference::new(TICKET_SERVICE),
-                DirectHttpCall::new("updateTicket")
-                    .with_path_parameter("ticket_id", "42")
-                    .with_json(json!({"title":"SLA breach"}))
-                    .with_deadline(deadline)
-                    .with_idempotency_key(IDEMPOTENCY_KEY),
-            )
-            .await?;
+    let client = DirectHttpClient::new(
+        LastValidEndpointResolver::new(SandboxEndpointResolver::new(PathBuf::from(SANDBOX_STATE))),
+        http_bindings()?,
+    );
+    let service = ServiceReference::new(TICKET_SERVICE);
+    let response = client
+        .call(
+            &service,
+            update_ticket_call("42", "SLA breach", deadline, IDEMPOTENCY_KEY),
+        )
+        .await?;
     ensure!(response.status == StatusCode::OK, "ticket operation failed");
     let body: Value = serde_json::from_slice(&response.body)?;
     ensure!(body["ticketId"] == "42", "ticket identity changed");
     ensure!(body["sla"]["priority"] == "urgent", "SLA outcome missing");
+
+    let state_path = PathBuf::from(SANDBOX_STATE);
+    let withheld_path = state_path.with_extension("withheld");
+    tokio::fs::rename(&state_path, &withheld_path).await?;
+    let system_plane_withheld = !tokio::fs::try_exists(&state_path).await?;
+    ensure!(
+        system_plane_withheld,
+        "System Plane endpoint source remained available"
+    );
+    let plane_independent_call = client
+        .call(
+            &service,
+            update_ticket_call(
+                "43",
+                "Plane-independent SLA breach",
+                now_ms() + CONTRACT_DEADLINE_MS,
+                "ticket-43:update",
+            ),
+        )
+        .await;
+    tokio::fs::rename(&withheld_path, &state_path).await?;
+    let plane_independent_call = plane_independent_call?;
+    ensure!(
+        plane_independent_call.status == StatusCode::OK,
+        "direct call failed while System Plane state was withheld"
+    );
+    let plane_independent_body: Value = serde_json::from_slice(&plane_independent_call.body)?;
+    ensure!(
+        plane_independent_body["ticketId"] == "43"
+            && plane_independent_body["sla"]["priority"] == "urgent",
+        "plane-independent business outcome missing"
+    );
 
     let probe = DirectGrpcClient::new(resolver(SLA_SERVICE, SLA_ENDPOINT)?, grpc_bindings()?)
         .probe_sla(&ServiceReference::new(SLA_SERVICE), vec![], deadline)
@@ -383,6 +575,20 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
     let ticket_operations =
         tokio::fs::read_to_string(ticket_store.join("operations.jsonl")).await?;
     let sla_operations = tokio::fs::read_to_string(sla_store.join("operations.jsonl")).await?;
+    let ticket_segments = json_lines(&ticket_operations);
+    let sla_segments = json_lines(&sla_operations);
+    let successful_story_segments = ticket_segments
+        .iter()
+        .chain(&sla_segments)
+        .filter(|segment| {
+            segment["artifactVersion"] == "lenso.story-segment.v1"
+                && segment["outcome"] == "succeeded"
+        })
+        .count() as u32;
+    ensure!(
+        successful_story_segments >= 4,
+        "successful direct calls did not persist local Story Segments"
+    );
     ensure!(
         ticket_operations.contains("updateTicket") && ticket_operations.contains(SLA_SERVICE),
         "ticket local evidence missing"
@@ -400,9 +606,8 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
             && sla_migration.store_id == Service::Sla.store_id(),
         "declared Service Store identities were not applied"
     );
-    let sla_api_identity = sla_operations
-        .lines()
-        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+    let sla_api_identity = sla_segments
+        .iter()
         .find(|value| value["operation"] == "UpdateSla")
         .and_then(|value| value["workloadIdentity"].as_str().map(str::to_owned))
         .context("SLA API Workload Identity evidence")?;
@@ -418,6 +623,11 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
         grpc_decision: body["grpcDecision"].as_str().unwrap_or_default().to_owned(),
         unsafe_retry_decision: unsafe_evidence.decision,
         unsafe_retry_attempts: unsafe_evidence.attempts,
+        calls_before_plane_withheld: 1,
+        calls_after_plane_withheld: 1,
+        system_plane_withheld,
+        runtime_console_withheld,
+        successful_story_segments,
         ticket_workload_identity: body["workloadIdentity"]
             .as_str()
             .unwrap_or_default()
@@ -450,6 +660,26 @@ fn resolver(service: &str, endpoint: &str) -> anyhow::Result<StaticEndpointResol
         vec![Endpoint::new(endpoint)],
     )])
     .map_err(anyhow::Error::msg)
+}
+
+fn update_ticket_call(
+    ticket_id: &str,
+    title: &str,
+    deadline: u64,
+    idempotency_key: &str,
+) -> DirectHttpCall {
+    DirectHttpCall::new("updateTicket")
+        .with_path_parameter("ticket_id", ticket_id)
+        .with_json(json!({"title": title}))
+        .with_deadline(deadline)
+        .with_idempotency_key(idempotency_key)
+}
+
+fn json_lines(source: &str) -> Vec<Value> {
+    source
+        .lines()
+        .filter_map(|line| serde_json::from_str(line).ok())
+        .collect()
 }
 
 async fn append_json(path: &Path, value: &Value) -> anyhow::Result<()> {
@@ -497,7 +727,10 @@ fn now_ms() -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lenso_service::{ContractSemanticKind, check_contract_artifact_value};
+    use lenso_service::{
+        ContractSemanticKind, EndpointResolver, LastValidEndpointResolver,
+        check_contract_artifact_value,
+    };
 
     #[test]
     fn service_definitions_are_valid_autonomous_contracts() {
@@ -517,5 +750,41 @@ mod tests {
         let value: Value = serde_json::from_str(include_str!("../lenso.system.json")).unwrap();
         let check = check_contract_artifact_value(&value).unwrap();
         assert_eq!(check.semantic_kind, ContractSemanticKind::MixedSystem);
+    }
+
+    #[test]
+    fn service_client_retains_endpoint_state_after_system_plane_is_withheld() {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "lenso-support-system-resolver-{}-{nonce}",
+            std::process::id(),
+        ));
+        std::fs::create_dir_all(&root).unwrap();
+        let state = root.join("state.json");
+        std::fs::write(
+            &state,
+            serde_json::to_vec(&json!({
+                "endpoints": [{
+                    "serviceId": SLA_SERVICE,
+                    "workloadId": "support-sla-service-api",
+                    "endpoint": SLA_ENDPOINT
+                }]
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        let resolver = LastValidEndpointResolver::new(SandboxEndpointResolver::new(state.clone()));
+        let service = ServiceReference::new(SLA_SERVICE);
+
+        let available = resolver.resolve(&service).unwrap();
+        std::fs::remove_file(&state).unwrap();
+        let withheld = resolver.resolve(&service).unwrap();
+
+        assert_eq!(available, withheld);
+        assert_eq!(withheld.endpoints[0].address, SLA_ENDPOINT);
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const fixtureRoot = new URL("../examples/support-system/", import.meta.url);
+const repoRoot = new URL("../", import.meta.url);
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, fixtureRoot), "utf8"));
@@ -93,6 +94,46 @@ test("sandbox launches every Workload and exposes only API endpoints", async () 
         : "support-sla-store",
     );
   }
+
+  const ticketApi = workloads.find(
+    ({ workloadId }) => workloadId === "support-ticket-service-api",
+  );
+  assert.deepEqual(ticketApi.scenarioCommand, [
+    "./target/debug/support-system-workload",
+    "scenario",
+  ]);
+  assert.deepEqual(
+    sandbox.scenarios.map(({ scenarioId, fault, callPolicy }) => ({
+      scenarioId,
+      kind: fault.kind,
+      serviceId: fault.serviceId,
+      workloadId: fault.workloadId,
+      idempotent: callPolicy.idempotent,
+    })),
+    [
+      {
+        scenarioId: "deadline-timeout",
+        kind: "timeout",
+        serviceId: "support-ticket-service",
+        workloadId: "support-ticket-service-api",
+        idempotent: true,
+      },
+      {
+        scenarioId: "support-ticket-api-crash",
+        kind: "workload_crash",
+        serviceId: "support-ticket-service",
+        workloadId: "support-ticket-service-api",
+        idempotent: false,
+      },
+      {
+        scenarioId: "support-ticket-api-partial-unavailability",
+        kind: "partial_unavailability",
+        serviceId: "support-ticket-service",
+        workloadId: "support-ticket-service-api",
+        idempotent: false,
+      },
+    ],
+  );
 });
 
 test("Service definitions retain isolated Store and contract ownership", async () => {
@@ -115,4 +156,9 @@ test("Service definitions retain isolated Store and contract ownership", async (
   assert.deepEqual(sla.serviceContracts.map(({ contractId }) => contractId), [
     "support-grpc",
   ]);
+});
+
+test("one public command owns the M1 acceptance proof", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m1"], "node scripts/m1-acceptance.mjs");
 });

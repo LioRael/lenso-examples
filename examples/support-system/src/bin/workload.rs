@@ -4,6 +4,9 @@ async fn main() -> anyhow::Result<()> {
     let service = args
         .next()
         .ok_or_else(|| anyhow::anyhow!("missing Service"))?;
+    if service == "scenario" {
+        return lenso_example_support_system::run_scenario().await;
+    }
     let role = args
         .next()
         .ok_or_else(|| anyhow::anyhow!("missing Workload role"))?;

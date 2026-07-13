@@ -24,6 +24,21 @@ pnpm smoke:support-system:contract
 pnpm smoke:support-system
 ```
 
+Run the authoritative M1 developer-preview acceptance workflow from the
+repository root:
+
+```sh
+pnpm acceptance:m1
+```
+
+This one command proves the generated-client business call and local Story
+Segment evidence, repeats the call after the Sandbox endpoint-state source is
+withheld, verifies Deadline, crash, partial-unavailability, attempt-count, and
+no-unsafe-retry machine results, checks deterministic cleanup, and finally runs
+the independent Host-managed Provider smoke. Runtime Console, Host, Provider,
+Kubernetes, service mesh, external broker, and production identity processes
+are absent from the Autonomous Data Plane proof.
+
 To use a source-built CLI containing the System Sandbox:
 
 ```sh
@@ -41,8 +56,9 @@ generated HTTP client
 
 No request is routed through the declared compatibility Host or Provider. The
 final JSON output exposes Service References, resolved endpoints, Deadline,
-Idempotency Key, HTTP and gRPC call decisions, one-attempt unsafe-operation
-suppression, Workload Identity, and Store isolation. Each Service also writes
+Idempotency Key, HTTP and gRPC call decisions, calls before and after the
+System Plane source is withheld, one-attempt unsafe-operation suppression,
+Workload Identity, and Store isolation. Each Service also writes
 business-operation evidence inside its sandbox-owned Store before cleanup.
 
 The original Host-managed Provider proof is intentionally independent:

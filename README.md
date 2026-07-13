@@ -128,7 +128,12 @@ With `lenso` CLI 0.1.30 or newer installed, run:
 ```sh
 pnpm smoke:support-system:contract
 pnpm smoke:support-system
+pnpm acceptance:m1
 ```
+
+`acceptance:m1` is the authoritative M1 developer-preview proof. It covers
+plane-independent direct calls, declared machine-readable failure results,
+deterministic cleanup, and the separate Provider smoke.
 
 The existing Provider-mode proof remains separate and unchanged:
 

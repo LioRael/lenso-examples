@@ -29,6 +29,7 @@
         {
           "workloadId": "support-ticket-service-api",
           "command": ["./target/debug/support-system-workload", "support-ticket-service", "api"],
+          "scenarioCommand": ["./target/debug/support-system-workload", "scenario"],
           "env": { "LENSO_SERVICE_STORE_ID": "support-ticket-store" },
           "endpoint": "http://127.0.0.1:4210",
           "healthUrl": "http://127.0.0.1:4210/health/ready"
@@ -44,6 +45,48 @@
           "env": { "LENSO_SERVICE_STORE_ID": "support-ticket-store" }
         }
       ]
+    }
+  ],
+  "scenarios": [
+    {
+      "scenarioId": "deadline-timeout",
+      "fault": {
+        "kind": "timeout",
+        "serviceId": "support-ticket-service",
+        "workloadId": "support-ticket-service-api",
+        "delayMs": 100
+      },
+      "callPolicy": {
+        "deadlineMs": 50,
+        "maxAttempts": 2,
+        "idempotent": true
+      }
+    },
+    {
+      "scenarioId": "support-ticket-api-crash",
+      "fault": {
+        "kind": "workload_crash",
+        "serviceId": "support-ticket-service",
+        "workloadId": "support-ticket-service-api"
+      },
+      "callPolicy": {
+        "deadlineMs": 50,
+        "maxAttempts": 2,
+        "idempotent": false
+      }
+    },
+    {
+      "scenarioId": "support-ticket-api-partial-unavailability",
+      "fault": {
+        "kind": "partial_unavailability",
+        "serviceId": "support-ticket-service",
+        "workloadId": "support-ticket-service-api"
+      },
+      "callPolicy": {
+        "deadlineMs": 50,
+        "maxAttempts": 2,
+        "idempotent": false
+      }
     }
   ]
 }
