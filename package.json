@@ -5,6 +5,7 @@
   "description": "Runnable examples for Lenso modules and API clients.",
   "type": "module",
   "scripts": {
+    "acceptance:m1": "node scripts/m1-acceptance.mjs",
     "check": "pnpm smoke && pnpm host-api-smoke:contract && pnpm smoke:support-system:contract",
     "integration:prepare": "node scripts/prepare-integration-set.mjs",
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke && pnpm --filter @lenso/example-support-ticket host-smoke && pnpm --filter @lenso/example-account-profile host-smoke",
