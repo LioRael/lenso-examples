@@ -122,6 +122,9 @@ Modules into separate Autonomous Services. The clusterless System Sandbox
 starts API, Worker, and Migration Workloads with isolated Service Stores. A
 generated HTTP client calls support-ticket, which calls support-sla directly
 through the generated gRPC client without a Host or Provider in the Data Plane.
+The same support workflow publishes `support.ticket-opened.v1` transactionally,
+authenticates its Service Principal and delegated tenant context at support-sla,
+and commits the SLA business effect through a durable Inbox.
 
 With `lenso` CLI 0.1.30 or newer installed, run:
 
@@ -129,11 +132,21 @@ With `lenso` CLI 0.1.30 or newer installed, run:
 pnpm smoke:support-system:contract
 pnpm smoke:support-system
 pnpm acceptance:m1
+pnpm acceptance:m2
 ```
 
 `acceptance:m1` is the authoritative M1 developer-preview proof. It covers
 plane-independent direct calls, declared machine-readable failure results,
 deterministic cleanup, and the separate Provider smoke.
+
+`acceptance:m2` is the dependency-free M2 gate. It provisions an ephemeral
+Postgres instance when `DATABASE_URL` is absent, runs direct calls plus local
+event delivery through the started Service Workers while Runtime Console and
+System Plane state are withheld, returns deterministic results for the
+reliability, identity, Deadline, and Call Policy matrix, and retains the
+Provider compatibility smoke. Real NATS JetStream evidence reuses the same
+support Module behavior; NATS and SPIFFE/SPIRE remain a separate explicit
+Approval Boundary exposed by `pnpm acceptance:m2:production`.
 
 The existing Provider-mode proof remains separate and unchanged:
 
