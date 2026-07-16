@@ -52,8 +52,10 @@ exactly-once business effects over at-least-once delivery, local Service
 Principal/delegation/tenant verification, dead-letter replay, restart and
 transport interruption recovery, the complete deterministic Call Policy
 matrix, plane-independent Service-local evidence, cleanup, and the unchanged
-Provider smoke. The command starts an ephemeral Postgres instance when
-`DATABASE_URL` is not already supplied.
+Provider smoke. Event production and consumption run inside the two started
+Service Worker processes, while the Call Policy matrix reaches the live SLA
+Service. The command starts an ephemeral Postgres instance when `DATABASE_URL`
+is not already supplied.
 
 Real production integrations are deliberately separate and require explicit
 authorized infrastructure:
@@ -66,9 +68,10 @@ SPIFFE_ENDPOINT_SOCKET=unix:///... \
 pnpm acceptance:m2:production
 ```
 
-That command runs the NATS JetStream transport conformance and SPIFFE/SPIRE
-identity proof. It refuses to infer production authority from repository
-access or local execution.
+That command runs the NATS JetStream transport conformance, reuses the same
+support Module handler and Event Contract against JetStream, and runs the
+SPIFFE/SPIRE identity proof. It refuses to infer production authority from
+repository access or local execution.
 
 To use a source-built CLI containing the System Sandbox:
 

@@ -140,12 +140,13 @@ plane-independent direct calls, declared machine-readable failure results,
 deterministic cleanup, and the separate Provider smoke.
 
 `acceptance:m2` is the dependency-free M2 gate. It provisions an ephemeral
-Postgres instance when `DATABASE_URL` is absent, runs direct calls and local
-event delivery while Runtime Console and System Plane state are withheld,
-returns deterministic results for the reliability, identity, Deadline, and
-Call Policy matrix, and retains the Provider compatibility smoke. Real NATS
-JetStream and SPIFFE/SPIRE evidence remains a separate explicit Approval
-Boundary exposed by `pnpm acceptance:m2:production`.
+Postgres instance when `DATABASE_URL` is absent, runs direct calls plus local
+event delivery through the started Service Workers while Runtime Console and
+System Plane state are withheld, returns deterministic results for the
+reliability, identity, Deadline, and Call Policy matrix, and retains the
+Provider compatibility smoke. Real NATS JetStream evidence reuses the same
+support Module behavior; NATS and SPIFFE/SPIRE remain a separate explicit
+Approval Boundary exposed by `pnpm acceptance:m2:production`.
 
 The existing Provider-mode proof remains separate and unchanged:
 

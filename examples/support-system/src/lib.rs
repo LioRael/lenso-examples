@@ -1,12 +1,16 @@
 use anyhow::{Context, ensure};
-use axum::{Router, routing::get};
+use axum::{
+    Json, Router,
+    extract::State,
+    routing::{get, post},
+};
 use http::StatusCode;
 use lenso_service::{
-    DirectGrpcBindings, DirectGrpcCallError, DirectGrpcClient, DirectHttpBindings, DirectHttpCall,
-    DirectHttpClient, DirectHttpResponse, DirectHttpServerBinding, Endpoint,
-    EndpointResolutionError, EndpointResolver, EndpointState, LastValidEndpointResolver,
-    ServiceReference, StaticEndpointResolver, generate_direct_grpc_bindings,
-    generate_direct_http_bindings,
+    CallPolicyDeclaration, CallPolicyRuntime, DirectGrpcBindings, DirectGrpcCallError,
+    DirectGrpcClient, DirectHttpBindings, DirectHttpCall, DirectHttpClient, DirectHttpResponse,
+    DirectHttpServerBinding, Endpoint, EndpointResolutionError, EndpointResolver, EndpointState,
+    LastValidEndpointResolver, ServiceReference, StaticEndpointResolver,
+    generate_direct_grpc_bindings, generate_direct_http_bindings,
     support_grpc_v1::{
         GetSlaRequest, ProbeSlaRequest, SlaResponse, UpdateSlaRequest,
         support_service_server::{SupportService, SupportServiceServer},
@@ -22,7 +26,10 @@ use tokio::io::AsyncWriteExt;
 use tonic::{Request, Response, Status};
 
 mod m2;
-pub use m2::{M2SmokeEvidence, run_m2_smoke};
+pub use m2::{
+    M2ConsumerRequest, M2ProducerEvidence, M2ProducerRequest, M2SmokeEvidence, run_m2_consumer,
+    run_m2_producer, run_m2_smoke,
+};
 
 const TICKET_SERVICE: &str = "support-ticket-service";
 const SLA_SERVICE: &str = "support-sla-service";
@@ -194,7 +201,7 @@ pub async fn run_workload(service: &str, role: &str) -> anyhow::Result<()> {
     let environment = workload_environment(service, role)?;
     match (service, role) {
         (_, WorkloadRole::Migration) => migrate(&environment).await,
-        (_, WorkloadRole::Worker) => worker(&environment).await,
+        (_, WorkloadRole::Worker) => worker(service, &environment).await,
         (Service::Ticket, WorkloadRole::Api) => ticket_api(environment).await,
         (Service::Sla, WorkloadRole::Api) => sla_api(environment).await,
     }
@@ -299,15 +306,59 @@ async fn migrate(environment: &WorkloadEvidence) -> anyhow::Result<()> {
     write_json(store.join("migration.json"), environment).await
 }
 
-async fn worker(environment: &WorkloadEvidence) -> anyhow::Result<()> {
+async fn worker(service: Service, environment: &WorkloadEvidence) -> anyhow::Result<()> {
     verify_store_owner(environment).await?;
     write_json(
         Path::new(&environment.store_path).join("worker.json"),
         environment,
     )
     .await?;
-    std::future::pending::<()>().await;
+    let evidence_path = PathBuf::from(&environment.store_path);
+    let (address, app) = match service {
+        Service::Ticket => (
+            "127.0.0.1:4213",
+            Router::new()
+                .route("/health/ready", get(|| async { StatusCode::OK }))
+                .route("/m2/events/produce", post(m2_produce))
+                .with_state(evidence_path),
+        ),
+        Service::Sla => (
+            "127.0.0.1:4214",
+            Router::new()
+                .route("/health/ready", get(|| async { StatusCode::OK }))
+                .route("/m2/events/consume", post(m2_consume))
+                .with_state(evidence_path),
+        ),
+    };
+    let listener = tokio::net::TcpListener::bind(address).await?;
+    axum::serve(listener, app).await?;
     Ok(())
+}
+
+async fn m2_produce(
+    State(store_path): State<PathBuf>,
+    Json(request): Json<M2ProducerRequest>,
+) -> Result<Json<M2ProducerEvidence>, (StatusCode, String)> {
+    let evidence = run_m2_producer(request).await.map_err(m2_handler_error)?;
+    write_json(store_path.join("m2-event-producer.json"), &evidence)
+        .await
+        .map_err(m2_handler_error)?;
+    Ok(Json(evidence))
+}
+
+async fn m2_consume(
+    State(store_path): State<PathBuf>,
+    Json(request): Json<M2ConsumerRequest>,
+) -> Result<Json<m2::EventFlowEvidence>, (StatusCode, String)> {
+    let evidence = run_m2_consumer(request).await.map_err(m2_handler_error)?;
+    write_json(store_path.join("m2-event-consumer.json"), &evidence)
+        .await
+        .map_err(m2_handler_error)?;
+    Ok(Json(evidence))
+}
+
+fn m2_handler_error(error: anyhow::Error) -> (StatusCode, String) {
+    (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
 }
 
 async fn ticket_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
@@ -390,6 +441,8 @@ fn ticket_id(path: &str) -> &str {
 struct SlaApi {
     evidence_path: PathBuf,
     workload_identity: String,
+    call_policy_runtime: CallPolicyRuntime,
+    get_sla_policy: CallPolicyDeclaration,
 }
 
 #[tonic::async_trait]
@@ -398,9 +451,75 @@ impl SupportService for SlaApi {
         &self,
         request: Request<GetSlaRequest>,
     ) -> Result<Response<SlaResponse>, Status> {
-        Ok(Response::new(SlaResponse {
-            payload: request.into_inner().payload,
-        }))
+        let permit = match self
+            .call_policy_runtime
+            .admit("support-grpc:GetSla", &self.get_sla_policy)
+        {
+            Ok(permit) => permit,
+            Err(event) => {
+                append_json(
+                    &self.evidence_path,
+                    &json!({
+                        "artifactVersion": "lenso.story-segment.v1",
+                        "storyId": "call-policy:overload",
+                        "segmentId": format!("{SLA_SERVICE}:GetSla:overload"),
+                        "kind": "direct_service_call",
+                        "operation": "GetSla",
+                        "outcome": event.as_str(),
+                    }),
+                )
+                .await
+                .map_err(|error| Status::internal(error.to_string()))?;
+                return Err(Status::resource_exhausted(event.as_str()));
+            }
+        };
+        let payload = request.into_inner().payload;
+        let scenario = String::from_utf8_lossy(&payload);
+        if scenario == "m2-call-policy-failure" {
+            let _ = permit.failure();
+            append_json(
+                &self.evidence_path,
+                &json!({
+                    "artifactVersion": "lenso.story-segment.v1",
+                    "storyId": "call-policy:circuit",
+                    "segmentId": format!("{SLA_SERVICE}:GetSla:failure"),
+                    "kind": "direct_service_call",
+                    "operation": "GetSla",
+                    "outcome": "unavailable",
+                    "workloadIdentity": self.workload_identity,
+                }),
+            )
+            .await
+            .map_err(|error| Status::internal(error.to_string()))?;
+            return Err(Status::unavailable("controlled M2 Call Policy failure"));
+        }
+        if scenario == "m2-call-policy-deadline" {
+            tokio::time::sleep(std::time::Duration::from_millis(25)).await;
+            let _ = permit.failure();
+            return Err(Status::deadline_exceeded(
+                "controlled M2 Service Deadline expired",
+            ));
+        }
+        if scenario == "m2-call-policy-slow" {
+            tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+        }
+        let events = permit.success();
+        append_json(
+            &self.evidence_path,
+            &json!({
+                "artifactVersion": "lenso.story-segment.v1",
+                "storyId": "call-policy:actual-call",
+                "segmentId": format!("{SLA_SERVICE}:GetSla:{}", now_ms()),
+                "kind": "direct_service_call",
+                "operation": "GetSla",
+                "outcome": "succeeded",
+                "workloadIdentity": self.workload_identity,
+                "callPolicyEvents": events.iter().map(|event| event.as_str()).collect::<Vec<_>>(),
+            }),
+        )
+        .await
+        .map_err(|error| Status::internal(error.to_string()))?;
+        Ok(Response::new(SlaResponse { payload }))
     }
 
     async fn update_sla(
@@ -464,9 +583,17 @@ fn metadata<T>(request: &Request<T>, key: &'static str) -> Result<String, Status
 
 async fn sla_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
     verify_store_owner(&environment).await?;
+    let bindings = grpc_bindings()?;
+    let get_sla_policy = bindings
+        .operation("GetSla")
+        .context("generated GetSla binding")?
+        .call_policy
+        .clone();
     let service = SlaApi {
         evidence_path: Path::new(&environment.store_path).join("operations.jsonl"),
         workload_identity: environment.workload_identity,
+        call_policy_runtime: CallPolicyRuntime::default(),
+        get_sla_policy,
     };
     let grpc_listener = tokio::net::TcpListener::bind("127.0.0.1:4211").await?;
     let incoming = tokio_stream::wrappers::TcpListenerStream::new(grpc_listener);

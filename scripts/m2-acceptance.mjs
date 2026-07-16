@@ -83,6 +83,7 @@ async function runAcceptance() {
   assert.equal(smokeEvidence.eventFlow.delegatedActor, "user_01");
   assert.equal(smokeEvidence.eventFlow.tenantId, "tenant_01");
   assert.ok(smokeEvidence.eventFlow.localEvidenceRecords > 0);
+  assert.equal(smokeEvidence.eventFlow.serviceLocalEvidenceFiles, 2);
   assert.equal(smokeEvidence.eventFlow.systemPlaneWithheld, true);
   assert.equal(smokeEvidence.eventFlow.runtimeConsoleWithheld, true);
   assert.equal(smokeEvidence.eventFlow.cleanupCompleted, true);

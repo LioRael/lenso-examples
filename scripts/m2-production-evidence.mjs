@@ -41,15 +41,15 @@ const natsEvidence = await run("cargo", [
 requireExecuted(natsEvidence, "NATS JetStream");
 const natsBusinessEvidence = await run("cargo", [
   "test",
+  "--manifest-path",
+  "examples/support-system/Cargo.toml",
   "--locked",
-  "-p",
-  "lenso-autonomous-service",
-  "--test",
-  "transport",
-  "jetstream_restart_preserves_authoritative_support_behavior_once",
+  "--lib",
+  "m2::production_tests::nats_jetstream_runs_same_support_module_behavior",
   "--",
   "--exact",
-]);
+  "--nocapture",
+], repoRoot);
 requireExecuted(natsBusinessEvidence, "NATS support Module behavior");
 const spiffeEvidence = await run("cargo", [
   "test",
@@ -95,10 +95,10 @@ function requireExecuted(output, integration) {
   }
 }
 
-function run(command, args) {
+function run(command, args, cwd = lensoRepo) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      cwd: lensoRepo,
+      cwd,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
     });
