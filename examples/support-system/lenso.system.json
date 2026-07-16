@@ -53,6 +53,17 @@
         "path": "contracts/support-grpc.v1.proto"
       },
       "tenancyMode": "none"
+    },
+    {
+      "contractId": "support-ticket-opened",
+      "version": "v1",
+      "producerKind": "autonomous_service",
+      "producerId": "support-ticket-service",
+      "artifact": {
+        "format": "json_schema",
+        "path": "contracts/support.ticket-opened.v1.schema.json"
+      },
+      "tenancyMode": "required"
     }
   ],
   "consumers": [
@@ -62,6 +73,13 @@
       "ownerId": "support-ticket-service",
       "contractId": "support-grpc",
       "tenancyMode": "none"
+    },
+    {
+      "consumerId": "support-sla-ticket-opened",
+      "ownerKind": "autonomous_service",
+      "ownerId": "support-sla-service",
+      "contractId": "support-ticket-opened",
+      "tenancyMode": "required"
     }
   ]
 }

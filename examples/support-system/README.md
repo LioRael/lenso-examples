@@ -5,7 +5,8 @@ This fixture preserves the existing `support-ticket`, `support-sla`,
 two Autonomous Services:
 
 - `support-ticket-service` owns the `support-ticket` Module, its HTTP Service
-  Contract, and an isolated Store.
+  Contract, the `support.ticket-opened.v1` Event Contract, and an isolated
+  Store.
 - `support-sla-service` owns the `support-sla` Module, its gRPC Service Contract,
   and an isolated Store.
 
@@ -38,6 +39,36 @@ no-unsafe-retry machine results, checks deterministic cleanup, and finally runs
 the independent Host-managed Provider smoke. Runtime Console, Host, Provider,
 Kubernetes, service mesh, external broker, and production identity processes
 are absent from the Autonomous Data Plane proof.
+
+Run the combined M2 reliability and identity proof with a CLI containing M2
+cyclic Service bootstrap support:
+
+```sh
+LENSO_CLI_BIN=../lenso-cli/target/debug/lenso pnpm acceptance:m2
+```
+
+This extends the same public Sandbox seam with a transactional support event,
+exactly-once business effects over at-least-once delivery, local Service
+Principal/delegation/tenant verification, dead-letter replay, restart and
+transport interruption recovery, the complete deterministic Call Policy
+matrix, plane-independent Service-local evidence, cleanup, and the unchanged
+Provider smoke. The command starts an ephemeral Postgres instance when
+`DATABASE_URL` is not already supplied.
+
+Real production integrations are deliberately separate and require explicit
+authorized infrastructure:
+
+```sh
+LENSO_NATS_TEST_INFRASTRUCTURE_APPROVED=true \
+LENSO_SPIFFE_TEST_INFRASTRUCTURE_APPROVED=true \
+DATABASE_URL=postgres://... \
+SPIFFE_ENDPOINT_SOCKET=unix:///... \
+pnpm acceptance:m2:production
+```
+
+That command runs the NATS JetStream transport conformance and SPIFFE/SPIRE
+identity proof. It refuses to infer production authority from repository
+access or local execution.
 
 To use a source-built CLI containing the System Sandbox:
 

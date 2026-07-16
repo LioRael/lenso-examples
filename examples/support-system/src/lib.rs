@@ -21,6 +21,9 @@ use std::{
 use tokio::io::AsyncWriteExt;
 use tonic::{Request, Response, Status};
 
+mod m2;
+pub use m2::{M2SmokeEvidence, run_m2_smoke};
+
 const TICKET_SERVICE: &str = "support-ticket-service";
 const SLA_SERVICE: &str = "support-sla-service";
 const TICKET_ENDPOINT: &str = "http://127.0.0.1:4210";
@@ -206,14 +209,15 @@ pub async fn run_scenario() -> anyhow::Result<()> {
 
     let attempts = std::sync::Arc::new(std::sync::atomic::AtomicU32::new(0));
     let observed_attempts = attempts.clone();
-    let server = DirectHttpServerBinding::new(http_bindings()?, move |_| {
-        let observed_attempts = observed_attempts.clone();
-        async move {
-            observed_attempts.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-            tokio::time::sleep(std::time::Duration::from_millis(delay_ms)).await;
-            DirectHttpResponse::json(StatusCode::OK, json!({"ok": true}))
-        }
-    });
+    let server =
+        DirectHttpServerBinding::new_without_workload_identity(http_bindings()?, move |_| {
+            let observed_attempts = observed_attempts.clone();
+            async move {
+                observed_attempts.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                tokio::time::sleep(std::time::Duration::from_millis(delay_ms)).await;
+                DirectHttpResponse::json(StatusCode::OK, json!({"ok": true}))
+            }
+        });
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let endpoint = format!("http://{}", listener.local_addr()?);
     let server = tokio::spawn(async move { axum::serve(listener, server.router()).await });
@@ -314,61 +318,62 @@ async fn ticket_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
         LastValidEndpointResolver::new(SandboxEndpointResolver::new(PathBuf::from(SANDBOX_STATE))),
         grpc_bindings()?,
     ));
-    let binding = DirectHttpServerBinding::new(http_bindings()?, move |request| {
-        let evidence_path = evidence_path.clone();
-        let workload_identity = workload_identity.clone();
-        let grpc = grpc.clone();
-        async move {
-            let deadline = request.deadline_unix_ms.unwrap_or_default();
-            let key = request.idempotency_key.clone().unwrap_or_default();
-            let payload = request.body.to_vec();
-            match grpc
-                .update_sla(&ServiceReference::new(SLA_SERVICE), payload, deadline, &key)
-                .await
-            {
-                Ok(response) => {
-                    let record = json!({
-                        "artifactVersion": "lenso.story-segment.v1",
-                        "storyId": format!("direct-call:{key}"),
-                        "segmentId": format!("{TICKET_SERVICE}:updateTicket:{key}"),
-                        "kind": "direct_service_call",
-                        "outcome": "succeeded",
-                        "operation": "updateTicket",
-                        "serviceReference": SLA_SERVICE,
-                        "resolvedEndpoint": SLA_ENDPOINT,
-                        "deadlineUnixMs": deadline,
-                        "idempotencyKey": key,
-                        "workloadIdentity": workload_identity,
-                        "grpcDecision": response.evidence.decision,
-                        "grpcAttempts": response.evidence.attempts,
-                    });
-                    if let Err(error) = append_json(&evidence_path, &record).await {
-                        return DirectHttpResponse::json(
-                            StatusCode::INTERNAL_SERVER_ERROR,
-                            json!({"error": error.to_string()}),
-                        );
-                    }
-                    let sla: Value = serde_json::from_slice(&response.payload)
-                        .unwrap_or_else(|_| json!({"error":"invalid SLA response"}));
-                    DirectHttpResponse::json(
-                        StatusCode::OK,
-                        json!({
-                            "ticketId": ticket_id(&request.path),
-                            "sla": sla,
-                            "slaServiceReference": SLA_SERVICE,
-                            "slaEndpoint": SLA_ENDPOINT,
-                            "grpcDecision": response.evidence.decision,
+    let binding =
+        DirectHttpServerBinding::new_without_workload_identity(http_bindings()?, move |request| {
+            let evidence_path = evidence_path.clone();
+            let workload_identity = workload_identity.clone();
+            let grpc = grpc.clone();
+            async move {
+                let deadline = request.deadline_unix_ms.unwrap_or_default();
+                let key = request.idempotency_key.clone().unwrap_or_default();
+                let payload = request.body.to_vec();
+                match grpc
+                    .update_sla(&ServiceReference::new(SLA_SERVICE), payload, deadline, &key)
+                    .await
+                {
+                    Ok(response) => {
+                        let record = json!({
+                            "artifactVersion": "lenso.story-segment.v1",
+                            "storyId": format!("direct-call:{key}"),
+                            "segmentId": format!("{TICKET_SERVICE}:updateTicket:{key}"),
+                            "kind": "direct_service_call",
+                            "outcome": "succeeded",
+                            "operation": "updateTicket",
+                            "serviceReference": SLA_SERVICE,
+                            "resolvedEndpoint": SLA_ENDPOINT,
+                            "deadlineUnixMs": deadline,
+                            "idempotencyKey": key,
                             "workloadIdentity": workload_identity,
-                        }),
-                    )
+                            "grpcDecision": response.evidence.decision,
+                            "grpcAttempts": response.evidence.attempts,
+                        });
+                        if let Err(error) = append_json(&evidence_path, &record).await {
+                            return DirectHttpResponse::json(
+                                StatusCode::INTERNAL_SERVER_ERROR,
+                                json!({"error": error.to_string()}),
+                            );
+                        }
+                        let sla: Value = serde_json::from_slice(&response.payload)
+                            .unwrap_or_else(|_| json!({"error":"invalid SLA response"}));
+                        DirectHttpResponse::json(
+                            StatusCode::OK,
+                            json!({
+                                "ticketId": ticket_id(&request.path),
+                                "sla": sla,
+                                "slaServiceReference": SLA_SERVICE,
+                                "slaEndpoint": SLA_ENDPOINT,
+                                "grpcDecision": response.evidence.decision,
+                                "workloadIdentity": workload_identity,
+                            }),
+                        )
+                    }
+                    Err(error) => DirectHttpResponse::json(
+                        StatusCode::BAD_GATEWAY,
+                        json!({"error": error.to_string()}),
+                    ),
                 }
-                Err(error) => DirectHttpResponse::json(
-                    StatusCode::BAD_GATEWAY,
-                    json!({"error": error.to_string()}),
-                ),
             }
-        }
-    });
+        });
     let app = Router::new()
         .route("/health/ready", get(|| async { StatusCode::OK }))
         .merge(binding.router());

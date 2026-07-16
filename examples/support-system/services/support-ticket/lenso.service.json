@@ -24,7 +24,32 @@
       }
     }
   ],
-  "eventContracts": [],
+  "eventContracts": [
+    {
+      "contractId": "ticket-opened",
+      "moduleId": "support-ticket",
+      "version": "v1",
+      "tenancyMode": "required",
+      "artifact": {
+        "format": "json_schema",
+        "path": "contracts/support.ticket-opened.v1.schema.json"
+      },
+      "context": {
+        "protocol": "lenso.context.v1",
+        "required": [
+          "story",
+          "trace",
+          "service_principal",
+          "delegated_actor",
+          "tenant",
+          "deadline",
+          "idempotency_key",
+          "causation",
+          "region"
+        ]
+      }
+    }
+  ],
   "tenancyMode": "none",
   "operatingRegions": ["local"]
 }

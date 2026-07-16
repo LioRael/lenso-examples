@@ -6,11 +6,14 @@ package lenso.services.support.v1;
 // lenso-contract-version: v1
 service SupportService {
   // lenso-idempotency: idempotent
+  // lenso-call-policy: {"maxAttempts":2,"circuitBreaker":{"failureThreshold":2,"openForMs":1000,"halfOpenMaxCalls":1},"concurrency":{"maxInFlight":2},"overload":{"maxInFlight":2},"fallback":{"handler":"support.cached_sla","on":["circuit_open","bulkhead_saturated","overload_rejected","deadline_expired"]}}
   rpc GetSla(GetSlaRequest) returns (SlaResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
   // lenso-idempotency: requires_key
+  // lenso-call-policy: {"maxAttempts":2,"circuitBreaker":{"failureThreshold":2,"openForMs":1000,"halfOpenMaxCalls":1},"concurrency":{"maxInFlight":2},"overload":{"maxInFlight":2}}
   rpc UpdateSla(UpdateSlaRequest) returns (SlaResponse);
+  // lenso-call-policy: {"maxAttempts":1,"circuitBreaker":{"failureThreshold":2,"openForMs":1000,"halfOpenMaxCalls":1},"concurrency":{"maxInFlight":2},"overload":{"maxInFlight":2}}
   rpc ProbeSla(ProbeSlaRequest) returns (SlaResponse);
 }
 

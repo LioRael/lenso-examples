@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { promisify } from "node:util";
 import test from "node:test";
 
 const fixtureRoot = new URL("../examples/support-system/", import.meta.url);
 const repoRoot = new URL("../", import.meta.url);
+const execFileAsync = promisify(execFile);
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, fixtureRoot), "utf8"));
@@ -34,10 +37,15 @@ test("support System preserves two autonomous Service identities", async () => {
   }
 
   assert.deepEqual(
-    system.contracts.map(({ contractId, producerId }) => [contractId, producerId]),
+    system.contracts.map(({ contractId, producerId, tenancyMode }) => [
+      contractId,
+      producerId,
+      tenancyMode,
+    ]),
     [
-      ["support-http", "support-ticket-service"],
-      ["support-grpc", "support-sla-service"],
+      ["support-http", "support-ticket-service", "none"],
+      ["support-grpc", "support-sla-service", "none"],
+      ["support-ticket-opened", "support-ticket-service", "required"],
     ],
   );
   assert.deepEqual(system.consumers, [
@@ -47,6 +55,13 @@ test("support System preserves two autonomous Service identities", async () => {
       ownerId: "support-ticket-service",
       contractId: "support-grpc",
       tenancyMode: "none",
+    },
+    {
+      consumerId: "support-sla-ticket-opened",
+      ownerKind: "autonomous_service",
+      ownerId: "support-sla-service",
+      contractId: "support-ticket-opened",
+      tenancyMode: "required",
     },
   ]);
   assert.deepEqual(system.host, {
@@ -153,6 +168,41 @@ test("Service definitions retain isolated Store and contract ownership", async (
   assert.deepEqual(ticket.serviceContracts.map(({ contractId }) => contractId), [
     "support-http",
   ]);
+  assert.deepEqual(
+    ticket.eventContracts.map(
+      ({ contractId, moduleId, version, tenancyMode, artifact, context }) => ({
+        contractId,
+        moduleId,
+        version,
+        tenancyMode,
+        artifact,
+        requiredContext: context.required,
+      }),
+    ),
+    [
+      {
+        contractId: "ticket-opened",
+        moduleId: "support-ticket",
+        version: "v1",
+        tenancyMode: "required",
+        artifact: {
+          format: "json_schema",
+          path: "contracts/support.ticket-opened.v1.schema.json",
+        },
+        requiredContext: [
+          "story",
+          "trace",
+          "service_principal",
+          "delegated_actor",
+          "tenant",
+          "deadline",
+          "idempotency_key",
+          "causation",
+          "region",
+        ],
+      },
+    ],
+  );
   assert.deepEqual(sla.serviceContracts.map(({ contractId }) => contractId), [
     "support-grpc",
   ]);
@@ -161,4 +211,49 @@ test("Service definitions retain isolated Store and contract ownership", async (
 test("one public command owns the M1 acceptance proof", async () => {
   const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
   assert.equal(pkg.scripts["acceptance:m1"], "node scripts/m1-acceptance.mjs");
+});
+
+test("one public command owns the M2 acceptance proof", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m2"], "node scripts/m2-acceptance.mjs");
+  assert.equal(
+    pkg.scripts["acceptance:m2:production"],
+    "node scripts/m2-production-evidence.mjs",
+  );
+});
+
+test("M2 acceptance describes every deterministic scenario and separate production proof", async () => {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    ["scripts/m2-acceptance.mjs", "--describe"],
+    { cwd: repoRoot },
+  );
+  const proof = JSON.parse(stdout);
+
+  assert.equal(proof.artifactVersion, "lenso.m2-acceptance-description.v1");
+  assert.equal(proof.publicSeam, "support-system");
+  assert.deepEqual(proof.deterministicScenarios, [
+    "duplicate",
+    "delayed",
+    "reordered",
+    "poison",
+    "producer_restart",
+    "consumer_restart",
+    "transport_interruption",
+    "dead_letter_replay",
+    "identity_expiry",
+    "wrong_audience",
+    "missing_tenant",
+    "circuit_open",
+    "bulkhead",
+    "overload",
+    "deadline",
+    "fallback",
+  ]);
+  assert.deepEqual(proof.productionEvidence, {
+    transport: "nats_jetstream_real_environment",
+    workloadIdentity: "spiffe_spire_real_environment",
+    approvalBoundary: true,
+  });
+  assert.equal(proof.providerCompatibility, "independent_host_managed_smoke");
 });

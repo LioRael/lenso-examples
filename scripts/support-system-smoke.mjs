@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtureRoot = path.join(repoRoot, "examples", "support-system");
 const cli = process.env.LENSO_CLI_BIN ?? "lenso";
+const smokeBinary = process.env.LENSO_SUPPORT_SMOKE_BIN ?? "support-system-smoke";
+const evidencePrefix =
+  process.env.LENSO_SUPPORT_SMOKE_EVIDENCE ?? "M1_SMOKE_EVIDENCE";
 const sandboxState = path.join(
   fixtureRoot,
   ".lenso",
@@ -36,7 +39,7 @@ sandbox.stderr.on("data", (chunk) => {
 try {
   await waitForReady();
   await assertSandboxState();
-  const smokeOutput = await run("./target/debug/support-system-smoke", [], fixtureRoot, true);
+  const smokeOutput = await run(`./target/debug/${smokeBinary}`, [], fixtureRoot, true);
   process.stdout.write(smokeOutput);
   smokeEvidence = JSON.parse(smokeOutput);
   if (
@@ -69,7 +72,7 @@ await access(path.dirname(sandboxState)).then(
   () => {},
 );
 console.log("Support System direct-Service smoke passed");
-console.log(`M1_SMOKE_EVIDENCE=${JSON.stringify(smokeEvidence)}`);
+console.log(`${evidencePrefix}=${JSON.stringify(smokeEvidence)}`);
 
 async function assertSandboxState() {
   const state = JSON.parse(await readFile(sandboxState, "utf8"));

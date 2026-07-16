@@ -7,12 +7,31 @@ paths:
     get:
       operationId: getTicket
       x-lenso-idempotency: idempotent
+      x-lenso-call-policy:
+        maxAttempts: 2
+        circuitBreaker: { failureThreshold: 2, openForMs: 1000, halfOpenMaxCalls: 1 }
+        concurrency: { maxInFlight: 2 }
+        overload: { maxInFlight: 2 }
+        fallback:
+          handler: support.cached_ticket
+          on: [circuit_open, bulkhead_saturated, overload_rejected]
       responses:
         '200':
           description: Ticket
+        '404':
+          description: Standard not-found problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       operationId: updateTicket
       x-lenso-idempotency: requires_key
+      x-lenso-call-policy:
+        maxAttempts: 2
+        circuitBreaker: { failureThreshold: 2, openForMs: 1000, halfOpenMaxCalls: 1 }
+        concurrency: { maxInFlight: 2 }
+        overload: { maxInFlight: 2 }
       requestBody:
         required: true
         content:
@@ -25,3 +44,29 @@ paths:
       responses:
         '200':
           description: Updated ticket
+        '400':
+          description: Standard validation problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Standard conflict problem
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [type, title, status, detail, code, errors]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer, minimum: 100, maximum: 599 }
+        detail: { type: string }
+        code: { type: string }
+        request_id: { type: [string, 'null'] }
+        correlation_id: { type: [string, 'null'] }
+        errors: { type: array, items: { type: object } }
