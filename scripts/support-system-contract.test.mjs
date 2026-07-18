@@ -222,6 +222,11 @@ test("one public command owns the M2 acceptance proof", async () => {
   );
 });
 
+test("one public command owns the M3 acceptance proof", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m3"], "node scripts/m3-acceptance.mjs");
+});
+
 test("M2 acceptance describes every deterministic scenario and separate production proof", async () => {
   const { stdout } = await execFileAsync(
     process.execPath,
@@ -256,4 +261,44 @@ test("M2 acceptance describes every deterministic scenario and separate producti
     approvalBoundary: true,
   });
   assert.equal(proof.providerCompatibility, "independent_host_managed_smoke");
+});
+
+test("M3 acceptance describes the durable workflow and federated evidence seam", async () => {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    ["scripts/m3-acceptance.mjs", "--describe"],
+    { cwd: repoRoot },
+  );
+  const proof = JSON.parse(stdout);
+
+  assert.equal(proof.artifactVersion, "lenso.m3-acceptance-description.v1");
+  assert.equal(proof.publicSeam, "support-system");
+  assert.deepEqual(proof.workflow.services, [
+    "support-ticket-service",
+    "support-sla-service",
+  ]);
+  assert.deepEqual(proof.workflow.capabilities, [
+    "child_workflow",
+    "participant_restart",
+    "controlled_timeout",
+    "exactly_once_compensation",
+    "version_pinning",
+    "worker_mismatch_rejection",
+  ]);
+  assert.deepEqual(proof.evidence, [
+    "delayed_federation",
+    "late_evidence",
+    "explicit_segment_gap",
+    "workflow_reliability",
+  ]);
+  assert.deepEqual(proof.planesWithheld, [
+    "runtime_console",
+    "story_aggregator",
+    "system_plane",
+  ]);
+  assert.equal(proof.priorGuarantees, "m2_acceptance");
+  assert.equal(proof.providerCompatibility, "independent_host_managed_smoke");
+  assert.equal(proof.externalWorkflowEngineRequired, false);
+  assert.equal(proof.kubernetesRequired, false);
+  assert.equal(proof.productionAuthorityRequired, false);
 });

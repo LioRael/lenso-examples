@@ -133,6 +133,7 @@ pnpm smoke:support-system:contract
 pnpm smoke:support-system
 pnpm acceptance:m1
 pnpm acceptance:m2
+pnpm acceptance:m3
 ```
 
 `acceptance:m1` is the authoritative M1 developer-preview proof. It covers
@@ -147,6 +148,17 @@ reliability, identity, Deadline, and Call Policy matrix, and retains the
 Provider compatibility smoke. Real NATS JetStream evidence reuses the same
 support Module behavior; NATS and SPIFFE/SPIRE remain a separate explicit
 Approval Boundary exposed by `pnpm acceptance:m2:production`.
+
+`acceptance:m3` is the dependency-free durable-process gate. It keeps the same
+two-Service Sandbox running, withholds Runtime Console, Story aggregation, and
+System Plane state during execution, and proves child work, participant restart,
+controlled timeout, exactly-once cross-Service compensation, v1/v2 definition
+pinning, and fail-closed worker mismatch. Aggregation then resumes from the
+authenticated Service-local feeds, accepts late evidence into the same
+Federated Runtime Story, exposes an intentionally missing source as a Segment
+gap, and collects the workflow-related Reliability Report. The command also
+reruns the M2 guarantees and the independent Provider smoke; it requires no
+Kubernetes, external workflow engine, or production authority.
 
 The existing Provider-mode proof remains separate and unchanged:
 

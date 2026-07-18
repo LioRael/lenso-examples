@@ -73,6 +73,30 @@ support Module handler and Event Contract against JetStream, and runs the
 SPIFFE/SPIRE identity proof. It refuses to infer production authority from
 repository access or local execution.
 
+Run the M3 durable-process and federated-evidence proof through the same public
+Sandbox seam:
+
+```sh
+LENSO_CLI_BIN=../lenso-cli/target/debug/lenso pnpm acceptance:m3
+```
+
+The command first preserves the complete M2 direct-call, Event Contract,
+identity, tenant, Deadline, and Call Policy proof. It then withholds System
+Plane state while the support SLA Durable Workflow runs child work, recovers
+across participant restarts, advances controlled time to its timeout, and
+reverses both completed support-ticket effects exactly once in declared order.
+One v1 instance remains pinned while a new v2 instance starts; an incompatible
+worker and unsafe migration are rejected without mutating durable state.
+
+Story aggregation and Runtime Console are absent during execution. After the
+workflow completes, the authenticated Service-local feeds are collected into
+the same `lenso.federated-runtime-story.v1`, late evidence enriches the existing
+Story, and an intentionally unavailable source remains visible as an
+`unreachable` Segment gap. The support SLA Reliability Contract is evaluated
+against real Workflow Store pressure and remains report-only. The final gate
+runs the independent Host-managed Provider smoke and requires no Kubernetes,
+external workflow engine, or production authority.
+
 To use a source-built CLI containing the System Sandbox:
 
 ```sh
