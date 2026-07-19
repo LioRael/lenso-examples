@@ -85,7 +85,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let linked_business: Value = serde_json::from_str(
         &std::env::var("M4_BUSINESS_EVIDENCE").context("M4_BUSINESS_EVIDENCE is required")?,
     )?;
-    ensure!(linked_business["httpDecision"] == "ready");
+    ensure!(linked_business["httpDecision"] == "call_completed");
     ensure!(linked_business["systemPlaneWithheld"] == true);
 
     let blocked: Value = serde_json::from_str(include_str!(
