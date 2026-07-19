@@ -1,19 +1,20 @@
 use anyhow::{Context, ensure};
 use lenso_service::{
-    ExtractionApproval, ExtractionAuthorityCommitInputs, ExtractionAuthorityCommitRevalidation,
-    ExtractionBackfillBoundary, ExtractionBackfillRecord, ExtractionBackfillRequest,
-    ExtractionBusinessInvariant, ExtractionCompatibilityEvidence, ExtractionDrainSnapshot,
-    ExtractionLinkedRollbackValidation, ExtractionPlan, ExtractionPolicyEvidence,
-    ExtractionProvisionalCutoverInputs, ExtractionReconciliationInputs,
+    ExtractionApproval, ExtractionApprovalVerifier, ExtractionAuthorityCommitInputs,
+    ExtractionAuthorityCommitRevalidation, ExtractionBackfillBoundary, ExtractionBackfillRecord,
+    ExtractionBackfillRequest, ExtractionBusinessInvariant, ExtractionCompatibilityEvidence,
+    ExtractionDrainSnapshot, ExtractionLinkedRollbackValidation, ExtractionPlan,
+    ExtractionPolicyEvidence, ExtractionProvisionalCutoverInputs, ExtractionReconciliationInputs,
     ExtractionReconciliationStatus, ExtractionRun, ExtractionSourceSnapshot,
-    ExtractionVerificationInputs, ExtractionVerificationStatus,
+    ExtractionTopologyState, ExtractionVerificationInputs, ExtractionVerificationStatus,
     apply_postgres_extraction_backfill_batch, commit_extraction_authority,
     commit_extraction_authority_postgres, complete_extraction_quiescence,
     complete_provisional_rollback_validation, fail_provisional_cutover,
-    load_postgres_extraction_backfill, reconcile_extraction_data, record_autonomous_mutation,
-    record_extraction_artifact, record_extraction_drain, request_fast_extraction_rollback,
-    start_extraction_backfill, start_extraction_quiescence, start_provisional_cutover,
-    verify_extraction_behavior, verify_provisional_cutover,
+    initialize_extraction_topology_state, load_postgres_extraction_backfill,
+    reconcile_extraction_data, record_autonomous_mutation, record_extraction_artifact,
+    record_extraction_drain, request_fast_extraction_rollback, start_extraction_backfill,
+    start_extraction_quiescence, start_provisional_cutover, verify_extraction_behavior,
+    verify_provisional_cutover,
 };
 use platform_core::{PLATFORM_MIGRATIONS, apply_migrations};
 use serde::Serialize;
@@ -199,8 +200,23 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let stale_approval_rejected =
         commit_extraction_authority(commit_inputs(&cutover, stale)).is_err();
     ensure!(stale_approval_rejected);
-    let committed =
-        commit_extraction_authority_postgres(&pool, commit_inputs(&cutover, approval)).await?;
+    initialize_extraction_topology_state(
+        &pool,
+        &ExtractionTopologyState {
+            authority_revision: cutover.authority_revision.clone(),
+            routing_revision: cutover.routing_revision_current.clone(),
+            system_graph_revision: "system-r12".to_owned(),
+            authority_kind: "linked".to_owned(),
+            owner_id: "support-host".to_owned(),
+        },
+    )
+    .await?;
+    let committed = commit_extraction_authority_postgres(
+        &pool,
+        commit_inputs(&cutover, approval),
+        &LocalApprovalVerifier,
+    )
+    .await?;
     let committed = record_autonomous_mutation(committed, "mutation:ticket-004");
     let post_commit_fast_rollback_blocked =
         request_fast_extraction_rollback(&committed, None).is_err();
@@ -262,6 +278,16 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         local_requirements: json!({"postgres":"ephemeral_or_DATABASE_URL","kubernetes":false,"productionAuthority":false}),
         cleanup: json!({"sandboxStateRemoved":true,"sourceStorePreservedReadOnly":true,"destructiveSourceCleanup":false}),
     })
+}
+
+struct LocalApprovalVerifier;
+
+impl ExtractionApprovalVerifier for LocalApprovalVerifier {
+    fn verify(&self, approval: &ExtractionApproval) -> bool {
+        approval.authorized
+            && approval.approver == "operator:m4"
+            && approval.approval_id == "approval:m4"
+    }
 }
 
 fn record(id: &str, status: &str) -> ExtractionBackfillRecord {
