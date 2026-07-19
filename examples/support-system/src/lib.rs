@@ -917,9 +917,36 @@ impl AutonomousExtractionService {
         Ok(response)
     }
 
+    pub async fn update_ticket_through_committed_topology(
+        &self,
+        topology_pool: &sqlx::PgPool,
+        ticket_id: &str,
+        title: &str,
+        idempotency_key: &str,
+    ) -> anyhow::Result<DirectHttpResponse> {
+        let topology: (String, String) = sqlx::query_as(
+            "select authority_kind, owner_id from lenso_extraction.authority_states where state_id = 'system'",
+        )
+        .fetch_one(topology_pool)
+        .await?;
+        ensure!(
+            topology == ("autonomous".to_owned(), TICKET_SERVICE.to_owned()),
+            "committed System topology does not resolve the candidate Service"
+        );
+        self.update_ticket(ticket_id, title, idempotency_key).await
+    }
+
     pub async fn probe_health(&self) -> anyhow::Result<()> {
         let response = reqwest::get(format!("{}/health/ready", self.endpoint)).await?;
         ensure!(response.status() == StatusCode::OK);
+        Ok(())
+    }
+
+    pub async fn probe_store_complete(&self) -> anyhow::Result<()> {
+        let ticket_count: i64 = sqlx::query_scalar("select count(*) from support.tickets")
+            .fetch_one(&self.pool)
+            .await?;
+        ensure!(ticket_count == 3, "candidate Store is incomplete");
         Ok(())
     }
 
@@ -1020,11 +1047,13 @@ pub async fn start_autonomous_extraction_service(
         get(move || {
             let pool = health_pool.clone();
             async move {
-                let count = sqlx::query_scalar::<_, i64>("select count(*) from support.tickets")
-                    .fetch_one(&pool)
-                    .await;
-                match count {
-                    Ok(3) => StatusCode::OK,
+                let ready = sqlx::query_scalar::<_, bool>(
+                    "select to_regclass('support.tickets') is not null",
+                )
+                .fetch_one(&pool)
+                .await;
+                match ready {
+                    Ok(true) => StatusCode::OK,
                     _ => StatusCode::SERVICE_UNAVAILABLE,
                 }
             }

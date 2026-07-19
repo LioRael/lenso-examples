@@ -137,7 +137,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     expansion_inputs.current_plan_inputs = plan_inputs.clone();
     expansion_inputs.scaffold = scaffold.clone();
     expansion_inputs.scaffold_apply_result = scaffold_apply.clone();
-    let expansion = execute_destination_expansion(&pool, expansion_inputs).await?;
+    let (expansion, candidate_service) =
+        execute_destination_expansion(&pool, expansion_inputs).await?;
     let blocked_issue_codes = blocked["findings"]
         .as_array()
         .into_iter()
@@ -227,7 +228,6 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     .await?;
     ensure!(reconciliation.status == ExtractionReconciliationStatus::Matched);
 
-    let candidate_service = super::start_autonomous_extraction_service(&pool).await?;
     let linked = super::observe_linked_extraction_behavior(&source_pool).await?;
     let candidate = candidate_service.observe().await?;
     let reconciliation = reconcile_postgres_extraction_service_data(
@@ -385,6 +385,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     ))?;
     let cutover = verify_provisional_cutover(cutover, "operator:m4-acceptance");
     candidate_service.probe_health().await?;
+    candidate_service.probe_store_complete().await?;
     let candidate_health = ExtractionCandidateHealthEvidence::bind(
         plan.plan_id.clone(),
         "support-ticket-service",
@@ -444,7 +445,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     )
     .await?;
     candidate_service
-        .update_ticket(
+        .update_ticket_through_committed_topology(
+            &pool,
             "ticket-003",
             "Post-commit autonomous mutation",
             "ticket-003:post-commit-autonomous",
@@ -529,8 +531,9 @@ impl ExtractionApprovalVerifier for LocalApprovalVerifier {
 async fn execute_destination_expansion(
     pool: &sqlx::PgPool,
     inputs: ExtractionRunInputs,
-) -> anyhow::Result<ExtractionRun> {
+) -> anyhow::Result<(ExtractionRun, super::AutonomousExtractionService)> {
     let mut run = start_destination_expansion(&inputs)?;
+    let mut candidate_service = None;
     for operation in run.ordered_operations.clone() {
         let (outcome, kind, detail) = match operation.kind {
             ExtractionExpansionOperationKind::CreateIsolatedStore => {
@@ -571,13 +574,13 @@ async fn execute_destination_expansion(
                 )
             }
             ExtractionExpansionOperationKind::VerifyCandidateHealth => {
-                sqlx::query("select 1 from support.tickets limit 1")
-                    .fetch_optional(pool)
-                    .await?;
+                let service = super::start_autonomous_extraction_service(pool).await?;
+                service.probe_health().await?;
+                candidate_service = Some(service);
                 (
                     ExtractionOperationOutcome::Healthy,
                     ExtractionRunEvidenceKind::CandidateHealth,
-                    "candidate Store workload accepted a live PostgreSQL query without authority",
+                    "candidate API Workload returned ready without authority",
                 )
             }
         };
@@ -601,7 +604,10 @@ async fn execute_destination_expansion(
         )?;
         run = record_destination_expansion_receipt(run, receipt)?;
     }
-    Ok(run)
+    Ok((
+        run,
+        candidate_service.context("candidate API Workload was not verified during expansion")?,
+    ))
 }
 
 fn cutover_inputs(
