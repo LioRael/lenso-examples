@@ -97,6 +97,19 @@ against real Workflow Store pressure and remains report-only. The final gate
 runs the independent Host-managed Provider smoke and requires no Kubernetes,
 external workflow engine, or production authority.
 
+Run the M4 Safe Module Extraction proof through the same support-system seam:
+
+```sh
+LENSO_CLI_BIN=../lenso-cli/target/debug/lenso pnpm acceptance:m4
+```
+
+The command retains the M3 and Provider proofs, then emits
+`lenso.m4-safe-module-extraction-acceptance.v1` with blocked and corrected
+readiness, deterministic plan/scaffold evidence, interrupted/resumed backfill,
+reconciliation, linked/candidate behavior comparison, quiescence, failed
+provisional rollback, exact approval pins, Autonomous authority history, stale
+evidence rejection, post-commit rollback blocking, and cleanup status.
+
 To use a source-built CLI containing the System Sandbox:
 
 ```sh

@@ -227,6 +227,19 @@ test("one public command owns the M3 acceptance proof", async () => {
   assert.equal(pkg.scripts["acceptance:m3"], "node scripts/m3-acceptance.mjs");
 });
 
+test("one public command owns the M4 safe extraction proof", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m4"], "node scripts/m4-acceptance.mjs");
+  const { stdout } = await execFileAsync(process.execPath, ["scripts/m4-acceptance.mjs", "--describe"], { cwd: repoRoot });
+  const proof = JSON.parse(stdout);
+  assert.equal(proof.artifactVersion, "lenso.m4-acceptance-description.v1");
+  assert.equal(proof.publicSeam, "support-system");
+  assert.deepEqual(proof.authorityHistory, ["linked", "provisional", "linked", "provisional", "autonomous"]);
+  assert.equal(proof.priorGuarantees, "m3_acceptance");
+  assert.equal(proof.providerCompatibility, "independent_host_managed_smoke");
+  assert.equal(proof.productionAuthorityRequired, false);
+});
+
 test("M2 acceptance describes every deterministic scenario and separate production proof", async () => {
   const { stdout } = await execFileAsync(
     process.execPath,
