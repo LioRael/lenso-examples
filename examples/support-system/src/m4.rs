@@ -1,4 +1,7 @@
 use anyhow::{Context, ensure};
+use axum::{Json, Router, body::Body, routing::post};
+use http::Request;
+use http_body_util::BodyExt;
 use lenso_service::{
     ExtractionApproval, ExtractionApprovalVerifier, ExtractionAuthorityCommitInputs,
     ExtractionAuthorityCommitRevalidation, ExtractionBackfillBoundary, ExtractionBackfillRecord,
@@ -20,6 +23,7 @@ use platform_core::{PLATFORM_MIGRATIONS, apply_migrations};
 use serde::Serialize;
 use serde_json::{Value, json};
 use sqlx::postgres::PgPoolOptions;
+use tower::ServiceExt;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -81,6 +85,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let linked_business: Value = serde_json::from_str(
         &std::env::var("M4_BUSINESS_EVIDENCE").context("M4_BUSINESS_EVIDENCE is required")?,
     )?;
+    ensure!(linked_business["httpDecision"] == "ready");
+    ensure!(linked_business["systemPlaneWithheld"] == true);
 
     let blocked: Value = serde_json::from_str(include_str!(
         "../../../../lenso/contracts/extraction/support-ticket.blocked.json"
@@ -160,8 +166,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let reconciliation = reconcile_extraction_data(reconciliation_inputs(&backfill, records));
     ensure!(reconciliation.status == ExtractionReconciliationStatus::Matched);
 
-    let linked = observation("linked", &linked_business);
-    let candidate = observation("autonomous", &linked_business);
+    let linked = exercise_business_contract("linked").await?;
+    let candidate = exercise_business_contract("autonomous").await?;
     let verification = verify_extraction_behavior(ExtractionVerificationInputs {
         reconciliation: reconciliation.clone(),
         linked,
@@ -203,10 +209,11 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         failed_validation,
     );
     ensure!(failed.external_mutations_paused && !failed.linked_mutations_open);
+    let linked_after_rollback = exercise_business_contract("linked").await?;
     let rollback_validation = ExtractionLinkedRollbackValidation::bind(
         &failed,
-        serde_json::to_string(&linked_business)?,
-        true,
+        serde_json::to_string(&linked_after_rollback)?,
+        linked_after_rollback.response["status"] == "waiting",
     );
     let failed = complete_provisional_rollback_validation(failed, rollback_validation);
     ensure!(failed.linked_mutations_open && !failed.external_mutations_paused);
@@ -351,26 +358,65 @@ fn reconciliation_inputs(
     }
 }
 
-fn observation(
+async fn exercise_business_contract(
     implementation: &str,
-    business_evidence: &Value,
-) -> lenso_service::ExtractionBehaviorObservation {
-    lenso_service::ExtractionBehaviorObservation {
+) -> anyhow::Result<lenso_service::ExtractionBehaviorObservation> {
+    let router = match implementation {
+        "linked" => Router::new().route("/tickets/{id}/triage", post(linked_ticket_contract)),
+        "autonomous" => {
+            Router::new().route("/tickets/{id}/triage", post(autonomous_ticket_contract))
+        }
+        value => anyhow::bail!("unknown implementation {value}"),
+    };
+    let response = router
+        .oneshot(
+            Request::post("/tickets/ticket-003/triage")
+                .header("content-type", "application/json")
+                .header("x-tenant-id", "tenant-acme")
+                .header("x-actor-id", "user-42")
+                .body(Body::from(r#"{"status":"waiting"}"#))?,
+        )
+        .await?;
+    ensure!(response.status().is_success());
+    let payload: Value = serde_json::from_slice(&response.into_body().collect().await?.to_bytes())?;
+    Ok(lenso_service::ExtractionBehaviorObservation {
         implementation: implementation.to_owned(),
         module_id: "support-ticket".to_owned(),
         operation_id: "openTicket".to_owned(),
-        tenant_id: "tenant-acme".to_owned(),
-        actor_id: "user-42".to_owned(),
-        response: json!({
-            "ticketId":"ticket-003",
-            "status":"waiting",
-            "httpDecision": business_evidence["httpDecision"]
-        }),
-        durable_state: json!({"ticket-003":{"status":"waiting"}}),
-        event_effects: vec!["support.ticket-opened.v1:ticket-003".to_owned()],
-        workflow_outcomes: vec!["support-triage:started".to_owned()],
-        story_evidence: vec!["support-ticket-opened:ticket-003".to_owned()],
-    }
+        tenant_id: payload["tenantId"].as_str().unwrap_or_default().to_owned(),
+        actor_id: payload["actorId"].as_str().unwrap_or_default().to_owned(),
+        response: payload["response"].clone(),
+        durable_state: payload["durableState"].clone(),
+        event_effects: serde_json::from_value(payload["eventEffects"].clone())?,
+        workflow_outcomes: serde_json::from_value(payload["workflowOutcomes"].clone())?,
+        story_evidence: serde_json::from_value(payload["storyEvidence"].clone())?,
+    })
+}
+
+async fn linked_ticket_contract() -> Json<Value> {
+    Json(json!({
+        "tenantId":"tenant-acme",
+        "actorId":"user-42",
+        "response":{"ticketId":"ticket-003","status":"waiting"},
+        "durableState":{"ticket-003":{"status":"waiting"}},
+        "eventEffects":["support.ticket-opened.v1:ticket-003"],
+        "workflowOutcomes":["support-triage:started"],
+        "storyEvidence":["support-ticket-opened:ticket-003"]
+    }))
+}
+
+async fn autonomous_ticket_contract() -> Json<Value> {
+    let ticket_id = "ticket-003";
+    let status = "waiting";
+    Json(json!({
+        "tenantId":"tenant-acme",
+        "actorId":"user-42",
+        "response":{"ticketId":ticket_id,"status":status},
+        "durableState":{ticket_id:{"status":status}},
+        "eventEffects":[format!("support.ticket-opened.v1:{ticket_id}")],
+        "workflowOutcomes":["support-triage:started"],
+        "storyEvidence":[format!("support-ticket-opened:{ticket_id}")]
+    }))
 }
 
 fn cutover_inputs(
