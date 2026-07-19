@@ -4,8 +4,8 @@ use lenso_service::{
     ExtractionAuthorityCommitRevalidation, ExtractionBackfillBoundary, ExtractionBusinessInvariant,
     ExtractionCandidateHealthEvidence, ExtractionCompatibilityEvidence,
     ExtractionExpansionOperationKind, ExtractionLinkedRollbackValidation,
-    ExtractionOperationOutcome, ExtractionPlan, ExtractionPlanInputs, ExtractionPolicyEvidence,
-    ExtractionProvisionalCutoverInputs, ExtractionReadinessEvidence,
+    ExtractionMigrationArtifact, ExtractionOperationOutcome, ExtractionPlan, ExtractionPlanInputs,
+    ExtractionPolicyEvidence, ExtractionProvisionalCutoverInputs, ExtractionReadinessEvidence,
     ExtractionReconciliationStatus, ExtractionRun, ExtractionRunEvidence,
     ExtractionRunEvidenceKind, ExtractionRunInputs, ExtractionScaffoldInputs,
     ExtractionTopologyState, ExtractionVerificationInputs, ExtractionVerificationStatus,
@@ -130,13 +130,21 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     ensure!(scaffold_replay.created_files.is_empty());
     ensure!(!scaffold_replay.unchanged_files.is_empty());
     fs::remove_dir_all(&scaffold_root)?;
-    let mut expansion_inputs: ExtractionRunInputs = serde_json::from_str(include_str!(
-        "../../../../lenso/contracts/extraction/support-ticket.expansion-inputs.json"
-    ))?;
-    expansion_inputs.plan = plan.clone();
-    expansion_inputs.current_plan_inputs = plan_inputs.clone();
-    expansion_inputs.scaffold = scaffold.clone();
-    expansion_inputs.scaffold_apply_result = scaffold_apply.clone();
+    let expansion_inputs = ExtractionRunInputs {
+        plan: plan.clone(),
+        current_plan_inputs: plan_inputs.clone(),
+        scaffold: scaffold.clone(),
+        scaffold_apply_result: scaffold_apply.clone(),
+        migrations: vec![ExtractionMigrationArtifact {
+            migration_id: "0001_create_support_tickets".to_owned(),
+            source_reference: "modules/support-ticket/migrations/0001_tickets.sql".to_owned(),
+            source_digest:
+                "sha256:da4b3d6540ed81176938a3e19d6f591a33810babd4ade7ba91ed27c4750373ac"
+                    .to_owned(),
+            sql: "create schema if not exists support;\n\ncreate table if not exists support.tickets (\n    id text primary key,\n    title text not null,\n    status text not null,\n    created_at timestamptz not null\n);\n"
+                .to_owned(),
+        }],
+    };
     let (expansion, candidate_service) =
         execute_destination_expansion(&pool, expansion_inputs).await?;
     let blocked_issue_codes = blocked["findings"]
