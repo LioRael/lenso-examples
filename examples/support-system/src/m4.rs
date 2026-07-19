@@ -2,14 +2,14 @@ use anyhow::{Context, ensure};
 use lenso_service::{
     ExtractionApproval, ExtractionApprovalVerifier, ExtractionAuthorityCommitInputs,
     ExtractionAuthorityCommitRevalidation, ExtractionBackfillBoundary, ExtractionBackfillRecord,
-    ExtractionBackfillRequest, ExtractionBusinessInvariant, ExtractionCompatibilityEvidence,
-    ExtractionDrainSnapshot, ExtractionLinkedRollbackValidation, ExtractionPlan,
-    ExtractionPolicyEvidence, ExtractionProvisionalCutoverInputs, ExtractionReconciliationInputs,
+    ExtractionBusinessInvariant, ExtractionCompatibilityEvidence, ExtractionDrainSnapshot,
+    ExtractionLinkedRollbackValidation, ExtractionPlan, ExtractionPolicyEvidence,
+    ExtractionProvisionalCutoverInputs, ExtractionReconciliationInputs,
     ExtractionReconciliationStatus, ExtractionRun, ExtractionSourceSnapshot,
     ExtractionTopologyState, ExtractionVerificationInputs, ExtractionVerificationStatus,
-    apply_postgres_extraction_backfill_batch, commit_extraction_authority,
-    commit_extraction_authority_postgres, complete_extraction_quiescence,
-    complete_provisional_rollback_validation, fail_provisional_cutover,
+    commit_extraction_authority, commit_extraction_authority_postgres,
+    complete_extraction_quiescence, complete_provisional_rollback_validation,
+    copy_postgres_extraction_service_data_batch, fail_provisional_cutover,
     initialize_extraction_topology_state, load_postgres_extraction_backfill,
     reconcile_extraction_data, record_autonomous_mutation, record_extraction_artifact,
     record_extraction_drain, request_fast_extraction_rollback, start_extraction_backfill,
@@ -50,7 +50,34 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         .max_connections(4)
         .connect(&database_url)
         .await?;
+    let source_pool = PgPoolOptions::new()
+        .max_connections(2)
+        .connect(
+            &std::env::var("M4_SOURCE_DATABASE_URL")
+                .context("M4_SOURCE_DATABASE_URL is required")?,
+        )
+        .await?;
     apply_migrations(&pool, PLATFORM_MIGRATIONS).await?;
+    for target in [&source_pool, &pool] {
+        sqlx::raw_sql(
+            r#"
+            create schema if not exists support;
+            create table if not exists support.tickets (
+                id text primary key,
+                title text not null,
+                status text not null,
+                created_at timestamptz not null
+            );
+            "#,
+        )
+        .execute(target)
+        .await?;
+    }
+    sqlx::query(
+        "insert into support.tickets (id,title,status,created_at) values ('ticket-001','Sign in','open','2026-07-19'),('ticket-002','Billing','closed','2026-07-19'),('ticket-003','Export','waiting','2026-07-19') on conflict do nothing",
+    )
+    .execute(&source_pool)
+    .await?;
     let linked_business: Value = serde_json::from_str(
         &std::env::var("M4_BUSINESS_EVIDENCE").context("M4_BUSINESS_EVIDENCE is required")?,
     )?;
@@ -76,11 +103,6 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         .collect::<Vec<_>>();
     ensure!(!blocked_issue_codes.is_empty());
 
-    let records = vec![
-        record("ticket-001", "open"),
-        record("ticket-002", "closed"),
-        record("ticket-003", "waiting"),
-    ];
     let run = start_extraction_backfill(
         &plan,
         &expansion,
@@ -90,16 +112,22 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         },
     )?;
     let original_run = run.clone();
-    let run = apply_postgres_extraction_backfill_batch(
+    let run = copy_postgres_extraction_service_data_batch(
+        &source_pool,
         &pool,
+        &plan,
         run,
-        ExtractionBackfillRequest::new("batch-001", None, records[..2].to_vec()),
+        "batch-001",
+        2,
     )
     .await?;
-    let replayed = apply_postgres_extraction_backfill_batch(
+    let replayed = copy_postgres_extraction_service_data_batch(
+        &source_pool,
         &pool,
+        &plan,
         original_run,
-        ExtractionBackfillRequest::new("batch-001", None, records[..2].to_vec()),
+        "batch-001",
+        2,
     )
     .await?;
     ensure!(
@@ -109,15 +137,21 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let restarted = load_postgres_extraction_backfill(&pool, &run.run_id)
         .await?
         .context("durable backfill run must reload")?;
-    let checkpoint = restarted.progress.destination_checkpoint.clone();
-    let backfill = apply_postgres_extraction_backfill_batch(
+    let backfill = copy_postgres_extraction_service_data_batch(
+        &source_pool,
         &pool,
+        &plan,
         restarted,
-        ExtractionBackfillRequest::new("batch-002", checkpoint, records[2..].to_vec())
-            .final_batch(),
+        "batch-002",
+        2,
     )
     .await?;
     ensure!(backfill.progress.copied_count == 3);
+    let destination_count: i64 = sqlx::query_scalar("select count(*) from support.tickets")
+        .fetch_one(&pool)
+        .await?;
+    ensure!(destination_count == 3);
+    let records = backfill.destination_records.clone();
 
     let mut changed = records.clone();
     changed[1] = record("ticket-002", "open");

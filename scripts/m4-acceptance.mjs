@@ -46,7 +46,11 @@ if (process.argv.includes("--describe")) {
 
 async function runAcceptance() {
   const database = process.env.DATABASE_URL
-    ? { url: process.env.DATABASE_URL, stop: async () => {} }
+    ? {
+        url: process.env.DATABASE_URL,
+        sourceUrl: process.env.M4_SOURCE_DATABASE_URL ?? process.env.DATABASE_URL,
+        stop: async () => {},
+      }
     : await startPostgres();
   let evidence;
   try {
@@ -68,6 +72,7 @@ async function runAcceptance() {
       true,
       {
         DATABASE_URL: database.url,
+        M4_SOURCE_DATABASE_URL: database.sourceUrl,
         M4_BUSINESS_EVIDENCE: JSON.stringify(businessEvidence),
       },
     );
@@ -99,9 +104,11 @@ async function startPostgres() {
   try {
     await run("initdb", ["-D", dataDir, "-U", "postgres", "-A", "trust", "--encoding=UTF8", "--no-locale"]);
     await run("pg_ctl", ["-D", dataDir, "-o", `-F -p ${port} -h 127.0.0.1`, "-w", "start"]);
+    await run("createdb", ["-h", "127.0.0.1", "-p", String(port), "-U", "postgres", "lenso_source"]);
     started = true;
     return {
       url: `postgres://postgres@127.0.0.1:${port}/postgres`,
+      sourceUrl: `postgres://postgres@127.0.0.1:${port}/lenso_source`,
       stop: async () => {
         await run("pg_ctl", ["-D", dataDir, "-m", "immediate", "-w", "stop"]);
         await rm(dataDir, { recursive: true, force: true });
