@@ -50,11 +50,26 @@ async function runAcceptance() {
     : await startPostgres();
   let evidence;
   try {
+    const businessOutput = await run(
+      "node",
+      ["scripts/support-system-smoke.mjs"],
+      true,
+      { LENSO_SUPPORT_SMOKE_EVIDENCE: "M4_BUSINESS_EVIDENCE" },
+    );
+    process.stdout.write(businessOutput);
+    const businessEvidence = JSON.parse(
+      businessOutput.match(/^M4_BUSINESS_EVIDENCE=(.+)$/m)?.[1] ?? "null",
+    );
+    assert.equal(businessEvidence.systemPlaneWithheld, true);
+    assert.equal(businessEvidence.runtimeConsoleWithheld, true);
     const output = await run(
       "cargo",
       ["run", "--locked", "--manifest-path", "examples/support-system/Cargo.toml", "--bin", "support-system-m4-smoke"],
       true,
-      { DATABASE_URL: database.url },
+      {
+        DATABASE_URL: database.url,
+        M4_BUSINESS_EVIDENCE: JSON.stringify(businessEvidence),
+      },
     );
     process.stdout.write(output);
     evidence = JSON.parse(output.match(/^M4_SMOKE_EVIDENCE=(.+)$/m)?.[1] ?? "null");

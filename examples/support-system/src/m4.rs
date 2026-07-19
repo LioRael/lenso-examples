@@ -3,14 +3,17 @@ use lenso_service::{
     ExtractionApproval, ExtractionAuthorityCommitInputs, ExtractionAuthorityCommitRevalidation,
     ExtractionBackfillBoundary, ExtractionBackfillRecord, ExtractionBackfillRequest,
     ExtractionBusinessInvariant, ExtractionCompatibilityEvidence, ExtractionDrainSnapshot,
-    ExtractionPlan, ExtractionPolicyEvidence, ExtractionProvisionalCutoverInputs,
-    ExtractionReconciliationInputs, ExtractionReconciliationStatus, ExtractionRun,
-    ExtractionSourceSnapshot, ExtractionVerificationInputs, ExtractionVerificationStatus,
+    ExtractionLinkedRollbackValidation, ExtractionPlan, ExtractionPolicyEvidence,
+    ExtractionProvisionalCutoverInputs, ExtractionReconciliationInputs,
+    ExtractionReconciliationStatus, ExtractionRun, ExtractionSourceSnapshot,
+    ExtractionVerificationInputs, ExtractionVerificationStatus,
     apply_postgres_extraction_backfill_batch, commit_extraction_authority,
-    complete_extraction_quiescence, fail_provisional_cutover, reconcile_extraction_data,
-    record_autonomous_mutation, record_extraction_artifact, record_extraction_drain,
-    request_fast_extraction_rollback, start_extraction_backfill, start_extraction_quiescence,
-    start_provisional_cutover, verify_extraction_behavior, verify_provisional_cutover,
+    commit_extraction_authority_postgres, complete_extraction_quiescence,
+    complete_provisional_rollback_validation, fail_provisional_cutover,
+    load_postgres_extraction_backfill, reconcile_extraction_data, record_autonomous_mutation,
+    record_extraction_artifact, record_extraction_drain, request_fast_extraction_rollback,
+    start_extraction_backfill, start_extraction_quiescence, start_provisional_cutover,
+    verify_extraction_behavior, verify_provisional_cutover,
 };
 use platform_core::{PLATFORM_MIGRATIONS, apply_migrations};
 use serde::Serialize;
@@ -33,6 +36,11 @@ pub struct M4SmokeEvidence {
     authority_committed: bool,
     post_commit_fast_rollback_blocked: bool,
     evidence_persisted: bool,
+    evidence_references: Vec<String>,
+    preserved_identities: Value,
+    authority_history: Vec<&'static str>,
+    local_requirements: Value,
+    cleanup: Value,
 }
 
 pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
@@ -42,6 +50,9 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         .connect(&database_url)
         .await?;
     apply_migrations(&pool, PLATFORM_MIGRATIONS).await?;
+    let linked_business: Value = serde_json::from_str(
+        &std::env::var("M4_BUSINESS_EVIDENCE").context("M4_BUSINESS_EVIDENCE is required")?,
+    )?;
 
     let blocked: Value = serde_json::from_str(include_str!(
         "../../../../lenso/contracts/extraction/support-ticket.blocked.json"
@@ -77,14 +88,26 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
             source_high_water_mark: "ticket-003".to_owned(),
         },
     )?;
+    let original_run = run.clone();
     let run = apply_postgres_extraction_backfill_batch(
         &pool,
         run,
         ExtractionBackfillRequest::new("batch-001", None, records[..2].to_vec()),
     )
     .await?;
-    let restarted: lenso_service::ExtractionBackfillRun =
-        serde_json::from_value(serde_json::to_value(&run)?)?;
+    let replayed = apply_postgres_extraction_backfill_batch(
+        &pool,
+        original_run,
+        ExtractionBackfillRequest::new("batch-001", None, records[..2].to_vec()),
+    )
+    .await?;
+    ensure!(
+        replayed == run,
+        "lost response must replay from durable receipt"
+    );
+    let restarted = load_postgres_extraction_backfill(&pool, &run.run_id)
+        .await?
+        .context("durable backfill run must reload")?;
     let checkpoint = restarted.progress.destination_checkpoint.clone();
     let backfill = apply_postgres_extraction_backfill_batch(
         &pool,
@@ -102,8 +125,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let reconciliation = reconcile_extraction_data(reconciliation_inputs(&backfill, records));
     ensure!(reconciliation.status == ExtractionReconciliationStatus::Matched);
 
-    let linked = observation("linked");
-    let candidate = observation("autonomous");
+    let linked = observation("linked", &linked_business);
+    let candidate = observation("autonomous", &linked_business);
     let verification = verify_extraction_behavior(ExtractionVerificationInputs {
         reconciliation: reconciliation.clone(),
         linked,
@@ -136,13 +159,32 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         &quiescence,
         "routing-r7",
     ))?;
+    let failed_validation =
+        ExtractionLinkedRollbackValidation::bind(&failed, "sha256:failed-linked-probe", false);
     let failed = fail_provisional_cutover(
         failed,
         "injected candidate 503",
         "operator:m4-acceptance",
-        false,
+        failed_validation,
     );
     ensure!(failed.external_mutations_paused && !failed.linked_mutations_open);
+    let rollback_validation = ExtractionLinkedRollbackValidation::bind(
+        &failed,
+        serde_json::to_string(&linked_business)?,
+        true,
+    );
+    let failed = complete_provisional_rollback_validation(failed, rollback_validation);
+    ensure!(failed.linked_mutations_open && !failed.external_mutations_paused);
+
+    let quiescence = start_extraction_quiescence(&plan, &plan.expected_authority.revision)?;
+    let quiescence = record_extraction_drain(quiescence, ExtractionDrainSnapshot::empty());
+    let quiescence = complete_extraction_quiescence(
+        quiescence,
+        &backfill,
+        &reconciliation,
+        &plan.plan_digest,
+        &plan.expected_authority.revision,
+    );
 
     let cutover = start_provisional_cutover(cutover_inputs(
         &plan,
@@ -157,7 +199,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     let stale_approval_rejected =
         commit_extraction_authority(commit_inputs(&cutover, stale)).is_err();
     ensure!(stale_approval_rejected);
-    let committed = commit_extraction_authority(commit_inputs(&cutover, approval))?;
+    let committed =
+        commit_extraction_authority_postgres(&pool, commit_inputs(&cutover, approval)).await?;
     let committed = record_autonomous_mutation(committed, "mutation:ticket-004");
     let post_commit_fast_rollback_blocked =
         request_fast_extraction_rollback(&committed, None).is_err();
@@ -194,6 +237,30 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         authority_committed: committed.candidate_authoritative,
         post_commit_fast_rollback_blocked,
         evidence_persisted: true,
+        evidence_references: vec![
+            plan.plan_digest.clone(),
+            backfill.run_digest.clone(),
+            reconciliation.reconciliation_digest.clone(),
+            verification.verification_digest.clone(),
+            cutover.cutover_digest.clone(),
+            committed.commit_digest.clone(),
+        ],
+        preserved_identities: json!({
+            "moduleId":"support-ticket",
+            "operationIds":["openTicket","getTicket"],
+            "eventContracts":["support.ticket-opened.v1"],
+            "storyIds":["support-ticket-opened"],
+            "tenantsAndActors":true
+        }),
+        authority_history: vec![
+            "linked",
+            "provisional",
+            "linked",
+            "provisional",
+            "autonomous",
+        ],
+        local_requirements: json!({"postgres":"ephemeral_or_DATABASE_URL","kubernetes":false,"productionAuthority":false}),
+        cleanup: json!({"sandboxStateRemoved":true,"sourceStorePreservedReadOnly":true,"destructiveSourceCleanup":false}),
     })
 }
 
@@ -224,14 +291,21 @@ fn reconciliation_inputs(
     }
 }
 
-fn observation(implementation: &str) -> lenso_service::ExtractionBehaviorObservation {
+fn observation(
+    implementation: &str,
+    business_evidence: &Value,
+) -> lenso_service::ExtractionBehaviorObservation {
     lenso_service::ExtractionBehaviorObservation {
         implementation: implementation.to_owned(),
         module_id: "support-ticket".to_owned(),
         operation_id: "openTicket".to_owned(),
         tenant_id: "tenant-acme".to_owned(),
         actor_id: "user-42".to_owned(),
-        response: json!({"ticketId":"ticket-003","status":"waiting"}),
+        response: json!({
+            "ticketId":"ticket-003",
+            "status":"waiting",
+            "httpDecision": business_evidence["httpDecision"]
+        }),
         durable_state: json!({"ticket-003":{"status":"waiting"}}),
         event_effects: vec!["support.ticket-opened.v1:ticket-003".to_owned()],
         workflow_outcomes: vec!["support-triage:started".to_owned()],
