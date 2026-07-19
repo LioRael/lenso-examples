@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const fixtureRoot = path.join(repoRoot, "examples", "support-system");
 const description = {
   artifactVersion: "lenso.m4-acceptance-description.v1",
   publicSeam: "support-system",
@@ -53,17 +54,23 @@ async function runAcceptance() {
       }
     : await startPostgres();
   let evidence;
+  let sandbox;
   try {
+    await run("cargo", ["build", "--locked", "--manifest-path", "Cargo.toml", "--bins"], false, {}, fixtureRoot);
+    await rm(path.join(fixtureRoot, ".lenso", "system-sandbox", "support-platform"), {
+      recursive: true,
+      force: true,
+    });
+    sandbox = await startSupportSandbox();
     const businessOutput = await run(
-      "node",
-      ["scripts/support-system-smoke.mjs"],
+      "./target/debug/support-system-smoke",
+      [],
       true,
-      { LENSO_SUPPORT_SMOKE_EVIDENCE: "M4_BUSINESS_EVIDENCE" },
+      {},
+      fixtureRoot,
     );
     process.stdout.write(businessOutput);
-    const businessEvidence = JSON.parse(
-      businessOutput.match(/^M4_BUSINESS_EVIDENCE=(.+)$/m)?.[1] ?? "null",
-    );
+    const businessEvidence = JSON.parse(businessOutput);
     assert.equal(businessEvidence.systemPlaneWithheld, true);
     assert.equal(businessEvidence.runtimeConsoleWithheld, true);
     const output = await run(
@@ -79,6 +86,7 @@ async function runAcceptance() {
     process.stdout.write(output);
     evidence = JSON.parse(output.match(/^M4_SMOKE_EVIDENCE=(.+)$/m)?.[1] ?? "null");
   } finally {
+    await sandbox?.stop();
     await database.stop();
   }
   assert.equal(evidence.artifactVersion, "lenso.m4-safe-module-extraction-acceptance.v1");
@@ -132,10 +140,41 @@ function reservePort() {
   });
 }
 
-function run(command, args, capture = false, extraEnv = {}) {
+async function startSupportSandbox() {
+  const command = process.env.LENSO_CLI_BIN ?? "lenso";
+  const child = spawn(command, ["system", "dev"], {
+    cwd: fixtureRoot,
+    env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let output = "";
+  child.stdout.on("data", (chunk) => {
+    output += chunk;
+    process.stdout.write(chunk);
+  });
+  child.stderr.on("data", (chunk) => {
+    output += chunk;
+    process.stderr.write(chunk);
+  });
+  const deadline = Date.now() + 30_000;
+  while (!output.includes("System Sandbox support-platform: ready")) {
+    if (child.exitCode !== null) throw new Error(`System Sandbox exited early\n${output}`);
+    if (Date.now() >= deadline) throw new Error(`System Sandbox readiness timed out\n${output}`);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return {
+    stop: async () => {
+      if (child.exitCode === null) child.kill("SIGINT");
+      if (child.exitCode === null) await new Promise((resolve) => child.once("exit", resolve));
+      if (child.exitCode !== 0) throw new Error(`System Sandbox exited with ${child.exitCode}\n${output}`);
+    },
+  };
+}
+
+function run(command, args, capture = false, extraEnv = {}, cwd = repoRoot) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      cwd: repoRoot,
+      cwd,
       env: { ...process.env, ...extraEnv },
       stdio: capture ? ["ignore", "pipe", "inherit"] : "inherit",
     });

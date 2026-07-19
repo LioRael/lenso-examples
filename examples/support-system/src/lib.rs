@@ -9,8 +9,9 @@ use lenso_service::{
     CallPolicyDeclaration, CallPolicyRuntime, DirectGrpcBindings, DirectGrpcCallError,
     DirectGrpcClient, DirectHttpBindings, DirectHttpCall, DirectHttpClient, DirectHttpResponse,
     DirectHttpServerBinding, Endpoint, EndpointResolutionError, EndpointResolver, EndpointState,
-    LastValidEndpointResolver, ServiceReference, StaticEndpointResolver,
-    generate_direct_grpc_bindings, generate_direct_http_bindings,
+    ExtractionBehaviorObservation, ExtractionDrainSnapshot, LastValidEndpointResolver,
+    ServiceReference, StaticEndpointResolver, generate_direct_grpc_bindings,
+    generate_direct_http_bindings,
     support_grpc_v1::{
         GetSlaRequest, ProbeSlaRequest, SlaResponse, UpdateSlaRequest,
         support_service_server::{SupportService, SupportServiceServer},
@@ -368,9 +369,10 @@ fn m2_handler_error(error: anyhow::Error) -> (StatusCode, String) {
 async fn ticket_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
     verify_store_owner(&environment).await?;
     let evidence_path = Path::new(&environment.store_path).join("operations.jsonl");
+    let mutation_gate = Path::new(&environment.store_path).join("mutations.paused");
     let workload_identity = environment.workload_identity.clone();
     let grpc = std::sync::Arc::new(DirectGrpcClient::new(
-        LastValidEndpointResolver::new(SandboxEndpointResolver::new(PathBuf::from(SANDBOX_STATE))),
+        LastValidEndpointResolver::new(SandboxEndpointResolver::new(fixture_path(SANDBOX_STATE))),
         grpc_bindings()?,
     ));
     let binding =
@@ -378,7 +380,14 @@ async fn ticket_api(environment: WorkloadEvidence) -> anyhow::Result<()> {
             let evidence_path = evidence_path.clone();
             let workload_identity = workload_identity.clone();
             let grpc = grpc.clone();
+            let mutation_gate = mutation_gate.clone();
             async move {
+                if tokio::fs::try_exists(&mutation_gate).await.unwrap_or(true) {
+                    return DirectHttpResponse::json(
+                        StatusCode::CONFLICT,
+                        json!({"error":"linked_mutations_paused"}),
+                    );
+                }
                 let deadline = request.deadline_unix_ms.unwrap_or_default();
                 let key = request.idempotency_key.clone().unwrap_or_default();
                 let payload = request.body.to_vec();
@@ -643,7 +652,7 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
     );
     let deadline = now_ms() + CONTRACT_DEADLINE_MS;
     let client = DirectHttpClient::new(
-        LastValidEndpointResolver::new(SandboxEndpointResolver::new(PathBuf::from(SANDBOX_STATE))),
+        LastValidEndpointResolver::new(SandboxEndpointResolver::new(fixture_path(SANDBOX_STATE))),
         http_bindings()?,
     );
     let service = ServiceReference::new(TICKET_SERVICE);
@@ -658,7 +667,7 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
     ensure!(body["ticketId"] == "42", "ticket identity changed");
     ensure!(body["sla"]["priority"] == "urgent", "SLA outcome missing");
 
-    let state_path = PathBuf::from(SANDBOX_STATE);
+    let state_path = fixture_path(SANDBOX_STATE);
     let withheld_path = state_path.with_extension("withheld");
     tokio::fs::rename(&state_path, &withheld_path).await?;
     let system_plane_withheld = !tokio::fs::try_exists(&state_path).await?;
@@ -702,7 +711,7 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
         anyhow::bail!("unsafe probe did not preserve native gRPC status");
     };
 
-    let root = Path::new(".lenso/system-sandbox/support-platform/services");
+    let root = fixture_path(".lenso/system-sandbox/support-platform/services");
     let ticket_store = root.join(TICKET_SERVICE).join("store");
     let sla_store = root.join(SLA_SERVICE).join("store");
     ensure!(ticket_store != sla_store, "Service Stores are shared");
@@ -772,6 +781,187 @@ pub async fn run_smoke() -> anyhow::Result<SmokeEvidence> {
         ticket_store_id: ticket_migration.store_id.clone(),
         sla_store_id: sla_migration.store_id.clone(),
         stores_isolated: ticket_migration.store_path != sla_migration.store_path,
+    })
+}
+
+pub async fn observe_linked_extraction_behavior(
+    source_pool: &sqlx::PgPool,
+) -> anyhow::Result<ExtractionBehaviorObservation> {
+    let response =
+        DirectHttpClient::new(resolver(TICKET_SERVICE, TICKET_ENDPOINT)?, http_bindings()?)
+            .call(
+                &ServiceReference::new(TICKET_SERVICE),
+                update_ticket_call(
+                    "ticket-003",
+                    "Extraction behavior proof",
+                    now_ms() + CONTRACT_DEADLINE_MS,
+                    "ticket-003:extraction-linked",
+                ),
+            )
+            .await?;
+    ensure!(response.status == StatusCode::OK);
+    sqlx::query(
+        "update support.tickets set title = 'Extraction behavior proof' where id = 'ticket-003'",
+    )
+    .execute(source_pool)
+    .await?;
+    extraction_observation("linked", source_pool, response).await
+}
+
+pub async fn pause_linked_extraction_mutations() -> anyhow::Result<()> {
+    tokio::fs::write(linked_mutation_gate_path(), b"m4-quiescence").await?;
+    Ok(())
+}
+
+pub async fn resume_linked_extraction_mutations() -> anyhow::Result<()> {
+    match tokio::fs::remove_file(linked_mutation_gate_path()).await {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+    }
+}
+
+pub async fn probe_linked_extraction_route() -> anyhow::Result<String> {
+    let response = reqwest::get(format!("{TICKET_ENDPOINT}/health/ready")).await?;
+    ensure!(response.status() == StatusCode::OK);
+    Ok("linked-health-ready".to_owned())
+}
+
+pub async fn linked_extraction_drain_snapshot() -> anyhow::Result<ExtractionDrainSnapshot> {
+    ensure!(
+        tokio::fs::try_exists(linked_mutation_gate_path()).await?,
+        "linked mutation gate is not paused"
+    );
+    Ok(ExtractionDrainSnapshot::empty())
+}
+
+fn linked_mutation_gate_path() -> PathBuf {
+    fixture_path(".lenso/system-sandbox/support-platform/services")
+        .join(TICKET_SERVICE)
+        .join("store")
+        .join("mutations.paused")
+}
+
+fn fixture_path(relative: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join(relative)
+}
+
+pub async fn observe_autonomous_extraction_behavior(
+    destination_pool: &sqlx::PgPool,
+) -> anyhow::Result<ExtractionBehaviorObservation> {
+    let grpc = std::sync::Arc::new(DirectGrpcClient::new(
+        resolver(SLA_SERVICE, SLA_ENDPOINT)?,
+        grpc_bindings()?,
+    ));
+    let pool = destination_pool.clone();
+    let binding = DirectHttpServerBinding::new_without_workload_identity(
+        http_bindings()?,
+        move |request| {
+            let grpc = grpc.clone();
+            let pool = pool.clone();
+            async move {
+                let deadline = request.deadline_unix_ms.unwrap_or_default();
+                let key = request.idempotency_key.clone().unwrap_or_default();
+                let title = serde_json::from_slice::<Value>(&request.body)
+                    .ok()
+                    .and_then(|value| value["title"].as_str().map(str::to_owned))
+                    .unwrap_or_default();
+                let ticket_id = ticket_id(&request.path).to_owned();
+                match grpc
+                    .update_sla(
+                        &ServiceReference::new(SLA_SERVICE),
+                        request.body.to_vec(),
+                        deadline,
+                        &key,
+                    )
+                    .await
+                {
+                    Ok(response) => {
+                        if let Err(error) =
+                            sqlx::query("update support.tickets set title = $2 where id = $1")
+                                .bind(&ticket_id)
+                                .bind(&title)
+                                .execute(&pool)
+                                .await
+                        {
+                            return DirectHttpResponse::json(
+                                StatusCode::INTERNAL_SERVER_ERROR,
+                                json!({"error":error.to_string()}),
+                            );
+                        }
+                        let sla: Value = serde_json::from_slice(&response.payload)
+                            .unwrap_or_else(|_| json!({"error":"invalid SLA response"}));
+                        DirectHttpResponse::json(
+                            StatusCode::OK,
+                            json!({
+                                "ticketId":ticket_id,
+                                "sla":sla,
+                                "slaServiceReference":SLA_SERVICE,
+                                "slaEndpoint":SLA_ENDPOINT,
+                                "grpcDecision":response.evidence.decision,
+                                "workloadIdentity":"local-dev://support-platform/support-ticket-service/support-ticket-service-api"
+                            }),
+                        )
+                    }
+                    Err(error) => DirectHttpResponse::json(
+                        StatusCode::BAD_GATEWAY,
+                        json!({"error":error.to_string()}),
+                    ),
+                }
+            }
+        },
+    );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let endpoint = format!("http://{}", listener.local_addr()?);
+    let server = tokio::spawn(async move { axum::serve(listener, binding.router()).await });
+    let response = DirectHttpClient::new(resolver(TICKET_SERVICE, &endpoint)?, http_bindings()?)
+        .call(
+            &ServiceReference::new(TICKET_SERVICE),
+            update_ticket_call(
+                "ticket-003",
+                "Extraction behavior proof",
+                now_ms() + CONTRACT_DEADLINE_MS,
+                "ticket-003:extraction-autonomous",
+            ),
+        )
+        .await?;
+    server.abort();
+    ensure!(response.status == StatusCode::OK);
+    extraction_observation("autonomous", destination_pool, response).await
+}
+
+pub async fn probe_autonomous_extraction_health(
+    destination_pool: &sqlx::PgPool,
+) -> anyhow::Result<String> {
+    let ticket_count: i64 = sqlx::query_scalar("select count(*) from support.tickets")
+        .fetch_one(destination_pool)
+        .await?;
+    ensure!(ticket_count == 3, "candidate Store is incomplete");
+    Ok(format!("candidate-ready:tickets={ticket_count}"))
+}
+
+async fn extraction_observation(
+    implementation: &str,
+    pool: &sqlx::PgPool,
+    response: DirectHttpResponse,
+) -> anyhow::Result<ExtractionBehaviorObservation> {
+    let response: Value = serde_json::from_slice(&response.body)?;
+    let durable_state: Value = sqlx::query_scalar(
+        "select to_jsonb(ticket_row) from support.tickets ticket_row where id = 'ticket-003'",
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(ExtractionBehaviorObservation {
+        implementation: implementation.to_owned(),
+        module_id: "support-ticket".to_owned(),
+        operation_id: "updateTicket".to_owned(),
+        tenant_id: "tenant-acme".to_owned(),
+        actor_id: "user-42".to_owned(),
+        response,
+        durable_state,
+        event_effects: Vec::new(),
+        workflow_outcomes: vec!["support-sla:urgent".to_owned()],
+        story_evidence: vec!["support-ticket:updateTicket:succeeded".to_owned()],
     })
 }
 
