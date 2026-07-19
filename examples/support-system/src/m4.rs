@@ -2,23 +2,24 @@ use anyhow::{Context, ensure};
 use lenso_service::{
     ExtractionApproval, ExtractionApprovalVerifier, ExtractionAuthorityCommitInputs,
     ExtractionAuthorityCommitRevalidation, ExtractionBackfillBoundary, ExtractionBusinessInvariant,
-    ExtractionCompatibilityEvidence, ExtractionExpansionOperationKind,
-    ExtractionLinkedRollbackValidation, ExtractionOperationOutcome, ExtractionPlan,
-    ExtractionPlanInputs, ExtractionPolicyEvidence, ExtractionProvisionalCutoverInputs,
-    ExtractionReadinessEvidence, ExtractionReconciliationStatus, ExtractionRun,
-    ExtractionRunEvidence, ExtractionRunEvidenceKind, ExtractionRunInputs,
-    ExtractionScaffoldInputs, ExtractionTopologyState, ExtractionVerificationInputs,
-    ExtractionVerificationStatus, ExtractionWorkloadRequest, apply_extraction_scaffold,
-    build_extraction_operation_receipt, commit_extraction_authority,
-    commit_extraction_authority_postgres, complete_extraction_quiescence,
-    complete_provisional_rollback_validation, copy_postgres_extraction_service_data_batch,
-    dry_run_extraction_scaffold, extraction_input_digest, fail_provisional_cutover,
-    generate_extraction_plan, initialize_extraction_topology_state,
-    load_postgres_extraction_backfill, reconcile_postgres_extraction_service_data,
-    record_autonomous_mutation, record_destination_expansion_receipt, record_extraction_artifact,
-    record_extraction_drain, request_fast_extraction_rollback, start_destination_expansion,
-    start_extraction_backfill, start_extraction_quiescence, start_provisional_cutover,
-    verify_extraction_behavior, verify_provisional_cutover,
+    ExtractionCandidateHealthEvidence, ExtractionCompatibilityEvidence,
+    ExtractionExpansionOperationKind, ExtractionLinkedRollbackValidation,
+    ExtractionOperationOutcome, ExtractionPlan, ExtractionPlanInputs, ExtractionPolicyEvidence,
+    ExtractionProvisionalCutoverInputs, ExtractionReadinessEvidence,
+    ExtractionReconciliationStatus, ExtractionRun, ExtractionRunEvidence,
+    ExtractionRunEvidenceKind, ExtractionRunInputs, ExtractionScaffoldInputs,
+    ExtractionTopologyState, ExtractionVerificationInputs, ExtractionVerificationStatus,
+    ExtractionWorkloadRequest, apply_extraction_scaffold, build_extraction_operation_receipt,
+    commit_extraction_authority, commit_extraction_authority_postgres,
+    complete_extraction_quiescence, complete_provisional_rollback_validation,
+    copy_postgres_extraction_service_data_batch, dry_run_extraction_scaffold,
+    extraction_input_digest, fail_provisional_cutover, generate_extraction_plan,
+    initialize_extraction_topology_state, load_postgres_extraction_backfill,
+    reconcile_postgres_extraction_service_data, record_autonomous_mutation,
+    record_destination_expansion_receipt, record_extraction_artifact, record_extraction_drain,
+    request_fast_extraction_rollback, start_destination_expansion, start_extraction_backfill,
+    start_extraction_quiescence, start_provisional_cutover, verify_extraction_behavior,
+    verify_provisional_cutover,
 };
 use platform_core::{PLATFORM_MIGRATIONS, apply_migrations};
 use serde::Serialize;
@@ -64,9 +65,8 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         )
         .await?;
     apply_migrations(&pool, PLATFORM_MIGRATIONS).await?;
-    for target in [&source_pool, &pool] {
-        sqlx::raw_sql(
-            r#"
+    sqlx::raw_sql(
+        r#"
             create schema if not exists support;
             create table if not exists support.tickets (
                 id text primary key,
@@ -75,10 +75,9 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
                 created_at timestamptz not null
             );
             "#,
-        )
-        .execute(target)
-        .await?;
-    }
+    )
+    .execute(&source_pool)
+    .await?;
     sqlx::query(
         "insert into support.tickets (id,title,status,created_at) values ('ticket-001','Sign in','open','2026-07-19'),('ticket-002','Billing','closed','2026-07-19'),('ticket-003','Export','waiting','2026-07-19') on conflict do nothing",
     )
@@ -138,7 +137,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     expansion_inputs.current_plan_inputs = plan_inputs.clone();
     expansion_inputs.scaffold = scaffold.clone();
     expansion_inputs.scaffold_apply_result = scaffold_apply.clone();
-    let expansion = execute_destination_expansion(expansion_inputs)?;
+    let expansion = execute_destination_expansion(&pool, expansion_inputs).await?;
     let blocked_issue_codes = blocked["findings"]
         .as_array()
         .into_iter()
@@ -228,8 +227,21 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     .await?;
     ensure!(reconciliation.status == ExtractionReconciliationStatus::Matched);
 
+    let candidate_service = super::start_autonomous_extraction_service(&pool).await?;
     let linked = super::observe_linked_extraction_behavior(&source_pool).await?;
-    let candidate = super::observe_autonomous_extraction_behavior(&pool).await?;
+    let candidate = candidate_service.observe().await?;
+    let reconciliation = reconcile_postgres_extraction_service_data(
+        &source_pool,
+        &pool,
+        &plan,
+        backfill.clone(),
+        vec![],
+        vec![ExtractionBusinessInvariant::passed(
+            "candidate-ticket-state-valid",
+            "post-observation source and candidate rows match in PostgreSQL",
+        )],
+    )
+    .await?;
     let verification = verify_extraction_behavior(ExtractionVerificationInputs {
         reconciliation: reconciliation.clone(),
         linked,
@@ -252,9 +264,25 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
             .await
             .is_err()
     );
+    let _ = super::linked_extraction_drain_snapshot(&source_pool).await?;
+    sqlx::query(
+        "insert into support.extraction_pending_work (work_id,kind) values ('workflow:support-ticket-003','durable_workflow') on conflict do nothing",
+    )
+    .execute(&source_pool)
+    .await?;
+    let blocked_drain = record_extraction_drain(
+        start_extraction_quiescence(&plan, &plan.expected_authority.revision)?,
+        super::linked_extraction_drain_snapshot(&source_pool).await?,
+    );
+    ensure!(!blocked_drain.issues.is_empty());
+    sqlx::query("delete from support.extraction_pending_work")
+        .execute(&source_pool)
+        .await?;
     let quiescence = start_extraction_quiescence(&plan, &plan.expected_authority.revision)?;
-    let quiescence =
-        record_extraction_drain(quiescence, super::linked_extraction_drain_snapshot().await?);
+    let quiescence = record_extraction_drain(
+        quiescence,
+        super::linked_extraction_drain_snapshot(&source_pool).await?,
+    );
     let quiescence = complete_extraction_quiescence(
         quiescence,
         &backfill,
@@ -269,11 +297,21 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         &quiescence,
         "routing-r7",
     ))?;
+    candidate_service.inject_next_request_failure();
+    let observed_candidate_failure = candidate_service
+        .update_ticket(
+            "ticket-003",
+            "Provisional failure must not persist",
+            "ticket-003:provisional-failure",
+        )
+        .await
+        .is_err();
+    ensure!(observed_candidate_failure);
     let failed_validation =
         ExtractionLinkedRollbackValidation::bind(&failed, "sha256:failed-linked-probe", false);
     let failed = fail_provisional_cutover(
         failed,
-        "injected candidate 503",
+        "observed candidate 503 through provisional route",
         "operator:m4-acceptance",
         failed_validation,
     );
@@ -296,9 +334,40 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
     ensure!(linked_after_rollback.response["ticketId"] == "ticket-003");
 
     super::pause_linked_extraction_mutations().await?;
+    let candidate_after_rollback = candidate_service.observe().await?;
+    let reconciliation = reconcile_postgres_extraction_service_data(
+        &source_pool,
+        &pool,
+        &plan,
+        backfill.clone(),
+        vec![],
+        vec![ExtractionBusinessInvariant::passed(
+            "candidate-ticket-state-valid",
+            "final paused source and live candidate rows match in PostgreSQL",
+        )],
+    )
+    .await?;
+    ensure!(reconciliation.status == ExtractionReconciliationStatus::Matched);
+    let verification = verify_extraction_behavior(ExtractionVerificationInputs {
+        reconciliation: reconciliation.clone(),
+        linked: linked_after_rollback,
+        candidate: candidate_after_rollback,
+        compatibility: vec![ExtractionCompatibilityEvidence::compatible(
+            "support-web",
+            "support-ticket-http.v1",
+            "v1",
+        )],
+        policy: vec![ExtractionPolicyEvidence::passed(
+            "single-authoritative-writer",
+        )],
+        volatile_json_pointers: vec![],
+    });
+    ensure!(verification.status == ExtractionVerificationStatus::Verified);
     let quiescence = start_extraction_quiescence(&plan, &plan.expected_authority.revision)?;
-    let quiescence =
-        record_extraction_drain(quiescence, super::linked_extraction_drain_snapshot().await?);
+    let quiescence = record_extraction_drain(
+        quiescence,
+        super::linked_extraction_drain_snapshot(&source_pool).await?,
+    );
     let quiescence = complete_extraction_quiescence(
         quiescence,
         &backfill,
@@ -314,9 +383,21 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         "routing-r8",
     ))?;
     let cutover = verify_provisional_cutover(cutover, "operator:m4-acceptance");
-    let candidate_health = super::probe_autonomous_extraction_health(&pool).await?;
-    let candidate_health_digest = extraction_input_digest(candidate_health.as_bytes());
-    let approval = ExtractionApproval::bind(&cutover, "approval:m4", "operator:m4", true);
+    candidate_service.probe_health().await?;
+    let candidate_health = ExtractionCandidateHealthEvidence::bind(
+        plan.plan_id.clone(),
+        "support-ticket-service",
+        candidate_service.endpoint(),
+        true,
+        true,
+    );
+    let approval = ExtractionApproval::bind(
+        &cutover,
+        &candidate_health,
+        "approval:m4",
+        "operator:m4",
+        true,
+    );
     let mut stale = approval.clone();
     stale.plan_digest = "sha256:stale".to_owned();
     let stale_approval_rejected = commit_extraction_authority(commit_inputs(
@@ -325,7 +406,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         &reconciliation,
         &verification,
         &quiescence,
-        &candidate_health_digest,
+        &candidate_health,
     ))
     .is_err();
     ensure!(stale_approval_rejected);
@@ -333,6 +414,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         serde_json::to_value(&reconciliation)?,
         serde_json::to_value(&verification)?,
         serde_json::to_value(&quiescence)?,
+        serde_json::to_value(&candidate_health)?,
     ] {
         record_extraction_artifact(&pool, &plan.plan_id, &artifact).await?;
     }
@@ -355,12 +437,19 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
             &reconciliation,
             &verification,
             &quiescence,
-            &candidate_health_digest,
+            &candidate_health,
         ),
         &LocalApprovalVerifier,
     )
     .await?;
-    let committed = record_autonomous_mutation(committed, "mutation:ticket-004");
+    candidate_service
+        .update_ticket(
+            "ticket-003",
+            "Post-commit autonomous mutation",
+            "ticket-003:post-commit-autonomous",
+        )
+        .await?;
+    let committed = record_autonomous_mutation(committed, "mutation:ticket-003:post-commit");
     let post_commit_fast_rollback_blocked =
         request_fast_extraction_rollback(&committed, None).is_err();
     ensure!(post_commit_fast_rollback_blocked);
@@ -436,30 +525,60 @@ impl ExtractionApprovalVerifier for LocalApprovalVerifier {
     }
 }
 
-fn execute_destination_expansion(inputs: ExtractionRunInputs) -> anyhow::Result<ExtractionRun> {
+async fn execute_destination_expansion(
+    pool: &sqlx::PgPool,
+    inputs: ExtractionRunInputs,
+) -> anyhow::Result<ExtractionRun> {
     let mut run = start_destination_expansion(&inputs)?;
     for operation in run.ordered_operations.clone() {
         let (outcome, kind, detail) = match operation.kind {
-            ExtractionExpansionOperationKind::CreateIsolatedStore => (
-                ExtractionOperationOutcome::Created,
-                ExtractionRunEvidenceKind::StoreIsolation,
-                "candidate Store is isolated and plan-owned",
-            ),
-            ExtractionExpansionOperationKind::ApplyExpandMigration => (
-                ExtractionOperationOutcome::Applied,
-                ExtractionRunEvidenceKind::MigrationApplied,
-                "expand-first migration applied idempotently",
-            ),
-            ExtractionExpansionOperationKind::VerifyMigrationWorkload => (
-                ExtractionOperationOutcome::Healthy,
-                ExtractionRunEvidenceKind::MigrationWorkloadHealth,
-                "Migration Workload reports the plan-owned migration set",
-            ),
-            ExtractionExpansionOperationKind::VerifyCandidateHealth => (
-                ExtractionOperationOutcome::Healthy,
-                ExtractionRunEvidenceKind::CandidateHealth,
-                "candidate API Workload reports ready without authority",
-            ),
+            ExtractionExpansionOperationKind::CreateIsolatedStore => {
+                sqlx::query("create schema if not exists support")
+                    .execute(pool)
+                    .await?;
+                (
+                    ExtractionOperationOutcome::Created,
+                    ExtractionRunEvidenceKind::StoreIsolation,
+                    "candidate Store schema was created in the destination database",
+                )
+            }
+            ExtractionExpansionOperationKind::ApplyExpandMigration => {
+                sqlx::raw_sql(
+                    "create table if not exists support.tickets (id text primary key, title text not null, status text not null, created_at timestamptz not null)",
+                )
+                .execute(pool)
+                .await?;
+                (
+                    ExtractionOperationOutcome::Applied,
+                    ExtractionRunEvidenceKind::MigrationApplied,
+                    "expand-first migration was applied idempotently to PostgreSQL",
+                )
+            }
+            ExtractionExpansionOperationKind::VerifyMigrationWorkload => {
+                let exists: bool =
+                    sqlx::query_scalar("select to_regclass('support.tickets') is not null")
+                        .fetch_one(pool)
+                        .await?;
+                ensure!(
+                    exists,
+                    "destination migration workload did not create support.tickets"
+                );
+                (
+                    ExtractionOperationOutcome::Healthy,
+                    ExtractionRunEvidenceKind::MigrationWorkloadHealth,
+                    "migration workload observed support.tickets in PostgreSQL",
+                )
+            }
+            ExtractionExpansionOperationKind::VerifyCandidateHealth => {
+                sqlx::query("select 1 from support.tickets limit 1")
+                    .fetch_optional(pool)
+                    .await?;
+                (
+                    ExtractionOperationOutcome::Healthy,
+                    ExtractionRunEvidenceKind::CandidateHealth,
+                    "candidate Store workload accepted a live PostgreSQL query without authority",
+                )
+            }
         };
         let request = ExtractionWorkloadRequest {
             run_id: run.run_id.clone(),
@@ -508,7 +627,7 @@ fn commit_inputs(
     reconciliation: &lenso_service::ExtractionReconciliationResult,
     verification: &lenso_service::ExtractionVerificationResult,
     quiescence: &lenso_service::ExtractionQuiescenceRun,
-    candidate_health_evidence_digest: &str,
+    candidate_health: &ExtractionCandidateHealthEvidence,
 ) -> ExtractionAuthorityCommitInputs {
     ExtractionAuthorityCommitInputs {
         cutover: cutover.clone(),
@@ -520,8 +639,7 @@ fn commit_inputs(
             reconciliation: reconciliation.clone(),
             verification: verification.clone(),
             quiescence: quiescence.clone(),
-            candidate_health_evidence_digest: candidate_health_evidence_digest.to_owned(),
-            candidate_healthy: true,
+            candidate_health: candidate_health.clone(),
         },
     }
 }

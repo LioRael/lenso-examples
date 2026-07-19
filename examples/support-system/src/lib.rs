@@ -21,6 +21,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
     path::{Path, PathBuf},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
     time::{SystemTime, UNIX_EPOCH},
 };
 use tokio::io::AsyncWriteExt;
@@ -827,12 +831,34 @@ pub async fn probe_linked_extraction_route() -> anyhow::Result<String> {
     Ok("linked-health-ready".to_owned())
 }
 
-pub async fn linked_extraction_drain_snapshot() -> anyhow::Result<ExtractionDrainSnapshot> {
+pub async fn linked_extraction_drain_snapshot(
+    source_pool: &sqlx::PgPool,
+) -> anyhow::Result<ExtractionDrainSnapshot> {
     ensure!(
         tokio::fs::try_exists(linked_mutation_gate_path()).await?,
         "linked mutation gate is not paused"
     );
-    Ok(ExtractionDrainSnapshot::empty())
+    sqlx::query(
+        "create table if not exists support.extraction_pending_work (work_id text primary key, kind text not null)",
+    )
+    .execute(source_pool)
+    .await?;
+    let rows: Vec<(String, String)> = sqlx::query_as(
+        "select work_id, kind from support.extraction_pending_work order by work_id",
+    )
+    .fetch_all(source_pool)
+    .await?;
+    let count = |kind: &str| rows.iter().filter(|(_, value)| value == kind).count() as u64;
+    Ok(ExtractionDrainSnapshot {
+        in_flight_requests: count("in_flight_request"),
+        outbox_messages: count("outbox_message"),
+        inbox_messages: count("inbox_message"),
+        scheduled_functions: count("scheduled_function"),
+        timers: count("timer"),
+        durable_workflows: count("durable_workflow"),
+        unresolved: rows.into_iter().map(|(id, _)| id).collect(),
+        timed_out: false,
+    })
 }
 
 fn linked_mutation_gate_path() -> PathBuf {
@@ -846,20 +872,91 @@ fn fixture_path(relative: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join(relative)
 }
 
-pub async fn observe_autonomous_extraction_behavior(
+pub struct AutonomousExtractionService {
+    endpoint: String,
+    pool: sqlx::PgPool,
+    server: tokio::task::JoinHandle<Result<(), std::io::Error>>,
+    fail_next_request: Arc<AtomicBool>,
+}
+
+impl AutonomousExtractionService {
+    pub fn endpoint(&self) -> &str {
+        &self.endpoint
+    }
+
+    pub async fn observe(&self) -> anyhow::Result<ExtractionBehaviorObservation> {
+        let response = self
+            .update_ticket(
+                "ticket-003",
+                "Extraction behavior proof",
+                "ticket-003:extraction-autonomous",
+            )
+            .await?;
+        extraction_observation("autonomous", &self.pool, response).await
+    }
+
+    pub async fn update_ticket(
+        &self,
+        ticket_id: &str,
+        title: &str,
+        idempotency_key: &str,
+    ) -> anyhow::Result<DirectHttpResponse> {
+        let response =
+            DirectHttpClient::new(resolver(TICKET_SERVICE, &self.endpoint)?, http_bindings()?)
+                .call(
+                    &ServiceReference::new(TICKET_SERVICE),
+                    update_ticket_call(
+                        ticket_id,
+                        title,
+                        now_ms() + CONTRACT_DEADLINE_MS,
+                        idempotency_key,
+                    ),
+                )
+                .await?;
+        ensure!(response.status == StatusCode::OK);
+        Ok(response)
+    }
+
+    pub async fn probe_health(&self) -> anyhow::Result<()> {
+        let response = reqwest::get(format!("{}/health/ready", self.endpoint)).await?;
+        ensure!(response.status() == StatusCode::OK);
+        Ok(())
+    }
+
+    pub fn inject_next_request_failure(&self) {
+        self.fail_next_request.store(true, Ordering::SeqCst);
+    }
+}
+
+impl Drop for AutonomousExtractionService {
+    fn drop(&mut self) {
+        self.server.abort();
+    }
+}
+
+pub async fn start_autonomous_extraction_service(
     destination_pool: &sqlx::PgPool,
-) -> anyhow::Result<ExtractionBehaviorObservation> {
+) -> anyhow::Result<AutonomousExtractionService> {
     let grpc = std::sync::Arc::new(DirectGrpcClient::new(
         resolver(SLA_SERVICE, SLA_ENDPOINT)?,
         grpc_bindings()?,
     ));
     let pool = destination_pool.clone();
+    let fail_next_request = Arc::new(AtomicBool::new(false));
+    let handler_failure = fail_next_request.clone();
     let binding = DirectHttpServerBinding::new_without_workload_identity(
         http_bindings()?,
         move |request| {
             let grpc = grpc.clone();
             let pool = pool.clone();
+            let fail_next_request = handler_failure.clone();
             async move {
+                if fail_next_request.swap(false, Ordering::SeqCst) {
+                    return DirectHttpResponse::json(
+                        StatusCode::SERVICE_UNAVAILABLE,
+                        json!({"error":"injected provisional candidate failure"}),
+                    );
+                }
                 let deadline = request.deadline_unix_ms.unwrap_or_default();
                 let key = request.idempotency_key.clone().unwrap_or_default();
                 let title = serde_json::from_slice::<Value>(&request.body)
@@ -913,31 +1010,31 @@ pub async fn observe_autonomous_extraction_behavior(
     );
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
     let endpoint = format!("http://{}", listener.local_addr()?);
-    let server = tokio::spawn(async move { axum::serve(listener, binding.router()).await });
-    let response = DirectHttpClient::new(resolver(TICKET_SERVICE, &endpoint)?, http_bindings()?)
-        .call(
-            &ServiceReference::new(TICKET_SERVICE),
-            update_ticket_call(
-                "ticket-003",
-                "Extraction behavior proof",
-                now_ms() + CONTRACT_DEADLINE_MS,
-                "ticket-003:extraction-autonomous",
-            ),
-        )
-        .await?;
-    server.abort();
-    ensure!(response.status == StatusCode::OK);
-    extraction_observation("autonomous", destination_pool, response).await
-}
-
-pub async fn probe_autonomous_extraction_health(
-    destination_pool: &sqlx::PgPool,
-) -> anyhow::Result<String> {
-    let ticket_count: i64 = sqlx::query_scalar("select count(*) from support.tickets")
-        .fetch_one(destination_pool)
-        .await?;
-    ensure!(ticket_count == 3, "candidate Store is incomplete");
-    Ok(format!("candidate-ready:tickets={ticket_count}"))
+    let health_pool = destination_pool.clone();
+    let router = binding.router().route(
+        "/health/ready",
+        get(move || {
+            let pool = health_pool.clone();
+            async move {
+                let count = sqlx::query_scalar::<_, i64>("select count(*) from support.tickets")
+                    .fetch_one(&pool)
+                    .await;
+                match count {
+                    Ok(3) => StatusCode::OK,
+                    _ => StatusCode::SERVICE_UNAVAILABLE,
+                }
+            }
+        }),
+    );
+    let server = tokio::spawn(async move { axum::serve(listener, router).await });
+    let service = AutonomousExtractionService {
+        endpoint,
+        pool: destination_pool.clone(),
+        server,
+        fail_next_request,
+    };
+    service.probe_health().await?;
+    Ok(service)
 }
 
 async fn extraction_observation(
