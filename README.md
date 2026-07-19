@@ -134,6 +134,7 @@ pnpm smoke:support-system
 pnpm acceptance:m1
 pnpm acceptance:m2
 pnpm acceptance:m3
+pnpm acceptance:m4
 ```
 
 `acceptance:m1` is the authoritative M1 developer-preview proof. It covers
@@ -159,6 +160,15 @@ Federated Runtime Story, exposes an intentionally missing source as a Segment
 gap, and collects the workflow-related Reliability Report. The command also
 reruns the M2 guarantees and the independent Provider smoke; it requires no
 Kubernetes, external workflow engine, or production authority.
+
+`acceptance:m4` is the public Safe Module Extraction gate. It begins with the
+linked support-ticket Module, proves readiness blockers with zero mutation,
+runs deterministic preparation and resumable backfill, and rolls an injected
+provisional failure back to linked authority. A fresh attempt crosses an exact
+local Approval Boundary, atomically commits Autonomous authority, rejects stale
+evidence, and blocks fast rollback after the first Autonomous mutation. The
+command first reruns M3, including its independent Provider smoke; `--simulate`
+is reserved for the deterministic M4 contract slice during development.
 
 The existing Provider-mode proof remains separate and unchanged:
 
