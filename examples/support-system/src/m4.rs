@@ -306,6 +306,7 @@ pub async fn run_m4_smoke() -> anyhow::Result<M4SmokeEvidence> {
         )
         .await
         .is_err();
+    candidate_service.clear_injected_failure();
     ensure!(observed_candidate_failure);
     let failed_validation =
         ExtractionLinkedRollbackValidation::bind(&failed, "sha256:failed-linked-probe", false);

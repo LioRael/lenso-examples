@@ -926,6 +926,10 @@ impl AutonomousExtractionService {
     pub fn inject_next_request_failure(&self) {
         self.fail_next_request.store(true, Ordering::SeqCst);
     }
+
+    pub fn clear_injected_failure(&self) {
+        self.fail_next_request.store(false, Ordering::SeqCst);
+    }
 }
 
 impl Drop for AutonomousExtractionService {
@@ -951,7 +955,7 @@ pub async fn start_autonomous_extraction_service(
             let pool = pool.clone();
             let fail_next_request = handler_failure.clone();
             async move {
-                if fail_next_request.swap(false, Ordering::SeqCst) {
+                if fail_next_request.load(Ordering::SeqCst) {
                     return DirectHttpResponse::json(
                         StatusCode::SERVICE_UNAVAILABLE,
                         json!({"error":"injected provisional candidate failure"}),
