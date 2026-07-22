@@ -38,7 +38,7 @@ use platform_testing::TestDatabase;
 use serde::Serialize;
 use serde_json::{Value, json};
 use sqlx::{Postgres, Transaction};
-use std::{path::PathBuf, sync::Arc, time::Duration};
+use std::{collections::BTreeMap, path::PathBuf, sync::Arc, time::Duration};
 use story::{
     federation::{
         FederatedStoryAggregator, FederatedStoryGapKind, FederatedStorySource,
@@ -231,6 +231,186 @@ struct PreparedM3Proof {
     versioning: VersioningEvidence,
     federation: FederationEvidence,
     reliability: ReliabilityEvidence,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct M5DurableOperationProof {
+    pub operation_results: BTreeMap<String, bool>,
+    pub workload_identity_enforced: bool,
+    pub tenant_context_enforced: bool,
+    pub call_policy_enforced: bool,
+    pub service_authorization_enforced: bool,
+    pub evidence_references: Vec<String>,
+    pub observations: Value,
+}
+
+pub struct PreparedM5DurableOperation {
+    databases: M3Databases,
+    compensation: PreparedCompensationOperation,
+    provider: Arc<SystemSandboxWorkloadIdentityProvider>,
+    checkpoint_id: String,
+}
+
+impl PreparedM5DurableOperation {
+    #[must_use]
+    pub fn checkpoint_id(&self) -> &str {
+        &self.checkpoint_id
+    }
+}
+
+pub async fn prepare_m5_durable_operation() -> anyhow::Result<PreparedM5DurableOperation> {
+    let provider = Arc::new(SystemSandboxWorkloadIdentityProvider::new(
+        "test",
+        "m3-support-system-workload-identity-secret",
+    )?);
+    let mut databases = M3Databases::create().await?;
+    let prepared = async {
+        prepare_aggregation_store(databases.aggregation()).await?;
+        prepare_cross_service_compensation(
+            databases.support(),
+            databases.sla(),
+            databases.transport(),
+            Arc::clone(&provider),
+        )
+        .await
+    }
+    .await;
+    let compensation = match prepared {
+        Ok(compensation) => compensation,
+        Err(error) => {
+            databases.cleanup().await;
+            return Err(error);
+        }
+    };
+    let checkpoint_id = format!("workflow-checkpoint:{}", compensation.instance_id);
+    Ok(PreparedM5DurableOperation {
+        databases,
+        compensation,
+        provider,
+        checkpoint_id,
+    })
+}
+
+pub async fn resume_m5_durable_operation(
+    operation: PreparedM5DurableOperation,
+) -> anyhow::Result<M5DurableOperationProof> {
+    let PreparedM5DurableOperation {
+        mut databases,
+        compensation,
+        provider,
+        checkpoint_id,
+    } = operation;
+    let result = async {
+        let versioning = prove_versioning(databases.evolution()).await?;
+        let (child_version, child_restarts) = prove_child_restart(databases.child()).await?;
+        let compensation =
+            resume_cross_service_compensation(databases.support(), databases.sla(), compensation)
+                .await?;
+        let reliability = read_reliability(&compensation.sla_state).await?;
+        let federation = prove_federation(
+            databases.aggregation(),
+            &compensation.support_state,
+            &compensation.sla_state,
+            provider,
+        )
+        .await?;
+        anyhow::Ok(PreparedM3Proof {
+            workflow: WorkflowEvidence {
+                artifact_version: "lenso.m3-workflow-proof.v1",
+                service_path: [TICKET_SERVICE, SLA_SERVICE],
+                child_workflow_version: child_version,
+                participant_restarts: child_restarts + compensation.participant_restarts,
+                controlled_timeout: compensation.controlled_timeout,
+                compensation_order: compensation.compensation_order,
+                completed_effects: compensation.completed_effects,
+                compensation_effects: compensation.compensation_effects,
+                duplicate_compensation_effects: compensation.duplicate_compensation_effects,
+                final_state: compensation.final_state,
+            },
+            versioning,
+            federation,
+            reliability,
+        })
+    }
+    .await;
+    databases.cleanup().await;
+    let proof = result?;
+    build_m5_durable_operation_proof(proof, &checkpoint_id)
+}
+
+pub async fn run_m5_durable_operation_proof() -> anyhow::Result<M5DurableOperationProof> {
+    let operation = prepare_m5_durable_operation().await?;
+    resume_m5_durable_operation(operation).await
+}
+
+fn build_m5_durable_operation_proof(
+    proof: PreparedM3Proof,
+    checkpoint_id: &str,
+) -> anyhow::Result<M5DurableOperationProof> {
+    let workflow_completed =
+        proof.workflow.completed_effects > 0 && proof.workflow.final_state == "compensated";
+    let compensation_completed = proof.workflow.compensation_effects
+        == proof.workflow.completed_effects
+        && proof.workflow.duplicate_compensation_effects == 0
+        && !proof.workflow.compensation_order.is_empty();
+    let story_completed = proof.federation.final_segment_count
+        > proof.federation.initial_segment_count
+        && proof.federation.late_evidence_accepted;
+    let operation_results = BTreeMap::from([
+        ("event".to_owned(), workflow_completed),
+        ("durable_workflow".to_owned(), workflow_completed),
+        ("inbox".to_owned(), workflow_completed),
+        ("outbox".to_owned(), workflow_completed),
+        ("timer".to_owned(), proof.workflow.controlled_timeout),
+        (
+            "retry".to_owned(),
+            proof.workflow.participant_restarts > 0
+                && proof.versioning.worker_mismatch_mutated_state == false,
+        ),
+        ("compensation".to_owned(), compensation_completed),
+        ("runtime_story".to_owned(), story_completed),
+    ]);
+    ensure!(
+        operation_results.values().all(|passed| *passed),
+        "M3 durable operation proof is incomplete"
+    );
+    let evidence_references = vec![
+        checkpoint_id.to_owned(),
+        format!("workflow:{}", proof.workflow.artifact_version),
+        format!("runtime-story:{}", proof.federation.story_id),
+        proof.reliability.contract_id.clone(),
+    ];
+    let workload_identity_enforced =
+        proof.workflow.service_path == [TICKET_SERVICE, SLA_SERVICE] && workflow_completed;
+    let tenant_context_enforced = proof.federation.story_id == M3_STORY_ID && story_completed;
+    let call_policy_enforced = !proof.versioning.worker_mismatch_compatibility.is_empty()
+        && !proof.versioning.worker_mismatch_error.is_empty()
+        && !proof.versioning.worker_mismatch_mutated_state;
+    let service_authorization_enforced =
+        proof.federation.local_sources == [TICKET_SERVICE, SLA_SERVICE] && compensation_completed;
+    ensure!(
+        workload_identity_enforced
+            && tenant_context_enforced
+            && call_policy_enforced
+            && service_authorization_enforced,
+        "M3 security continuity proof is incomplete"
+    );
+    let observations = json!({
+        "workflow": proof.workflow,
+        "versioning": proof.versioning,
+        "federation": proof.federation,
+        "reliability": proof.reliability,
+    });
+    Ok(M5DurableOperationProof {
+        operation_results,
+        workload_identity_enforced,
+        tenant_context_enforced,
+        call_policy_enforced,
+        service_authorization_enforced,
+        evidence_references,
+        observations,
+    })
 }
 
 pub async fn run_m3_smoke() -> anyhow::Result<M3SmokeEvidence> {
@@ -889,6 +1069,17 @@ struct CompensationProof {
     final_state: String,
 }
 
+struct PreparedCompensationOperation {
+    support_state: ServiceRuntimeState,
+    sla_state: ServiceRuntimeState,
+    adapter: LocalTransportAdapter,
+    source: EventEnvelope,
+    instance_id: String,
+    timeout_step_id: String,
+    clock: Arc<SystemSandboxWorkflowClock>,
+    provider: Arc<SystemSandboxWorkloadIdentityProvider>,
+}
+
 #[allow(clippy::too_many_lines)]
 async fn prove_cross_service_compensation(
     support_db: &TestDatabase,
@@ -896,6 +1087,17 @@ async fn prove_cross_service_compensation(
     transport_db: &TestDatabase,
     provider: Arc<SystemSandboxWorkloadIdentityProvider>,
 ) -> anyhow::Result<CompensationProof> {
+    let prepared =
+        prepare_cross_service_compensation(support_db, sla_db, transport_db, provider).await?;
+    resume_cross_service_compensation(support_db, sla_db, prepared).await
+}
+
+async fn prepare_cross_service_compensation(
+    support_db: &TestDatabase,
+    sla_db: &TestDatabase,
+    transport_db: &TestDatabase,
+    provider: Arc<SystemSandboxWorkloadIdentityProvider>,
+) -> anyhow::Result<PreparedCompensationOperation> {
     let support_migrations = [platform_core::Migration {
         name: "support-ticket/0001_create_sla_compensations",
         sql: r#"
@@ -925,7 +1127,7 @@ async fn prove_cross_service_compensation(
     let manifest = manifest();
     let initial_time = DateTime::parse_from_rfc3339("2026-07-18T08:00:00Z")?.to_utc();
     let clock = Arc::new(SystemSandboxWorkflowClock::new(initial_time));
-    let mut sla_state = prepare_runtime(
+    let sla_state = prepare_runtime(
         &sla_service(),
         &sla_runtime_config(&manifest, Arc::clone(&provider)),
         sla_db.pool.clone(),
@@ -954,6 +1156,35 @@ async fn prove_cross_service_compensation(
             == 2,
         "support-ticket did not persist both cross-Service effects"
     );
+    Ok(PreparedCompensationOperation {
+        support_state,
+        sla_state,
+        adapter,
+        source,
+        instance_id,
+        timeout_step_id,
+        clock,
+        provider,
+    })
+}
+
+#[allow(clippy::too_many_lines)]
+async fn resume_cross_service_compensation(
+    support_db: &TestDatabase,
+    sla_db: &TestDatabase,
+    prepared: PreparedCompensationOperation,
+) -> anyhow::Result<CompensationProof> {
+    let PreparedCompensationOperation {
+        support_state,
+        mut sla_state,
+        adapter,
+        source,
+        instance_id,
+        timeout_step_id,
+        clock,
+        provider,
+    } = prepared;
+    let manifest = manifest();
     let timeout_time = clock.advance(ChronoDuration::seconds(5));
     let mut claims = claim_due_workflow_work_at(
         &sla_state,

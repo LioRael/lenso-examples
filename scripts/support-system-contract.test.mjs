@@ -3,6 +3,7 @@ import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import test from "node:test";
+import { trustedObserverLocator } from "./m5-observer-locator.mjs";
 
 const fixtureRoot = new URL("../examples/support-system/", import.meta.url);
 const repoRoot = new URL("../", import.meta.url);
@@ -238,6 +239,40 @@ test("one public command owns the M4 safe extraction proof", async () => {
   assert.equal(proof.priorGuarantees, "m3_acceptance");
   assert.equal(proof.providerCompatibility, "independent_host_managed_smoke");
   assert.equal(proof.productionAuthorityRequired, false);
+});
+
+test("one public command owns the M5 production delivery proof", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m5"], "node scripts/m5-acceptance.mjs");
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    ["scripts/m5-acceptance.mjs", "--describe"],
+    { cwd: repoRoot },
+  );
+  const proof = JSON.parse(stdout);
+  assert.equal(proof.artifactVersion, "lenso.m5-acceptance-description.v1");
+  assert.equal(proof.publicSeam, "support-system");
+  assert.equal(proof.priorGuarantees, "m4_acceptance");
+  assert.equal(proof.kubernetesRequired, true);
+  assert.equal(proof.actualKubernetesApiRequired, true);
+  assert.equal(proof.runningOperatorRequired, true);
+  assert.equal(proof.runtimeConsoleDeploymentAuthority, false);
+  assert.ok(proof.workflow.includes("migration_first_staging"));
+  assert.ok(proof.workflow.includes("stale_target_zero_mutation"));
+  assert.ok(proof.workflow.includes("safe_operator_rollback"));
+  assert.ok(proof.workflow.includes("system_plane_outage_continuity"));
+});
+
+test("M5 trusted observer cannot select an alternate namespace", () => {
+  assert.deepEqual(trustedObserverLocator("operator", "staging"), {
+    namespace: "lenso-m5-staging",
+    resource: "lensoautonomousservice/service-support-staging",
+  });
+  assert.deepEqual(trustedObserverLocator("gateway", "production"), {
+    namespace: "lenso-m5-production",
+    resource: "configmap/lenso-m5-gateway",
+  });
+  assert.throws(() => trustedObserverLocator("operator", "staging-shadow"), /not allowlisted/u);
 });
 
 test("M2 acceptance describes every deterministic scenario and separate production proof", async () => {

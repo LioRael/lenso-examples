@@ -24,6 +24,22 @@ path = "src/bin/m3_smoke.rs"
 name = "support-system-m4-smoke"
 path = "src/bin/m4_smoke.rs"
 
+[[bin]]
+name = "support-system-m5-smoke"
+path = "src/bin/m5_smoke.rs"
+
+[[bin]]
+name = "support-system-m5-data-plane"
+path = "src/bin/m5_data_plane.rs"
+
+[[bin]]
+name = "support-system-m5-canary-step"
+path = "src/bin/m5_canary_step.rs"
+
+[[bin]]
+name = "support-system-m5-coordination-resume"
+path = "src/bin/m5_coordination_resume.rs"
+
 [dependencies]
 anyhow = "1"
 async-nats = "0.49"
