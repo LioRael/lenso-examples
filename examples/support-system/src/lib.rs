@@ -33,12 +33,18 @@ use tonic::{Request, Response, Status};
 mod m2;
 mod m3;
 mod m4;
+mod m5;
 pub use m2::{
     M2ConsumerRequest, M2ProducerEvidence, M2ProducerRequest, M2SmokeEvidence, run_m2_consumer,
     run_m2_producer, run_m2_smoke,
 };
-pub use m3::{M3SmokeEvidence, run_m3_smoke};
+pub use m3::{
+    M3SmokeEvidence, M5DurableOperationProof, PreparedM5DurableOperation,
+    prepare_m5_durable_operation, resume_m5_durable_operation, run_m3_smoke,
+    run_m5_durable_operation_proof,
+};
 pub use m4::{M4SmokeEvidence, run_m4_smoke};
+pub use m5::{M5SmokeEvidence, run_m5_smoke};
 
 const TICKET_SERVICE: &str = "support-ticket-service";
 const SLA_SERVICE: &str = "support-sla-service";
