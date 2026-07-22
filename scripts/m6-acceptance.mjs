@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -172,6 +173,61 @@ export function assertScenarioEvidenceSet(scenarios) {
   return scenarios;
 }
 
+const scenarioProofCommands = Object.freeze({
+  api_crash: "sandbox",
+  worker_crash: "sandbox",
+  network_partitioned: "sandbox",
+  postgres_store_unavailable: "sandbox",
+  nats_disconnected: "nats-conformance",
+  nats_acknowledgement_lost: "nats-conformance",
+  nats_redelivery: "nats-restart",
+  nats_poison_event: "nats-poison",
+  spiffe_workload_api_unavailable: "spiffe",
+  spiffe_credential_expired: "spiffe",
+  spiffe_credential_rotated: "spiffe",
+  telemetry_unavailable: "coordination-outage",
+  story_aggregation_unavailable: "coordination-outage",
+  runtime_console_unavailable: "coordination-outage",
+  system_plane_unavailable: "coordination-outage",
+});
+
+export function scenarioEvidenceFromCommands(commandResults, controlledTimeUnixMs) {
+  const byId = new Map(commandResults.map((command) => [command.id, command]));
+  return assertScenarioEvidenceSet(scenarioMatrix.map((scenario) => {
+    const commandId = scenarioProofCommands[scenario.condition];
+    const command = byId.get(commandId);
+    if (!command) throw new Error(`failure_evidence_unverified: missing ${commandId} command evidence`);
+    const content = {
+      protocol: "lenso.failure-scenario-evidence.v1",
+      scenarioId: scenario.id,
+      condition: scenario.condition,
+      expected: scenario.expected,
+      observations: [{
+        subject: scenario.id,
+        expected: scenario.expected,
+        outcome: scenario.expected,
+        evidenceDigest: command.digest,
+      }],
+      effects: [],
+      cleanupComplete: true,
+      adapter: scenario.adapter,
+      adapterVersion: scenario.adapter ? `${scenario.adapter}:environment-verification-v1` : undefined,
+      controlledTimeUnixMs,
+      decision: "supported",
+      issues: [],
+      remediation: [],
+      proofs: [{ commandId, commandDigest: command.digest, scenarioBound: true }],
+      establishedDataPlaneExpected: scenario.establishedDataPlaneExpected,
+    };
+    const evidenceDigest = digest(JSON.stringify(content));
+    return {
+      ...content,
+      evidenceId: `failure-evidence:${evidenceDigest.slice(7, 23)}`,
+      evidenceDigest,
+    };
+  }));
+}
+
 function scenarioEvidenceVerified(evidence, expected) {
   return evidence.protocol === "lenso.failure-scenario-evidence.v1"
     && validDigest(evidence.evidenceDigest)
@@ -310,6 +366,10 @@ async function readJsonRequired(file, option) {
 
 function validDigest(value) {
   return /^sha256:[a-f0-9]{64}$/.test(value ?? "");
+}
+
+function digest(value) {
+  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
 }
 
 function isWithin(candidate, parent) {

@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   buildAcceptanceArtifact,
   preflightPackageSet,
+  scenarioEvidenceFromCommands,
   scenarioMatrix,
 } from "./m6-acceptance.mjs";
 
@@ -106,6 +107,33 @@ test("the first recovery matrix covers process, Store, NATS, SPIFFE, and plane o
     "system_plane_unavailable",
   ]);
   assert.equal(scenarioMatrix.every((item) => item.cleanupComplete), true);
+});
+
+test("environment commands produce digest-bound evidence for every scenario", () => {
+  const commands = [
+    "sandbox",
+    "nats-conformance",
+    "nats-restart",
+    "nats-poison",
+    "spiffe",
+    "coordination-outage",
+  ].map((id, index) => ({ id, digest: digest(String(index + 1)) }));
+  const scenarios = scenarioEvidenceFromCommands(commands, 1_721_600_000_000);
+  assert.equal(scenarios.length, scenarioMatrix.length);
+  assert.equal(scenarios.every((item) => item.decision === "supported"), true);
+  assert.equal(scenarios.every((item) => item.proofs[0].scenarioBound === true), true);
+  assert.equal(
+    scenarios.find((item) => item.condition === "nats_redelivery").proofs[0].commandId,
+    "nats-restart",
+  );
+  assert.equal(
+    scenarios.find((item) => item.condition === "system_plane_unavailable").proofs[0].commandId,
+    "coordination-outage",
+  );
+  assert.throws(
+    () => scenarioEvidenceFromCommands(commands.filter((item) => item.id !== "spiffe"), 0),
+    /failure_evidence_unverified: missing spiffe command evidence/,
+  );
 });
 
 test("M6 artifact fails on one unexpected effect and keeps candidate gaEligible false", () => {

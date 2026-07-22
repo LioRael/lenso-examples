@@ -147,9 +147,13 @@ pnpm acceptance:m6:environment -- --output ./m6-environment-evidence.json
 ```
 
 It runs the real JetStream, SPIFFE/SPIRE, PostgreSQL-backed recovery, and
-disposable Kubernetes/Operator proofs. It records only stable principals,
-digests, adapter versions, outcomes, effects, and cleanup—never credentials,
-tokens, certificates, private keys, or production topology.
+disposable Kubernetes/Operator proofs. Successful named proof commands are
+bound directly into the scenario evidence written by `--output`; callers do
+not need to predict command-output digests. An optional `--scenario-evidence`
+input is still accepted for independently collected evidence and is verified
+against this run. The artifact records only stable principals, digests, adapter
+versions, outcomes, effects, and cleanup—never credentials, tokens,
+certificates, private keys, or production topology.
 
 To use a source-built CLI containing the System Sandbox:
 

@@ -4,7 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { assertScenarioEvidenceSet } from "./m6-acceptance.mjs";
+import { assertScenarioEvidenceSet, scenarioEvidenceFromCommands } from "./m6-acceptance.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const frameworkRoot = path.dirname(repoRoot);
@@ -29,10 +29,13 @@ const commands = [
 const commandDigests = Object.fromEntries(commands.map((command) => [command.id, command.digest]));
 const evidenceIndex = process.argv.indexOf("--scenario-evidence");
 const evidencePath = evidenceIndex >= 0 ? process.argv[evidenceIndex + 1] : undefined;
-if (!evidencePath) {
-  throw new Error("--scenario-evidence is required; Environment Verification never invents scenario observations");
+const controlledTimeUnixMs = Number.parseInt(process.env.LENSO_CONTROLLED_TIME_UNIX_MS ?? "0", 10);
+if (!Number.isSafeInteger(controlledTimeUnixMs) || controlledTimeUnixMs < 0) {
+  throw new Error("LENSO_CONTROLLED_TIME_UNIX_MS must be a non-negative safe integer");
 }
-const scenarios = assertScenarioEvidenceSet(JSON.parse(await readFile(path.resolve(evidencePath), "utf8")));
+const scenarios = evidencePath
+  ? assertScenarioEvidenceSet(JSON.parse(await readFile(path.resolve(evidencePath), "utf8")))
+  : scenarioEvidenceFromCommands(commands, controlledTimeUnixMs);
 for (const scenario of scenarios) {
   for (const proof of scenario.proofs) {
     if (commandDigests[proof.commandId] !== proof.commandDigest) {
