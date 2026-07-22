@@ -13,7 +13,6 @@ const cliRoot = path.resolve(process.env.LENSO_CLI_ROOT ?? path.join(frameworkRo
 
 requireApproval("LENSO_NATS_TEST_INFRASTRUCTURE_APPROVED", "real NATS JetStream test infrastructure");
 requireApproval("LENSO_SPIFFE_TEST_INFRASTRUCTURE_APPROVED", "real SPIFFE/SPIRE test infrastructure");
-requireApproval("LENSO_KUBERNETES_TEST_INFRASTRUCTURE_APPROVED", "disposable Kubernetes and Operator test infrastructure");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required for authoritative Store recovery evidence");
 if (!process.env.SPIFFE_ENDPOINT_SOCKET) throw new Error("SPIFFE_ENDPOINT_SOCKET is required for the short-lived SPIRE Workload API");
 
