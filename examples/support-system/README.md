@@ -110,6 +110,51 @@ reconciliation, linked/candidate behavior comparison, quiescence, failed
 provisional rollback, exact approval pins, Autonomous authority history, stale
 evidence rejection, post-commit rollback blocking, and cleanup status.
 
+## M6 GA support and recovery shell
+
+Inspect the public candidate/published modes and their non-production effects:
+
+```sh
+pnpm acceptance:m6 -- --describe
+```
+
+Preflight an exact staged package set against the versioned GA Support
+Manifest without running product scenarios:
+
+```sh
+pnpm acceptance:m6 -- --preflight --mode candidate \
+  --support-manifest ./lenso.ga-support-manifest.v1.json \
+  --packages ./m6-candidate-packages.json
+```
+
+Candidate mode accepts only exact staged artifacts with immutable digests and
+accepted shadow receipts. Published mode accepts only public registry artifacts
+with accepted release receipts. Both reject path/workspace dependencies,
+mutable versions, synthetic final versions, missing receipts, and combinations
+absent from the Support Manifest. Candidate evidence always records
+`gaEligible: false`.
+
+The explicitly approved Environment Verification lane produces the recovery
+scenario evidence consumed by the shell:
+
+```sh
+LENSO_NATS_TEST_INFRASTRUCTURE_APPROVED=true \
+LENSO_SPIFFE_TEST_INFRASTRUCTURE_APPROVED=true \
+LENSO_KUBERNETES_TEST_INFRASTRUCTURE_APPROVED=true \
+DATABASE_URL=postgres://... \
+SPIFFE_ENDPOINT_SOCKET=unix:///... \
+pnpm acceptance:m6:environment -- --output ./m6-environment-evidence.json
+```
+
+It runs the real JetStream, SPIFFE/SPIRE, PostgreSQL-backed recovery, and
+disposable Kubernetes/Operator proofs. Successful named proof commands are
+bound directly into the scenario evidence written by `--output`; callers do
+not need to predict command-output digests. An optional `--scenario-evidence`
+input is still accepted for independently collected evidence and is verified
+against this run. The artifact records only stable principals, digests, adapter
+versions, outcomes, effects, and cleanup—never credentials, tokens,
+certificates, private keys, or production topology.
+
 To use a source-built CLI containing the System Sandbox:
 
 ```sh

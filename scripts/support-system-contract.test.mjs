@@ -263,6 +263,30 @@ test("one public command owns the M5 production delivery proof", async () => {
   assert.ok(proof.workflow.includes("system_plane_outage_continuity"));
 });
 
+test("one public command owns the M6 candidate and published acceptance shell", async () => {
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.equal(pkg.scripts["acceptance:m6"], "node scripts/m6-acceptance.mjs");
+  assert.equal(
+    pkg.scripts["acceptance:m6:environment"],
+    "node scripts/m6-environment-verification.mjs",
+  );
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    ["scripts/m6-acceptance.mjs", "--describe"],
+    { cwd: repoRoot },
+  );
+  const proof = JSON.parse(stdout);
+  assert.equal(proof.artifactVersion, "lenso.m6-acceptance-description.v1");
+  assert.equal(proof.publicSeam, "pnpm acceptance:m6");
+  assert.deepEqual(proof.modes, ["candidate", "published"]);
+  assert.equal(proof.freshStarterOutsideFrameworkWorkspaces, true);
+  assert.equal(proof.mutableOrLocalArtifactsRejected, true);
+  assert.equal(proof.candidateCanClaimGa, false);
+  assert.equal(proof.productionMutation, false);
+  assert.match(proof.environmentVerification.nats, /JetStream/u);
+  assert.match(proof.environmentVerification.spiffe, /SPIRE/u);
+});
+
 test("M5 trusted observer cannot select an alternate namespace", () => {
   assert.deepEqual(trustedObserverLocator("operator", "staging"), {
     namespace: "lenso-m5-staging",
