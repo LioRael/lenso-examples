@@ -4,10 +4,125 @@ import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import test from "node:test";
 import { trustedObserverLocator } from "./m5-observer-locator.mjs";
+import { canonicalDataPlaneOperationResults } from "./m5-outage-observation.mjs";
+import { actualScalingIsSatisfied } from "./m5-scaling-observation.mjs";
 
 const fixtureRoot = new URL("../examples/support-system/", import.meta.url);
 const repoRoot = new URL("../", import.meta.url);
 const execFileAsync = promisify(execFile);
+
+test("outage observations use the canonical Rust Data Plane operation order", () => {
+  const operationResults = canonicalDataPlaneOperationResults({
+    compensation: true,
+    direct_request: true,
+    durable_workflow: true,
+    event: true,
+    inbox: true,
+    outbox: true,
+    retry: true,
+    runtime_story: true,
+    timer: true,
+  });
+
+  assert.deepEqual(Object.keys(operationResults), [
+    "direct_request",
+    "event",
+    "durable_workflow",
+    "inbox",
+    "outbox",
+    "timer",
+    "retry",
+    "compensation",
+    "runtime_story",
+  ]);
+  assert.throws(
+    () => canonicalDataPlaneOperationResults({ ...operationResults, unexpected: true }),
+    /unexpected Data Plane operation set/,
+  );
+});
+
+test("canary scaling evidence is bound to exact Deployments and HPAs", () => {
+  const workloads = [{
+    workloadId: "support-api",
+    role: "api",
+    replicas: 1,
+    scaling: { minReplicas: 1, maxReplicas: 3, targetCpuUtilization: 70 },
+  }];
+  const deployment = {
+    metadata: {
+      name: "service-support-production-support-api",
+      generation: 4,
+      labels: { "lenso.dev/workload": "support-api" },
+    },
+    spec: { replicas: 1 },
+    status: { observedGeneration: 4, readyReplicas: 1, availableReplicas: 1 },
+  };
+  const hpa = {
+    metadata: { labels: { "lenso.dev/workload": "support-api" } },
+    spec: {
+      minReplicas: 1,
+      maxReplicas: 3,
+      scaleTargetRef: {
+        apiVersion: "apps/v1",
+        kind: "Deployment",
+        name: "service-support-production-support-api",
+      },
+      metrics: [{
+        type: "Resource",
+        resource: {
+          name: "cpu",
+          target: { type: "Utilization", averageUtilization: 70 },
+        },
+      }],
+    },
+    status: { currentReplicas: 1, desiredReplicas: 1 },
+  };
+
+  assert.equal(actualScalingIsSatisfied(workloads, [deployment], [hpa]), true);
+  assert.equal(actualScalingIsSatisfied(workloads, [deployment], []), false);
+  assert.equal(
+    actualScalingIsSatisfied(
+      workloads,
+      [deployment],
+      [{ ...hpa, status: { currentReplicas: 1, desiredReplicas: 2 } }],
+    ),
+    false,
+  );
+  assert.equal(
+    actualScalingIsSatisfied(workloads, [deployment], [{
+      ...hpa,
+      spec: {
+        ...hpa.spec,
+        metrics: [{
+          ...hpa.spec.metrics[0],
+          resource: {
+            ...hpa.spec.metrics[0].resource,
+            target: { type: "Utilization", averageUtilization: 99 },
+          },
+        }],
+      },
+    }]),
+    false,
+  );
+  assert.equal(
+    actualScalingIsSatisfied(workloads, [deployment], [{
+      ...hpa,
+      spec: {
+        ...hpa.spec,
+        scaleTargetRef: { ...hpa.spec.scaleTargetRef, name: "wrong-deployment" },
+      },
+    }]),
+    false,
+  );
+  assert.equal(
+    actualScalingIsSatisfied(
+      [{ ...workloads[0], scaling: { minReplicas: 1, maxReplicas: 1 } }],
+      [{ ...deployment, spec: { replicas: 1 } }],
+      [],
+    ),
+    true,
+  );
+});
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, fixtureRoot), "utf8"));
@@ -223,6 +338,37 @@ test("one public command owns the M2 acceptance proof", async () => {
   );
 });
 
+test("Runtime Console serves the SPA entry point at the root path", async () => {
+  const dockerfile = await readFile(
+    new URL("infrastructure/m5-runtime-console.Dockerfile", repoRoot),
+    "utf8",
+  );
+
+  assert.match(
+    dockerfile,
+    /location = \/ \{ try_files \/index\.html =404; \}/u,
+  );
+  assert.match(dockerfile, /root \/usr\/share\/nginx\/html;/u);
+  assert.match(dockerfile, /index index\.html;/u);
+});
+
+test("stable Gateway targets the declared API workload port", async () => {
+  const [acceptance, observer] = await Promise.all([
+    readFile(new URL("scripts/m5-acceptance.mjs", repoRoot), "utf8"),
+    readFile(
+      new URL("scripts/m5-trusted-observer-adapter.mjs", repoRoot),
+      "utf8",
+    ),
+  ]);
+
+  for (const source of [acceptance, observer]) {
+    assert.match(
+      source,
+      /service-support-\$\{plan\.environment\}-support-api:8080/u,
+    );
+  }
+});
+
 test("one public command owns the M3 acceptance proof", async () => {
   const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
   assert.equal(pkg.scripts["acceptance:m3"], "node scripts/m3-acceptance.mjs");
@@ -244,6 +390,12 @@ test("one public command owns the M4 safe extraction proof", async () => {
 test("one public command owns the M5 production delivery proof", async () => {
   const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
   assert.equal(pkg.scripts["acceptance:m5"], "node scripts/m5-acceptance.mjs");
+  const [manifest, acceptance] = await Promise.all([
+    readFile(new URL("examples/support-system/Cargo.toml", repoRoot), "utf8"),
+    readFile(new URL("scripts/m5-acceptance.mjs", repoRoot), "utf8"),
+  ]);
+  assert.match(manifest, /name = "support-system-m5-attest-outage"/u);
+  assert.match(acceptance, /--bin", "support-system-m5-attest-outage"/u);
   const { stdout } = await execFileAsync(
     process.execPath,
     ["scripts/m5-acceptance.mjs", "--describe"],
@@ -296,7 +448,18 @@ test("M5 trusted observer cannot select an alternate namespace", () => {
     namespace: "lenso-m5-production",
     resource: "configmap/lenso-m5-gateway",
   });
+  assert.deepEqual(
+    trustedObserverLocator("operator", "production", "service-support-production-canary"),
+    {
+      namespace: "lenso-m5-production",
+      resource: "lensoautonomousservice/service-support-production-canary",
+    },
+  );
   assert.throws(() => trustedObserverLocator("operator", "staging-shadow"), /not allowlisted/u);
+  assert.throws(
+    () => trustedObserverLocator("operator", "production", "service-support-production-shadow"),
+    /resource is not allowlisted/u,
+  );
 });
 
 test("M2 acceptance describes every deterministic scenario and separate production proof", async () => {

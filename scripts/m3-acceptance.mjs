@@ -79,7 +79,7 @@ async function runAcceptance() {
   ]);
   assert.equal(evidence.workflow.completedEffects, 2);
   assert.equal(evidence.workflow.compensationEffects, 2);
-  assert.equal(evidence.workflow.duplicateCompensationEffects, 2);
+  assert.equal(evidence.workflow.duplicateCompensationEffects, 0);
   assert.equal(evidence.workflow.finalState, "compensated");
 
   assert.equal(evidence.versioning.pinnedInstanceVersion, "v1");

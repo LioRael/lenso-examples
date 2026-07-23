@@ -54,6 +54,7 @@ const M3_TENANT_ID: &str = "tenant_01";
 const AGGREGATOR_PRINCIPAL: &str = "service:story-aggregator";
 const AGGREGATOR_TRANSPORT_BINDING: &str = "sandbox://support-platform/story-aggregator";
 const STORY_CURSOR_KEY: &[u8] = b"support-system-m3-story-cursor-key-v1";
+const ACCEPTANCE_STORY_RETENTION: Duration = Duration::from_secs(100 * 365 * 24 * 60 * 60);
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -373,7 +374,12 @@ fn build_m5_durable_operation_proof(
     ]);
     ensure!(
         operation_results.values().all(|passed| *passed),
-        "M3 durable operation proof is incomplete"
+        "M3 durable operation proof is incomplete: {}",
+        serde_json::to_string(&json!({
+            "operationResults": operation_results,
+            "workflow": &proof.workflow,
+            "federation": &proof.federation,
+        }))?
     );
     let evidence_references = vec![
         checkpoint_id.to_owned(),
@@ -718,7 +724,7 @@ fn story_feed_config(
     StorySegmentFeedConfig::new(
         provider,
         feed_audience(service_id),
-        Duration::from_secs(24 * 60 * 60),
+        ACCEPTANCE_STORY_RETENTION,
         STORY_CURSOR_KEY,
     )
     .with_reader(
@@ -1328,6 +1334,10 @@ async fn resume_cross_service_compensation(
     )
     .await?;
     ensure!(duplicate_effects == 0, "redelivery repeated compensation");
+    ensure!(
+        duplicate_dispatches == u32::try_from(selection.compensations.len())?,
+        "duplicate compensation dispatch was not rejected"
+    );
 
     let business_compensations: Vec<(String, String, String)> = sqlx::query_as(
         "select compensation_id, effect_id, action from support_ticket_sla_compensations order by action",
@@ -1385,7 +1395,7 @@ async fn resume_cross_service_compensation(
             .collect(),
         completed_effects: 2,
         compensation_effects: u32::try_from(business_compensations.len())?,
-        duplicate_compensation_effects: duplicate_dispatches,
+        duplicate_compensation_effects: u32::try_from(duplicate_effects)?,
         final_state: inspected["instance"]["state"]
             .as_str()
             .context("workflow state")?
