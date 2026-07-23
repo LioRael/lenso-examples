@@ -15,6 +15,9 @@ FROM ${RUNTIME_IMAGE}
 ARG RELEASE_VERSION=development
 ENV M5_RELEASE_VERSION=$RELEASE_VERSION
 LABEL org.opencontainers.image.version=$RELEASE_VERSION
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=builder \
     /workspace/examples/examples/support-system/target/release/support-system-m5-data-plane \
     /usr/local/bin/support-system-m5-data-plane
