@@ -6,7 +6,8 @@ ENV M5_RELEASE_VERSION=$RELEASE_VERSION
 WORKDIR /workspace
 COPY --from=lenso . /workspace/lenso
 COPY examples/support-system /workspace/examples/examples/support-system
-RUN cargo build --locked --release \
+RUN CARGO_HTTP_MULTIPLEXING=false RUSTFLAGS="-C debug-assertions=yes" \
+    cargo build --locked --release \
     --manifest-path /workspace/examples/examples/support-system/Cargo.toml \
     --bin support-system-m5-data-plane
 
