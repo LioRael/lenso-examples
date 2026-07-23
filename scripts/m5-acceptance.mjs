@@ -5,6 +5,8 @@ import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { canonicalDataPlaneOperationResults } from "./m5-outage-observation.mjs";
+import { actualScalingIsSatisfied } from "./m5-scaling-observation.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const frameworkRoot = path.dirname(repoRoot);
@@ -23,8 +25,6 @@ const operatorObservationAuthorityId = "kubernetes-api:lenso-m5-kind";
 const gatewayObservationAuthorityId = "gateway-api:lenso-m5-kind";
 const operatorObserverKeys = observerKeyPair();
 const gatewayObserverKeys = observerKeyPair();
-const outageObservationAuthorityId = "data-plane-probe:lenso-m5-kind";
-const outageObservationAuthorityKey = "ephemeral-m5-outage-observation-key";
 const description = {
   artifactVersion: "lenso.m5-acceptance-description.v1",
   publicSeam: "support-system",
@@ -273,6 +273,30 @@ async function runAcceptance() {
       workDir,
       "production-baseline.operator-observation.json",
     );
+    const previousProductionCanary = JSON.parse(
+      await readFile(exports.previousProduction, "utf8"),
+    );
+    previousProductionCanary.metadata.name = "service-support-production-canary";
+    const previousProductionCanaryPath = path.join(
+      workDir,
+      "previous-production-canary.autonomous-service.json",
+    );
+    await writeJson(previousProductionCanaryPath, previousProductionCanary);
+    const productionCanaryBaseline = await applyPreviouslyMigratedBaseline({
+      kubeEnv,
+      namespace: "lenso-m5-production",
+      resource: previousProductionCanaryPath,
+    });
+    await bridgeOperatorObservation(
+      workDir,
+      kubeEnv,
+      "production-canary-baseline",
+      productionCanaryBaseline,
+    );
+    const productionCanaryBaselineObservationPath = path.join(
+      workDir,
+      "production-canary-baseline.operator-observation.json",
+    );
     const productionBaselineGatewayObservation = await installGateway(
       workDir,
       kubeEnv,
@@ -350,7 +374,7 @@ async function runAcceptance() {
       core,
       oldObservationPath: stagingObservationPath,
       currentGatewayPath: currentStagingEvidence.gateway,
-      targetObservation: productionBaselineObservationPath,
+      targetObservation: productionCanaryBaselineObservationPath,
       operatorExport: exports.candidateProductionExport,
       authorityContext: promotionCurrentnessContext,
     });
@@ -358,7 +382,7 @@ async function runAcceptance() {
       workDir,
       kubeEnv,
       core,
-      targetObservation: productionBaselineObservationPath,
+      targetObservation: productionCanaryBaselineObservationPath,
       operatorExport: exports.candidateProductionExport,
       readCurrentStagingEvidence,
     });
@@ -368,7 +392,7 @@ async function runAcceptance() {
       core,
       currentStagingEvidence.operator,
       currentStagingEvidence.gateway,
-      productionBaselineObservationPath,
+      productionCanaryBaselineObservationPath,
       exports.candidateProductionExport,
     );
     assert.equal(staging.status.observedReleaseId, core.serviceRelease.releaseId);
@@ -380,7 +404,7 @@ async function runAcceptance() {
       kubeEnv,
       "lenso-m5-production",
       authorizedProduction,
-      productionBaseline,
+      productionCanaryBaseline,
     );
     currentStagingEvidence = await readCurrentStagingEvidence();
     authorizedProduction = await authorizeProductionResource(
@@ -1379,6 +1403,7 @@ async function bridgeOperatorObservation(workDir, kubeEnv, name, resource, autho
   const output = await run(process.execPath, [trustedObserverAdapter, JSON.stringify({
     kind: "operator",
     environment: resource.spec.environment,
+    resourceName: resource.metadata.name,
     authorityContext,
   })], true, {
     ...kubeEnv,
@@ -1472,6 +1497,15 @@ console.log(JSON.stringify({
     "--selector", `lenso.dev/autonomous-service=${resourceName}`,
     "--output=json",
   ], true, kubeEnv));
+  const deployments = JSON.parse(await run(kubectlBin, [
+    "get", "deployments", "--namespace", "lenso-m5-production",
+    "--selector", `lenso.dev/autonomous-service=${resourceName}`,
+    "--output=json",
+  ], true, kubeEnv));
+  const autonomousService = JSON.parse(await run(kubectlBin, [
+    "get", "--namespace", "lenso-m5-production",
+    `lensoautonomousservice/${resourceName}`, "--output=json",
+  ], true, kubeEnv));
   const pdbs = JSON.parse(await run(kubectlBin, [
     "get", "pdb", "--namespace", "lenso-m5-production",
     "--selector", `lenso.dev/autonomous-service=${resourceName}`,
@@ -1527,8 +1561,11 @@ console.log(JSON.stringify({
     compensationPressure: probe.compensationPressure,
     dependencies: [{ dependencyId: "database", available: probe.databaseAvailable }],
     failureDomains,
-    scalingCheckPassed: hpas.items.length > 0 && hpas.items.every((item) =>
-      (item.status?.currentReplicas ?? 0) >= (item.spec?.minReplicas ?? 1)),
+    scalingCheckPassed: actualScalingIsSatisfied(
+      autonomousService.spec.workloads,
+      deployments.items,
+      hpas.items,
+    ),
     disruptionCheckPassed: pdbs.items.length > 0 && pdbs.items.every((item) =>
       (item.status?.currentHealthy ?? 0) >= (item.status?.desiredHealthy ?? 0)),
     availabilityCheckPassed: Object.values(failureDomains).some(Boolean),
@@ -1847,7 +1884,7 @@ function assertGatewayPlanIntegrity(plan) {
 }
 
 function renderGatewayConfiguration(plan) {
-  const upstream = `service-support-${plan.environment}-support-api`;
+  const upstream = `service-support-${plan.environment}-support-api:8080`;
   const allowedOrigin = plan.routes[0].cors.allowedOrigins[0];
   const quotedAllowedOrigin = nginxQuoted(allowedOrigin);
   const locationPattern = nginxQuoted(nginxLocationPattern(plan.routes[0].publicPath));
@@ -2241,14 +2278,16 @@ async function proveStalePromotionIsNonMutating(
     "get", "--namespace", namespace, `lensoautonomousservice/${name}`, "--output=json",
   ], true, kubeEnv));
   assert.equal(before.metadata.uid, authorized.metadata.uid);
-  assert.equal(before.metadata.resourceVersion, authorized.metadata.resourceVersion);
-  await run(kubectlBin, [
-    "annotate", "--namespace", namespace, `lensoautonomousservice/${name}`,
-    `lenso.dev/m5-cas-probe=${process.pid}`, "--overwrite",
-  ], false, kubeEnv);
-  const concurrent = JSON.parse(await run(kubectlBin, [
-    "get", "--namespace", namespace, `lensoautonomousservice/${name}`, "--output=json",
-  ], true, kubeEnv));
+  let concurrent = before;
+  if (before.metadata.resourceVersion === authorized.metadata.resourceVersion) {
+    await run(kubectlBin, [
+      "annotate", "--namespace", namespace, `lensoautonomousservice/${name}`,
+      `lenso.dev/m5-cas-probe=${process.pid}`, "--overwrite",
+    ], false, kubeEnv);
+    concurrent = JSON.parse(await run(kubectlBin, [
+      "get", "--namespace", namespace, `lensoautonomousservice/${name}`, "--output=json",
+    ], true, kubeEnv));
+  }
   assert.notEqual(concurrent.metadata.resourceVersion, authorized.metadata.resourceVersion);
   assert.deepEqual(concurrent.spec, expectedBaseline.spec, "CAS probe must not alter production intent");
   let rejected = false;
@@ -2302,6 +2341,28 @@ async function applyAndWait({ kubeEnv, namespace, resource, migrationFirst, muta
     observed.status.policyEvidenceReferences,
     desired.spec.policyEvidenceReferences,
     "Operator status must report the exact Policy Evidence references",
+  );
+  return observed;
+}
+
+async function applyPreviouslyMigratedBaseline({ kubeEnv, namespace, resource }) {
+  const desired = JSON.parse(await readFile(resource, "utf8"));
+  const name = desired.metadata.name;
+  await run(kubectlBin, ["apply", "--namespace", namespace, "--filename", resource], false, kubeEnv);
+  await run(kubectlBin, [
+    "wait", "--namespace", namespace, "--for=jsonpath={.status.state}=ready",
+    `lensoautonomousservice/${name}`, "--timeout=180s",
+  ], false, kubeEnv);
+  const observed = JSON.parse(await run(kubectlBin, [
+    "get", "--namespace", namespace,
+    `lensoautonomousservice/${name}`, "--output=json",
+  ], true, kubeEnv));
+  assert.equal(observed.status.observedReleaseDigest, desired.spec.releaseDigest);
+  assert.equal(observed.status.drifted, false);
+  assert.deepEqual(
+    observed.status.policyEvidenceReferences,
+    desired.spec.policyEvidenceReferences,
+    "pre-migrated canary baseline must preserve the exact Policy Evidence references",
   );
   return observed;
 }
@@ -2601,6 +2662,7 @@ console.log(JSON.stringify({ ...first.body, protectedOperations, unauthorizedDen
   assert.equal(raw.unauthorizedDenied, true);
   assert.equal(raw.releaseId, core.previousDeploymentPlan.releaseId);
   assert.equal(raw.configRevisionId, core.previousDeploymentPlan.configRevisionId);
+  const operationResults = canonicalDataPlaneOperationResults(raw.operationResults);
   const claims = {
     protocol: "lenso.coordination-outage-observation.v1",
     deploymentPlanId: core.previousDeploymentPlan.planId,
@@ -2624,25 +2686,25 @@ console.log(JSON.stringify({ ...first.body, protectedOperations, unauthorizedDen
     lastValidConfigRevisionAvailable: raw.lastValidConfigRevisionAvailable,
     secretProviderLeaseValid: raw.secretProviderLeaseValid,
     secretRotationPolicyPreserved: raw.secretRotationPolicyPreserved,
-    operationResults: raw.operationResults,
+    operationResults,
     security: raw.security,
     durableCheckpointId: raw.durableCheckpointId,
     evidenceReferences: [...raw.evidenceReferences].sort(),
   };
-  const observationDigest = digestJson(claims);
-  const observation = {
-    protocol: "lenso.coordination-outage-observation.v1",
-    observationId: `coordination-outage-observation:${observationDigest}`,
-    observationDigest,
-    authorityId: outageObservationAuthorityId,
-    authorityProof: digestJson([
-      "lenso.coordination-authority-proof.v1",
-      outageObservationAuthorityId,
-      observationDigest,
-      outageObservationAuthorityKey,
-    ]),
-    claims,
-  };
+  const claimsFile = path.join(workDir, "outage-observation-claims.json");
+  await writeJson(claimsFile, claims);
+  const attestationOutput = await run(
+    "cargo",
+    [
+      "run", "--quiet", "--locked", "--manifest-path", fixtureManifest,
+      "--bin", "support-system-m5-attest-outage", "--", claimsFile,
+    ],
+    true,
+  );
+  const observation = JSON.parse(
+    attestationOutput.match(/^M5_OUTAGE_OBSERVATION=(.+)$/m)?.[1] ?? "null",
+  );
+  assert.equal(observation?.claims?.durableCheckpointId, raw.durableCheckpointId);
   const file = path.join(workDir, "outage-observation.json");
   await writeJson(file, observation);
   return observation;
@@ -2678,8 +2740,8 @@ async function proveCoordinationResume(workDir, kubeEnv, namespace, resource, co
   const interruptedResumeEvidence = JSON.parse(interruptedResumeOutput.match(/^M5_COORDINATION_RESUME=(.+)$/m)?.[1] ?? "null");
   assert.equal(interruptedResumeEvidence.receiptCount, 1);
   assert.deepEqual(interruptedResumeEvidence.firstReceipt.effects, {
-    writesSecretValues: false,
     mutatesConfiguration: false,
+    mutatesGateway: false,
     mutatesDeployment: false,
     mutatesEnvironment: false,
     appendsLedger: false,

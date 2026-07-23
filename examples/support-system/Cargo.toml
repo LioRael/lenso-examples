@@ -40,6 +40,10 @@ path = "src/bin/m5_canary_step.rs"
 name = "support-system-m5-coordination-resume"
 path = "src/bin/m5_coordination_resume.rs"
 
+[[bin]]
+name = "support-system-m5-attest-outage"
+path = "src/bin/m5_attest_outage.rs"
+
 [dependencies]
 anyhow = "1"
 async-nats = "0.49"

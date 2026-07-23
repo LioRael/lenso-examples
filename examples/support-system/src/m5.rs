@@ -1155,7 +1155,8 @@ pub fn run_m5_smoke() -> anyhow::Result<M5SmokeEvidence> {
                     && observation.claims.config_revision_id == outage.config_revision_id
             }) && rollback.is_some()
                 && outage.decision == DeliveryDecision::Passed,
-            "actual outage proof must pass"
+            "actual outage proof must pass: {}",
+            serde_json::to_string(&outage)?
         );
     }
 

@@ -15,8 +15,8 @@ if (!authorityId || !privateKeyPem) throw new Error("trusted observer signing au
 const privateKey = createPrivateKey(privateKeyPem);
 const kubectl = process.env.KUBECTL_BIN ?? "kubectl";
 
-function readResource(kind, environment) {
-  const locator = trustedObserverLocator(kind, environment);
+function readResource(kind, environment, resourceName = null) {
+  const locator = trustedObserverLocator(kind, environment, resourceName);
   return JSON.parse(execFileSync(kubectl, [
     "get", locator.resource, "--namespace", locator.namespace, "--output=json",
   ], { encoding: "utf8", env: process.env }));
@@ -53,7 +53,7 @@ function renderGatewayConfiguration(plan) {
   const allowedOrigin = route.cors.allowedOrigins[0];
   const quotedAllowedOrigin = nginxQuoted(allowedOrigin);
   const locationPattern = nginxQuoted(publicPathPattern(route.publicPath));
-  const upstream = `service-support-${plan.environment}-support-api`;
+  const upstream = `service-support-${plan.environment}-support-api:8080`;
   return [
     "limit_req_zone $binary_remote_addr zone=m5_edge:10m rate=100r/m;",
     "map $http_authorization $m5_auth_ok { default 1; \"\" 0; }",
@@ -125,7 +125,7 @@ function requiredText(value, field) {
 }
 
 function observeOperator() {
-  const resource = readResource("operator", request.environment);
+  const resource = readResource("operator", request.environment, request.resourceName);
   const { spec, status, metadata } = resource;
   const planId = spec.evidenceReferences.find((value) => value.startsWith("deployment-plan:sha256:"));
   if (!planId) throw new Error("live Operator resource does not identify its Deployment plan");
