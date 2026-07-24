@@ -800,7 +800,7 @@ async function assertRequirements() {
   await Promise.all([
     run(kindBin, ["version"], true),
     run(kubectlBin, ["version", "--client", "--output=json"], true),
-    run(dockerBin, ["info", "--format", "{{.ServerVersion}}"], true),
+    run(dockerBin, ["info", "--format", "{{.ServerVersion}}"], true, {}, repoRoot, 15_000),
     run("cargo", ["--version"], true),
     run(lensoBin, ["--version"], true),
   ]);
@@ -2810,21 +2810,38 @@ async function writeJson(file, value) {
   await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function run(command, args, capture = false, extraEnv = {}, cwd = repoRoot) {
+function run(command, args, capture = false, extraEnv = {}, cwd = repoRoot, timeoutMs = 0) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
       env: { ...process.env, ...extraEnv },
       stdio: capture ? ["ignore", "pipe", "pipe"] : "inherit",
     });
+    let settled = false;
     let stdout = "";
     let stderr = "";
+    const finish = (callback) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      callback();
+    };
+    const timer = timeoutMs > 0
+      ? setTimeout(() => {
+        child.kill("SIGTERM");
+        finish(() => reject(new Error(`${command} timed out after ${timeoutMs}ms`)));
+      }, timeoutMs)
+      : null;
+    timer?.unref();
     child.stdout?.on("data", (chunk) => { stdout += chunk; });
     child.stderr?.on("data", (chunk) => { stderr += chunk; });
-    child.once("error", (error) => reject(new Error(`${command} is unavailable: ${error.message}`)));
+    child.once("error", (error) => finish(() =>
+      reject(new Error(`${command} is unavailable: ${error.message}`))));
     child.once("exit", (code, signal) => {
-      if (code === 0) resolve(stdout);
-      else reject(new Error(`${command} exited with ${code ?? signal}${stderr ? `\n${stderr.trim()}` : ""}`));
+      finish(() => {
+        if (code === 0) resolve(stdout);
+        else reject(new Error(`${command} exited with ${code ?? signal}${stderr ? `\n${stderr.trim()}` : ""}`));
+      });
     });
   });
 }
