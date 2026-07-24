@@ -135,6 +135,10 @@ tarball into the isolated starter and runs its public `lenso --version`
 and `lenso host init` commands. Every entry also declares `artifactFormat` as
 `npm_tgz`, `cargo_crate`, or `json`; the gate reads the package's own
 name/version metadata and binds every copied artifact digest into the trace.
+The same starter then executes public Module authoring, System graph, exact GA
+support, failure recovery, Contract safety, delivery, workflow/Story,
+upgrade/rollback, and manifest-evolution surfaces. It emits a content-addressed
+`lenso.m6-fresh-starter-tutorial-receipt.v1` before cleanup.
 
 Candidate mode accepts only exact staged artifacts with immutable digests and
 accepted shadow receipts. Published mode accepts only public registry artifacts

@@ -206,6 +206,16 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
         '} else if (process.argv[2] === "ga" && process.argv[3] === "support-check") {',
         '  const manifest = JSON.parse(fs.readFileSync(process.argv[process.argv.indexOf("--manifest") + 1]));',
         '  console.log(JSON.stringify({ decision: "candidate", manifestDigest: manifest.manifestDigest }));',
+        '} else if (process.argv[2] === "system" && process.argv[3] === "init") {',
+        '  const systemFile = process.argv[process.argv.indexOf("--system-file") + 1];',
+        '  fs.writeFileSync(systemFile, JSON.stringify({ protocol: "lenso.system.v1", name: "support-system" }));',
+        '} else if (process.argv[2] === "system" && process.argv[3] === "check") {',
+        '  console.log(JSON.stringify({ status: "ready", issues: [] }));',
+        '} else if (process.argv[2] === "ga" && process.argv[3] === "failure-evaluate") {',
+        '  console.log(JSON.stringify({ decision: "supported", issues: [] }));',
+        '} else if (process.argv[2] === "ga" && process.argv[3] === "contract-retire") {',
+        '  console.log(JSON.stringify({ decision: "unsupported", issues: [{ code: "retirement_active_consumer" }] }));',
+        "  process.exitCode = 1;",
         '} else { console.log("lenso 0.1.30"); }',
         "",
       ].join("\n"),
@@ -271,6 +281,9 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
     assert.equal(result.candidateTrace.replayCommand, "lenso host init");
     assert.equal(result.candidateTrace.supportCheckCommand, "lenso ga support-check");
     assert.equal(result.candidateTrace.inspectedArtifacts.length, 2);
+    assert.equal(result.candidateTrace.tutorial.phases.length, 9);
+    assert.equal(result.candidateTrace.tutorial.productionMutated, false);
+    assert.match(result.candidateTrace.tutorial.tutorialDigest, /^sha256:/u);
     assert.equal(result.cleanup.temporaryStarterDeleted, true);
     await assert.rejects(readFile(result.starterRoot), /ENOENT/);
   } finally {

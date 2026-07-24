@@ -456,6 +456,11 @@ async function executeCandidateTracer(starterRoot, packages, supportManifest) {
     || supportCheck.manifestDigest !== supportManifest.manifestDigest) {
     throw new Error("m6_candidate_tracer_invalid: staged CLI rejected the exact GA combination");
   }
+  const tutorial = await executeCandidateTutorial(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    hostRoot,
+    supportManifest,
+  );
   return {
     outcome: "passed",
     tracerDigest: tracer.digest,
@@ -463,9 +468,107 @@ async function executeCandidateTracer(starterRoot, packages, supportManifest) {
     publicCommand: "lenso --version",
     replayCommand: "lenso host init",
     supportCheckCommand: "lenso ga support-check",
+    tutorial,
     inspectedArtifacts: copied.map((item) => item.inspectedIdentity),
     consumedDigests: expected,
     cwdOutsideFramework: true,
+  };
+}
+
+async function executeCandidateTutorial(cli, hostRoot, supportManifest) {
+  const phases = [];
+  const trace = async (phase, args, expected = "success") => {
+    const observed = await runObserved(cli, args, hostRoot);
+    if ((expected === "success" && observed.code !== 0)
+      || (expected === "blocked" && observed.code === 0)) {
+      throw new Error(`m6_candidate_tutorial_invalid: ${phase} produced an unexpected exit`);
+    }
+    let report = null;
+    if (observed.stdout.trim().startsWith("{")) {
+      report = JSON.parse(observed.stdout);
+    }
+    phases.push({
+      phase,
+      commandDigest: digest(JSON.stringify(args)),
+      outputDigest: digest(observed.stdout),
+      outcome: observed.code === 0 ? "passed" : "blocked_as_expected",
+      issueCodes: (report?.issues ?? []).map((issue) => issue.code),
+    });
+    return report;
+  };
+  await trace("module_authoring", [
+    "module", "create", "support", "--repo-root", hostRoot, "--dry-run",
+  ]);
+  const systemFile = path.join(hostRoot, "lenso.system.json");
+  await trace("system_init", [
+    "system", "init", "support-system", "--system-file", systemFile,
+  ]);
+  const system = await trace("system_graph", [
+    "system", "check", "--system-file", systemFile, "--json",
+  ]);
+  if (system?.status !== "ready") {
+    throw new Error("m6_candidate_tutorial_invalid: fresh System graph is not ready");
+  }
+  const failureInput = path.join(hostRoot, "m6-failure-input.json");
+  await writeFile(failureInput, JSON.stringify({
+    scenarioId: "system-plane-outage",
+    condition: "system_plane_unavailable",
+    expected: "pause_coordinated_mutation",
+    observations: [{
+      subject: "promotion",
+      outcome: "pause_coordinated_mutation",
+      evidenceDigest: digest("candidate-tutorial-system-plane"),
+    }],
+    effects: [],
+    cleanupComplete: true,
+  }));
+  const failure = await trace("failure_recovery", [
+    "ga", "failure-evaluate", "--input", failureInput, "--json",
+  ]);
+  if (failure?.decision !== "supported") {
+    throw new Error("m6_candidate_tutorial_invalid: failure recovery trace is unsupported");
+  }
+  const retirementInput = path.join(hostRoot, "m6-retirement-input.json");
+  await writeFile(retirementInput, JSON.stringify({
+    systemGraphDigest: digest("candidate-tutorial-system"),
+    environmentEvidenceDigest: digest("candidate-tutorial-environment"),
+    evidenceFresh: true,
+    contractId: "support-http",
+    retiringVersion: "v1",
+    replacementVersion: "v2",
+    deprecationWindowComplete: true,
+    consumers: [{
+      consumerId: "runtime-console",
+      activeVersion: "v1",
+      replacementVerified: false,
+    }],
+  }));
+  const retirement = await trace("contract_evolution", [
+    "ga", "contract-retire", "--input", retirementInput, "--json",
+  ], "blocked");
+  if (retirement?.issues?.[0]?.code !== "retirement_active_consumer") {
+    throw new Error("m6_candidate_tutorial_invalid: active Consumer was not rejected");
+  }
+  for (const [phase, args] of [
+    ["service_delivery", ["service", "delivery", "--help"]],
+    ["workflow_and_story", ["system", "runbook", "--help"]],
+    ["upgrade_and_rollback", ["ga", "service-upgrade", "--help"]],
+    ["manifest_evolution", ["ga", "manifest-migrate", "--help"]],
+  ]) {
+    await trace(phase, args);
+  }
+  const content = {
+    protocol: "lenso.m6-fresh-starter-tutorial-receipt.v1",
+    supportManifestDigest: supportManifest.manifestDigest,
+    phases,
+    cleanupComplete: true,
+    productionMutated: false,
+  };
+  const tutorialDigest = digest(JSON.stringify(content));
+  return {
+    ...content,
+    tutorialId: `m6-tutorial:${tutorialDigest.slice(7, 23)}`,
+    tutorialDigest,
   };
 }
 
@@ -842,6 +945,29 @@ function runCaptured(command, args, cwd) {
     child.once("exit", (code, signal) => {
       if (code === 0) resolve(stdout);
       else reject(new Error(`m6_candidate_tracer_invalid: exited with ${code ?? signal}: ${stderr}`));
+    });
+  });
+}
+
+function runObserved(command, args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: {
+        PATH: process.env.PATH,
+        HOME: cwd,
+        CARGO_HOME: path.join(cwd, "cargo-home"),
+        npm_config_cache: path.join(cwd, "package-store"),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      resolve({ code: code ?? 128, signal, stdout, stderr });
     });
   });
 }
