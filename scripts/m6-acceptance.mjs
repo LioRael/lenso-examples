@@ -74,7 +74,8 @@ export async function preflightPackageSet({
   supportManifest,
   trustedManifestDigest,
   packages,
-  temporaryRoot = os.tmpdir(),
+  temporaryRoot = process.env.LENSO_M6_TEMP_ROOT
+    ?? (process.platform === "darwin" ? "/tmp" : os.tmpdir()),
   runFullTutorial = false,
   fullTutorialRunner = runFullTutorialWorkspace,
 }) {
@@ -630,6 +631,14 @@ export async function runFullTutorialWorkspace({
   await writeFile(archivePath, archive);
   await mkdir(tutorialRoot, { recursive: true });
   await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
+  await runCaptured("git", ["init"], tutorialRoot);
+  await runCaptured(
+    "git",
+    ["fetch", "--no-tags", "--depth=1", repoRoot, commit],
+    tutorialRoot,
+  );
+  await runCaptured("git", ["update-ref", "HEAD", commit], tutorialRoot);
+  await runCaptured("git", ["read-tree", commit], tutorialRoot);
   const contractFixtureDigests = {};
   for (const fixture of tutorialContractFixtures) {
     const source = path.join(frameworkRoot, "lenso", "contracts", fixture);
