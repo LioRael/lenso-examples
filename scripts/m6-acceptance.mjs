@@ -653,7 +653,15 @@ export async function runFullTutorialWorkspace({
     ["install", "--frozen-lockfile", "--ignore-scripts"],
     tutorialRoot,
   );
-  const environment = { LENSO_CLI_BIN: cli };
+  const environment = {
+    LENSO_CLI_BIN: cli,
+    LENSO_REPO_ROOT: process.env.LENSO_REPO_ROOT ?? path.join(frameworkRoot, "lenso"),
+    LENSO_RUNTIME_CONSOLE_ROOT: process.env.LENSO_RUNTIME_CONSOLE_ROOT
+      ?? path.join(
+        frameworkRoot,
+        path.basename(repoRoot).replace("lenso-examples", "lenso-runtime-console"),
+      ),
+  };
   const priorOutput = await runCaptured(
     "pnpm",
     ["acceptance:m5"],
