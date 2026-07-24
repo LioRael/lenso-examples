@@ -7,6 +7,13 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const frameworkRoot = path.dirname(repoRoot);
+const tutorialContractFixtures = Object.freeze([
+  "events/support/support.ticket-opened.v1.envelope.json",
+  "extraction/support-ticket.blocked-inputs.json",
+  "extraction/support-ticket.corrected-inputs.json",
+  "extraction/support-ticket.plan-inputs.json",
+  "extraction/support-ticket.scaffold-inputs.json",
+]);
 
 export const scenarioMatrix = Object.freeze([
   scenario("api-crash", "api_crash", "degrade"),
@@ -623,6 +630,15 @@ export async function runFullTutorialWorkspace({
   await writeFile(archivePath, archive);
   await mkdir(tutorialRoot, { recursive: true });
   await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
+  const contractFixtureDigests = {};
+  for (const fixture of tutorialContractFixtures) {
+    const source = path.join(frameworkRoot, "lenso", "contracts", fixture);
+    const contents = await readFile(source);
+    const destination = path.join(starterRoot, "lenso", "contracts", fixture);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await writeFile(destination, contents);
+    contractFixtureDigests[fixture] = digest(contents);
+  }
   const cargoConfigRoot = path.join(tutorialRoot, ".cargo");
   await mkdir(cargoConfigRoot, { recursive: true });
   const patchLines = Object.entries(stagedCargoPatches)
@@ -655,6 +671,7 @@ export async function runFullTutorialWorkspace({
     sourceCommit: commit,
     sourceArchiveDigest: archiveDigest,
     supportManifestDigest: supportManifest.manifestDigest,
+    contractFixtureDigests,
     publicCommands: ["pnpm acceptance:m5", "pnpm smoke"],
     priorMilestoneOutputDigest: digest(priorOutput),
     providerSmokeOutputDigest: digest(smokeOutput),
