@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -11,23 +12,50 @@ import {
   deliveryRecoveryConditions,
   scenarioEvidenceFromCommands,
   scenarioMatrix,
+  receiptContent,
+  supportManifestDigest,
 } from "./m6-acceptance.mjs";
 
 const digest = (value) => `sha256:${value.repeat(64)}`;
+const hash = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
+const receiptKeys = generateKeyPairSync("ed25519");
+const receiptAuthority = "m6-test-verifier";
+const receiptPublicKey = receiptKeys.publicKey.export({ type: "spki", format: "pem" });
 
 function supportManifest() {
-  return {
+  const manifest = {
     protocol: "lenso.ga-support-manifest.v1",
-    manifestId: "ga-support:test",
-    manifestDigest: digest("a"),
+    manifestId: "",
+    manifestDigest: "",
     status: "candidate",
+    components: [
+      { kind: "cli", componentId: "@lenso/cli", version: "0.1.30", digest: digest("b") },
+      { kind: "runtime", componentId: "lenso-service", version: "0.1.4", digest: digest("c") },
+    ],
+    manifestFormats: [{ kind: "service", version: "lenso.service.v2" }],
+    stateVersions: ["service-store.v1"],
+    adapterVersions: { postgresql: "18" },
+    documentation: { version: "m6-ga", digest: digest("d") },
     combinations: [{
       combinationId: "candidate-1",
       componentReferences: ["cli:@lenso/cli@0.1.30", "runtime:lenso-service@0.1.4"],
       stateVersion: "service-store.v1",
       status: "candidate",
     }],
+    upgradeEdges: [],
+    evidenceReceiptAuthorities: Object.fromEntries([
+      "lenso.delivery-failure-recovery-evidence.v1",
+      "lenso.performance-profile.v1",
+      "lenso.service-restore-evidence.v1",
+      "lenso.disaster-recovery-evidence.v1",
+      "lenso.support-envelope.v1",
+      "lenso.security-review-evidence.v1",
+    ].map((protocol) => [protocol, receiptAuthority])),
+    receiptAuthorityPublicKeys: { [receiptAuthority]: receiptPublicKey },
   };
+  manifest.manifestDigest = supportManifestDigest(manifest);
+  manifest.manifestId = `ga-support:${manifest.manifestDigest.slice(7, 23)}`;
+  return manifest;
 }
 
 function packages() {
@@ -51,23 +79,42 @@ function verifiedScenarios() {
 }
 
 function gaEvidence() {
+  const manifestDigest = supportManifest().manifestDigest;
   const addressed = (value, idField, digestField, prefix) =>
     contentAddressEvidence(value, idField, digestField, prefix);
-  return {
-    deliveryRecoveries: deliveryRecoveryConditions.map((condition) => addressed({
-      protocol: "lenso.delivery-failure-recovery-evidence.v1",
-      evidenceId: "",
-      condition,
-      decision: "passed",
-      evidenceDigest: "",
-      effects: { mutatesEnvironment: false },
-    }, "evidenceId", "evidenceDigest", "delivery-failure-recovery")),
+  const evidence = {
+    deliveryRecoveries: deliveryRecoveryConditions.map((condition) => {
+      const environment = new Set([
+        "deployment_adapter_rejected",
+        "operator_reconciliation_failed",
+        "gateway_drift",
+        "migration_failed",
+      ]).has(condition);
+      return addressed({
+        protocol: "lenso.delivery-failure-recovery-evidence.v1",
+        evidenceId: "",
+        condition,
+        scope: environment ? "environment_verification" : "deterministic",
+        environmentObservation: environment ? {
+          clusterIdentity: "kind:m6",
+          apiServerVersion: "1.35",
+          operatorVersion: "0.2.9",
+          gatewayAdapterVersion: "1.4",
+          usedRealApi: true,
+          observedResourceVersion: "42",
+          evidenceDigest: hash(`kubernetes:${condition}`),
+        } : undefined,
+        decision: "passed",
+        evidenceDigest: "",
+        effects: { mutatesEnvironment: false },
+      }, "evidenceId", "evidenceDigest", "delivery-failure-recovery");
+    }),
     performanceProfile: addressed({
       protocol: "lenso.performance-profile.v1",
       profileId: "",
       decision: "passed",
       profileDigest: "",
-      supportManifestDigest: digest("a"),
+      supportManifestDigest: manifestDigest,
     }, "profileId", "profileDigest", "performance-profile"),
     restore: addressed({
       protocol: "lenso.service-restore-evidence.v1",
@@ -86,15 +133,51 @@ function gaEvidence() {
       envelopeId: "",
       decision: "passed",
       envelopeDigest: "",
-      supportManifestDigest: digest("a"),
+      supportManifestDigest: manifestDigest,
     }, "envelopeId", "envelopeDigest", "support-envelope"),
     securityReview: addressed({
       protocol: "lenso.security-review-evidence.v1",
       reviewId: "",
       decision: "passed",
       reviewDigest: "",
-      supportManifestDigest: digest("a"),
+      supportManifestDigest: manifestDigest,
     }, "reviewId", "reviewDigest", "security-review"),
+  };
+  const artifactDigests = {
+    "lenso.delivery-failure-recovery-evidence.v1": evidence.deliveryRecoveries.map((item) => item.evidenceDigest),
+    "lenso.performance-profile.v1": [evidence.performanceProfile.profileDigest],
+    "lenso.service-restore-evidence.v1": [evidence.restore.evidenceDigest],
+    "lenso.disaster-recovery-evidence.v1": [evidence.disasterRecovery.evidenceDigest],
+    "lenso.support-envelope.v1": [evidence.supportEnvelope.envelopeDigest],
+    "lenso.security-review-evidence.v1": [evidence.securityReview.reviewDigest],
+  };
+  evidence.executionReceipts = Object.fromEntries(
+    Object.entries(artifactDigests).map(([protocol, digests]) => [
+      protocol,
+      executionReceipt(protocol, digests),
+    ]),
+  );
+  return evidence;
+}
+
+function executionReceipt(subjectProtocol, artifactDigests) {
+  const base = {
+    protocol: "lenso.m6-execution-receipt.v1",
+    subjectProtocol,
+    artifactDigests: [...artifactDigests].sort(),
+    commandDigest: hash(`command:${subjectProtocol}`),
+    authority: receiptAuthority,
+    status: "accepted",
+    cleanupComplete: true,
+    productionMutated: false,
+    observedAtUnixMs: 1_721_600_000_000,
+  };
+  const receiptDigest = hash(JSON.stringify(receiptContent(base)));
+  return {
+    ...base,
+    receiptId: `m6-execution-receipt:${receiptDigest.slice(7, 23)}`,
+    receiptDigest,
+    signature: sign(null, Buffer.from(receiptDigest), receiptKeys.privateKey).toString("base64"),
   };
 }
 
@@ -265,4 +348,25 @@ test("M6 artifact rejects evidence changed after content addressing", () => {
   assert.equal(artifact.outcome, "failed");
   assert.equal(artifact.issues.some((item) => item.code === "m6_restore_evidence_invalid"), true);
   assert.equal(artifact.issues.some((item) => item.code === "m6_performance_profile_invalid"), true);
+});
+
+test("M6 artifact rejects forged receipts and mock-only Kubernetes recovery", () => {
+  const evidence = gaEvidence();
+  evidence.executionReceipts["lenso.service-restore-evidence.v1"].signature =
+    Buffer.from("forged").toString("base64");
+  const gateway = evidence.deliveryRecoveries.find(
+    (item) => item.condition === "gateway_drift",
+  );
+  gateway.environmentObservation.usedRealApi = false;
+  const artifact = buildAcceptanceArtifact({
+    mode: "candidate",
+    supportManifest: supportManifest(),
+    packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
+    scenarios: verifiedScenarios(),
+    priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: evidence,
+  });
+  assert.equal(artifact.outcome, "failed");
+  assert.equal(artifact.issues.some((item) => item.code === "m6_execution_receipt_invalid"), true);
+  assert.equal(artifact.issues.some((item) => item.code === "m6_delivery_recovery_missing"), true);
 });

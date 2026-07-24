@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, verify as verifySignature } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -35,6 +35,12 @@ export const deliveryRecoveryConditions = Object.freeze([
   "gateway_drift",
   "invalid_config_revision",
   "secret_reference_unavailable",
+  "migration_failed",
+]);
+const kubernetesRecoveryConditions = new Set([
+  "deployment_adapter_rejected",
+  "operator_reconciliation_failed",
+  "gateway_drift",
   "migration_failed",
 ]);
 
@@ -276,7 +282,8 @@ async function main() {
       return;
     }
     if (!args.m6Only) {
-      await run("pnpm", ["acceptance:m5", "--", "--m5-only"]);
+      await run("pnpm", ["acceptance:m5"]);
+      await run("pnpm", ["smoke"]);
     }
     const scenarios = await readJsonRequired(args.scenarioEvidence, "--scenario-evidence");
     const gaEvidence = await readJsonRequired(args.gaEvidence, "--ga-evidence");
@@ -311,7 +318,11 @@ function validateSupportManifest(manifest) {
   if (manifest?.protocol !== "lenso.ga-support-manifest.v1"
     || typeof manifest.manifestId !== "string"
     || !validDigest(manifest.manifestDigest)
-    || !Array.isArray(manifest.combinations)) {
+    || !Array.isArray(manifest.combinations)
+    || manifest.manifestDigest !== supportManifestDigest(manifest)
+    || manifest.manifestId !== `ga-support:${manifest.manifestDigest.slice(7, 23)}`
+    || !manifest.evidenceReceiptAuthorities
+    || !manifest.receiptAuthorityPublicKeys) {
     throw new Error("m6_support_manifest_invalid: expected a versioned, digest-bound manifest");
   }
 }
@@ -384,6 +395,13 @@ function validateGaEvidence(evidence, supportManifest, issues) {
         "evidenceDigest",
         "delivery-failure-recovery",
       )
+      || (kubernetesRecoveryConditions.has(condition)
+        && (recovery.scope !== "environment_verification"
+          || recovery.environmentObservation?.usedRealApi !== true
+          || !recovery.environmentObservation?.clusterIdentity
+          || !recovery.environmentObservation?.operatorVersion
+          || !recovery.environmentObservation?.gatewayAdapterVersion
+          || !validDigest(recovery.environmentObservation?.evidenceDigest)))
       || recovery.effects?.mutatesEnvironment !== false) {
       issues.push(issue("m6_delivery_recovery_missing", `${condition} lacks passing zero-effect recovery evidence.`));
     }
@@ -447,6 +465,123 @@ function validateGaEvidence(evidence, supportManifest, issues) {
       issues.push(issue("m6_evidence_manifest_mismatch", "GA evidence is not bound to the exact Support Manifest."));
     }
   }
+  const artifactsByProtocol = new Map([
+    [
+      "lenso.delivery-failure-recovery-evidence.v1",
+      recoveries.map((item) => item.evidenceDigest),
+    ],
+    ["lenso.performance-profile.v1", [evidence?.performanceProfile?.profileDigest]],
+    ["lenso.service-restore-evidence.v1", [evidence?.restore?.evidenceDigest]],
+    ["lenso.disaster-recovery-evidence.v1", [evidence?.disasterRecovery?.evidenceDigest]],
+    ["lenso.support-envelope.v1", [evidence?.supportEnvelope?.envelopeDigest]],
+    ["lenso.security-review-evidence.v1", [evidence?.securityReview?.reviewDigest]],
+  ]);
+  for (const [protocol, artifactDigests] of artifactsByProtocol) {
+    validateExecutionReceipt(
+      evidence?.executionReceipts?.[protocol],
+      protocol,
+      artifactDigests,
+      supportManifest,
+      issues,
+    );
+  }
+}
+
+function validateExecutionReceipt(receipt, subjectProtocol, artifactDigests, manifest, issues) {
+  const authority = manifest.evidenceReceiptAuthorities?.[subjectProtocol];
+  const publicKey = manifest.receiptAuthorityPublicKeys?.[authority];
+  const content = receiptContent(receipt);
+  const receiptDigest = digest(JSON.stringify(content));
+  const valid = receipt?.protocol === "lenso.m6-execution-receipt.v1"
+    && receipt.subjectProtocol === subjectProtocol
+    && receipt.authority === authority
+    && typeof publicKey === "string"
+    && receipt.status === "accepted"
+    && receipt.cleanupComplete === true
+    && receipt.productionMutated === false
+    && validDigest(receipt.commandDigest)
+    && Number.isSafeInteger(receipt.observedAtUnixMs)
+    && receipt.observedAtUnixMs > 0
+    && JSON.stringify(receipt.artifactDigests) === JSON.stringify([...artifactDigests].sort())
+    && receipt.receiptDigest === receiptDigest
+    && receipt.receiptId === `m6-execution-receipt:${receiptDigest.slice(7, 23)}`
+    && signatureValid(receipt.receiptDigest, receipt.signature, publicKey);
+  if (!valid) {
+    issues.push(issue(
+      "m6_execution_receipt_invalid",
+      `${subjectProtocol} lacks an accepted authority-signed execution receipt.`,
+    ));
+  }
+}
+
+function signatureValid(receiptDigest, signature, publicKey) {
+  try {
+    return verifySignature(
+      null,
+      Buffer.from(receiptDigest),
+      publicKey,
+      Buffer.from(signature ?? "", "base64"),
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function receiptContent(receipt) {
+  return {
+    protocol: receipt?.protocol,
+    subjectProtocol: receipt?.subjectProtocol,
+    artifactDigests: [...(receipt?.artifactDigests ?? [])].sort(),
+    commandDigest: receipt?.commandDigest,
+    authority: receipt?.authority,
+    status: receipt?.status,
+    cleanupComplete: receipt?.cleanupComplete,
+    productionMutated: receipt?.productionMutated,
+    observedAtUnixMs: receipt?.observedAtUnixMs,
+  };
+}
+
+export function supportManifestDigest(manifest) {
+  const input = {
+    status: manifest.status,
+    components: manifest.components.map((component) => ({
+      kind: component.kind,
+      componentId: component.componentId,
+      version: component.version,
+      digest: component.digest,
+    })),
+    manifestFormats: manifest.manifestFormats.map((format) => ({
+      kind: format.kind,
+      version: format.version,
+    })),
+    stateVersions: manifest.stateVersions,
+    adapterVersions: sortedObject(manifest.adapterVersions),
+    documentation: {
+      version: manifest.documentation.version,
+      digest: manifest.documentation.digest,
+    },
+    combinations: manifest.combinations.map((combination) => ({
+      combinationId: combination.combinationId,
+      componentReferences: combination.componentReferences,
+      stateVersion: combination.stateVersion,
+      status: combination.status,
+    })),
+    upgradeEdges: manifest.upgradeEdges.map((edge) => ({
+      edgeId: edge.edgeId,
+      sourceFormat: edge.sourceFormat,
+      targetFormat: edge.targetFormat,
+      mixedVersionReferences: edge.mixedVersionReferences,
+      rollbackSafe: edge.rollbackSafe,
+    })),
+    evidenceReceiptAuthorities: sortedObject(manifest.evidenceReceiptAuthorities),
+    receiptAuthorityPublicKeys: sortedObject(manifest.receiptAuthorityPublicKeys),
+  };
+  return digest(JSON.stringify(input));
+}
+
+function sortedObject(value) {
+  return Object.fromEntries(Object.entries(value ?? {}).sort(([left], [right]) =>
+    left < right ? -1 : left > right ? 1 : 0));
 }
 
 function validateEvidence(
