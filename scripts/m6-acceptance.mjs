@@ -84,7 +84,7 @@ export async function preflightPackageSet({
     await writeFile(path.join(starterRoot, "clean-cargo-home"), "isolated\n");
     await writeFile(path.join(starterRoot, "clean-package-store"), "isolated\n");
     const candidateTrace = mode === "candidate"
-      ? await executeCandidateTracer(starterRoot, packages)
+      ? await executeCandidateTracer(starterRoot, packages, supportManifest)
       : null;
     return {
       artifactVersion: "lenso.m6-package-preflight.v1",
@@ -381,7 +381,7 @@ function validatePackages(mode, packages) {
   }
 }
 
-async function executeCandidateTracer(starterRoot, packages) {
+async function executeCandidateTracer(starterRoot, packages, supportManifest) {
   const artifactsRoot = path.join(starterRoot, "artifacts");
   const copied = [];
   for (const [index, item] of packages.entries()) {
@@ -432,12 +432,37 @@ async function executeCandidateTracer(starterRoot, packages) {
   if (!hostMetadata.isDirectory()) {
     throw new Error("m6_candidate_tracer_invalid: staged CLI did not create a fresh Host");
   }
+  const manifestPath = path.join(starterRoot, "lenso.ga-support-manifest.v1.json");
+  await writeFile(manifestPath, `${JSON.stringify(supportManifest, null, 2)}\n`);
+  const combination = supportManifest.combinations.find((item) =>
+    item.componentReferences.length === packages.length
+    && item.componentReferences.every((reference) =>
+      packages.some((item) => reference === `${item.kind}:${item.id}@${item.version}`)));
+  const supportCheck = JSON.parse(await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    [
+      "ga",
+      "support-check",
+      "--manifest",
+      manifestPath,
+      ...combination.componentReferences.flatMap((reference) => ["--component", reference]),
+      "--state-version",
+      combination.stateVersion,
+      "--json",
+    ],
+    hostRoot,
+  ));
+  if (!new Set(["supported", "candidate"]).has(supportCheck.decision)
+    || supportCheck.manifestDigest !== supportManifest.manifestDigest) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI rejected the exact GA combination");
+  }
   return {
     outcome: "passed",
     tracerDigest: tracer.digest,
     tracerVersion: tracer.version,
     publicCommand: "lenso --version",
     replayCommand: "lenso host init",
+    supportCheckCommand: "lenso ga support-check",
     inspectedArtifacts: copied.map((item) => item.inspectedIdentity),
     consumedDigests: expected,
     cwdOutsideFramework: true,
