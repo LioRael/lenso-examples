@@ -671,6 +671,7 @@ export async function runFullTutorialWorkspace({
         path.basename(repoRoot).replace("lenso-examples", "lenso-runtime-console"),
       ),
     ...(process.env.DOCKER_HOST ? { DOCKER_HOST: process.env.DOCKER_HOST } : {}),
+    ...(process.env.ARCBOX_SOCKET ? { ARCBOX_SOCKET: process.env.ARCBOX_SOCKET } : {}),
   };
   const priorOutput = await runCaptured(
     "pnpm",
