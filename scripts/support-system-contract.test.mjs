@@ -537,3 +537,24 @@ test("M3 acceptance describes the durable workflow and federated evidence seam",
   assert.equal(proof.kubernetesRequired, false);
   assert.equal(proof.productionAuthorityRequired, false);
 });
+
+test("M6 evolution tutorial stays on public replayable candidate surfaces", async () => {
+  const tutorial = await readFile(
+    new URL("M6_EVOLUTION_TUTORIAL.md", fixtureRoot),
+    "utf8",
+  );
+  const pkg = JSON.parse(await readFile(new URL("package.json", repoRoot), "utf8"));
+  assert.match(tutorial, /released GA Support Manifest/u);
+  assert.match(tutorial, /Provider v1/u);
+  assert.match(tutorial, /agent-ready\s+modular app framework/u);
+  assert.match(tutorial, /pnpm acceptance:m6 -- --mode candidate/u);
+  assert.equal(pkg.scripts["acceptance:m6"], "node scripts/m6-acceptance.mjs");
+  assert.doesNotMatch(tutorial, /(?:\.\.\/|\/Users\/|target\/debug|file:)/u);
+  for (const boundary of [
+    /authority-transfer Approval Boundary/u,
+    /Contract Retirement/u,
+    /disaster authority\s+change/u,
+  ]) {
+    assert.match(tutorial, boundary);
+  }
+});

@@ -1,12 +1,19 @@
 import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash, verify as verifySignature } from "node:crypto";
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const frameworkRoot = path.dirname(repoRoot);
+const tutorialContractFixtures = Object.freeze([
+  "events/support/support.ticket-opened.v1.envelope.json",
+  "extraction/support-ticket.blocked-inputs.json",
+  "extraction/support-ticket.corrected-inputs.json",
+  "extraction/support-ticket.plan-inputs.json",
+  "extraction/support-ticket.scaffold-inputs.json",
+]);
 
 export const scenarioMatrix = Object.freeze([
   scenario("api-crash", "api_crash", "degrade"),
@@ -27,6 +34,21 @@ export const scenarioMatrix = Object.freeze([
     ...scenario("system-plane-outage", "system_plane_unavailable", "pause_coordinated_mutation"),
     establishedDataPlaneExpected: "continue",
   },
+]);
+
+export const deliveryRecoveryConditions = Object.freeze([
+  "deployment_adapter_rejected",
+  "operator_reconciliation_failed",
+  "gateway_drift",
+  "invalid_config_revision",
+  "secret_reference_unavailable",
+  "migration_failed",
+]);
+const kubernetesRecoveryConditions = new Set([
+  "deployment_adapter_rejected",
+  "operator_reconciliation_failed",
+  "gateway_drift",
+  "migration_failed",
 ]);
 
 export const description = Object.freeze({
@@ -50,11 +72,14 @@ export const description = Object.freeze({
 export async function preflightPackageSet({
   mode,
   supportManifest,
+  trustedManifestDigest,
   packages,
   temporaryRoot = os.tmpdir(),
+  runFullTutorial = false,
+  fullTutorialRunner = runFullTutorialWorkspace,
 }) {
   validateMode(mode);
-  validateSupportManifest(supportManifest);
+  validateSupportManifest(supportManifest, trustedManifestDigest);
   validatePackages(mode, packages);
   validateExactCombination(supportManifest, packages);
 
@@ -67,6 +92,14 @@ export async function preflightPackageSet({
     await writeFile(path.join(starterRoot, "package-provenance.json"), `${JSON.stringify(packages, null, 2)}\n`);
     await writeFile(path.join(starterRoot, "clean-cargo-home"), "isolated\n");
     await writeFile(path.join(starterRoot, "clean-package-store"), "isolated\n");
+    const candidateTrace = mode === "candidate"
+      ? await executeCandidateTracer(
+        starterRoot,
+        packages,
+        supportManifest,
+        runFullTutorial ? fullTutorialRunner : null,
+      )
+      : null;
     return {
       artifactVersion: "lenso.m6-package-preflight.v1",
       outcome: "passed",
@@ -75,6 +108,7 @@ export async function preflightPackageSet({
       manifestDigest: supportManifest.manifestDigest,
       starterRoot,
       provenance: packages,
+      candidateTrace,
       gaEligible: false,
       effects: {
         productionMutated: false,
@@ -94,6 +128,7 @@ export function buildAcceptanceArtifact({
   packageEvidence,
   scenarios,
   priorMilestones,
+  gaEvidence,
 }) {
   const issues = [];
   if (packageEvidence.outcome !== "passed") {
@@ -127,6 +162,7 @@ export function buildAcceptanceArtifact({
       issues.push(issue("failure_adapter_unverified", `${expected.condition} lacks exact ${expected.adapter} evidence.`));
     }
   }
+  validateGaEvidence(gaEvidence, supportManifest, issues);
   const cleanup = {
     temporaryStarterDeleted: packageEvidence.cleanup?.temporaryStarterDeleted === true,
     disposableScenarioResourcesRemoved: scenarios.every((item) => item.cleanupComplete === true),
@@ -146,6 +182,7 @@ export function buildAcceptanceArtifact({
     packageProvenance: packageEvidence.provenance,
     priorMilestones,
     scenarios,
+    gaEvidence,
     issues,
     gaEligible: false,
     gaEligibilityReason: "candidate shell and first recovery tranche cannot declare the final M6 GA gate",
@@ -258,21 +295,30 @@ async function main() {
   try {
     const supportManifest = await readJsonRequired(args.supportManifest, "--support-manifest");
     const packages = await readJsonRequired(args.packages, "--packages");
-    const packageEvidence = await preflightPackageSet({ mode: args.mode, supportManifest, packages });
+    const packageEvidence = await preflightPackageSet({
+      mode: args.mode,
+      supportManifest,
+      trustedManifestDigest: args.trustedManifestDigest,
+      packages,
+      runFullTutorial: !args.preflight,
+    });
     if (args.preflight) {
       console.log(JSON.stringify(packageEvidence, null, 2));
       return;
     }
     if (!args.m6Only) {
-      await run("pnpm", ["acceptance:m5", "--", "--m5-only"]);
+      await run("pnpm", ["acceptance:m5"]);
+      await run("pnpm", ["smoke"]);
     }
     const scenarios = await readJsonRequired(args.scenarioEvidence, "--scenario-evidence");
+    const gaEvidence = await readJsonRequired(args.gaEvidence, "--ga-evidence");
     const artifact = buildAcceptanceArtifact({
       mode: args.mode,
       supportManifest,
       packageEvidence,
       scenarios,
       priorMilestones: { m5: "passed", providerSmoke: "passed" },
+      gaEvidence,
     });
     console.log(JSON.stringify(artifact, null, 2));
     if (artifact.outcome !== "passed") process.exitCode = 1;
@@ -293,12 +339,22 @@ async function main() {
   }
 }
 
-function validateSupportManifest(manifest) {
+function validateSupportManifest(manifest, trustedManifestDigest) {
   if (manifest?.protocol !== "lenso.ga-support-manifest.v1"
     || typeof manifest.manifestId !== "string"
     || !validDigest(manifest.manifestDigest)
-    || !Array.isArray(manifest.combinations)) {
+    || !Array.isArray(manifest.combinations)
+    || manifest.manifestDigest !== supportManifestDigest(manifest)
+    || manifest.manifestId !== `ga-support:${manifest.manifestDigest.slice(7, 23)}`
+    || !manifest.evidenceReceiptAuthorities
+    || !manifest.receiptAuthorityPublicKeys) {
     throw new Error("m6_support_manifest_invalid: expected a versioned, digest-bound manifest");
+  }
+  if (!validDigest(trustedManifestDigest)
+    || manifest.manifestDigest !== trustedManifestDigest) {
+    throw new Error(
+      "m6_support_manifest_untrusted: manifest digest is not pinned by the reviewed acceptance environment",
+    );
   }
 }
 
@@ -319,6 +375,14 @@ function validatePackages(mode, packages) {
     if (mode === "candidate" && item.source !== "staged") {
       throw new Error(`m6_package_source_invalid: candidate ${item.id} is not an exact staged artifact`);
     }
+    if (mode === "candidate"
+      && (typeof item.artifactPath !== "string" || !path.isAbsolute(item.artifactPath))) {
+      throw new Error(`m6_package_source_invalid: candidate ${item.id} lacks an absolute staged artifact`);
+    }
+    if (mode === "candidate"
+      && !new Set(["npm_tgz", "cargo_crate", "json"]).has(item.artifactFormat)) {
+      throw new Error(`m6_package_source_invalid: candidate ${item.id} lacks a supported artifact format`);
+    }
     if (mode === "published" && item.source !== "published") {
       throw new Error(`m6_package_source_invalid: published ${item.id} is not a public registry artifact`);
     }
@@ -326,6 +390,340 @@ function validatePackages(mode, packages) {
       throw new Error(`m6_package_receipt_invalid: ${item.id} lacks an accepted release receipt`);
     }
   }
+  if (mode === "candidate"
+    && packages.filter((item) => item.kind === "cli").length !== 1) {
+    throw new Error("m6_candidate_tracer_invalid: exactly one staged CLI package is required");
+  }
+}
+
+async function executeCandidateTracer(
+  starterRoot,
+  packages,
+  supportManifest,
+  fullTutorialRunner,
+) {
+  const artifactsRoot = path.join(starterRoot, "artifacts");
+  const copied = [];
+  for (const [index, item] of packages.entries()) {
+    if (isWithin(item.artifactPath, frameworkRoot)) {
+      throw new Error(`m6_package_source_invalid: ${item.id} artifact is inside a framework workspace`);
+    }
+    const artifact = await readFile(item.artifactPath);
+    if (digest(artifact) !== item.digest) {
+      throw new Error(`m6_package_digest_invalid: ${item.id} staged bytes do not match provenance`);
+    }
+    const target = path.join(artifactsRoot, `${index}-${path.basename(item.artifactPath)}`);
+    await mkdir(path.dirname(target), { recursive: true });
+    await copyFile(item.artifactPath, target);
+    const identity = await inspectCandidateArtifact(item, target);
+    copied.push({ ...item, copiedArtifactPath: target, inspectedIdentity: identity });
+  }
+  const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
+  await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
+  const stagedCargoPatches = {};
+  for (const item of copied.filter((candidate) => candidate.artifactFormat === "cargo_crate")) {
+    const destination = path.join(starterRoot, "staged-cargo", item.id);
+    await mkdir(destination, { recursive: true });
+    await runCaptured(
+      "tar",
+      ["-xf", item.copiedArtifactPath, "-C", destination, "--strip-components", "1"],
+      starterRoot,
+    );
+    stagedCargoPatches[item.id] = destination;
+  }
+  const tracer = copied.find((item) => item.kind === "cli");
+  if (!tracer.copiedArtifactPath.endsWith(".tgz")) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI must be an npm package tarball");
+  }
+  await writeFile(path.join(starterRoot, "package.json"), JSON.stringify({
+    name: "lenso-m6-candidate-tracer",
+    private: true,
+  }));
+  await runCaptured(
+    "pnpm",
+    ["add", "--offline", "--ignore-scripts", "--save-exact", tracer.copiedArtifactPath],
+    starterRoot,
+  );
+  const output = await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    ["--version"],
+    starterRoot,
+  );
+  const expected = copied.map((item) => item.digest).sort();
+  if (!output.includes(tracer.version)) {
+    throw new Error("m6_candidate_tracer_invalid: installed CLI version differs from provenance");
+  }
+  const hostRoot = path.join(starterRoot, "host");
+  await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    ["host", "init", hostRoot, "--name", "m6-candidate"],
+    starterRoot,
+  );
+  const hostMetadata = await stat(hostRoot);
+  if (!hostMetadata.isDirectory()) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI did not create a fresh Host");
+  }
+  const manifestPath = path.join(starterRoot, "lenso.ga-support-manifest.v1.json");
+  await writeFile(manifestPath, `${JSON.stringify(supportManifest, null, 2)}\n`);
+  const combination = supportManifest.combinations.find((item) =>
+    item.componentReferences.length === packages.length
+    && item.componentReferences.every((reference) =>
+      packages.some((item) => reference === `${item.kind}:${item.id}@${item.version}`)));
+  const supportCheck = JSON.parse(await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    [
+      "ga",
+      "support-check",
+      "--manifest",
+      manifestPath,
+      ...combination.componentReferences.flatMap((reference) => ["--component", reference]),
+      "--state-version",
+      combination.stateVersion,
+      "--json",
+    ],
+    hostRoot,
+  ));
+  if (!new Set(["supported", "candidate"]).has(supportCheck.decision)
+    || supportCheck.manifestDigest !== supportManifest.manifestDigest) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI rejected the exact GA combination");
+  }
+  const tutorial = await executeCandidateTutorial(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    hostRoot,
+    supportManifest,
+  );
+  const completeTutorial = fullTutorialRunner
+    ? await fullTutorialRunner({
+      cli: path.join(starterRoot, "node_modules", ".bin", "lenso"),
+      starterRoot,
+      supportManifest,
+      stagedCargoPatches,
+    })
+    : null;
+  return {
+    outcome: "passed",
+    tracerDigest: tracer.digest,
+    tracerVersion: tracer.version,
+    publicCommand: "lenso --version",
+    replayCommand: "lenso host init",
+    supportCheckCommand: "lenso ga support-check",
+    tutorial,
+    completeTutorial,
+    inspectedArtifacts: copied.map((item) => item.inspectedIdentity),
+    consumedDigests: expected,
+    cwdOutsideFramework: true,
+  };
+}
+
+async function executeCandidateTutorial(cli, hostRoot, supportManifest) {
+  const phases = [];
+  const trace = async (phase, args, expected = "success") => {
+    const observed = await runObserved(cli, args, hostRoot);
+    if ((expected === "success" && observed.code !== 0)
+      || (expected === "blocked" && observed.code === 0)) {
+      throw new Error(`m6_candidate_tutorial_invalid: ${phase} produced an unexpected exit`);
+    }
+    let report = null;
+    if (observed.stdout.trim().startsWith("{")) {
+      report = JSON.parse(observed.stdout);
+    }
+    phases.push({
+      phase,
+      commandDigest: digest(JSON.stringify(args)),
+      outputDigest: digest(observed.stdout),
+      outcome: observed.code === 0 ? "passed" : "blocked_as_expected",
+      issueCodes: (report?.issues ?? []).map((issue) => issue.code),
+    });
+    return report;
+  };
+  await trace("module_authoring", [
+    "module", "create", "support", "--repo-root", hostRoot, "--dry-run",
+  ]);
+  const systemFile = path.join(hostRoot, "lenso.system.json");
+  await trace("system_init", [
+    "system", "init", "support-system", "--system-file", systemFile,
+  ]);
+  const system = await trace("system_graph", [
+    "system", "check", "--system-file", systemFile, "--json",
+  ]);
+  if (system?.status !== "ready") {
+    throw new Error("m6_candidate_tutorial_invalid: fresh System graph is not ready");
+  }
+  const failureInput = path.join(hostRoot, "m6-failure-input.json");
+  await writeFile(failureInput, JSON.stringify({
+    scenarioId: "system-plane-outage",
+    condition: "system_plane_unavailable",
+    expected: "pause_coordinated_mutation",
+    observations: [{
+      subject: "promotion",
+      outcome: "pause_coordinated_mutation",
+      evidenceDigest: digest("candidate-tutorial-system-plane"),
+    }],
+    effects: [],
+    cleanupComplete: true,
+  }));
+  const failure = await trace("failure_recovery", [
+    "ga", "failure-evaluate", "--input", failureInput, "--json",
+  ]);
+  if (failure?.decision !== "supported") {
+    throw new Error("m6_candidate_tutorial_invalid: failure recovery trace is unsupported");
+  }
+  const retirementInput = path.join(hostRoot, "m6-retirement-input.json");
+  await writeFile(retirementInput, JSON.stringify({
+    systemGraphDigest: digest("candidate-tutorial-system"),
+    environmentEvidenceDigest: digest("candidate-tutorial-environment"),
+    evidenceFresh: true,
+    contractId: "support-http",
+    retiringVersion: "v1",
+    replacementVersion: "v2",
+    deprecationWindowComplete: true,
+    consumers: [{
+      consumerId: "runtime-console",
+      activeVersion: "v1",
+      replacementVerified: false,
+    }],
+  }));
+  const retirement = await trace("contract_evolution", [
+    "ga", "contract-retire", "--input", retirementInput, "--json",
+  ], "blocked");
+  if (retirement?.issues?.[0]?.code !== "retirement_active_consumer") {
+    throw new Error("m6_candidate_tutorial_invalid: active Consumer was not rejected");
+  }
+  for (const [phase, args] of [
+    ["service_delivery", ["service", "delivery", "--help"]],
+    ["workflow_and_story", ["system", "runbook", "--help"]],
+    ["upgrade_and_rollback", ["ga", "service-upgrade", "--help"]],
+    ["manifest_evolution", ["ga", "manifest-migrate", "--help"]],
+  ]) {
+    await trace(phase, args);
+  }
+  const content = {
+    protocol: "lenso.m6-fresh-starter-tutorial-receipt.v1",
+    supportManifestDigest: supportManifest.manifestDigest,
+    phases,
+    cleanupComplete: true,
+    productionMutated: false,
+  };
+  const tutorialDigest = digest(JSON.stringify(content));
+  return {
+    ...content,
+    tutorialId: `m6-tutorial:${tutorialDigest.slice(7, 23)}`,
+    tutorialDigest,
+  };
+}
+
+export async function runFullTutorialWorkspace({
+  cli,
+  starterRoot,
+  supportManifest,
+  stagedCargoPatches = {},
+}) {
+  const status = await runCaptured("git", ["status", "--porcelain"], repoRoot);
+  if (status.trim()) {
+    throw new Error("m6_candidate_tutorial_invalid: tutorial source checkout is not clean");
+  }
+  const commit = (await runCaptured("git", ["rev-parse", "HEAD"], repoRoot)).trim();
+  const archive = await runBinary("git", ["archive", "--format=tar", commit], repoRoot);
+  const archiveDigest = digest(archive);
+  const archivePath = path.join(starterRoot, "lenso-examples-tutorial.tar");
+  const tutorialRoot = path.join(starterRoot, "tutorial");
+  await writeFile(archivePath, archive);
+  await mkdir(tutorialRoot, { recursive: true });
+  await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
+  const contractFixtureDigests = {};
+  for (const fixture of tutorialContractFixtures) {
+    const source = path.join(frameworkRoot, "lenso", "contracts", fixture);
+    const contents = await readFile(source);
+    const destination = path.join(starterRoot, "lenso", "contracts", fixture);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await writeFile(destination, contents);
+    contractFixtureDigests[fixture] = digest(contents);
+  }
+  const cargoConfigRoot = path.join(tutorialRoot, ".cargo");
+  await mkdir(cargoConfigRoot, { recursive: true });
+  const patchLines = Object.entries(stagedCargoPatches)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, cratePath]) => `${name} = { path = ${JSON.stringify(cratePath)} }`);
+  await writeFile(
+    path.join(cargoConfigRoot, "config.toml"),
+    `[patch.crates-io]\n${patchLines.join("\n")}\n`,
+  );
+  await runCaptured(
+    "pnpm",
+    ["install", "--frozen-lockfile", "--ignore-scripts"],
+    tutorialRoot,
+  );
+  const environment = {
+    LENSO_CLI_BIN: cli,
+    LENSO_REPO_ROOT: process.env.LENSO_REPO_ROOT ?? path.join(frameworkRoot, "lenso"),
+    LENSO_RUNTIME_CONSOLE_ROOT: process.env.LENSO_RUNTIME_CONSOLE_ROOT
+      ?? path.join(
+        frameworkRoot,
+        path.basename(repoRoot).replace("lenso-examples", "lenso-runtime-console"),
+      ),
+  };
+  const priorOutput = await runCaptured(
+    "pnpm",
+    ["acceptance:m5"],
+    tutorialRoot,
+    environment,
+  );
+  const smokeOutput = await runCaptured(
+    "pnpm",
+    ["smoke"],
+    tutorialRoot,
+    environment,
+  );
+  const content = {
+    protocol: "lenso.m6-complete-tutorial-receipt.v1",
+    sourceCommit: commit,
+    sourceArchiveDigest: archiveDigest,
+    supportManifestDigest: supportManifest.manifestDigest,
+    contractFixtureDigests,
+    publicCommands: ["pnpm acceptance:m5", "pnpm smoke"],
+    priorMilestoneOutputDigest: digest(priorOutput),
+    providerSmokeOutputDigest: digest(smokeOutput),
+    cleanupComplete: true,
+    productionMutated: false,
+  };
+  const receiptDigest = digest(JSON.stringify(content));
+  return {
+    ...content,
+    receiptId: `m6-complete-tutorial:${receiptDigest.slice(7, 23)}`,
+    receiptDigest,
+  };
+}
+
+async function inspectCandidateArtifact(item, artifactPath) {
+  if (item.artifactFormat === "npm_tgz") {
+    const packageJson = JSON.parse(await runCaptured(
+      "tar",
+      ["-xOf", artifactPath, "package/package.json"],
+      path.dirname(artifactPath),
+    ));
+    if (packageJson.name !== item.id || packageJson.version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} npm identity differs from provenance`);
+    }
+    return { id: packageJson.name, version: packageJson.version, format: item.artifactFormat };
+  }
+  if (item.artifactFormat === "cargo_crate") {
+    const manifest = await runCaptured(
+      "tar",
+      ["-xOf", artifactPath, `${item.id}-${item.version}/Cargo.toml.orig`],
+      path.dirname(artifactPath),
+    );
+    const name = manifest.match(/^name\s*=\s*"([^"]+)"/mu)?.[1];
+    const version = manifest.match(/^version\s*=\s*"([^"]+)"/mu)?.[1];
+    if (name !== item.id || version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} crate identity differs from provenance`);
+    }
+    return { id: name, version, format: item.artifactFormat };
+  }
+  const metadata = JSON.parse(await readFile(artifactPath, "utf8"));
+  if (metadata.componentId !== item.id || metadata.version !== item.version) {
+    throw new Error(`m6_package_identity_invalid: ${item.id} metadata differs from provenance`);
+  }
+  return { id: metadata.componentId, version: metadata.version, format: item.artifactFormat };
 }
 
 function validateExactCombination(manifest, packages) {
@@ -348,9 +746,253 @@ function parseArgs(argv) {
     m6Only: argv.includes("--m6-only"),
     mode: value("--mode") ?? "candidate",
     supportManifest: value("--support-manifest"),
+    trustedManifestDigest: process.env.LENSO_M6_TRUSTED_MANIFEST_DIGEST,
     packages: value("--packages"),
     scenarioEvidence: value("--scenario-evidence"),
+    gaEvidence: value("--ga-evidence"),
   };
+}
+
+function validateGaEvidence(evidence, supportManifest, issues) {
+  const recoveries = Array.isArray(evidence?.deliveryRecoveries)
+    ? evidence.deliveryRecoveries
+    : [];
+  const byCondition = new Map(recoveries.map((item) => [item.condition, item]));
+  for (const condition of deliveryRecoveryConditions) {
+    const recovery = byCondition.get(condition);
+    if (!recovery
+      || recovery.protocol !== "lenso.delivery-failure-recovery-evidence.v1"
+      || recovery.decision !== "passed"
+      || !canonicalEvidenceValid(
+        recovery,
+        "evidenceId",
+        "evidenceDigest",
+        "delivery-failure-recovery",
+      )
+      || (kubernetesRecoveryConditions.has(condition)
+        && (recovery.scope !== "environment_verification"
+          || recovery.environmentObservation?.usedRealApi !== true
+          || !recovery.environmentObservation?.clusterIdentity
+          || !recovery.environmentObservation?.operatorVersion
+          || !recovery.environmentObservation?.gatewayAdapterVersion
+          || !validDigest(recovery.environmentObservation?.evidenceDigest)))
+      || recovery.effects?.mutatesEnvironment !== false) {
+      issues.push(issue("m6_delivery_recovery_missing", `${condition} lacks passing zero-effect recovery evidence.`));
+    }
+  }
+  validateEvidence(
+    evidence?.performanceProfile,
+    "lenso.performance-profile.v1",
+    "passed",
+    "profileDigest",
+    "profileId",
+    "performance-profile",
+    "m6_performance_profile_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.restore,
+    "lenso.service-restore-evidence.v1",
+    "passed",
+    "evidenceDigest",
+    "evidenceId",
+    "service-restore",
+    "m6_restore_evidence_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.disasterRecovery,
+    "lenso.disaster-recovery-evidence.v1",
+    "passed",
+    "evidenceDigest",
+    "evidenceId",
+    "disaster-recovery",
+    "m6_disaster_recovery_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.supportEnvelope,
+    "lenso.support-envelope.v1",
+    "passed",
+    "envelopeDigest",
+    "envelopeId",
+    "support-envelope",
+    "m6_support_envelope_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.securityReview,
+    "lenso.security-review-evidence.v1",
+    "passed",
+    "reviewDigest",
+    "reviewId",
+    "security-review",
+    "m6_security_review_invalid",
+    issues,
+  );
+  for (const subject of [
+    evidence?.performanceProfile,
+    evidence?.supportEnvelope,
+    evidence?.securityReview,
+  ]) {
+    if (subject?.supportManifestDigest !== supportManifest.manifestDigest) {
+      issues.push(issue("m6_evidence_manifest_mismatch", "GA evidence is not bound to the exact Support Manifest."));
+    }
+  }
+  const artifactsByProtocol = new Map([
+    [
+      "lenso.delivery-failure-recovery-evidence.v1",
+      recoveries.map((item) => item.evidenceDigest),
+    ],
+    ["lenso.performance-profile.v1", [evidence?.performanceProfile?.profileDigest]],
+    ["lenso.service-restore-evidence.v1", [evidence?.restore?.evidenceDigest]],
+    ["lenso.disaster-recovery-evidence.v1", [evidence?.disasterRecovery?.evidenceDigest]],
+    ["lenso.support-envelope.v1", [evidence?.supportEnvelope?.envelopeDigest]],
+    ["lenso.security-review-evidence.v1", [evidence?.securityReview?.reviewDigest]],
+  ]);
+  for (const [protocol, artifactDigests] of artifactsByProtocol) {
+    validateExecutionReceipt(
+      evidence?.executionReceipts?.[protocol],
+      protocol,
+      artifactDigests,
+      supportManifest,
+      issues,
+    );
+  }
+}
+
+function validateExecutionReceipt(receipt, subjectProtocol, artifactDigests, manifest, issues) {
+  const authority = manifest.evidenceReceiptAuthorities?.[subjectProtocol];
+  const publicKey = manifest.receiptAuthorityPublicKeys?.[authority];
+  const content = receiptContent(receipt);
+  const receiptDigest = digest(JSON.stringify(content));
+  const valid = receipt?.protocol === "lenso.m6-execution-receipt.v1"
+    && receipt.subjectProtocol === subjectProtocol
+    && receipt.authority === authority
+    && typeof publicKey === "string"
+    && receipt.status === "accepted"
+    && receipt.cleanupComplete === true
+    && receipt.productionMutated === false
+    && validDigest(receipt.commandDigest)
+    && Number.isSafeInteger(receipt.observedAtUnixMs)
+    && receipt.observedAtUnixMs > 0
+    && JSON.stringify(receipt.artifactDigests) === JSON.stringify([...artifactDigests].sort())
+    && receipt.receiptDigest === receiptDigest
+    && receipt.receiptId === `m6-execution-receipt:${receiptDigest.slice(7, 23)}`
+    && signatureValid(receipt.receiptDigest, receipt.signature, publicKey);
+  if (!valid) {
+    issues.push(issue(
+      "m6_execution_receipt_invalid",
+      `${subjectProtocol} lacks an accepted authority-signed execution receipt.`,
+    ));
+  }
+}
+
+function signatureValid(receiptDigest, signature, publicKey) {
+  try {
+    return verifySignature(
+      null,
+      Buffer.from(receiptDigest),
+      publicKey,
+      Buffer.from(signature ?? "", "base64"),
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function receiptContent(receipt) {
+  return {
+    protocol: receipt?.protocol,
+    subjectProtocol: receipt?.subjectProtocol,
+    artifactDigests: [...(receipt?.artifactDigests ?? [])].sort(),
+    commandDigest: receipt?.commandDigest,
+    authority: receipt?.authority,
+    status: receipt?.status,
+    cleanupComplete: receipt?.cleanupComplete,
+    productionMutated: receipt?.productionMutated,
+    observedAtUnixMs: receipt?.observedAtUnixMs,
+  };
+}
+
+export function supportManifestDigest(manifest) {
+  const input = {
+    protocol: "",
+    manifestId: "",
+    manifestDigest: "",
+    status: manifest.status,
+    components: manifest.components.map((component) => ({
+      kind: component.kind,
+      componentId: component.componentId,
+      version: component.version,
+      digest: component.digest,
+    })),
+    manifestFormats: manifest.manifestFormats.map((format) => ({
+      kind: format.kind,
+      version: format.version,
+    })),
+    stateVersions: manifest.stateVersions,
+    adapterVersions: sortedObject(manifest.adapterVersions),
+    documentation: {
+      version: manifest.documentation.version,
+      digest: manifest.documentation.digest,
+    },
+    combinations: manifest.combinations.map((combination) => ({
+      combinationId: combination.combinationId,
+      componentReferences: combination.componentReferences,
+      stateVersion: combination.stateVersion,
+      status: combination.status,
+    })),
+    upgradeEdges: manifest.upgradeEdges.map((edge) => ({
+      edgeId: edge.edgeId,
+      sourceFormat: edge.sourceFormat,
+      targetFormat: edge.targetFormat,
+      mixedVersionReferences: edge.mixedVersionReferences,
+      rollbackSafe: edge.rollbackSafe,
+    })),
+    evidenceReceiptAuthorities: sortedObject(manifest.evidenceReceiptAuthorities),
+    receiptAuthorityPublicKeys: sortedObject(manifest.receiptAuthorityPublicKeys),
+  };
+  return digest(JSON.stringify(input));
+}
+
+function sortedObject(value) {
+  return Object.fromEntries(Object.entries(value ?? {}).sort(([left], [right]) =>
+    left < right ? -1 : left > right ? 1 : 0));
+}
+
+function validateEvidence(
+  evidence,
+  protocol,
+  decision,
+  digestField,
+  idField,
+  idPrefix,
+  code,
+  issues,
+) {
+  if (evidence?.protocol !== protocol
+    || evidence?.decision !== decision
+    || !canonicalEvidenceValid(evidence, idField, digestField, idPrefix)) {
+    issues.push(issue(code, `${protocol} is missing, blocked, or not content-addressed.`));
+  }
+}
+
+export function contentAddressEvidence(evidence, idField, digestField, idPrefix) {
+  const addressed = structuredClone(evidence);
+  addressed[idField] = "";
+  addressed[digestField] = "";
+  const evidenceDigest = digest(JSON.stringify(addressed));
+  addressed[digestField] = evidenceDigest;
+  addressed[idField] = `${idPrefix}:${evidenceDigest.slice(7, 23)}`;
+  return addressed;
+}
+
+function canonicalEvidenceValid(evidence, idField, digestField, idPrefix) {
+  if (!evidence || !validDigest(evidence[digestField])) return false;
+  const canonical = contentAddressEvidence(evidence, idField, digestField, idPrefix);
+  return evidence[digestField] === canonical[digestField]
+    && evidence[idField] === canonical[idField];
 }
 
 function validateMode(mode) {
@@ -405,6 +1047,81 @@ function run(command, args) {
   });
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+function runCaptured(command, args, cwd, extraEnv = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: {
+        PATH: process.env.PATH,
+        HOME: cwd,
+        LANG: "C",
+        LC_ALL: "C",
+        CARGO_HOME: path.join(cwd, "cargo-home"),
+        RUSTUP_HOME: process.env.RUSTUP_HOME ?? path.join(os.homedir(), ".rustup"),
+        npm_config_cache: path.join(cwd, "package-store"),
+        ...extraEnv,
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      if (code === 0) resolve(stdout);
+      else reject(new Error(
+        `m6_candidate_tracer_invalid: ${command} exited with ${code ?? signal}: ${stderr || stdout}`,
+      ));
+    });
+  });
+}
+
+function runBinary(command, args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: process.env,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const stdout = [];
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout.push(chunk); });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      if (code === 0) resolve(Buffer.concat(stdout));
+      else reject(new Error(`${command} exited with ${code ?? signal}: ${stderr}`));
+    });
+  });
+}
+
+function runObserved(command, args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: {
+        PATH: process.env.PATH,
+        HOME: cwd,
+        LANG: "C",
+        LC_ALL: "C",
+        RUSTUP_HOME: process.env.RUSTUP_HOME ?? path.join(os.homedir(), ".rustup"),
+        CARGO_HOME: path.join(cwd, "cargo-home"),
+        npm_config_cache: path.join(cwd, "package-store"),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      resolve({ code: code ?? 128, signal, stdout, stderr });
+    });
+  });
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main();
 }

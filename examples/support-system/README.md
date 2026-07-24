@@ -127,6 +127,24 @@ pnpm acceptance:m6 -- --preflight --mode candidate \
   --packages ./m6-candidate-packages.json
 ```
 
+The trusted digest must come from the reviewed acceptance environment, not from
+the supplied manifest file. Candidate package entries point to immutable
+absolute `artifactPath` files outside the framework workspaces. Exactly one
+staged CLI entry must be a real npm package tarball. The gate installs that
+tarball into the isolated starter and runs its public `lenso --version`
+and `lenso host init` commands. Every entry also declares `artifactFormat` as
+`npm_tgz`, `cargo_crate`, or `json`; the gate reads the package's own
+name/version metadata and binds every copied artifact digest into the trace.
+The same starter then executes public Module authoring, System graph, exact GA
+support, failure recovery, Contract safety, delivery, workflow/Story,
+upgrade/rollback, and manifest-evolution surfaces. It emits a content-addressed
+`lenso.m6-fresh-starter-tutorial-receipt.v1` before cleanup.
+The complete candidate command additionally archives the exact clean
+`lenso-examples` commit, installs it offline inside that starter, and runs the
+cascading `pnpm acceptance:m5` plus independent Provider smoke through the
+staged CLI. That produces `lenso.m6-complete-tutorial-receipt.v1`; preflight
+mode intentionally stops before this longer replay.
+
 Candidate mode accepts only exact staged artifacts with immutable digests and
 accepted shadow receipts. Published mode accepts only public registry artifacts
 with accepted release receipts. Both reject path/workspace dependencies,
@@ -145,6 +163,13 @@ DATABASE_URL=postgres://... \
 SPIFFE_ENDPOINT_SOCKET=unix:///... \
 pnpm acceptance:m6:environment -- --output ./m6-environment-evidence.json
 ```
+
+The complete candidate gate additionally consumes `--scenario-evidence` and
+`--ga-evidence`, which bind delivery recovery, backup/restore, disaster
+recovery, performance, the 3–20 Service envelope, and security review to the
+exact Support Manifest. Follow
+[`M6_EVOLUTION_TUTORIAL.md`](./M6_EVOLUTION_TUTORIAL.md) for the public
+fresh-starter product path.
 
 It runs the real JetStream, SPIFFE/SPIRE, PostgreSQL-backed recovery, and
 disposable Kubernetes/Operator proofs. Successful named proof commands are

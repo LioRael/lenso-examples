@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
@@ -152,6 +152,7 @@ async function runAcceptance() {
 
 async function startPostgres() {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "lenso-m3-postgres-"));
+  const logFile = path.join(dataDir, "postgres.log");
   const port = await reservePort();
   let started = false;
   try {
@@ -171,7 +172,16 @@ async function startPostgres() {
     );
     await run(
       "pg_ctl",
-      ["-D", dataDir, "-o", `-F -p ${port} -h 127.0.0.1`, "-w", "start"],
+      [
+        "-D",
+        dataDir,
+        "-l",
+        logFile,
+        "-o",
+        `-F -p ${port} -h 127.0.0.1 -k /tmp`,
+        "-w",
+        "start",
+      ],
       repoRoot,
     );
     started = true;
@@ -187,6 +197,7 @@ async function startPostgres() {
       },
     };
   } catch (error) {
+    const postgresLog = await readFile(logFile, "utf8").catch(() => "");
     if (started) {
       await run(
         "pg_ctl",
@@ -195,7 +206,7 @@ async function startPostgres() {
       ).catch(() => {});
     }
     await rm(dataDir, { recursive: true, force: true });
-    throw error;
+    throw new Error(`${error instanceof Error ? error.message : error}\n${postgresLog}`);
   }
 }
 
