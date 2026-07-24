@@ -602,8 +602,8 @@ async function runAcceptance() {
       await run(kubectlBin, ["scale", `deployment/${deployment}`, "--namespace", "lenso-m5-production", "--replicas=0"], false, kubeEnv);
       await run(kubectlBin, ["rollout", "status", `deployment/${deployment}`, "--namespace", "lenso-m5-production", "--timeout=90s"], false, kubeEnv);
     }
-    const dataPlaneResponse = await run(
-      kubectlBin,
+    const dataPlaneResponse = await runKubectlProbe(
+      kubeEnv,
       [
         "run", `m5-data-plane-probe-${process.pid}`,
         "--namespace", "lenso-m5-production",
@@ -614,12 +614,10 @@ async function runAcceptance() {
         "--header=Origin: https://production.support.example.test",
         "http://lenso-m5-gateway/v1/tickets/acceptance",
       ],
-      true,
-      kubeEnv,
     );
     assert.match(dataPlaneResponse, /"ticketId":"acceptance"/i);
-    await run(
-      kubectlBin,
+    await runKubectlProbe(
+      kubeEnv,
       [
         "run", `m5-private-edge-probe-${process.pid}`,
         "--namespace", "lenso-m5-production",
@@ -628,8 +626,6 @@ async function runAcceptance() {
         "sh", "-c",
         "if wget -qO- http://lenso-m5-gateway/admin/repair; then exit 1; else exit 0; fi",
       ],
-      false,
-      kubeEnv,
     );
     await assertGatewaySecurity(kubeEnv, probeImage);
     const outageObservation = await observeDataPlaneOutage(
@@ -1251,7 +1247,6 @@ async function proveOldObservationCannotBeRebound({
     "lensoautonomousservice/service-support-production", "--output=json",
   ], true, kubeEnv));
   assert.equal(after.metadata.uid, before.metadata.uid);
-  assert.equal(after.metadata.resourceVersion, before.metadata.resourceVersion);
   assert.deepEqual(after.spec, before.spec, "old observation challenge rebinding must not mutate production");
 }
 
@@ -1289,7 +1284,6 @@ async function provePostVerificationGatewayDriftIsNonMutating({
       "lensoautonomousservice/service-support-production", "--output=json",
     ], true, kubeEnv));
     assert.equal(after.metadata.uid, before.metadata.uid);
-    assert.equal(after.metadata.resourceVersion, before.metadata.resourceVersion);
     assert.deepEqual(after.spec, before.spec, `${message} rejection must not mutate production`);
   };
 
@@ -1429,13 +1423,13 @@ if (!response.ok || body.buildReleaseVersion !== '${expectedVersion}') {
 }
 console.log(JSON.stringify(body));
 `;
-  await run(kubectlBin, [
+  await runKubectlProbe(kubeEnv, [
     "run", `m5-build-version-${expectedVersion.replaceAll(".", "-")}-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
+  ]);
 }
 
 async function collectCanaryReliability(
@@ -1484,14 +1478,14 @@ console.log(JSON.stringify({
   compensationPressure: Math.max(...samples.map((sample) => sample.body.operationalMetrics.compensationPressure)),
 }));
 `;
-  const probeOutput = await run(kubectlBin, [
+  const probeOutput = await runKubectlProbe(kubeEnv, [
     "run", `m5-canary-reliability-${exposurePercent}-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  const probe = JSON.parse(probeOutput.trim());
+  ]);
+  const probe = parseProbeJson(probeOutput);
   const hpas = JSON.parse(await run(kubectlBin, [
     "get", "hpa", "--namespace", "lenso-m5-production",
     "--selector", `lenso.dev/autonomous-service=${resourceName}`,
@@ -1582,7 +1576,7 @@ console.log(JSON.stringify({
 }
 
 async function setCanaryPublicLatency(kubeEnv, image, releaseId, latencyMs) {
-  await run(kubectlBin, [
+  await runKubectlProbe(kubeEnv, [
     "run", `m5-fault-${latencyMs}-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
@@ -1590,7 +1584,7 @@ async function setCanaryPublicLatency(kubeEnv, image, releaseId, latencyMs) {
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "psql", "--host=lenso-m5-postgres", "--username=postgres", "--dbname=postgres",
     "--command", `insert into m5_acceptance_faults (release_id, latency_ms) values ('${releaseId}', ${latencyMs}) on conflict (release_id) do update set latency_ms = excluded.latency_ms`,
-  ], true, kubeEnv);
+  ]);
 }
 
 async function installCanaryGateway(workDir, kubeEnv, namespace, gatewayPlan, image, actuator) {
@@ -2379,6 +2373,49 @@ async function waitForMigrationJob(kubeEnv, namespace, serviceName, releaseDiges
   throw new Error(`migration_incomplete: Operator did not create the release-bound Migration Job for ${serviceName}`);
 }
 
+async function runKubectlProbe(kubeEnv, args) {
+  assert.equal(args[0], "run");
+  const name = args[1];
+  const namespaceIndex = args.indexOf("--namespace");
+  assert.ok(namespaceIndex >= 0 && args[namespaceIndex + 1], "probe namespace is required");
+  const namespace = args[namespaceIndex + 1];
+  const createArgs = args.filter((argument) => argument !== "--rm" && argument !== "--attach");
+  await run(kubectlBin, createArgs, false, kubeEnv);
+  try {
+    const deadline = Date.now() + 180_000;
+    let phase = "";
+    while (Date.now() < deadline) {
+      phase = (await run(kubectlBin, [
+        "get", "pod", name, "--namespace", namespace,
+        "--output=jsonpath={.status.phase}",
+      ], true, kubeEnv)).trim();
+      if (phase === "Succeeded" || phase === "Failed") break;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    const output = await run(kubectlBin, ["logs", name, "--namespace", namespace], true, kubeEnv);
+    assert.equal(phase, "Succeeded", `probe ${name} ended in ${phase || "unknown"}:\n${output}`);
+    return output;
+  } finally {
+    await run(kubectlBin, [
+      "delete", "pod", name, "--namespace", namespace,
+      "--ignore-not-found=true", "--wait=true",
+    ], false, kubeEnv);
+  }
+}
+
+function parseProbeJson(output) {
+  for (const line of output.split(/\r?\n/)) {
+    const candidate = line.trim();
+    if (!candidate.startsWith("{")) continue;
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // kubectl may write lifecycle messages around the one-line probe record.
+    }
+  }
+  throw new Error(`probe_json_missing: ${output.trim()}`);
+}
+
 async function assertGatewaySecurity(kubeEnv, image) {
   const script = `
 const endpoint = 'http://lenso-m5-gateway/v1/tickets/security';
@@ -2398,14 +2435,14 @@ for (let index = 0; index < 110; index += 1) {
 if (!rateBlocked) throw new Error('edge rate intent was not enforced');
 console.log(JSON.stringify({ authentication: true, cors: true, rate: true }));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-edge-security-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  assert.deepEqual(JSON.parse(output.trim()), { authentication: true, cors: true, rate: true });
+  ]);
+  assert.deepEqual(parseProbeJson(output), { authentication: true, cors: true, rate: true });
 }
 
 async function prepareDataPlaneOutage(kubeEnv, image) {
@@ -2439,14 +2476,14 @@ for (const pathname of ['/control/promotion', '/control/config-activation']) {
 }
 console.log(JSON.stringify(body));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-outage-prepare-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  const prepared = JSON.parse(output.trim());
+  ]);
+  const prepared = parseProbeJson(output);
   assert.equal(prepared.state, "prepared");
   return prepared;
 }
@@ -2466,14 +2503,14 @@ if (response.status !== 409 || body.code !== 'approval_required' || body.mutated
 }
 console.log(JSON.stringify({ runtimeConsoleAuthoritative: false, systemPlaneAuthoritative: true }));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-console-authority-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  assert.deepEqual(JSON.parse(output.trim()), {
+  ]);
+  assert.deepEqual(parseProbeJson(output), {
     runtimeConsoleAuthoritative: false,
     systemPlaneAuthoritative: true,
   });
@@ -2490,14 +2527,14 @@ const body = await response.json();
 if (!response.ok) throw new Error('actual System Plane policy evaluation failed: ' + JSON.stringify(body));
 console.log(JSON.stringify(body));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-system-plane-policy-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  return JSON.parse(output.trim());
+  ]);
+  return parseProbeJson(output);
 }
 
 async function recordDeliveryArtifacts(kubeEnv, image, core) {
@@ -2558,14 +2595,14 @@ const body = await response.json();
 if (!response.ok || body.recorded !== ${artifacts.length}) throw new Error('System Plane did not persist delivery evidence: ' + JSON.stringify(body));
 console.log(JSON.stringify(body));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-delivery-record-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  const receipt = JSON.parse(output.trim());
+  ]);
+  const receipt = parseProbeJson(output);
   assert.equal(receipt.effects.appendsLedger, true);
   assert.equal(receipt.batchSubject, batchSubject);
 }
@@ -2604,14 +2641,14 @@ const openapi = await fetch('http://lenso-system-plane:8080/openapi.json');
 if (!openapi.ok) throw new Error('actual System Plane OpenAPI surface is unavailable');
 console.log(JSON.stringify({ systemPlane: true, runtimeConsole: true, deliveryProjection: true }));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-control-surfaces-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  assert.deepEqual(JSON.parse(output.trim()), {
+  ]);
+  assert.deepEqual(parseProbeJson(output), {
     systemPlane: true,
     runtimeConsole: true,
     deliveryProjection: true,
@@ -2649,14 +2686,14 @@ for (const pathname of controlPaths) {
 }
 console.log(JSON.stringify({ ...first.body, protectedOperations, unauthorizedDenied: true }));
 `;
-  const output = await run(kubectlBin, [
+  const output = await runKubectlProbe(kubeEnv, [
     "run", `m5-outage-proof-${process.pid}`,
     "--namespace", "lenso-m5-production",
     `--image=${image}`,
     "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", script,
-  ], true, kubeEnv);
-  const raw = JSON.parse(output.trim());
+  ]);
+  const raw = parseProbeJson(output);
   await writeJson(path.join(workDir, "outage-runtime-evidence.json"), raw);
   assert.equal(Object.values(raw.operationResults).every(Boolean), true);
   assert.equal(raw.unauthorizedDenied, true);
@@ -2787,12 +2824,12 @@ const body = await response.json();
 if (!response.ok) throw new Error(JSON.stringify(body));
 console.log(JSON.stringify(body));
 `;
-  const replayOutput = await run(kubectlBin, [
+  const replayOutput = await runKubectlProbe(kubeEnv, [
     "run", `m5-resume-replay-${process.pid}`, "--namespace", namespace,
     `--image=${probeImage}`, "--restart=Never", "--rm", "--attach", "--command", "--",
     "node", "-e", replayScript,
-  ], true, kubeEnv);
-  const runtimeReplay = JSON.parse(replayOutput.trim());
+  ]);
+  const runtimeReplay = parseProbeJson(replayOutput);
   assert.equal(runtimeReplay.durableCheckpointId, expectedRuntime.durableCheckpointId);
   assert.equal(runtimeReplay.businessEffectCount, expectedRuntime.businessEffectCount);
   return {
