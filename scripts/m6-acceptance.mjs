@@ -608,7 +608,7 @@ export async function runFullTutorialWorkspace({ cli, starterRoot, supportManife
   await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
   await runCaptured(
     "pnpm",
-    ["install", "--offline", "--frozen-lockfile"],
+    ["install", "--frozen-lockfile", "--ignore-scripts"],
     tutorialRoot,
   );
   const environment = { LENSO_CLI_BIN: cli };
