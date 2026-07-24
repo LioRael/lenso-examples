@@ -171,7 +171,7 @@ async function startPostgres() {
     );
     await run(
       "pg_ctl",
-      ["-D", dataDir, "-o", `-F -p ${port} -h 127.0.0.1`, "-w", "start"],
+      ["-D", dataDir, "-o", `-F -p ${port} -h 127.0.0.1 -k /tmp`, "-w", "start"],
       repoRoot,
     );
     started = true;
