@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { createHash, generateKeyPairSync, sign } from "node:crypto";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -184,16 +185,22 @@ function executionReceipt(subjectProtocol, artifactDigests) {
 test("candidate preflight creates an isolated starter and can never claim GA", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "lenso-m6-test-"));
   try {
-    const cliArtifact = path.join(root, "lenso-cli-tracer.mjs");
+    const cliPackageRoot = path.join(root, "cli-package", "package");
+    const cliArtifact = path.join(root, "lenso-cli-0.1.30.tgz");
     const runtimeArtifact = path.join(root, "lenso-service.crate");
-    await writeFile(cliArtifact, [
-      'import { readFile } from "node:fs/promises";',
-      "const provenance = JSON.parse(await readFile(process.argv[3], \"utf8\"));",
-      "console.log(JSON.stringify({",
-      '  outcome: process.argv[2] === "--m6-package-trace" ? "passed" : "failed",',
-      "  consumedDigests: provenance.map((item) => item.digest),",
-      "}));",
-    ].join("\n"));
+    await mkdir(path.join(cliPackageRoot, "bin"), { recursive: true });
+    await writeFile(path.join(cliPackageRoot, "package.json"), JSON.stringify({
+      name: "@lenso/cli",
+      version: "0.1.30",
+      bin: { lenso: "bin/lenso.js" },
+    }));
+    await writeFile(
+      path.join(cliPackageRoot, "bin", "lenso.js"),
+      '#!/usr/bin/env node\nconsole.log("lenso 0.1.30");\n',
+      { mode: 0o755 },
+    );
+    const packed = spawnSync("tar", ["-czf", cliArtifact, "-C", path.dirname(cliPackageRoot), "package"]);
+    assert.equal(packed.status, 0, packed.stderr?.toString());
     await writeFile(runtimeArtifact, "immutable staged runtime artifact\n");
     const candidatePackages = [
       {
@@ -204,7 +211,6 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
         source: "staged",
         receiptStatus: "accepted",
         artifactPath: cliArtifact,
-        candidateTracer: true,
       },
       {
         id: "lenso-service",

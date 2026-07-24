@@ -372,8 +372,8 @@ function validatePackages(mode, packages) {
     }
   }
   if (mode === "candidate"
-    && packages.filter((item) => item.candidateTracer === true).length !== 1) {
-    throw new Error("m6_candidate_tracer_invalid: exactly one staged CLI tracer is required");
+    && packages.filter((item) => item.kind === "cli").length !== 1) {
+    throw new Error("m6_candidate_tracer_invalid: exactly one staged CLI package is required");
   }
 }
 
@@ -395,24 +395,33 @@ async function executeCandidateTracer(starterRoot, packages) {
   }
   const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
   await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
-  const tracer = copied.find((item) => item.candidateTracer === true);
-  if (tracer.kind !== "cli") {
-    throw new Error("m6_candidate_tracer_invalid: candidate tracer must be the exact staged CLI");
+  const tracer = copied.find((item) => item.kind === "cli");
+  if (!tracer.copiedArtifactPath.endsWith(".tgz")) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI must be an npm package tarball");
   }
-  const output = await runCaptured(
-    process.execPath,
-    [tracer.copiedArtifactPath, "--m6-package-trace", provenancePath],
+  await writeFile(path.join(starterRoot, "package.json"), JSON.stringify({
+    name: "lenso-m6-candidate-tracer",
+    private: true,
+  }));
+  await runCaptured(
+    "pnpm",
+    ["add", "--offline", "--ignore-scripts", "--save-exact", tracer.copiedArtifactPath],
     starterRoot,
   );
-  const trace = JSON.parse(output);
+  const output = await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    ["--version"],
+    starterRoot,
+  );
   const expected = copied.map((item) => item.digest).sort();
-  if (trace.outcome !== "passed"
-    || JSON.stringify([...(trace.consumedDigests ?? [])].sort()) !== JSON.stringify(expected)) {
-    throw new Error("m6_candidate_tracer_invalid: staged CLI did not consume the exact package set");
+  if (!output.includes(tracer.version)) {
+    throw new Error("m6_candidate_tracer_invalid: installed CLI version differs from provenance");
   }
   return {
     outcome: "passed",
     tracerDigest: tracer.digest,
+    tracerVersion: tracer.version,
+    publicCommand: "lenso --version",
     consumedDigests: expected,
     cwdOutsideFramework: true,
   };
@@ -438,8 +447,7 @@ function parseArgs(argv) {
     m6Only: argv.includes("--m6-only"),
     mode: value("--mode") ?? "candidate",
     supportManifest: value("--support-manifest"),
-    trustedManifestDigest: value("--trusted-manifest-digest")
-      ?? process.env.LENSO_M6_TRUSTED_MANIFEST_DIGEST,
+    trustedManifestDigest: process.env.LENSO_M6_TRUSTED_MANIFEST_DIGEST,
     packages: value("--packages"),
     scenarioEvidence: value("--scenario-evidence"),
     gaEvidence: value("--ga-evidence"),

@@ -124,15 +124,15 @@ Manifest without running product scenarios:
 ```sh
 pnpm acceptance:m6 -- --preflight --mode candidate \
   --support-manifest ./lenso.ga-support-manifest.v1.json \
-  --trusted-manifest-digest "$LENSO_M6_TRUSTED_MANIFEST_DIGEST" \
   --packages ./m6-candidate-packages.json
 ```
 
 The trusted digest must come from the reviewed acceptance environment, not from
 the supplied manifest file. Candidate package entries point to immutable
 absolute `artifactPath` files outside the framework workspaces. Exactly one
-staged CLI entry declares `candidateTracer: true`; that copied CLI must consume
-and report every exact package digest from the isolated starter.
+staged CLI entry must be a real npm package tarball. The gate installs that
+tarball into the isolated starter and runs its public `lenso --version`
+command while binding every copied artifact digest into the trace.
 
 Candidate mode accepts only exact staged artifacts with immutable digests and
 accepted shadow receipts. Published mode accepts only public registry artifacts

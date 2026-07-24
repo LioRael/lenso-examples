@@ -66,7 +66,6 @@ Run from clean caches with exact staged artifacts:
 ```sh
 pnpm acceptance:m6 -- --mode candidate \
   --support-manifest ./lenso.ga-support-manifest.v1.json \
-  --trusted-manifest-digest "$LENSO_M6_TRUSTED_MANIFEST_DIGEST" \
   --packages ./m6-candidate-packages.json \
   --scenario-evidence ./m6-failure-evidence.json \
   --ga-evidence ./m6-ga-evidence.json
