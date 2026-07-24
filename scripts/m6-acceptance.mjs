@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { createHash, verify as verifySignature } from "node:crypto";
-import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -364,6 +364,10 @@ function validatePackages(mode, packages) {
       && (typeof item.artifactPath !== "string" || !path.isAbsolute(item.artifactPath))) {
       throw new Error(`m6_package_source_invalid: candidate ${item.id} lacks an absolute staged artifact`);
     }
+    if (mode === "candidate"
+      && !new Set(["npm_tgz", "cargo_crate", "json"]).has(item.artifactFormat)) {
+      throw new Error(`m6_package_source_invalid: candidate ${item.id} lacks a supported artifact format`);
+    }
     if (mode === "published" && item.source !== "published") {
       throw new Error(`m6_package_source_invalid: published ${item.id} is not a public registry artifact`);
     }
@@ -391,7 +395,8 @@ async function executeCandidateTracer(starterRoot, packages) {
     const target = path.join(artifactsRoot, `${index}-${path.basename(item.artifactPath)}`);
     await mkdir(path.dirname(target), { recursive: true });
     await copyFile(item.artifactPath, target);
-    copied.push({ ...item, copiedArtifactPath: target });
+    const identity = await inspectCandidateArtifact(item, target);
+    copied.push({ ...item, copiedArtifactPath: target, inspectedIdentity: identity });
   }
   const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
   await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
@@ -417,14 +422,58 @@ async function executeCandidateTracer(starterRoot, packages) {
   if (!output.includes(tracer.version)) {
     throw new Error("m6_candidate_tracer_invalid: installed CLI version differs from provenance");
   }
+  const hostRoot = path.join(starterRoot, "host");
+  await runCaptured(
+    path.join(starterRoot, "node_modules", ".bin", "lenso"),
+    ["host", "init", hostRoot, "--name", "m6-candidate"],
+    starterRoot,
+  );
+  const hostMetadata = await stat(hostRoot);
+  if (!hostMetadata.isDirectory()) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI did not create a fresh Host");
+  }
   return {
     outcome: "passed",
     tracerDigest: tracer.digest,
     tracerVersion: tracer.version,
     publicCommand: "lenso --version",
+    replayCommand: "lenso host init",
+    inspectedArtifacts: copied.map((item) => item.inspectedIdentity),
     consumedDigests: expected,
     cwdOutsideFramework: true,
   };
+}
+
+async function inspectCandidateArtifact(item, artifactPath) {
+  if (item.artifactFormat === "npm_tgz") {
+    const packageJson = JSON.parse(await runCaptured(
+      "tar",
+      ["-xOf", artifactPath, "package/package.json"],
+      path.dirname(artifactPath),
+    ));
+    if (packageJson.name !== item.id || packageJson.version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} npm identity differs from provenance`);
+    }
+    return { id: packageJson.name, version: packageJson.version, format: item.artifactFormat };
+  }
+  if (item.artifactFormat === "cargo_crate") {
+    const manifest = await runCaptured(
+      "tar",
+      ["-xOf", artifactPath, `${item.id}-${item.version}/Cargo.toml.orig`],
+      path.dirname(artifactPath),
+    );
+    const name = manifest.match(/^name\s*=\s*"([^"]+)"/mu)?.[1];
+    const version = manifest.match(/^version\s*=\s*"([^"]+)"/mu)?.[1];
+    if (name !== item.id || version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} crate identity differs from provenance`);
+    }
+    return { id: name, version, format: item.artifactFormat };
+  }
+  const metadata = JSON.parse(await readFile(artifactPath, "utf8"));
+  if (metadata.componentId !== item.id || metadata.version !== item.version) {
+    throw new Error(`m6_package_identity_invalid: ${item.id} metadata differs from provenance`);
+  }
+  return { id: metadata.componentId, version: metadata.version, format: item.artifactFormat };
 }
 
 function validateExactCombination(manifest, packages) {

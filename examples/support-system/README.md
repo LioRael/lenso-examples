@@ -132,7 +132,9 @@ the supplied manifest file. Candidate package entries point to immutable
 absolute `artifactPath` files outside the framework workspaces. Exactly one
 staged CLI entry must be a real npm package tarball. The gate installs that
 tarball into the isolated starter and runs its public `lenso --version`
-command while binding every copied artifact digest into the trace.
+and `lenso host init` commands. Every entry also declares `artifactFormat` as
+`npm_tgz`, `cargo_crate`, or `json`; the gate reads the package's own
+name/version metadata and binds every copied artifact digest into the trace.
 
 Candidate mode accepts only exact staged artifacts with immutable digests and
 accepted shadow receipts. Published mode accepts only public registry artifacts

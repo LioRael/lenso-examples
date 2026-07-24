@@ -187,7 +187,8 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
   try {
     const cliPackageRoot = path.join(root, "cli-package", "package");
     const cliArtifact = path.join(root, "lenso-cli-0.1.30.tgz");
-    const runtimeArtifact = path.join(root, "lenso-service.crate");
+    const runtimePackageRoot = path.join(root, "crate-package", "lenso-service-0.1.4");
+    const runtimeArtifact = path.join(root, "lenso-service-0.1.4.crate");
     await mkdir(path.join(cliPackageRoot, "bin"), { recursive: true });
     await writeFile(path.join(cliPackageRoot, "package.json"), JSON.stringify({
       name: "@lenso/cli",
@@ -196,12 +197,32 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
     }));
     await writeFile(
       path.join(cliPackageRoot, "bin", "lenso.js"),
-      '#!/usr/bin/env node\nconsole.log("lenso 0.1.30");\n',
+      [
+        "#!/usr/bin/env node",
+        'const fs = require("node:fs");',
+        'if (process.argv[2] === "host" && process.argv[3] === "init") {',
+        "  fs.mkdirSync(process.argv[4], { recursive: true });",
+        '  fs.writeFileSync(`${process.argv[4]}/lenso.host.json`, JSON.stringify({ name: "m6-candidate" }));',
+        '} else { console.log("lenso 0.1.30"); }',
+        "",
+      ].join("\n"),
       { mode: 0o755 },
     );
     const packed = spawnSync("tar", ["-czf", cliArtifact, "-C", path.dirname(cliPackageRoot), "package"]);
     assert.equal(packed.status, 0, packed.stderr?.toString());
-    await writeFile(runtimeArtifact, "immutable staged runtime artifact\n");
+    await mkdir(runtimePackageRoot, { recursive: true });
+    await writeFile(
+      path.join(runtimePackageRoot, "Cargo.toml.orig"),
+      '[package]\nname = "lenso-service"\nversion = "0.1.4"\n',
+    );
+    const packedCrate = spawnSync("tar", [
+      "-czf",
+      runtimeArtifact,
+      "-C",
+      path.dirname(runtimePackageRoot),
+      path.basename(runtimePackageRoot),
+    ]);
+    assert.equal(packedCrate.status, 0, packedCrate.stderr?.toString());
     const candidatePackages = [
       {
         id: "@lenso/cli",
@@ -211,6 +232,7 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
         source: "staged",
         receiptStatus: "accepted",
         artifactPath: cliArtifact,
+        artifactFormat: "npm_tgz",
       },
       {
         id: "lenso-service",
@@ -220,6 +242,7 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
         source: "staged",
         receiptStatus: "accepted",
         artifactPath: runtimeArtifact,
+        artifactFormat: "cargo_crate",
       },
     ];
     const manifest = supportManifest();
@@ -242,6 +265,8 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
     assert.equal(result.effects.productionMutated, false);
     assert.equal(result.candidateTrace.outcome, "passed");
     assert.equal(result.candidateTrace.consumedDigests.length, 2);
+    assert.equal(result.candidateTrace.replayCommand, "lenso host init");
+    assert.equal(result.candidateTrace.inspectedArtifacts.length, 2);
     assert.equal(result.cleanup.temporaryStarterDeleted, true);
     await assert.rejects(readFile(result.starterRoot), /ENOENT/);
   } finally {
