@@ -413,6 +413,17 @@ async function executeCandidateTracer(
   }
   const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
   await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
+  const stagedCargoPatches = {};
+  for (const item of copied.filter((candidate) => candidate.artifactFormat === "cargo_crate")) {
+    const destination = path.join(starterRoot, "staged-cargo", item.id);
+    await mkdir(destination, { recursive: true });
+    await runCaptured(
+      "tar",
+      ["-xf", item.copiedArtifactPath, "-C", destination, "--strip-components", "1"],
+      starterRoot,
+    );
+    stagedCargoPatches[item.id] = destination;
+  }
   const tracer = copied.find((item) => item.kind === "cli");
   if (!tracer.copiedArtifactPath.endsWith(".tgz")) {
     throw new Error("m6_candidate_tracer_invalid: staged CLI must be an npm package tarball");
@@ -479,6 +490,7 @@ async function executeCandidateTracer(
       cli: path.join(starterRoot, "node_modules", ".bin", "lenso"),
       starterRoot,
       supportManifest,
+      stagedCargoPatches,
     })
     : null;
   return {
@@ -593,7 +605,12 @@ async function executeCandidateTutorial(cli, hostRoot, supportManifest) {
   };
 }
 
-export async function runFullTutorialWorkspace({ cli, starterRoot, supportManifest }) {
+export async function runFullTutorialWorkspace({
+  cli,
+  starterRoot,
+  supportManifest,
+  stagedCargoPatches = {},
+}) {
   const status = await runCaptured("git", ["status", "--porcelain"], repoRoot);
   if (status.trim()) {
     throw new Error("m6_candidate_tutorial_invalid: tutorial source checkout is not clean");
@@ -606,6 +623,15 @@ export async function runFullTutorialWorkspace({ cli, starterRoot, supportManife
   await writeFile(archivePath, archive);
   await mkdir(tutorialRoot, { recursive: true });
   await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
+  const cargoConfigRoot = path.join(tutorialRoot, ".cargo");
+  await mkdir(cargoConfigRoot, { recursive: true });
+  const patchLines = Object.entries(stagedCargoPatches)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, cratePath]) => `${name} = { path = ${JSON.stringify(cratePath)} }`);
+  await writeFile(
+    path.join(cargoConfigRoot, "config.toml"),
+    `[patch.crates-io]\n${patchLines.join("\n")}\n`,
+  );
   await runCaptured(
     "pnpm",
     ["install", "--frozen-lockfile", "--ignore-scripts"],
