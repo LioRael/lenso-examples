@@ -1016,7 +1016,9 @@ function runCaptured(command, args, cwd, extraEnv = {}) {
     child.once("error", reject);
     child.once("exit", (code, signal) => {
       if (code === 0) resolve(stdout);
-      else reject(new Error(`m6_candidate_tracer_invalid: exited with ${code ?? signal}: ${stderr}`));
+      else reject(new Error(
+        `m6_candidate_tracer_invalid: ${command} exited with ${code ?? signal}: ${stderr || stdout}`,
+      ));
     });
   });
 }
