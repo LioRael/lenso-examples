@@ -184,16 +184,58 @@ function executionReceipt(subjectProtocol, artifactDigests) {
 test("candidate preflight creates an isolated starter and can never claim GA", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "lenso-m6-test-"));
   try {
+    const cliArtifact = path.join(root, "lenso-cli-tracer.mjs");
+    const runtimeArtifact = path.join(root, "lenso-service.crate");
+    await writeFile(cliArtifact, [
+      'import { readFile } from "node:fs/promises";',
+      "const provenance = JSON.parse(await readFile(process.argv[3], \"utf8\"));",
+      "console.log(JSON.stringify({",
+      '  outcome: process.argv[2] === "--m6-package-trace" ? "passed" : "failed",',
+      "  consumedDigests: provenance.map((item) => item.digest),",
+      "}));",
+    ].join("\n"));
+    await writeFile(runtimeArtifact, "immutable staged runtime artifact\n");
+    const candidatePackages = [
+      {
+        id: "@lenso/cli",
+        kind: "cli",
+        version: "0.1.30",
+        digest: hash(await readFile(cliArtifact)),
+        source: "staged",
+        receiptStatus: "accepted",
+        artifactPath: cliArtifact,
+        candidateTracer: true,
+      },
+      {
+        id: "lenso-service",
+        kind: "runtime",
+        version: "0.1.4",
+        digest: hash(await readFile(runtimeArtifact)),
+        source: "staged",
+        receiptStatus: "accepted",
+        artifactPath: runtimeArtifact,
+      },
+    ];
+    const manifest = supportManifest();
+    manifest.components = manifest.components.map((component) => ({
+      ...component,
+      digest: candidatePackages.find((item) => item.id === component.componentId).digest,
+    }));
+    manifest.manifestDigest = supportManifestDigest(manifest);
+    manifest.manifestId = `ga-support:${manifest.manifestDigest.slice(7, 23)}`;
     const result = await preflightPackageSet({
       mode: "candidate",
-      supportManifest: supportManifest(),
-      packages: packages(),
+      supportManifest: manifest,
+      trustedManifestDigest: manifest.manifestDigest,
+      packages: candidatePackages,
       temporaryRoot: root,
     });
     assert.equal(result.outcome, "passed");
     assert.equal(result.gaEligible, false);
     assert.equal(result.provenance.every((item) => item.digest.startsWith("sha256:")), true);
     assert.equal(result.effects.productionMutated, false);
+    assert.equal(result.candidateTrace.outcome, "passed");
+    assert.equal(result.candidateTrace.consumedDigests.length, 2);
     assert.equal(result.cleanup.temporaryStarterDeleted, true);
     await assert.rejects(readFile(result.starterRoot), /ENOENT/);
   } finally {
@@ -214,11 +256,24 @@ test("published mode rejects staged, mutable, local, or receipt-pending packages
       preflightPackageSet({
         mode: "published",
         supportManifest: supportManifest(),
+        trustedManifestDigest: supportManifest().manifestDigest,
         packages: subject,
       }),
       /m6_package_(source|mutable|receipt)_invalid/,
     );
   }
+});
+
+test("preflight rejects a self-certified support manifest", async () => {
+  await assert.rejects(
+    preflightPackageSet({
+      mode: "candidate",
+      supportManifest: supportManifest(),
+      trustedManifestDigest: hash("different reviewed manifest"),
+      packages: packages(),
+    }),
+    /m6_support_manifest_untrusted/,
+  );
 });
 
 test("the first recovery matrix covers process, Store, NATS, SPIFFE, and plane outages", () => {

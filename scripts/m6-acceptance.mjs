@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { createHash, verify as verifySignature } from "node:crypto";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -65,11 +65,12 @@ export const description = Object.freeze({
 export async function preflightPackageSet({
   mode,
   supportManifest,
+  trustedManifestDigest,
   packages,
   temporaryRoot = os.tmpdir(),
 }) {
   validateMode(mode);
-  validateSupportManifest(supportManifest);
+  validateSupportManifest(supportManifest, trustedManifestDigest);
   validatePackages(mode, packages);
   validateExactCombination(supportManifest, packages);
 
@@ -82,6 +83,9 @@ export async function preflightPackageSet({
     await writeFile(path.join(starterRoot, "package-provenance.json"), `${JSON.stringify(packages, null, 2)}\n`);
     await writeFile(path.join(starterRoot, "clean-cargo-home"), "isolated\n");
     await writeFile(path.join(starterRoot, "clean-package-store"), "isolated\n");
+    const candidateTrace = mode === "candidate"
+      ? await executeCandidateTracer(starterRoot, packages)
+      : null;
     return {
       artifactVersion: "lenso.m6-package-preflight.v1",
       outcome: "passed",
@@ -90,6 +94,7 @@ export async function preflightPackageSet({
       manifestDigest: supportManifest.manifestDigest,
       starterRoot,
       provenance: packages,
+      candidateTrace,
       gaEligible: false,
       effects: {
         productionMutated: false,
@@ -276,7 +281,12 @@ async function main() {
   try {
     const supportManifest = await readJsonRequired(args.supportManifest, "--support-manifest");
     const packages = await readJsonRequired(args.packages, "--packages");
-    const packageEvidence = await preflightPackageSet({ mode: args.mode, supportManifest, packages });
+    const packageEvidence = await preflightPackageSet({
+      mode: args.mode,
+      supportManifest,
+      trustedManifestDigest: args.trustedManifestDigest,
+      packages,
+    });
     if (args.preflight) {
       console.log(JSON.stringify(packageEvidence, null, 2));
       return;
@@ -314,7 +324,7 @@ async function main() {
   }
 }
 
-function validateSupportManifest(manifest) {
+function validateSupportManifest(manifest, trustedManifestDigest) {
   if (manifest?.protocol !== "lenso.ga-support-manifest.v1"
     || typeof manifest.manifestId !== "string"
     || !validDigest(manifest.manifestDigest)
@@ -324,6 +334,12 @@ function validateSupportManifest(manifest) {
     || !manifest.evidenceReceiptAuthorities
     || !manifest.receiptAuthorityPublicKeys) {
     throw new Error("m6_support_manifest_invalid: expected a versioned, digest-bound manifest");
+  }
+  if (!validDigest(trustedManifestDigest)
+    || manifest.manifestDigest !== trustedManifestDigest) {
+    throw new Error(
+      "m6_support_manifest_untrusted: manifest digest is not pinned by the reviewed acceptance environment",
+    );
   }
 }
 
@@ -344,6 +360,10 @@ function validatePackages(mode, packages) {
     if (mode === "candidate" && item.source !== "staged") {
       throw new Error(`m6_package_source_invalid: candidate ${item.id} is not an exact staged artifact`);
     }
+    if (mode === "candidate"
+      && (typeof item.artifactPath !== "string" || !path.isAbsolute(item.artifactPath))) {
+      throw new Error(`m6_package_source_invalid: candidate ${item.id} lacks an absolute staged artifact`);
+    }
     if (mode === "published" && item.source !== "published") {
       throw new Error(`m6_package_source_invalid: published ${item.id} is not a public registry artifact`);
     }
@@ -351,6 +371,51 @@ function validatePackages(mode, packages) {
       throw new Error(`m6_package_receipt_invalid: ${item.id} lacks an accepted release receipt`);
     }
   }
+  if (mode === "candidate"
+    && packages.filter((item) => item.candidateTracer === true).length !== 1) {
+    throw new Error("m6_candidate_tracer_invalid: exactly one staged CLI tracer is required");
+  }
+}
+
+async function executeCandidateTracer(starterRoot, packages) {
+  const artifactsRoot = path.join(starterRoot, "artifacts");
+  const copied = [];
+  for (const [index, item] of packages.entries()) {
+    if (isWithin(item.artifactPath, frameworkRoot)) {
+      throw new Error(`m6_package_source_invalid: ${item.id} artifact is inside a framework workspace`);
+    }
+    const artifact = await readFile(item.artifactPath);
+    if (digest(artifact) !== item.digest) {
+      throw new Error(`m6_package_digest_invalid: ${item.id} staged bytes do not match provenance`);
+    }
+    const target = path.join(artifactsRoot, `${index}-${path.basename(item.artifactPath)}`);
+    await mkdir(path.dirname(target), { recursive: true });
+    await copyFile(item.artifactPath, target);
+    copied.push({ ...item, copiedArtifactPath: target });
+  }
+  const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
+  await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
+  const tracer = copied.find((item) => item.candidateTracer === true);
+  if (tracer.kind !== "cli") {
+    throw new Error("m6_candidate_tracer_invalid: candidate tracer must be the exact staged CLI");
+  }
+  const output = await runCaptured(
+    process.execPath,
+    [tracer.copiedArtifactPath, "--m6-package-trace", provenancePath],
+    starterRoot,
+  );
+  const trace = JSON.parse(output);
+  const expected = copied.map((item) => item.digest).sort();
+  if (trace.outcome !== "passed"
+    || JSON.stringify([...(trace.consumedDigests ?? [])].sort()) !== JSON.stringify(expected)) {
+    throw new Error("m6_candidate_tracer_invalid: staged CLI did not consume the exact package set");
+  }
+  return {
+    outcome: "passed",
+    tracerDigest: tracer.digest,
+    consumedDigests: expected,
+    cwdOutsideFramework: true,
+  };
 }
 
 function validateExactCombination(manifest, packages) {
@@ -373,6 +438,8 @@ function parseArgs(argv) {
     m6Only: argv.includes("--m6-only"),
     mode: value("--mode") ?? "candidate",
     supportManifest: value("--support-manifest"),
+    trustedManifestDigest: value("--trusted-manifest-digest")
+      ?? process.env.LENSO_M6_TRUSTED_MANIFEST_DIGEST,
     packages: value("--packages"),
     scenarioEvidence: value("--scenario-evidence"),
     gaEvidence: value("--ga-evidence"),
@@ -543,6 +610,9 @@ export function receiptContent(receipt) {
 
 export function supportManifestDigest(manifest) {
   const input = {
+    protocol: "",
+    manifestId: "",
+    manifestDigest: "",
     status: manifest.status,
     components: manifest.components.map((component) => ({
       kind: component.kind,
@@ -670,6 +740,30 @@ function run(command, args) {
   });
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+function runCaptured(command, args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: {
+        PATH: process.env.PATH,
+        HOME: cwd,
+        CARGO_HOME: path.join(cwd, "cargo-home"),
+        npm_config_cache: path.join(cwd, "package-store"),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      if (code === 0) resolve(stdout);
+      else reject(new Error(`m6_candidate_tracer_invalid: exited with ${code ?? signal}: ${stderr}`));
+    });
+  });
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main();
 }
