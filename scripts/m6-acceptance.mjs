@@ -75,7 +75,7 @@ export async function preflightPackageSet({
   trustedManifestDigest,
   packages,
   temporaryRoot = process.env.LENSO_M6_TEMP_ROOT
-    ?? (process.platform === "darwin" ? "/tmp" : os.tmpdir()),
+    ?? (process.platform === "darwin" ? "/Users/Shared" : os.tmpdir()),
   runFullTutorial = false,
   fullTutorialRunner = runFullTutorialWorkspace,
 }) {
@@ -84,7 +84,11 @@ export async function preflightPackageSet({
   validatePackages(mode, packages);
   validateExactCombination(supportManifest, packages);
 
-  const starterRoot = await mkdtemp(path.join(temporaryRoot, "lenso-m6-starter-"));
+  await mkdir(temporaryRoot, { recursive: true });
+  const starterPrefix = process.platform === "darwin" && temporaryRoot === "/Users/Shared"
+    ? `.lenso-m6-${process.getuid?.() ?? "candidate"}-`
+    : "lenso-m6-starter-";
+  const starterRoot = await mkdtemp(path.join(temporaryRoot, starterPrefix));
   if (isWithin(starterRoot, frameworkRoot)) {
     await rm(starterRoot, { recursive: true, force: true });
     throw new Error("m6_starter_location_invalid: starter must be outside framework workspaces");
