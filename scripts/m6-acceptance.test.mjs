@@ -271,6 +271,16 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
       trustedManifestDigest: manifest.manifestDigest,
       packages: candidatePackages,
       temporaryRoot: root,
+      runFullTutorial: true,
+      fullTutorialRunner: async ({ cli, starterRoot, supportManifest }) => ({
+        protocol: "lenso.m6-complete-tutorial-receipt.v1",
+        cli,
+        starterRoot,
+        supportManifestDigest: supportManifest.manifestDigest,
+        receiptDigest: hash("complete tutorial"),
+        cleanupComplete: true,
+        productionMutated: false,
+      }),
     });
     assert.equal(result.outcome, "passed");
     assert.equal(result.gaEligible, false);
@@ -284,6 +294,10 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
     assert.equal(result.candidateTrace.tutorial.phases.length, 9);
     assert.equal(result.candidateTrace.tutorial.productionMutated, false);
     assert.match(result.candidateTrace.tutorial.tutorialDigest, /^sha256:/u);
+    assert.equal(
+      result.candidateTrace.completeTutorial.protocol,
+      "lenso.m6-complete-tutorial-receipt.v1"
+    );
     assert.equal(result.cleanup.temporaryStarterDeleted, true);
     await assert.rejects(readFile(result.starterRoot), /ENOENT/);
   } finally {

@@ -68,6 +68,8 @@ export async function preflightPackageSet({
   trustedManifestDigest,
   packages,
   temporaryRoot = os.tmpdir(),
+  runFullTutorial = false,
+  fullTutorialRunner = runFullTutorialWorkspace,
 }) {
   validateMode(mode);
   validateSupportManifest(supportManifest, trustedManifestDigest);
@@ -84,7 +86,12 @@ export async function preflightPackageSet({
     await writeFile(path.join(starterRoot, "clean-cargo-home"), "isolated\n");
     await writeFile(path.join(starterRoot, "clean-package-store"), "isolated\n");
     const candidateTrace = mode === "candidate"
-      ? await executeCandidateTracer(starterRoot, packages, supportManifest)
+      ? await executeCandidateTracer(
+        starterRoot,
+        packages,
+        supportManifest,
+        runFullTutorial ? fullTutorialRunner : null,
+      )
       : null;
     return {
       artifactVersion: "lenso.m6-package-preflight.v1",
@@ -286,6 +293,7 @@ async function main() {
       supportManifest,
       trustedManifestDigest: args.trustedManifestDigest,
       packages,
+      runFullTutorial: !args.preflight,
     });
     if (args.preflight) {
       console.log(JSON.stringify(packageEvidence, null, 2));
@@ -381,7 +389,12 @@ function validatePackages(mode, packages) {
   }
 }
 
-async function executeCandidateTracer(starterRoot, packages, supportManifest) {
+async function executeCandidateTracer(
+  starterRoot,
+  packages,
+  supportManifest,
+  fullTutorialRunner,
+) {
   const artifactsRoot = path.join(starterRoot, "artifacts");
   const copied = [];
   for (const [index, item] of packages.entries()) {
@@ -461,6 +474,13 @@ async function executeCandidateTracer(starterRoot, packages, supportManifest) {
     hostRoot,
     supportManifest,
   );
+  const completeTutorial = fullTutorialRunner
+    ? await fullTutorialRunner({
+      cli: path.join(starterRoot, "node_modules", ".bin", "lenso"),
+      starterRoot,
+      supportManifest,
+    })
+    : null;
   return {
     outcome: "passed",
     tracerDigest: tracer.digest,
@@ -469,6 +489,7 @@ async function executeCandidateTracer(starterRoot, packages, supportManifest) {
     replayCommand: "lenso host init",
     supportCheckCommand: "lenso ga support-check",
     tutorial,
+    completeTutorial,
     inspectedArtifacts: copied.map((item) => item.inspectedIdentity),
     consumedDigests: expected,
     cwdOutsideFramework: true,
@@ -569,6 +590,56 @@ async function executeCandidateTutorial(cli, hostRoot, supportManifest) {
     ...content,
     tutorialId: `m6-tutorial:${tutorialDigest.slice(7, 23)}`,
     tutorialDigest,
+  };
+}
+
+export async function runFullTutorialWorkspace({ cli, starterRoot, supportManifest }) {
+  const status = await runCaptured("git", ["status", "--porcelain"], repoRoot);
+  if (status.trim()) {
+    throw new Error("m6_candidate_tutorial_invalid: tutorial source checkout is not clean");
+  }
+  const commit = (await runCaptured("git", ["rev-parse", "HEAD"], repoRoot)).trim();
+  const archive = await runBinary("git", ["archive", "--format=tar", commit], repoRoot);
+  const archiveDigest = digest(archive);
+  const archivePath = path.join(starterRoot, "lenso-examples-tutorial.tar");
+  const tutorialRoot = path.join(starterRoot, "tutorial");
+  await writeFile(archivePath, archive);
+  await mkdir(tutorialRoot, { recursive: true });
+  await runCaptured("tar", ["-xf", archivePath, "-C", tutorialRoot], starterRoot);
+  await runCaptured(
+    "pnpm",
+    ["install", "--offline", "--frozen-lockfile"],
+    tutorialRoot,
+  );
+  const environment = { LENSO_CLI_BIN: cli };
+  const priorOutput = await runCaptured(
+    "pnpm",
+    ["acceptance:m5"],
+    tutorialRoot,
+    environment,
+  );
+  const smokeOutput = await runCaptured(
+    "pnpm",
+    ["smoke"],
+    tutorialRoot,
+    environment,
+  );
+  const content = {
+    protocol: "lenso.m6-complete-tutorial-receipt.v1",
+    sourceCommit: commit,
+    sourceArchiveDigest: archiveDigest,
+    supportManifestDigest: supportManifest.manifestDigest,
+    publicCommands: ["pnpm acceptance:m5", "pnpm smoke"],
+    priorMilestoneOutputDigest: digest(priorOutput),
+    providerSmokeOutputDigest: digest(smokeOutput),
+    cleanupComplete: true,
+    productionMutated: false,
+  };
+  const receiptDigest = digest(JSON.stringify(content));
+  return {
+    ...content,
+    receiptId: `m6-complete-tutorial:${receiptDigest.slice(7, 23)}`,
+    receiptDigest,
   };
 }
 
@@ -925,7 +996,7 @@ function run(command, args) {
   });
 }
 
-function runCaptured(command, args, cwd) {
+function runCaptured(command, args, cwd, extraEnv = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
@@ -934,6 +1005,7 @@ function runCaptured(command, args, cwd) {
         HOME: cwd,
         CARGO_HOME: path.join(cwd, "cargo-home"),
         npm_config_cache: path.join(cwd, "package-store"),
+        ...extraEnv,
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -945,6 +1017,25 @@ function runCaptured(command, args, cwd) {
     child.once("exit", (code, signal) => {
       if (code === 0) resolve(stdout);
       else reject(new Error(`m6_candidate_tracer_invalid: exited with ${code ?? signal}: ${stderr}`));
+    });
+  });
+}
+
+function runBinary(command, args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: process.env,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const stdout = [];
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout.push(chunk); });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      if (code === 0) resolve(Buffer.concat(stdout));
+      else reject(new Error(`${command} exited with ${code ?? signal}: ${stderr}`));
     });
   });
 }

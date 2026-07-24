@@ -139,6 +139,11 @@ The same starter then executes public Module authoring, System graph, exact GA
 support, failure recovery, Contract safety, delivery, workflow/Story,
 upgrade/rollback, and manifest-evolution surfaces. It emits a content-addressed
 `lenso.m6-fresh-starter-tutorial-receipt.v1` before cleanup.
+The complete candidate command additionally archives the exact clean
+`lenso-examples` commit, installs it offline inside that starter, and runs the
+cascading `pnpm acceptance:m5` plus independent Provider smoke through the
+staged CLI. That produces `lenso.m6-complete-tutorial-receipt.v1`; preflight
+mode intentionally stops before this longer replay.
 
 Candidate mode accepts only exact staged artifacts with immutable digests and
 accepted shadow receipts. Published mode accepts only public registry artifacts
