@@ -1003,6 +1003,8 @@ function runCaptured(command, args, cwd, extraEnv = {}) {
       env: {
         PATH: process.env.PATH,
         HOME: cwd,
+        LANG: "C",
+        LC_ALL: "C",
         CARGO_HOME: path.join(cwd, "cargo-home"),
         npm_config_cache: path.join(cwd, "package-store"),
         ...extraEnv,
@@ -1049,6 +1051,8 @@ function runObserved(command, args, cwd) {
       env: {
         PATH: process.env.PATH,
         HOME: cwd,
+        LANG: "C",
+        LC_ALL: "C",
         CARGO_HOME: path.join(cwd, "cargo-home"),
         npm_config_cache: path.join(cwd, "package-store"),
       },
