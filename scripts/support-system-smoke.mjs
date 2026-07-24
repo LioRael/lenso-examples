@@ -62,8 +62,12 @@ try {
   await waitForExit(sandbox);
 }
 
-if (sandbox.exitCode !== 0) {
-  throw new Error(`System Sandbox exited with ${sandbox.exitCode}\n${output}`);
+const sandboxStoppedCleanly =
+  sandbox.exitCode === 0 || sandbox.signalCode === "SIGINT";
+if (!sandboxStoppedCleanly) {
+  throw new Error(
+    `System Sandbox exited with ${sandbox.exitCode ?? sandbox.signalCode}\n${output}`,
+  );
 }
 await access(path.dirname(sandboxState)).then(
   () => {
