@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   buildAcceptanceArtifact,
   preflightPackageSet,
+  deliveryRecoveryConditions,
   scenarioEvidenceFromCommands,
   scenarioMatrix,
 } from "./m6-acceptance.mjs";
@@ -46,6 +47,46 @@ function verifiedScenarios() {
     proofs: [{ commandId: `${item.id}-proof`, commandDigest: digest("f"), scenarioBound: true }],
     adapterVersion: item.adapter ? "test-adapter-1" : undefined,
   }));
+}
+
+function gaEvidence() {
+  return {
+    deliveryRecoveries: deliveryRecoveryConditions.map((condition) => ({
+      protocol: "lenso.delivery-failure-recovery-evidence.v1",
+      condition,
+      decision: "passed",
+      evidenceDigest: digest("1"),
+      effects: { mutatesEnvironment: false },
+    })),
+    performanceProfile: {
+      protocol: "lenso.performance-profile.v1",
+      decision: "passed",
+      profileDigest: digest("2"),
+      supportManifestDigest: digest("a"),
+    },
+    restore: {
+      protocol: "lenso.service-restore-evidence.v1",
+      decision: "passed",
+      evidenceDigest: digest("3"),
+    },
+    disasterRecovery: {
+      protocol: "lenso.disaster-recovery-evidence.v1",
+      decision: "passed",
+      evidenceDigest: digest("4"),
+    },
+    supportEnvelope: {
+      protocol: "lenso.support-envelope.v1",
+      decision: "passed",
+      envelopeDigest: digest("5"),
+      supportManifestDigest: digest("a"),
+    },
+    securityReview: {
+      protocol: "lenso.security-review-evidence.v1",
+      decision: "passed",
+      reviewDigest: digest("6"),
+      supportManifestDigest: digest("a"),
+    },
+  };
 }
 
 test("candidate preflight creates an isolated starter and can never claim GA", async () => {
@@ -144,6 +185,7 @@ test("M6 artifact fails on one unexpected effect and keeps candidate gaEligible 
     packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
     scenarios,
     priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: gaEvidence(),
   });
   assert.equal(passed.outcome, "passed");
   assert.equal(passed.gaEligible, false);
@@ -157,6 +199,7 @@ test("M6 artifact fails on one unexpected effect and keeps candidate gaEligible 
     packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
     scenarios,
     priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: gaEvidence(),
   });
   assert.equal(failed.outcome, "failed");
   assert.equal(failed.gaEligible, false);
@@ -175,7 +218,25 @@ test("M6 artifact rejects scenario labels that are not bound to real evidence", 
     packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
     scenarios,
     priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: gaEvidence(),
   });
   assert.equal(artifact.outcome, "failed");
   assert.equal(artifact.issues.some((item) => item.code === "failure_evidence_unverified"), true);
+});
+
+test("M6 artifact requires recovery, performance, restore, DR, envelope, and security evidence", () => {
+  const evidence = gaEvidence();
+  evidence.deliveryRecoveries.pop();
+  evidence.securityReview.decision = "blocked";
+  const artifact = buildAcceptanceArtifact({
+    mode: "candidate",
+    supportManifest: supportManifest(),
+    packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
+    scenarios: verifiedScenarios(),
+    priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: evidence,
+  });
+  assert.equal(artifact.outcome, "failed");
+  assert.equal(artifact.issues.some((item) => item.code === "m6_delivery_recovery_missing"), true);
+  assert.equal(artifact.issues.some((item) => item.code === "m6_security_review_invalid"), true);
 });

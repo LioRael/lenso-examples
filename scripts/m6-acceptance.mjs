@@ -29,6 +29,15 @@ export const scenarioMatrix = Object.freeze([
   },
 ]);
 
+export const deliveryRecoveryConditions = Object.freeze([
+  "deployment_adapter_rejected",
+  "operator_reconciliation_failed",
+  "gateway_drift",
+  "invalid_config_revision",
+  "secret_reference_unavailable",
+  "migration_failed",
+]);
+
 export const description = Object.freeze({
   artifactVersion: "lenso.m6-acceptance-description.v1",
   publicSeam: "pnpm acceptance:m6",
@@ -94,6 +103,7 @@ export function buildAcceptanceArtifact({
   packageEvidence,
   scenarios,
   priorMilestones,
+  gaEvidence,
 }) {
   const issues = [];
   if (packageEvidence.outcome !== "passed") {
@@ -127,6 +137,7 @@ export function buildAcceptanceArtifact({
       issues.push(issue("failure_adapter_unverified", `${expected.condition} lacks exact ${expected.adapter} evidence.`));
     }
   }
+  validateGaEvidence(gaEvidence, supportManifest, issues);
   const cleanup = {
     temporaryStarterDeleted: packageEvidence.cleanup?.temporaryStarterDeleted === true,
     disposableScenarioResourcesRemoved: scenarios.every((item) => item.cleanupComplete === true),
@@ -146,6 +157,7 @@ export function buildAcceptanceArtifact({
     packageProvenance: packageEvidence.provenance,
     priorMilestones,
     scenarios,
+    gaEvidence,
     issues,
     gaEligible: false,
     gaEligibilityReason: "candidate shell and first recovery tranche cannot declare the final M6 GA gate",
@@ -267,12 +279,14 @@ async function main() {
       await run("pnpm", ["acceptance:m5", "--", "--m5-only"]);
     }
     const scenarios = await readJsonRequired(args.scenarioEvidence, "--scenario-evidence");
+    const gaEvidence = await readJsonRequired(args.gaEvidence, "--ga-evidence");
     const artifact = buildAcceptanceArtifact({
       mode: args.mode,
       supportManifest,
       packageEvidence,
       scenarios,
       priorMilestones: { m5: "passed", providerSmoke: "passed" },
+      gaEvidence,
     });
     console.log(JSON.stringify(artifact, null, 2));
     if (artifact.outcome !== "passed") process.exitCode = 1;
@@ -350,7 +364,82 @@ function parseArgs(argv) {
     supportManifest: value("--support-manifest"),
     packages: value("--packages"),
     scenarioEvidence: value("--scenario-evidence"),
+    gaEvidence: value("--ga-evidence"),
   };
+}
+
+function validateGaEvidence(evidence, supportManifest, issues) {
+  const recoveries = Array.isArray(evidence?.deliveryRecoveries)
+    ? evidence.deliveryRecoveries
+    : [];
+  const byCondition = new Map(recoveries.map((item) => [item.condition, item]));
+  for (const condition of deliveryRecoveryConditions) {
+    const recovery = byCondition.get(condition);
+    if (!recovery
+      || recovery.protocol !== "lenso.delivery-failure-recovery-evidence.v1"
+      || recovery.decision !== "passed"
+      || !validDigest(recovery.evidenceDigest)
+      || recovery.effects?.mutatesEnvironment !== false) {
+      issues.push(issue("m6_delivery_recovery_missing", `${condition} lacks passing zero-effect recovery evidence.`));
+    }
+  }
+  validateEvidence(
+    evidence?.performanceProfile,
+    "lenso.performance-profile.v1",
+    "passed",
+    "profileDigest",
+    "m6_performance_profile_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.restore,
+    "lenso.service-restore-evidence.v1",
+    "passed",
+    "evidenceDigest",
+    "m6_restore_evidence_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.disasterRecovery,
+    "lenso.disaster-recovery-evidence.v1",
+    "passed",
+    "evidenceDigest",
+    "m6_disaster_recovery_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.supportEnvelope,
+    "lenso.support-envelope.v1",
+    "passed",
+    "envelopeDigest",
+    "m6_support_envelope_invalid",
+    issues,
+  );
+  validateEvidence(
+    evidence?.securityReview,
+    "lenso.security-review-evidence.v1",
+    "passed",
+    "reviewDigest",
+    "m6_security_review_invalid",
+    issues,
+  );
+  for (const subject of [
+    evidence?.performanceProfile,
+    evidence?.supportEnvelope,
+    evidence?.securityReview,
+  ]) {
+    if (subject?.supportManifestDigest !== supportManifest.manifestDigest) {
+      issues.push(issue("m6_evidence_manifest_mismatch", "GA evidence is not bound to the exact Support Manifest."));
+    }
+  }
+}
+
+function validateEvidence(evidence, protocol, decision, digestField, code, issues) {
+  if (evidence?.protocol !== protocol
+    || evidence?.decision !== decision
+    || !validDigest(evidence?.[digestField])) {
+    issues.push(issue(code, `${protocol} is missing, blocked, or not content-addressed.`));
+  }
 }
 
 function validateMode(mode) {

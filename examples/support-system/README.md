@@ -146,6 +146,13 @@ SPIFFE_ENDPOINT_SOCKET=unix:///... \
 pnpm acceptance:m6:environment -- --output ./m6-environment-evidence.json
 ```
 
+The complete candidate gate additionally consumes `--scenario-evidence` and
+`--ga-evidence`, which bind delivery recovery, backup/restore, disaster
+recovery, performance, the 3–20 Service envelope, and security review to the
+exact Support Manifest. Follow
+[`M6_EVOLUTION_TUTORIAL.md`](./M6_EVOLUTION_TUTORIAL.md) for the public
+fresh-starter product path.
+
 It runs the real JetStream, SPIFFE/SPIRE, PostgreSQL-backed recovery, and
 disposable Kubernetes/Operator proofs. Successful named proof commands are
 bound directly into the scenario evidence written by `--output`; callers do
