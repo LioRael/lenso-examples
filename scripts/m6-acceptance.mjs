@@ -378,7 +378,12 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     if (!recovery
       || recovery.protocol !== "lenso.delivery-failure-recovery-evidence.v1"
       || recovery.decision !== "passed"
-      || !validDigest(recovery.evidenceDigest)
+      || !canonicalEvidenceValid(
+        recovery,
+        "evidenceId",
+        "evidenceDigest",
+        "delivery-failure-recovery",
+      )
       || recovery.effects?.mutatesEnvironment !== false) {
       issues.push(issue("m6_delivery_recovery_missing", `${condition} lacks passing zero-effect recovery evidence.`));
     }
@@ -388,6 +393,8 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     "lenso.performance-profile.v1",
     "passed",
     "profileDigest",
+    "profileId",
+    "performance-profile",
     "m6_performance_profile_invalid",
     issues,
   );
@@ -396,6 +403,8 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     "lenso.service-restore-evidence.v1",
     "passed",
     "evidenceDigest",
+    "evidenceId",
+    "service-restore",
     "m6_restore_evidence_invalid",
     issues,
   );
@@ -404,6 +413,8 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     "lenso.disaster-recovery-evidence.v1",
     "passed",
     "evidenceDigest",
+    "evidenceId",
+    "disaster-recovery",
     "m6_disaster_recovery_invalid",
     issues,
   );
@@ -412,6 +423,8 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     "lenso.support-envelope.v1",
     "passed",
     "envelopeDigest",
+    "envelopeId",
+    "support-envelope",
     "m6_support_envelope_invalid",
     issues,
   );
@@ -420,6 +433,8 @@ function validateGaEvidence(evidence, supportManifest, issues) {
     "lenso.security-review-evidence.v1",
     "passed",
     "reviewDigest",
+    "reviewId",
+    "security-review",
     "m6_security_review_invalid",
     issues,
   );
@@ -434,12 +449,38 @@ function validateGaEvidence(evidence, supportManifest, issues) {
   }
 }
 
-function validateEvidence(evidence, protocol, decision, digestField, code, issues) {
+function validateEvidence(
+  evidence,
+  protocol,
+  decision,
+  digestField,
+  idField,
+  idPrefix,
+  code,
+  issues,
+) {
   if (evidence?.protocol !== protocol
     || evidence?.decision !== decision
-    || !validDigest(evidence?.[digestField])) {
+    || !canonicalEvidenceValid(evidence, idField, digestField, idPrefix)) {
     issues.push(issue(code, `${protocol} is missing, blocked, or not content-addressed.`));
   }
+}
+
+export function contentAddressEvidence(evidence, idField, digestField, idPrefix) {
+  const addressed = structuredClone(evidence);
+  addressed[idField] = "";
+  addressed[digestField] = "";
+  const evidenceDigest = digest(JSON.stringify(addressed));
+  addressed[digestField] = evidenceDigest;
+  addressed[idField] = `${idPrefix}:${evidenceDigest.slice(7, 23)}`;
+  return addressed;
+}
+
+function canonicalEvidenceValid(evidence, idField, digestField, idPrefix) {
+  if (!evidence || !validDigest(evidence[digestField])) return false;
+  const canonical = contentAddressEvidence(evidence, idField, digestField, idPrefix);
+  return evidence[digestField] === canonical[digestField]
+    && evidence[idField] === canonical[idField];
 }
 
 function validateMode(mode) {

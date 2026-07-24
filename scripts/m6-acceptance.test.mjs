@@ -6,6 +6,7 @@ import test from "node:test";
 
 import {
   buildAcceptanceArtifact,
+  contentAddressEvidence,
   preflightPackageSet,
   deliveryRecoveryConditions,
   scenarioEvidenceFromCommands,
@@ -50,42 +51,50 @@ function verifiedScenarios() {
 }
 
 function gaEvidence() {
+  const addressed = (value, idField, digestField, prefix) =>
+    contentAddressEvidence(value, idField, digestField, prefix);
   return {
-    deliveryRecoveries: deliveryRecoveryConditions.map((condition) => ({
+    deliveryRecoveries: deliveryRecoveryConditions.map((condition) => addressed({
       protocol: "lenso.delivery-failure-recovery-evidence.v1",
+      evidenceId: "",
       condition,
       decision: "passed",
-      evidenceDigest: digest("1"),
+      evidenceDigest: "",
       effects: { mutatesEnvironment: false },
-    })),
-    performanceProfile: {
+    }, "evidenceId", "evidenceDigest", "delivery-failure-recovery")),
+    performanceProfile: addressed({
       protocol: "lenso.performance-profile.v1",
+      profileId: "",
       decision: "passed",
-      profileDigest: digest("2"),
+      profileDigest: "",
       supportManifestDigest: digest("a"),
-    },
-    restore: {
+    }, "profileId", "profileDigest", "performance-profile"),
+    restore: addressed({
       protocol: "lenso.service-restore-evidence.v1",
+      evidenceId: "",
       decision: "passed",
-      evidenceDigest: digest("3"),
-    },
-    disasterRecovery: {
+      evidenceDigest: "",
+    }, "evidenceId", "evidenceDigest", "service-restore"),
+    disasterRecovery: addressed({
       protocol: "lenso.disaster-recovery-evidence.v1",
+      evidenceId: "",
       decision: "passed",
-      evidenceDigest: digest("4"),
-    },
-    supportEnvelope: {
+      evidenceDigest: "",
+    }, "evidenceId", "evidenceDigest", "disaster-recovery"),
+    supportEnvelope: addressed({
       protocol: "lenso.support-envelope.v1",
+      envelopeId: "",
       decision: "passed",
-      envelopeDigest: digest("5"),
+      envelopeDigest: "",
       supportManifestDigest: digest("a"),
-    },
-    securityReview: {
+    }, "envelopeId", "envelopeDigest", "support-envelope"),
+    securityReview: addressed({
       protocol: "lenso.security-review-evidence.v1",
+      reviewId: "",
       decision: "passed",
-      reviewDigest: digest("6"),
+      reviewDigest: "",
       supportManifestDigest: digest("a"),
-    },
+    }, "reviewId", "reviewDigest", "security-review"),
   };
 }
 
@@ -239,4 +248,21 @@ test("M6 artifact requires recovery, performance, restore, DR, envelope, and sec
   assert.equal(artifact.outcome, "failed");
   assert.equal(artifact.issues.some((item) => item.code === "m6_delivery_recovery_missing"), true);
   assert.equal(artifact.issues.some((item) => item.code === "m6_security_review_invalid"), true);
+});
+
+test("M6 artifact rejects evidence changed after content addressing", () => {
+  const evidence = gaEvidence();
+  evidence.restore.decision = "blocked";
+  evidence.performanceProfile.supportManifestDigest = digest("9");
+  const artifact = buildAcceptanceArtifact({
+    mode: "candidate",
+    supportManifest: supportManifest(),
+    packageEvidence: { outcome: "passed", provenance: packages(), cleanup: { temporaryStarterDeleted: true } },
+    scenarios: verifiedScenarios(),
+    priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: evidence,
+  });
+  assert.equal(artifact.outcome, "failed");
+  assert.equal(artifact.issues.some((item) => item.code === "m6_restore_evidence_invalid"), true);
+  assert.equal(artifact.issues.some((item) => item.code === "m6_performance_profile_invalid"), true);
 });
