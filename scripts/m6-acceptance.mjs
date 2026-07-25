@@ -677,6 +677,15 @@ export async function runFullTutorialWorkspace({
     ...(process.env.DOCKER_HOST ? { DOCKER_HOST: process.env.DOCKER_HOST } : {}),
     ...(process.env.DOCKER_BIN ? { DOCKER_BIN: process.env.DOCKER_BIN } : {}),
     ...(process.env.ARCBOX_SOCKET ? { ARCBOX_SOCKET: process.env.ARCBOX_SOCKET } : {}),
+    ...(process.env.CARGO_HTTP_MULTIPLEXING
+      ? { CARGO_HTTP_MULTIPLEXING: process.env.CARGO_HTTP_MULTIPLEXING }
+      : {}),
+    ...(process.env.CARGO_HTTP_LOW_SPEED_LIMIT
+      ? { CARGO_HTTP_LOW_SPEED_LIMIT: process.env.CARGO_HTTP_LOW_SPEED_LIMIT }
+      : {}),
+    ...(process.env.CARGO_HTTP_TIMEOUT
+      ? { CARGO_HTTP_TIMEOUT: process.env.CARGO_HTTP_TIMEOUT }
+      : {}),
   };
   const priorOutput = await runCaptured(
     "pnpm",
