@@ -300,6 +300,36 @@ test("candidate preflight creates an isolated starter and can never claim GA", a
     );
     assert.equal(result.cleanup.temporaryStarterDeleted, true);
     await assert.rejects(readFile(result.starterRoot), /ENOENT/);
+
+    manifest.status = "general_availability";
+    manifest.combinations[0].status = "general_availability";
+    manifest.manifestDigest = supportManifestDigest(manifest);
+    manifest.manifestId = `ga-support:${manifest.manifestDigest.slice(7, 23)}`;
+    const publishedPackages = candidatePackages.map((item) => ({
+      ...item,
+      source: "published",
+      artifactUrl: `https://registry.example/${path.basename(item.artifactPath)}`,
+      receiptDigest: hash(`receipt:${item.id}`),
+      attestationStatus: "verified",
+      attestationDigest: hash(`attestation:${item.id}`),
+    }));
+    const published = await preflightPackageSet({
+      mode: "published",
+      supportManifest: manifest,
+      trustedManifestDigest: manifest.manifestDigest,
+      packages: publishedPackages,
+      temporaryRoot: root,
+      publishedArtifactResolver: async (items) => items,
+    });
+    assert.equal(published.outcome, "passed");
+    assert.equal(published.gaEligible, false);
+    assert.equal(published.publishedTrace.outcome, "passed");
+    assert.equal(published.publishedTrace.source, "published");
+    assert.equal(published.publishedTrace.registryArtifacts.length, 2);
+    assert.equal(published.publishedTrace.completeTutorial, null);
+    assert.equal(published.publishedTrace.inspectedArtifacts.length, 2);
+    assert.equal(published.publishedTrace.consumedDigests.length, 2);
+    assert.equal(published.publishedTrace.cwdOutsideFramework, true);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -413,6 +443,44 @@ test("M6 artifact fails on one unexpected effect and keeps candidate gaEligible 
   assert.equal(failed.outcome, "failed");
   assert.equal(failed.gaEligible, false);
   assert.equal(failed.issues[0].code, "failure_unexpected_outcome");
+});
+
+test("only a complete published fresh-starter proof can become GA eligible", () => {
+  const packageEvidence = {
+    outcome: "passed",
+    provenance: packages().map((item) => ({ ...item, source: "published" })),
+    publishedTrace: {
+      outcome: "passed",
+      completeTutorial: { cleanupComplete: true, productionMutated: false },
+    },
+    cleanup: { temporaryStarterDeleted: true },
+  };
+  const passed = buildAcceptanceArtifact({
+    mode: "published",
+    supportManifest: supportManifest(),
+    packageEvidence,
+    scenarios: verifiedScenarios(),
+    priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: gaEvidence(),
+  });
+  assert.equal(passed.outcome, "passed");
+  assert.equal(passed.gaEligible, true);
+
+  packageEvidence.publishedTrace.completeTutorial.cleanupComplete = false;
+  const failed = buildAcceptanceArtifact({
+    mode: "published",
+    supportManifest: supportManifest(),
+    packageEvidence,
+    scenarios: verifiedScenarios(),
+    priorMilestones: { m5: "passed", providerSmoke: "passed" },
+    gaEvidence: gaEvidence(),
+  });
+  assert.equal(failed.outcome, "failed");
+  assert.equal(failed.gaEligible, false);
+  assert.equal(
+    failed.issues.some((item) => item.code === "m6_published_fresh_starter_invalid"),
+    true,
+  );
 });
 
 test("M6 artifact rejects scenario labels that are not bound to real evidence", () => {
