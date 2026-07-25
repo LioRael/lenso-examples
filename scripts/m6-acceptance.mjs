@@ -414,7 +414,13 @@ function validatePackages(mode, packages) {
       throw new Error(`m6_package_source_invalid: published ${item.id} is not a public registry artifact`);
     }
     if (mode === "published"
-      && (!new Set(["npm_tgz", "cargo_crate", "json"]).has(item.artifactFormat)
+      && (!new Set([
+        "npm_tgz",
+        "cargo_crate",
+        "json",
+        "release_archive",
+        "support_manifest_component",
+      ]).has(item.artifactFormat)
         || !URL.canParse(item.artifactUrl)
         || new URL(item.artifactUrl).protocol !== "https:")) {
       throw new Error(`m6_package_source_invalid: published ${item.id} lacks an immutable HTTPS artifact`);
@@ -489,6 +495,8 @@ async function materializePublishedArtifacts(packages, starterRoot) {
       ? "tgz"
       : item.artifactFormat === "cargo_crate"
         ? "crate"
+        : item.artifactFormat === "release_archive"
+          ? "tar.gz"
         : "json";
     const artifactPath = path.join(
       downloadRoot,
@@ -850,6 +858,28 @@ async function inspectCandidateArtifact(item, artifactPath) {
       throw new Error(`m6_package_identity_invalid: ${item.id} crate identity differs from provenance`);
     }
     return { id: name, version, format: item.artifactFormat };
+  }
+  if (item.artifactFormat === "release_archive") {
+    const manifestPath = item.archiveManifestPath ?? "./manifest.json";
+    const metadata = JSON.parse(await runCaptured(
+      "tar",
+      ["-xOzf", artifactPath, manifestPath],
+      path.dirname(artifactPath),
+    ));
+    const expectedName = item.archiveComponentId ?? item.id;
+    if (metadata.name !== expectedName || metadata.version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} release archive differs from provenance`);
+    }
+    return { id: item.id, version: metadata.version, format: item.artifactFormat };
+  }
+  if (item.artifactFormat === "support_manifest_component") {
+    const manifest = JSON.parse(await readFile(artifactPath, "utf8"));
+    const component = manifest.components?.find((candidate) =>
+      candidate.kind === item.kind && candidate.componentId === item.id);
+    if (component?.version !== item.version) {
+      throw new Error(`m6_package_identity_invalid: ${item.id} Support Manifest identity differs`);
+    }
+    return { id: item.id, version: component.version, format: item.artifactFormat };
   }
   const metadata = JSON.parse(await readFile(artifactPath, "utf8"));
   if (metadata.componentId !== item.id || metadata.version !== item.version) {
