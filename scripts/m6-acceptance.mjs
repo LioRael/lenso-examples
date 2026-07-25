@@ -78,11 +78,12 @@ export async function preflightPackageSet({
     ?? (process.platform === "darwin" ? "/Users/Shared" : os.tmpdir()),
   runFullTutorial = false,
   fullTutorialRunner = runFullTutorialWorkspace,
+  publishedArtifactResolver = materializePublishedArtifacts,
 }) {
   validateMode(mode);
   validateSupportManifest(supportManifest, trustedManifestDigest);
   validatePackages(mode, packages);
-  validateExactCombination(supportManifest, packages);
+  validateExactCombination(mode, supportManifest, packages);
 
   await mkdir(temporaryRoot, { recursive: true });
   const starterPrefix = process.platform === "darwin" && temporaryRoot === "/Users/Shared"
@@ -97,14 +98,20 @@ export async function preflightPackageSet({
     await writeFile(path.join(starterRoot, "package-provenance.json"), `${JSON.stringify(packages, null, 2)}\n`);
     await writeFile(path.join(starterRoot, "clean-cargo-home"), "isolated\n");
     await writeFile(path.join(starterRoot, "clean-package-store"), "isolated\n");
-    const candidateTrace = mode === "candidate"
+    const freshStarterTrace = mode === "candidate"
       ? await executeCandidateTracer(
         starterRoot,
         packages,
         supportManifest,
         runFullTutorial ? fullTutorialRunner : null,
       )
-      : null;
+      : await executePublishedTracer(
+        starterRoot,
+        packages,
+        supportManifest,
+        runFullTutorial ? fullTutorialRunner : null,
+        publishedArtifactResolver,
+      );
     return {
       artifactVersion: "lenso.m6-package-preflight.v1",
       outcome: "passed",
@@ -113,7 +120,8 @@ export async function preflightPackageSet({
       manifestDigest: supportManifest.manifestDigest,
       starterRoot,
       provenance: packages,
-      candidateTrace,
+      candidateTrace: mode === "candidate" ? freshStarterTrace : null,
+      publishedTrace: mode === "published" ? freshStarterTrace : null,
       gaEligible: false,
       effects: {
         productionMutated: false,
@@ -175,6 +183,16 @@ export function buildAcceptanceArtifact({
   if (!Object.values(cleanup).every(Boolean)) {
     issues.push(issue("m6_cleanup_incomplete", "Disposable M6 resources were not fully cleaned or isolated."));
   }
+  if (mode === "published"
+    && (packageEvidence.publishedTrace?.outcome !== "passed"
+      || packageEvidence.publishedTrace?.completeTutorial?.cleanupComplete !== true
+      || packageEvidence.publishedTrace?.completeTutorial?.productionMutated !== false)) {
+    issues.push(issue(
+      "m6_published_fresh_starter_invalid",
+      "Published packages did not complete the isolated fresh-starter tracer.",
+    ));
+  }
+  const gaEligible = mode === "published" && issues.length === 0;
   return {
     artifactVersion: "lenso.m6-single-region-ga-acceptance.v1",
     outcome: issues.length === 0 ? "passed" : "failed",
@@ -189,8 +207,12 @@ export function buildAcceptanceArtifact({
     scenarios,
     gaEvidence,
     issues,
-    gaEligible: false,
-    gaEligibilityReason: "candidate shell and first recovery tranche cannot declare the final M6 GA gate",
+    gaEligible,
+    gaEligibilityReason: gaEligible
+      ? "exact public packages and accepted execution evidence passed the complete M6 gate"
+      : mode === "candidate"
+        ? "candidate mode can never declare General Availability"
+        : "one or more published-mode GA requirements did not pass",
     effects: {
       productionMutated: false,
       contractRetired: false,
@@ -391,8 +413,22 @@ function validatePackages(mode, packages) {
     if (mode === "published" && item.source !== "published") {
       throw new Error(`m6_package_source_invalid: published ${item.id} is not a public registry artifact`);
     }
+    if (mode === "published"
+      && (!new Set(["npm_tgz", "cargo_crate", "json"]).has(item.artifactFormat)
+        || !URL.canParse(item.artifactUrl)
+        || new URL(item.artifactUrl).protocol !== "https:")) {
+      throw new Error(`m6_package_source_invalid: published ${item.id} lacks an immutable HTTPS artifact`);
+    }
     if (item.receiptStatus !== "accepted") {
       throw new Error(`m6_package_receipt_invalid: ${item.id} lacks an accepted release receipt`);
+    }
+    if (mode === "published"
+      && (!validDigest(item.receiptDigest)
+        || item.attestationStatus !== "verified"
+        || !validDigest(item.attestationDigest))) {
+      throw new Error(
+        `m6_package_receipt_invalid: ${item.id} lacks a digest-bound receipt or verified attestation`,
+      );
     }
   }
   if (mode === "candidate"
@@ -401,11 +437,74 @@ function validatePackages(mode, packages) {
   }
 }
 
+async function executePublishedTracer(
+  starterRoot,
+  packages,
+  supportManifest,
+  fullTutorialRunner,
+  artifactResolver,
+) {
+  const materialized = await artifactResolver(packages, starterRoot);
+  const trace = await executeCandidateTracer(
+    starterRoot,
+    materialized,
+    supportManifest,
+    fullTutorialRunner,
+    { allowCargoPatches: false, installOffline: false },
+  );
+  return {
+    ...trace,
+    source: "published",
+    registryArtifacts: materialized.map((item) => ({
+      id: item.id,
+      version: item.version,
+      artifactUrl: item.artifactUrl,
+      digest: item.digest,
+      receiptDigest: item.receiptDigest,
+      attestationDigest: item.attestationDigest,
+    })),
+  };
+}
+
+async function materializePublishedArtifacts(packages, starterRoot) {
+  const downloadRoot = path.join(starterRoot, "registry-downloads");
+  await mkdir(downloadRoot, { recursive: true });
+  return Promise.all(packages.map(async (item, index) => {
+    const response = await fetch(item.artifactUrl, {
+      redirect: "follow",
+      headers: { "user-agent": "lenso-m6-published-acceptance" },
+    });
+    if (!response.ok) {
+      throw new Error(
+        `m6_package_download_failed: ${item.id}@${item.version} returned ${response.status}`,
+      );
+    }
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (digest(bytes) !== item.digest) {
+      throw new Error(
+        `m6_package_digest_invalid: ${item.id}@${item.version} public bytes differ from provenance`,
+      );
+    }
+    const extension = item.artifactFormat === "npm_tgz"
+      ? "tgz"
+      : item.artifactFormat === "cargo_crate"
+        ? "crate"
+        : "json";
+    const artifactPath = path.join(
+      downloadRoot,
+      `${index}-${item.id.replaceAll("/", "_")}@${item.version}.${extension}`,
+    );
+    await writeFile(artifactPath, bytes);
+    return { ...item, artifactPath };
+  }));
+}
+
 async function executeCandidateTracer(
   starterRoot,
   packages,
   supportManifest,
   fullTutorialRunner,
+  { allowCargoPatches = true, installOffline = true } = {},
 ) {
   const artifactsRoot = path.join(starterRoot, "artifacts");
   const copied = [];
@@ -426,7 +525,9 @@ async function executeCandidateTracer(
   const provenancePath = path.join(starterRoot, "materialized-package-provenance.json");
   await writeFile(provenancePath, `${JSON.stringify(copied, null, 2)}\n`);
   const stagedCargoPatches = {};
-  for (const item of copied.filter((candidate) => candidate.artifactFormat === "cargo_crate")) {
+  for (const item of copied.filter(
+    (candidate) => allowCargoPatches && candidate.artifactFormat === "cargo_crate",
+  )) {
     const destination = path.join(starterRoot, "staged-cargo", item.id);
     await mkdir(destination, { recursive: true });
     await runCaptured(
@@ -446,7 +547,13 @@ async function executeCandidateTracer(
   }));
   await runCaptured(
     "pnpm",
-    ["add", "--offline", "--ignore-scripts", "--save-exact", tracer.copiedArtifactPath],
+    [
+      "add",
+      ...(installOffline ? ["--offline"] : []),
+      "--ignore-scripts",
+      "--save-exact",
+      tracer.copiedArtifactPath,
+    ],
     starterRoot,
   );
   const output = await runCaptured(
@@ -751,12 +858,14 @@ async function inspectCandidateArtifact(item, artifactPath) {
   return { id: metadata.componentId, version: metadata.version, format: item.artifactFormat };
 }
 
-function validateExactCombination(manifest, packages) {
+function validateExactCombination(mode, manifest, packages) {
   const requested = packages.map((item) => `${item.kind}:${item.id}@${item.version}`).sort();
   const matched = manifest.combinations.some((combination) => {
     const declared = [...combination.componentReferences].sort();
     return JSON.stringify(declared) === JSON.stringify(requested)
-      && combination.status !== "unsupported";
+      && (mode === "published"
+        ? combination.status === "general_availability"
+        : combination.status !== "unsupported");
   });
   if (!matched) {
     throw new Error("m6_package_combination_unknown: semantic-version proximity is not compatibility");
