@@ -220,7 +220,7 @@ try {
   }
 
   const assigned = await fetchJson(
-    `${moduleBaseUrl}/admin/actions/assign_ticket`,
+    `${moduleBaseUrl}/http/admin/actions/assign_ticket`,
     {
       body: JSON.stringify({
         assignee: "alex",
@@ -303,7 +303,7 @@ try {
     throw new Error("support-knowledge-base did not refresh its index");
   }
 
-  const admin = await fetchJson(`${moduleBaseUrl}/admin/tickets`);
+  const admin = await fetchJson(`${moduleBaseUrl}/http/admin/tickets`);
   const ids = admin.records?.map((record) => record.id) ?? [];
   if (!ids.includes("ticket_1") || !ids.includes("ticket_2")) {
     throw new Error("schema-admin endpoint did not return tickets");

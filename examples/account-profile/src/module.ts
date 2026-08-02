@@ -92,8 +92,8 @@ const membershipEntity = defineSchemaEntity({
 
 const serviceCompatibility = {
   console_package_api: "1",
-  remote_protocol_version: "1",
-  required_host_features: ["service.status"],
+  providerProtocolVersion: "1",
+  requiredHostFeatures: ["service.status"],
 };
 
 const serviceDeployment = {

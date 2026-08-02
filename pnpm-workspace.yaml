@@ -5,5 +5,4 @@ allowBuilds:
   protobufjs: true
 
 minimumReleaseAgeExclude:
-  - '@lenso/remote-module-kit'
   - '@lenso/service-kit'

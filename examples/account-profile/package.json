@@ -12,6 +12,6 @@
     "start": "node src/server.ts"
   },
   "dependencies": {
-    "@lenso/service-kit": "0.1.0"
+    "@lenso/service-kit": "0.1.5"
   }
 }

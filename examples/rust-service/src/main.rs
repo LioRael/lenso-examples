@@ -4,7 +4,7 @@ use axum::{
     routing::{get, post},
 };
 use lenso::{
-    ModuleHttpMethod, ModuleHttpRoute, ModuleManifest, ModuleManifestLintSeverity, ModuleSource,
+    ModuleHttpMethod, ModuleHttpRoute, ModuleManifest, ModuleManifestLintSeverity,
     RuntimeFunctionDeclaration, RuntimeSurface, ServiceOperationMetadata,
     ServiceOperationSafeProbe, lint_module_manifest,
 };
@@ -159,6 +159,7 @@ fn audit_log_module() -> ModuleManifest {
                 }),
             }],
             schedules: vec![],
+            workflows: vec![],
         })
         .build()
 }
@@ -167,7 +168,7 @@ fn service_manifest(port: u16) -> Result<Value, serde_json::Error> {
     let module_manifest = serde_json::to_value(audit_log_module())?;
     Ok(json!({
         "compatibility": {
-            "remoteProtocolVersion": "1",
+            "providerProtocolVersion": "1",
             "requiredHostFeatures": ["service.status"],
             "sdkLanguage": "rust",
             "sdkVersion": env!("CARGO_PKG_VERSION"),
@@ -210,7 +211,7 @@ fn service_manifest(port: u16) -> Result<Value, serde_json::Error> {
 fn ensure_manifest_has_no_errors(
     manifest: &ModuleManifest,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let lints = lint_module_manifest(ModuleSource::Remote, manifest);
+    let lints = lint_module_manifest(manifest);
     let errors = lints
         .iter()
         .filter(|lint| matches!(lint.severity, ModuleManifestLintSeverity::Error))
@@ -248,7 +249,10 @@ mod tests {
             manifest["health"]["readyUrl"],
             "http://127.0.0.1:4130/lenso/service/v1/status"
         );
-        assert_eq!(manifest["modules"][0]["name"], MODULE_NAME);
+        assert_eq!(
+            manifest["modules"][0]["module_id"],
+            format!("lenso/{MODULE_NAME}")
+        );
         assert_eq!(manifest["modules"][0]["http_routes"][0]["method"], "GET");
         assert_eq!(manifest["modules"][0]["http_routes"][0]["path"], "/events");
         assert_eq!(

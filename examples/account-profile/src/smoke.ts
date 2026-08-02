@@ -77,7 +77,7 @@ try {
   }
 
   const updated = await fetchJson(
-    `${moduleBaseUrl}/admin/actions/upsert_profile`,
+    `${moduleBaseUrl}/http/admin/actions/upsert_profile`,
     {
       body: JSON.stringify({
         auth_user_id: "auth_user_2",
@@ -113,7 +113,7 @@ try {
     throw new Error("HTTP detail route did not return updated profile");
   }
 
-  const admin = await fetchJson(`${moduleBaseUrl}/admin/memberships`);
+  const admin = await fetchJson(`${moduleBaseUrl}/http/admin/memberships`);
   const roles = admin.records?.map((record) => record.role) ?? [];
   if (!roles.includes("owner") || !roles.includes("admin")) {
     throw new Error("schema-admin endpoint did not return memberships");
