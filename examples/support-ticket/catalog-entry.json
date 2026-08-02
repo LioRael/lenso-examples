@@ -2,7 +2,7 @@
   "baseUrl": "http://127.0.0.1:4110/lenso/service/v1",
   "compatibility": {
     "consolePackageApi": "1",
-    "remoteProtocolVersion": "1",
+    "providerProtocolVersion": "1",
     "requiredHostFeatures": ["service.status"]
   },
   "deployment": {

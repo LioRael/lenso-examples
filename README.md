@@ -2,28 +2,20 @@
 
 Runnable examples for Lenso module authors.
 
-This repository uses published packages for released contracts where available:
+This repository uses published packages for released contracts where available,
+including `lenso` and the framework-owned `@lenso/service-kit`.
 
-- `lenso`
-- `@lenso/remote-module-kit` for the gRPC legacy transport example
-
-The V8 proofs currently have two temporary sibling-repository dependencies
-until the matching contracts are published:
-
-- TypeScript service examples resolve `@lenso/service-kit` and the V8
-  `@lenso/remote-module-kit` build from `../lenso-runtime-console`.
-- `examples/rust-service` and `examples/support-system` point at the sibling
-  `../lenso` crates.
+Standard TypeScript Service examples consume the published Service Kit. Pinned
+integration-set runs override it with the exact Framework source selected by
+the integration set. The Rust V8 proofs still use sibling path dependencies:
+`examples/rust-service` and `examples/support-system` point at `../lenso`
+crates.
 
 For local V8 verification, clone the matching V8 branches next to each other:
 
 ```sh
-git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-examples.git
-git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso-runtime-console.git
-git clone --branch chore/open-source-hygiene https://github.com/LioRael/lenso.git
-pnpm --dir lenso-runtime-console install
-pnpm --dir lenso-runtime-console --filter @lenso/remote-module-kit build
-pnpm --dir lenso-runtime-console --filter @lenso/service-kit build
+git clone https://github.com/LioRael/lenso-examples.git
+git clone https://github.com/LioRael/lenso.git
 cd lenso-examples
 pnpm install
 ```
@@ -38,7 +30,7 @@ pnpm smoke
 ```
 
 The communicating Autonomous Services proof is opt-in because it also requires
-the System Sandbox CLI and sibling `lenso` checkout; use
+the System Sandbox CLI and the sibling `lenso` checkout; use
 `pnpm smoke:support-system` for that proof.
 
 ## Launchpad App
@@ -285,7 +277,7 @@ lenso system runbook check fixtures/system-runbook/staging/system-runbook.json
 ```
 
 Copy `lenso.system.json` into a host repo when you want Console Services to show
-the system plane next to provider lifecycle, rollout, release, and Remote Calls
+the system plane next to provider lifecycle, rollout, release, and Service Calls
 evidence.
 V19 adds system drift checks and safe apply. `fixtures/system-state/ready`
 contains the minimum host-local `.lenso` state for a clean system diff; remove a
@@ -369,7 +361,7 @@ It starts the service examples, creates temporary host repos, runs the real
 `lenso module catalog add` and `lenso service install` commands, and checks the
 generated `.lenso/module-catalog.json`, `.env`, and install receipts.
 
-To run the example through a real host API and call its remote HTTP route via
+To run the example through a real Host API and call its Service HTTP route via
 `/modules/hello-action/http/greetings`, follow
 [docs/hello-action-host-run.md](docs/hello-action-host-run.md).
 
@@ -397,34 +389,6 @@ Install its manifest into a local Lenso host:
 
 ```sh
 lenso service install http://127.0.0.1:4120/lenso/service/v1/manifest
-```
-
-### gRPC Notes Legacy Transport
-
-`examples/grpc-notes` is the native gRPC compatibility example for the older
-remote-module transport. It exposes a module manifest over gRPC, schema-admin
-`notes`, `GET /notes` through the host proxy, and `grpc-notes.summarize.v1`
-through the runtime function lane. The V5 HTTP service manifest path is shown
-by the HTTP examples above.
-
-Start it from the repository root:
-
-```sh
-pnpm start:grpc-notes
-```
-
-Verify the gRPC protocol path:
-
-```sh
-pnpm smoke:grpc-notes
-```
-
-Install it into a local host with the checked-in manifest and a gRPC base URL:
-
-```sh
-lenso module catalog add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051 --summary "Native gRPC notes module"
-lenso module add ../lenso-examples/examples/grpc-notes/lenso.module.json --base-url grpc://127.0.0.1:50051
-lenso console package apply-plan
 ```
 
 ### Support Ticket Service
@@ -513,4 +477,4 @@ For the manual walkthrough, see
 ## Repositories
 
 - Backend framework: https://github.com/LioRael/lenso
-- Runtime Console and service kit: https://github.com/LioRael/lenso-runtime-console
+- Console Service: https://github.com/LioRael/lenso-console

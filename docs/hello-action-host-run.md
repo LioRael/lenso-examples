@@ -52,7 +52,7 @@ lenso service install http://127.0.0.1:4100/lenso/service/v1/manifest
 
 `hello-action` does not publish a Runtime Console package, so no frontend
 dependency install is required for this module. If the API is already running,
-restart it after `service install`; `REMOTE_MODULES` is loaded on startup.
+restart it after `service install`; `SERVICE_MODULES` is loaded on startup.
 
 Start the host services:
 
@@ -67,7 +67,7 @@ background runtime processing and the Runtime Console.
 
 ## Call Through The Host Proxy
 
-Create a greeting through the host-owned remote HTTP proxy:
+Create a greeting through the Host-owned Service HTTP proxy:
 
 ```sh
 curl -sS -X POST http://127.0.0.1:3000/modules/hello-action/http/greetings \
@@ -153,7 +153,7 @@ The response should include the seed record, `host-proxy-user`, and
 
 ## Inspect Operations
 
-Remote proxy calls are host-owned operational data. Query the call by the same
+Service proxy calls are Host-owned operational data. Query the call by the same
 correlation id:
 
 ```sh
@@ -169,7 +169,7 @@ Story for `corr_hello_action_host_run`.
 
 - `401`: the request is missing an `authorization` header.
 - `403`: the service token is missing `hello-action:greetings:write`.
-- `404`: the API was started before `REMOTE_MODULES` was updated, or the service
+- `404`: the API was started before `SERVICE_MODULES` was updated, or the service
   process is not running.
 - `400 validation_failed`: the proxy write request is missing
   `content-type: application/json` or has invalid JSON.

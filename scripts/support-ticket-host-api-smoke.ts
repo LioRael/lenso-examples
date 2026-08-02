@@ -38,7 +38,6 @@ const localLensoPatchToml = () =>
     `lenso-platform-core = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-core")}" }`,
     `lenso-platform-http = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-http")}" }`,
     `lenso-platform-module = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-module")}" }`,
-    `lenso-platform-module-remote = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-module-remote")}" }`,
     `lenso-platform-runtime = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-runtime")}" }`,
     `lenso-platform-testing = { path = "${path.join(lensoWorkspaceRoot, "crates/platform-testing")}" }`,
     `lenso-module-auth = { path = "${path.join(lensoAuthModuleRoot, "crates/auth")}" }`,

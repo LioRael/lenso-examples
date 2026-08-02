@@ -1,6 +1,6 @@
 use lenso::{
     AdminSchema, EntitySchema, FieldSchema, FieldType, ModuleManifest, ModuleManifestLintSeverity,
-    ModuleSource, RuntimeFunctionDeclaration, RuntimeSurface, lint_module_manifest,
+    RuntimeFunctionDeclaration, RuntimeSurface, lint_module_manifest,
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -40,11 +40,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 queue: "rust-notes".to_owned(),
                 input_schema: Some("rust-notes.sync.v1".to_owned()),
                 retry_policy: None,
+                operation: None,
             }],
+            schedules: vec![],
+            workflows: vec![],
         })
         .build();
 
-    let lints = lint_module_manifest(ModuleSource::Remote, &manifest);
+    let lints = lint_module_manifest(&manifest);
     let has_errors = lints
         .iter()
         .any(|lint| matches!(lint.severity, ModuleManifestLintSeverity::Error));

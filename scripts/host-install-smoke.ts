@@ -14,21 +14,18 @@ const lensoCliManifest = path.resolve(repoRoot, "../lenso-cli/Cargo.toml");
 
 const examples = {
   "account-profile": {
-    catalogSummary: "Account Profile auth boundary module",
     installCommand: "service",
     installName: "account-profile-service",
     providedModuleName: "account-profile",
     serve: serveAccountProfileModule,
   },
   "hello-action": {
-    catalogSummary: "Hello Action starter module",
     installCommand: "service",
     installName: "hello-service",
     providedModuleName: "hello-action",
     serve: serveHelloActionModule,
   },
   "support-ticket": {
-    catalogSummary: "Support Ticket agent-ready module",
     installCommand: "service",
     installName: "support-suite-provider",
     providedModuleName: "support-ticket",
@@ -118,39 +115,12 @@ try {
   const installName = example.installName ?? exampleName;
   const receiptModuleName = example.providedModuleName ?? exampleName;
   await runLenso({
-    args: [
-      "module",
-      "catalog",
-      "add",
-      manifestUrl,
-      "--repo-root",
-      hostRoot,
-      "--summary",
-      example.catalogSummary,
-    ],
-    cwd: hostRoot,
-  });
-
-  const catalog = await readJson(
-    path.join(hostRoot, ".lenso/module-catalog.json")
-  );
-  assertEqual(catalog.version, 1, "catalog version");
-  assertEqual(catalog.modules?.length, 1, "catalog module count");
-  assertEqual(catalog.modules[0]?.name, installName, "catalog module name");
-  assertEqual(
-    catalog.modules[0]?.source,
-    installCommand === "service" ? "service" : "remote",
-    "catalog source"
-  );
-  assertEqual(catalog.modules[0]?.baseUrl, server.baseUrl, "catalog base URL");
-
-  await runLenso({
     args: [installCommand, "install", manifestUrl, "--repo-root", hostRoot],
     cwd: hostRoot,
   });
 
   const envFile = await readFile(path.join(hostRoot, ".env"), "utf8");
-  assertEqual(envFile, `REMOTE_MODULES=${installName}=${server.baseUrl}\n`, ".env");
+  assertEqual(envFile, `SERVICE_MODULES=${installName}=${server.baseUrl}\n`, ".env");
 
   const installReceipt = await readJson(
     path.join(hostRoot, ".lenso/module-installs.json")

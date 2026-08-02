@@ -31,21 +31,21 @@ for (const [repository, commit] of Object.entries(repositories)) {
 }
 const identity = { schema: integration.schema, baseSystemVersion: integration.baseSystemVersion, repositories };
 assert.equal(integration.integrationSetId, digest(Buffer.from(canonical(identity))), "integration set ID is invalid");
-const runtimeCommit = repositories["LioRael/lenso-runtime-console"];
-assert.match(runtimeCommit ?? "", /^[0-9a-f]{40}$/u, "integration set must pin Runtime Console");
+const frameworkCommit = repositories["LioRael/lenso"];
+assert.match(frameworkCommit ?? "", /^[0-9a-f]{40}$/u, "integration set must pin the framework");
 
 const root = path.resolve(import.meta.dirname, "..");
-const runtime = path.resolve(root, "../lenso-runtime-console");
+const framework = path.resolve(root, "../lenso");
 try {
-  assert.equal((await lstat(runtime)).isSymbolicLink(), false, "refusing to replace a linked Runtime Console path");
+  assert.equal((await lstat(framework)).isSymbolicLink(), false, "refusing to replace a linked framework path");
 } catch (error) {
   if (error?.code !== "ENOENT") throw error;
 }
-await rm(runtime, { recursive: true, force: true });
-await mkdir(runtime, { recursive: true });
-execFileSync("git", ["init"], { cwd: runtime, stdio: "inherit" });
-execFileSync("git", ["fetch", "--depth=1", "https://github.com/LioRael/lenso-runtime-console.git", runtimeCommit], { cwd: runtime, stdio: "inherit" });
-execFileSync("git", ["checkout", "--detach", "FETCH_HEAD"], { cwd: runtime, stdio: "inherit" });
-assert.equal(execFileSync("git", ["rev-parse", "HEAD"], { cwd: runtime, encoding: "utf8" }).trim(), runtimeCommit);
-await appendFile(path.join(root, "pnpm-workspace.yaml"), "\noverrides:\n  '@lenso/remote-module-kit': link:../lenso-runtime-console/packages/remote-module-kit\n  '@lenso/service-kit': link:../lenso-runtime-console/packages/service-kit\n");
+await rm(framework, { recursive: true, force: true });
+await mkdir(framework, { recursive: true });
+execFileSync("git", ["init"], { cwd: framework, stdio: "inherit" });
+execFileSync("git", ["fetch", "--depth=1", "https://github.com/LioRael/lenso.git", frameworkCommit], { cwd: framework, stdio: "inherit" });
+execFileSync("git", ["checkout", "--detach", "FETCH_HEAD"], { cwd: framework, stdio: "inherit" });
+assert.equal(execFileSync("git", ["rev-parse", "HEAD"], { cwd: framework, encoding: "utf8" }).trim(), frameworkCommit);
+await appendFile(path.join(root, "pnpm-workspace.yaml"), "\noverrides:\n  '@lenso/service-kit': link:../lenso/sdk/typescript/packages/service-kit\n");
 if (process.env.GITHUB_STEP_SUMMARY) await writeFile(process.env.GITHUB_STEP_SUMMARY, `Integration set: ${integration.integrationSetId}\nDigest: ${expectedDigest}\n`, { flag: "a" });

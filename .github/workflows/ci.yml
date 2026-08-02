@@ -36,14 +36,12 @@ jobs:
           INTEGRATION_SET_URL: ${{ inputs.integration_set_url }}
           INTEGRATION_SET_SHA256: ${{ inputs.integration_set_sha256 }}
         run: npm run integration:prepare
-      - name: Install linked Runtime Console SDK dependencies
+      - name: Install linked framework SDK dependencies
         if: inputs.integration_set_url != ''
-        run: pnpm --dir ../lenso-runtime-console install --frozen-lockfile
-      - name: Build exact linked Runtime Console SDKs
+        run: pnpm --dir ../lenso/sdk/typescript install --frozen-lockfile
+      - name: Build exact linked framework SDK
         if: inputs.integration_set_url != ''
-        run: |
-          pnpm --dir ../lenso-runtime-console --filter @lenso/remote-module-kit build
-          pnpm --dir ../lenso-runtime-console --filter @lenso/service-kit build
+        run: pnpm --dir ../lenso/sdk/typescript --filter @lenso/service-kit build
       - name: Install released dependencies
         if: inputs.integration_set_url == '' && inputs.integration_set_sha256 == ''
         run: pnpm install --frozen-lockfile

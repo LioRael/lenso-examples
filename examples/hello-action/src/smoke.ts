@@ -132,7 +132,7 @@ try {
   }
 
   const seededByAction = await fetchJson(
-    `${moduleBaseUrl}/admin/actions/seed_greeting`,
+    `${moduleBaseUrl}/http/admin/actions/seed_greeting`,
     {
       body: JSON.stringify({
         message: "Hello from admin action.",
@@ -147,7 +147,7 @@ try {
     throw new Error("admin action did not record the expected greeting");
   }
 
-  const admin = await fetchJson(`${moduleBaseUrl}/admin/greetings`);
+  const admin = await fetchJson(`${moduleBaseUrl}/http/admin/greetings`);
   const recipients = admin.records?.map((record) => record.recipient) ?? [];
   if (
     !recipients.includes("example-user") ||
