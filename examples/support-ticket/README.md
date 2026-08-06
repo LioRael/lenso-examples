@@ -53,16 +53,8 @@ lenso module install dist/lenso-service/support-suite-provider/modules/support-t
   --base-url http://127.0.0.1:4110/lenso/service/v1
 ```
 
-Or add the release artifact to a local Lenso host catalog, then install by
-module name:
-
-```sh
-lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
-  --base-url http://127.0.0.1:4110/lenso/service/v1
-lenso module install support-ticket
-lenso service verify support-suite-provider
-lenso service doctor support-suite-provider --json
-```
+For local artifacts, install the release path directly; Available Modules uses
+the official catalog by default.
 
 After the provider is installed, generate an environment-aware release plan
 before applying a new package candidate:

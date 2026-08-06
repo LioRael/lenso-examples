@@ -73,7 +73,7 @@ pnpm host-smoke
 It starts this service, creates a temporary host repo, runs the real `lenso`
 CLI, and verifies:
 
-- `.lenso/module-catalog.json` from `lenso module catalog add`;
+- `.env` and `.lenso/module-installs.json` from direct `lenso module install`;
 - `.env` from `lenso service install`;
 - `.lenso/module-installs.json` records `hello-action` as a module provided by
   `hello-service`;
