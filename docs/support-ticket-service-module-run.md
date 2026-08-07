@@ -51,9 +51,8 @@ From the sibling `lenso` backend checkout:
 test -f .env || cp .env.example .env
 lenso module install audit-log
 lenso module release inspect ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
-lenso module catalog add ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
+lenso module install ../lenso-examples/dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
   --base-url http://127.0.0.1:4110/lenso/service/v1
-lenso module install support-ticket
 lenso service list
 lenso service verify support-suite-provider
 lenso service doctor support-suite-provider --json
