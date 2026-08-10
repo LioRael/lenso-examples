@@ -83,8 +83,15 @@ V27 adds local Capability Packs. The `fixtures/capabilities/support-sla-pack`
 fixture shows `lenso capability init`, `lenso capability check`, App Composer
 with `--pack`, and a capability-scoped agent handoff.
 
+The exact App Composition fixture
+`fixtures/launchpad/support-desk-composition` fixture records immutable Module
+release digests, stable Service Reference bindings, resolved dependency
+selections, and the revision consumed by the Local Control Adapter. It has no
+second System lock or App Change Plan overlay.
+
 ```sh
 pnpm check:launchpad-fixtures
+pnpm check:app-composition-fixtures
 ```
 
 ## Blank Host Starter

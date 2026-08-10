@@ -26,6 +26,7 @@
     "smoke:support-system:contract": "node --test scripts/support-system-contract.test.mjs",
     "host-api-smoke:support-ticket": "node scripts/support-ticket-host-api-smoke.ts",
     "check:launchpad-fixtures": "node scripts/check-launchpad-fixtures.mjs",
+    "check:app-composition-fixtures": "node scripts/check-app-composition-fixtures.mjs",
     "check:operator-fixtures": "node scripts/check-operator-fixtures.mjs",
     "rust-manifest": "cargo run --manifest-path examples/rust-manifest/Cargo.toml",
     "rust-service:check": "cargo run --manifest-path examples/rust-service/Cargo.toml -- --check",

@@ -1,0 +1,27 @@
+{
+  "protocol": "lenso.service-workspace.v1",
+  "services": [
+    {
+      "name": "notification-worker",
+      "lang": "rust",
+      "cwd": "services/notification-worker",
+      "manifest": "lenso.service.json",
+      "command": "cargo run",
+      "readyUrl": "http://127.0.0.1:4120/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": ["notification-worker"]
+    },
+    {
+      "name": "support-api",
+      "lang": "ts",
+      "cwd": "services/support-api",
+      "manifest": "lenso.service.json",
+      "command": "pnpm start",
+      "readyUrl": "http://127.0.0.1:4110/lenso/service/v1/status",
+      "autoStart": true,
+      "readyTimeoutMs": 10000,
+      "modules": ["support-api"]
+    }
+  ]
+}
