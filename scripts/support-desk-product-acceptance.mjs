@@ -2,6 +2,7 @@
 
 import assert from "node:assert/strict";
 import {
+  createHash,
   generateKeyPairSync,
   randomBytes,
 } from "node:crypto";
@@ -854,6 +855,23 @@ const main = async () => {
     const frameworkRoot = await resolveRoot("LENSO_FRAMEWORK_ROOT", "lenso");
     const cliRoot = await resolveRoot("LENSO_CLI_ROOT", "lenso-cli");
     const consoleRoot = await resolveRoot("LENSO_CONSOLE_ROOT", "lenso-console");
+    const surfaceContractDocument = await readFile(
+      path.join(
+        consoleRoot,
+        "packages",
+        "support-ticket-console",
+        "src",
+        "support-ticket-business-api.v1.json"
+      ),
+      "utf8"
+    );
+    assert.equal(
+      `sha256:${createHash("sha256")
+        .update(surfaceContractDocument)
+        .digest("hex")}`,
+      SUPPORT_TICKET_CONTRACT_DIGEST,
+      "Support Ticket implementation and Console Surface must share one exact Business API contract"
+    );
     const pnpm = await resolveExecutable("pnpm");
     if (!pnpm) {
       throw new Error("pnpm is required");
@@ -1047,7 +1065,12 @@ const main = async () => {
       },
       composition,
       policy,
-      supportTicket: { serviceId, servicePrincipal, workloadId },
+      supportTicket: {
+        serviceId,
+        servicePrincipal,
+        surfaceContractDocument,
+        workloadId,
+      },
     });
 
     let databaseUrl = process.env.LENSO_ACCEPTANCE_DATABASE_URL?.trim();
