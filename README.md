@@ -33,66 +33,59 @@ The communicating Autonomous Services proof is opt-in because it also requires
 the System Sandbox CLI and the sibling `lenso` checkout; use
 `pnpm smoke:support-system` for that proof.
 
-## Launchpad App
+## Support Desk application acceptance
 
-Use Launchpad when you want a generated service-ready app instead of wiring a
-host and services by hand:
+The product-level acceptance starts from one exact `lenso.app.json`, runs the
+Support Ticket Provider and Local Control Adapter with `lenso system dev`,
+connects the signed System through Console, and exercises the reviewed
+`console_ui_esm` Support Ticket and Story surfaces in a real browser.
 
-```sh
-cargo install lenso-cli
-lenso app list
-lenso app inspect support-desk
-lenso app create ../support-desk --blueprint support-desk
-cd ../support-desk
-lenso app add support-sla
-lenso app compose --repo-root . --addon support-sla --addon customer-profile --write-plan
-lenso dev status
-lenso dev doctor --write-state
-lenso app plan --addon support-sla --write-plan
-lenso app apply .lenso/app-change-plan.json --dry-run
-lenso app verify --write-proof
-lenso app diff
-lenso app repair --dry-run
-lenso agent context
-```
-
-The generated app includes a TypeScript `support-api` service, a Rust
-`notification-worker` service, `lenso.system.json`, `lenso.workspace.json`, and
-`.lenso/launchpad.json`. This repository keeps representative generated output
-under `fixtures/launchpad/support-desk/`.
-
-V23 adds product blueprints and addons. The `support-desk-addon` fixture shows
-`support-sla` added to the app, `.lenso/dev-doctor.json` written by
-`lenso dev doctor --write-state`, and the matching `lenso agent task` handoff.
-
-V24 adds App Proof for generated control-plane state. The `support-desk-proof`
-fixture shows `.lenso/app-proof.json`, a clean `lenso app diff`, and an agent
-handoff that marks service source files as user-owned code while generated
-Launchpad files can be safely repaired.
-
-V25 adds App Change Plan before repair or addon application. The
-`support-desk-change-plan` fixture shows `.lenso/app-change-plan.json` for a
-safe `support-sla` addon apply, plus the matching agent handoff boundaries.
-
-V26 adds App Composer. The `support-desk-composer` fixture shows a
-`support-desk` app composed with `support-sla` and `customer-profile`, a
-composition-aware `.lenso/app-change-plan.json`, and an agent task generated
-with `lenso agent task --from-app-plan`.
-
-V27 adds local Capability Packs. The `fixtures/capabilities/support-sla-pack`
-fixture shows `lenso capability init`, `lenso capability check`, App Composer
-with `--pack`, and a capability-scoped agent handoff.
-
-The exact App Composition fixture
-`fixtures/launchpad/support-desk-composition` fixture records immutable Module
-release digests, stable Service Reference bindings, resolved dependency
-selections, and the revision consumed by the Local Control Adapter. It has no
-second System lock or App Change Plan overlay.
+From this repository root, the materialization command proven by the runner is:
 
 ```sh
-pnpm check:launchpad-fixtures
-pnpm check:app-composition-fixtures
+lenso app compose ./support-desk \
+  --blueprint support-desk \
+  --pack ./fixtures/acceptance/support-desk/capability \
+  --implementation support-api=linked \
+  --implementation notification-worker=linked \
+  --implementation lenso/platform-story=linked \
+  --apply
 ```
+
+The resulting document must exactly match
+`fixtures/acceptance/support-desk/lenso.app.json`. The explicit `--apply` flag
+only atomically materializes that composition; it is not a separate product
+lifecycle or a deployment operation.
+
+Run the complete proof with sibling Framework, CLI, and Console checkouts:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm acceptance:support-desk
+```
+
+The runner accepts optional `LENSO_FRAMEWORK_ROOT`, `LENSO_CLI_ROOT`,
+`LENSO_CONSOLE_ROOT`, and `LENSO_CLI_BIN` overrides. Otherwise it resolves
+`../lenso`, `../lenso-cli`, and `../lenso-console`. It starts a disposable local
+PostgreSQL instance when `LENSO_ACCEPTANCE_DATABASE_URL` is absent; an explicit
+URL must name an acceptance database. Node, pnpm, Cargo, `initdb`, `postgres`,
+`pg_isready`, and a headless Chrome are the local prerequisites. Cargo remains
+required even with `LENSO_CLI_BIN`, because
+the runner uses the Console repository's Cargo-backed migration and service
+entrypoints.
+
+The proof uses only the public CLI and authenticated HTTP boundaries. It never
+seeds or queries Console tables directly, never sends Adapter URLs, bearer
+tokens, or signing keys for managed authorities to the browser, and never
+publishes or deploys an artifact. The browser signs in through the public
+Console password flow and receives only its ordinary Console session; no
+compile-time development bearer is injected. Set
+`LENSO_ACCEPTANCE_KEEP_TEMP=1` only when local screenshots and process evidence
+should be retained for inspection.
+
+The regular `pnpm check` keeps the fast composition/contract and Provider gates
+in CI. The cross-repository process and browser proof remains the explicit
+`pnpm acceptance:support-desk` command.
 
 ## Blank Host Starter
 
@@ -125,53 +118,22 @@ The same support workflow publishes `support.ticket-opened.v1` transactionally,
 authenticates its Service Principal and delegated tenant context at support-sla,
 and commits the SLA business effect through a durable Inbox.
 
-With `lenso` CLI 0.1.30 or newer installed, run:
+The current product proof for Support Desk is the application acceptance
+described above:
+
+```sh
+pnpm acceptance:support-desk
+```
+
+It owns the current Compose → Run locally → signed Connect → Status lifecycle.
+The historical `acceptance:m1` through `acceptance:m6`, support-system fixtures,
+and direct Provider smokes remain compatibility and regression inputs; they are
+not alternate public lifecycles or authoritative product proofs. For targeted
+compatibility checks, run:
 
 ```sh
 pnpm smoke:support-system:contract
 pnpm smoke:support-system
-pnpm acceptance:m1
-pnpm acceptance:m2
-pnpm acceptance:m3
-pnpm acceptance:m4
-```
-
-`acceptance:m1` is the authoritative M1 developer-preview proof. It covers
-plane-independent direct calls, declared machine-readable failure results,
-deterministic cleanup, and the separate Provider smoke.
-
-`acceptance:m2` is the dependency-free M2 gate. It provisions an ephemeral
-Postgres instance when `DATABASE_URL` is absent, runs direct calls plus local
-event delivery through the started Service Workers while Runtime Console and
-System Plane state are withheld, returns deterministic results for the
-reliability, identity, Deadline, and Call Policy matrix, and retains the
-Provider compatibility smoke. Real NATS JetStream evidence reuses the same
-support Module behavior; NATS and SPIFFE/SPIRE remain a separate explicit
-Approval Boundary exposed by `pnpm acceptance:m2:production`.
-
-`acceptance:m3` is the dependency-free durable-process gate. It keeps the same
-two-Service Sandbox running, withholds Runtime Console, Story aggregation, and
-System Plane state during execution, and proves child work, participant restart,
-controlled timeout, exactly-once cross-Service compensation, v1/v2 definition
-pinning, and fail-closed worker mismatch. Aggregation then resumes from the
-authenticated Service-local feeds, accepts late evidence into the same
-Federated Runtime Story, exposes an intentionally missing source as a Segment
-gap, and collects the workflow-related Reliability Report. The command also
-reruns the M2 guarantees and the independent Provider smoke; it requires no
-Kubernetes, external workflow engine, or production authority.
-
-`acceptance:m4` is the public Safe Module Extraction gate. It begins with the
-linked support-ticket Module, proves readiness blockers with zero mutation,
-runs deterministic preparation and resumable backfill, and rolls an injected
-provisional failure back to linked authority. A fresh attempt crosses an exact
-local Approval Boundary, atomically commits Autonomous authority, rejects stale
-evidence, and blocks fast rollback after the first Autonomous mutation. The
-command first reruns M3, including its independent Provider smoke; `--simulate`
-is reserved for the deterministic M4 contract slice during development.
-
-The existing Provider-mode proof remains separate and unchanged:
-
-```sh
 pnpm smoke:support-ticket
 ```
 
@@ -261,48 +223,17 @@ lenso service workspace export \
   --output .lenso/module-services.json
 ```
 
-V18 adds `lenso.system.json` as the service system manifest. It describes the
-same examples as a business system: services own process targets, modules own
-capabilities, and dependencies show cross-service capability consumption.
+The current application-model path intentionally has one lifecycle:
 
-```sh
-lenso system graph --system-file lenso.system.json
-lenso system plan --system-file lenso.system.json --check
-lenso system diff --system-file lenso.system.json --repo-root fixtures/system-state/ready --check
-lenso system apply --system-file lenso.system.json --dry-run
-lenso system doctor --system-file lenso.system.json
-lenso system release plan \
-  --env staging \
-  --system-file lenso.system.json \
-  --repo-root fixtures/system-state/ready \
-  --output fixtures/system-release/staging/system-release.json
-lenso system release check fixtures/system-release/staging/system-release.json
-lenso system runbook generate \
-  fixtures/system-release/staging/system-release.json \
-  --output fixtures/system-runbook/staging/system-runbook.json
-lenso system runbook check fixtures/system-runbook/staging/system-runbook.json
-```
+1. Compose the exact `lenso.app.json`.
+2. Run it locally with `lenso system dev`.
+3. Connect it through signed Console enrollment.
+4. Read System, Service, Surface, Story, and Workload status in Console.
 
-Copy `lenso.system.json` into a host repo when you want Console Services to show
-the system plane next to provider lifecycle, rollout, release, and Service Calls
-evidence.
-V19 adds system drift checks and safe apply. `fixtures/system-state/ready`
-contains the minimum host-local `.lenso` state for a clean system diff; remove a
-file from that fixture to see the doctor output point at the missing state.
-V20 adds system release train fixtures under `fixtures/system-release/`. The
-staging fixture is ready, the prod fixture is a promotion from staging, and
-`blocked-drift` shows the policy output when host-local state is missing.
-V21 adds generated system runbook fixtures under `fixtures/system-runbook/`.
-These are operator evidence artifacts generated from release plans, not module
-authoring inputs.
-
-V11 examples keep `lenso.module.v1` module contracts next to
-`lenso.module-release.v1` release artifacts so module install remains the
-business-capability entrypoint and service install remains the provider/process
-entrypoint.
-The V8 proof path uses service operation metadata and checks across both TS
-services and the Rust Axum provider, including safe HTTP probes and runtime
-function declarations.
+`pnpm acceptance:support-desk` is the executable reference for that lifecycle.
+`lenso.system.json` and the older system-state, release, and runbook fixtures
+remain compatibility-test inputs; they are not public product commands or
+Console deployment controls.
 
 ### Hello Action Service
 
@@ -421,63 +352,23 @@ Smoke the module directly:
 pnpm smoke:support-ticket
 ```
 
-With the service running, emit a V9 service package artifact from its manifest
-URL:
+The supported product proof is `pnpm acceptance:support-desk`. It composes the
+exact App, runs it locally, performs signed Console enrollment and connection,
+then exercises the generated client and real browser. Console observes runtime
+status; it does not install, deploy, upgrade, or roll back the Provider.
 
-```sh
-pnpm service-package:support-ticket
-```
-
-Then install the package artifact:
-
-```sh
-lenso service install dist/lenso-service/support-suite-provider/lenso.service-package.json \
-  --base-url http://127.0.0.1:4110/lenso/service/v1
-```
-
-Install the business module through the generated V10 module release artifact:
-
-```sh
-lenso module release inspect dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json
-lenso module release check dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
-  --base-url http://127.0.0.1:4110/lenso/service/v1
-lenso module install dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
-  --base-url http://127.0.0.1:4110/lenso/service/v1
-```
-
-Or add that release to the local catalog and install by module name:
-
-```sh
-lenso module catalog add dist/lenso-service/support-suite-provider/modules/support-ticket/lenso.module-release.json \
-  --base-url http://127.0.0.1:4110/lenso/service/v1
-lenso module install support-ticket
-```
-
-Plan and apply the next provider release from the host repository after the
-service has an install receipt:
-
-```sh
-lenso service release plan support-suite-provider \
-  ../lenso-examples/dist/lenso-service/support-suite-provider/lenso.service-package.json \
-  --output .lenso/support-suite-provider.release-plan.json
-lenso service policy check .lenso/support-suite-provider.release-plan.json --fail-on breaking
-lenso service release apply .lenso/support-suite-provider.release-plan.json
-```
-
-The apply step updates `.lenso/service-releases.json`; Console Services shows
-the latest release risk and recent release history for the provider.
-
-Run the full service host path:
+For lower-level service/Host compatibility, run:
 
 ```sh
 pnpm host-api-smoke:support-ticket
 ```
 
-That starts the service, installs it into a temporary host, exercises the
-host-owned HTTP proxy and runtime path for its module, installs the first-party
-`audit-log` module by name, and verifies both support-ticket and Audit Events
-Data Surfaces. The smoke checks co-install visibility; support-ticket records
-do not create audit rows unless a module calls the audit-log writer API.
+That compatibility smoke starts the service, installs it into a temporary Host,
+exercises the host-owned HTTP proxy and runtime path for its module, installs
+the first-party `audit-log` module by name, and verifies both support-ticket and
+Audit Events Data Surfaces. The smoke checks co-install visibility;
+support-ticket records do not create audit rows unless a module calls the
+audit-log writer API. It is not an alternative application lifecycle.
 For the manual walkthrough, see
 [docs/support-ticket-service-module-run.md](docs/support-ticket-service-module-run.md).
 

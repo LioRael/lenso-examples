@@ -5,14 +5,21 @@
   "description": "Agent-ready support ticket service provider for Lenso.",
   "type": "module",
   "scripts": {
-    "check": "pnpm smoke",
+    "build": "tsc -p tsconfig.build.json",
+    "check": "pnpm test && pnpm typecheck && pnpm build && pnpm smoke",
     "dev": "node src/server.ts",
     "host-smoke": "node ../../scripts/host-install-smoke.ts support-ticket",
     "service:verify": "lenso service verify http://127.0.0.1:4110/lenso/service/v1/manifest --serve-command \"pnpm start\"",
     "smoke": "node src/smoke.ts",
+    "test": "node --test src/module.test.ts",
+    "typecheck": "tsc -p tsconfig.json",
     "start": "node src/server.ts"
   },
   "dependencies": {
     "@lenso/service-kit": "0.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "typescript": "7.0.2"
   }
 }
