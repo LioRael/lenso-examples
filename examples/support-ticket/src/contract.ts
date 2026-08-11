@@ -1,5 +1,5 @@
 export const SUPPORT_TICKET_CONTRACT_DIGEST =
-  "sha256:5c95d669efa62fa3b423bc46a5e9be3af17393b6c97cb57a9966e3bb79be1155";
+  "sha256:da9725e81bebf8eb73c29fbd5fc800996ef014b98fc2bb689e1763deeeda90ad";
 
 export const SUPPORT_TICKET_OPERATION_IDS = {
   close: "support-ticket/http/POST:/tickets/{id}/close",

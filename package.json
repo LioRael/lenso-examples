@@ -16,7 +16,8 @@
     "acceptance:m6": "node scripts/m6-acceptance.mjs",
     "acceptance:m6:environment": "node scripts/m6-environment-verification.mjs",
     "test:m6": "node --test scripts/m6-acceptance.test.mjs",
-    "check": "pnpm smoke && pnpm --filter @lenso/example-support-ticket check && pnpm host-api-smoke:contract && pnpm smoke:support-system:contract && pnpm acceptance:support-desk:contract",
+    "check": "pnpm smoke && pnpm --filter @lenso/example-support-ticket check && pnpm --filter @lenso/example-support-ticket-console test && pnpm --filter @lenso/example-support-ticket-console typecheck && pnpm host-api-smoke:contract && pnpm smoke:support-system:contract && pnpm acceptance:support-desk:contract",
+    "build:console-artifact:support-ticket": "node scripts/build-support-ticket-console-artifact.mjs",
     "integration:prepare": "node scripts/prepare-integration-set.mjs",
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke && pnpm --filter @lenso/example-support-ticket host-smoke && pnpm --filter @lenso/example-account-profile host-smoke",
     "host-smoke:account-profile": "pnpm --filter @lenso/example-account-profile host-smoke",
@@ -47,7 +48,9 @@
     "start:support-ticket": "pnpm --filter @lenso/example-support-ticket start"
   },
   "devDependencies": {
-    "@playwright/cli": "0.1.18"
+    "@playwright/cli": "0.1.18",
+    "@vitejs/plugin-react": "6.0.5",
+    "vite": "8.2.0"
   },
   "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1"
 }

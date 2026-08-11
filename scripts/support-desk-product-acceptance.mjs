@@ -857,10 +857,10 @@ const main = async () => {
     const consoleRoot = await resolveRoot("LENSO_CONSOLE_ROOT", "lenso-console");
     const surfaceContractDocument = await readFile(
       path.join(
-        consoleRoot,
-        "packages",
-        "support-ticket-console",
-        "src",
+        root,
+        "examples",
+        "support-ticket",
+        "contracts",
         "support-ticket-business-api.v1.json"
       ),
       "utf8"
@@ -1028,6 +1028,8 @@ const main = async () => {
     await mkdir(artifactRoot, { recursive: true });
     const artifactServer = await startStaticServer(artifactRoot);
     cleanup.push(() => artifactServer.close());
+    const platformArtifactRoot = path.join(artifactRoot, "platform");
+    const supportArtifactRoot = path.join(artifactRoot, "support-ticket");
     const systemRegistryDigest = digestJson({ moduleId: "lenso/system-registry", revision: 1 });
     const releaseDigests = Object.fromEntries(
       composition.modules
@@ -1040,17 +1042,34 @@ const main = async () => {
     await runCommand(pnpm, ["build:module-artifacts"], {
       cwd: consoleRoot,
       env: {
-        LENSO_CONSOLE_MODULE_ARTIFACT_BASE_URL: artifactServer.baseUrl,
-        LENSO_CONSOLE_MODULE_ARTIFACT_DIR: artifactRoot,
+        LENSO_CONSOLE_MODULE_ARTIFACT_BASE_URL: `${artifactServer.baseUrl}/platform`,
+        LENSO_CONSOLE_MODULE_ARTIFACT_DIR: platformArtifactRoot,
         LENSO_MODULE_RELEASE_DIGESTS: JSON.stringify(releaseDigests),
       },
-      label: "console-artifacts",
+      label: "platform-console-artifacts",
     });
-    const artifactIndex = JSON.parse(
-      await readFile(path.join(artifactRoot, "artifact-index.json"), "utf8")
+    await runCommand(pnpm, ["build:console-artifact:support-ticket"], {
+      cwd: root,
+      env: {
+        LENSO_CONSOLE_MODULE_ARTIFACT_BASE_URL: `${artifactServer.baseUrl}/support-ticket`,
+        LENSO_SUPPORT_TICKET_CONSOLE_ARTIFACT_DIR: supportArtifactRoot,
+        LENSO_SUPPORT_TICKET_MODULE_RELEASE_DIGEST:
+          releaseDigests["support/tickets"],
+      },
+      label: "support-ticket-console-artifact",
+    });
+    const platformArtifactIndex = JSON.parse(
+      await readFile(path.join(platformArtifactRoot, "artifact-index.json"), "utf8")
     );
+    const supportArtifactIndex = JSON.parse(
+      await readFile(path.join(supportArtifactRoot, "artifact-index.json"), "utf8")
+    );
+    const artifacts = [
+      ...platformArtifactIndex.artifacts,
+      ...supportArtifactIndex.artifacts,
+    ];
     const artifact = (moduleId) => {
-      const value = artifactIndex.artifacts.find((entry) => entry.moduleId === moduleId);
+      const value = artifacts.find((entry) => entry.moduleId === moduleId);
       assert.ok(value, `missing ${moduleId} artifact`);
       return value;
     };
@@ -1391,8 +1410,8 @@ const main = async () => {
           LENSO_ACCEPTANCE_CONSOLE_AUTHORIZATION: operatorAuthorization,
           LENSO_ACCEPTANCE_CONSOLE_URL: consoleUrl,
           LENSO_ACCEPTANCE_GENERATED_CLIENT: path.join(
-            consoleRoot,
-            "packages",
+            root,
+            "examples",
             "support-ticket-console",
             "src",
             "business-api.ts"
