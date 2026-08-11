@@ -407,6 +407,10 @@ test("builds the exact connected topology from composition, artifacts, and Adapt
   const moduleReleaseDigest = digest("b");
   const supportArtifactDigest = digest("c");
   const storyArtifactDigest = digest("d");
+  const surfaceContractDocument = JSON.stringify({
+    openapi: "3.1.0",
+    paths: {},
+  });
   const request = buildSystemConnectRequest({
     adapterState: {
       adapterId: "workload-control:support-desk",
@@ -460,6 +464,7 @@ test("builds the exact connected topology from composition, artifacts, and Adapt
     supportTicket: {
       serviceId: "support-ticket",
       servicePrincipal: "svc.support-ticket",
+      surfaceContractDocument,
       workloadId: "support-ticket-api",
     },
   });
@@ -482,6 +487,14 @@ test("builds the exact connected topology from composition, artifacts, and Adapt
     request.topology.modules.find((module) => module.moduleId === "support/tickets")
       ?.surfaceApiGrant?.contractDigest,
     SUPPORT_TICKET_CONTRACT_DIGEST
+  );
+  assert.deepEqual(
+    request.topology.modules.find((module) => module.moduleId === "support/tickets")
+      ?.surfaceApiGrant?.contractArtifact,
+    {
+      document: surfaceContractDocument,
+      format: "openapi_3_1_json",
+    }
   );
   const operationIds = request.topology.modules.find(
     (module) => module.moduleId === "support/tickets"

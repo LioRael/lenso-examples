@@ -124,7 +124,7 @@ const artifactFor = (artifacts, moduleId) => {
   return undefined;
 };
 
-const topologyModule = (module, artifacts) => {
+const topologyModule = (module, artifacts, supportTicket) => {
   const artifact = artifactFor(artifacts, module.moduleId);
   const serviceReference = module.implementation.serviceReference;
   const serviceId =
@@ -145,6 +145,10 @@ const topologyModule = (module, artifacts) => {
       moduleReleaseDigest: module.release.contentDigest,
       contractDigest: SUPPORT_TICKET_CONTRACT_DIGEST,
       operationIds: [...SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS],
+      contractArtifact: {
+        format: "openapi_3_1_json",
+        document: supportTicket.surfaceContractDocument,
+      },
     };
     const { runtimeStatus } = projected;
     delete projected.runtimeStatus;
@@ -191,7 +195,7 @@ export const buildSystemConnectRequest = ({
     },
   ].sort((left, right) => left.serviceId.localeCompare(right.serviceId));
   const modules = composition.modules
-    .map((module) => topologyModule(module, artifacts))
+    .map((module) => topologyModule(module, artifacts, supportTicket))
     .sort((left, right) => left.moduleId.localeCompare(right.moduleId));
   const topology = {
     protocol: "lenso.system.v2",
