@@ -334,7 +334,8 @@ lenso service install http://127.0.0.1:4120/lenso/service/v1/manifest
 `examples/support-ticket` is the agent-ready service demo. It turns a concrete
 business prompt into an independently running service that provides the
 `support-ticket` module with tickets data, HTTP routes, an admin action, a
-runtime escalation function, and Console-visible metadata:
+runtime escalation function, its exact Business API contract, and its
+Module-owned `console_ui_esm` Surface:
 
 ```text
 Build a support ticket module for a Lenso app.
@@ -350,6 +351,14 @@ Smoke the module directly:
 
 ```sh
 pnpm smoke:support-ticket
+```
+
+Build the receipt-bound Console artifact from the same repository and bind it
+to an exact Module Release digest:
+
+```sh
+LENSO_SUPPORT_TICKET_MODULE_RELEASE_DIGEST='sha256:<64-hex>' \
+  pnpm build:console-artifact:support-ticket
 ```
 
 The supported product proof is `pnpm acceptance:support-desk`. It composes the

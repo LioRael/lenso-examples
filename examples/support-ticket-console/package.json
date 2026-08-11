@@ -1,0 +1,24 @@
+{
+  "name": "@lenso/example-support-ticket-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "scripts": {
+    "test": "vitest run src",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@lenso/console-module-api": "1.0.0",
+    "@lenso/console-tokens": "0.1.0",
+    "@lenso/console-ui": "1.0.1",
+    "react": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  }
+}

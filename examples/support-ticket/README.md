@@ -14,6 +14,8 @@ It exposes:
 - `support-knowledge-base` under `/lenso/service/v1/modules/support-knowledge-base`;
 - ticket HTTP routes, `support-ticket.escalate-ticket.v1`, the `tickets`
   admin surface, and `assign_ticket`;
+- the committed Business API contract under `contracts/` and the owning
+  `console_ui_esm` Surface package under `examples/support-ticket-console`;
 - `support-notification.send-ticket-update.v1`;
 - `GET /articles/{id}` for knowledge-base articles.
 
@@ -29,6 +31,16 @@ Run the smoke:
 pnpm --filter @lenso/example-support-ticket smoke
 pnpm --filter @lenso/example-support-ticket service:verify
 ```
+
+Build the Support Ticket Console artifact with an exact Module Release digest:
+
+```sh
+LENSO_SUPPORT_TICKET_MODULE_RELEASE_DIGEST='sha256:<64-hex>' \
+  pnpm build:console-artifact:support-ticket
+```
+
+The generic Console host consumes this artifact through its reconciliation API;
+it does not own or compile the Support Ticket Business API or Surface source.
 
 Package the running service manifest for handoff. This writes the service
 package, one module contract, and one module release artifact per provided
