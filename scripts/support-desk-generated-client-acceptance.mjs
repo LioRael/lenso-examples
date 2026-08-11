@@ -23,7 +23,9 @@ const gatewayUrl = `${consoleBaseUrl}/api/console/v1/services/${encodeURICompone
   context.serviceId
 )}/surface-gateway`;
 
-const { createSupportTicketApi } = await import(pathToFileURL(clientModule));
+const { createSupportTicketApi, SUPPORT_TICKET_OPERATION_IDS } = await import(
+  pathToFileURL(clientModule)
+);
 
 const invokeGateway = async (request) => {
   const response = await fetch(gatewayUrl, {
@@ -55,9 +57,11 @@ const client = {
     invoke: async (request) => {
       const response = await invokeGateway(request);
       if (response.status < 200 || response.status >= 300) {
-        throw new Error(
+        const error = new Error(
           `Surface Gateway ${request.operationId} returned ${response.status}: ${JSON.stringify(response.body)}`
         );
+        error.status = response.status;
+        throw error;
       }
       acceptedRequests.push(structuredClone(request));
       return response.body;
@@ -116,6 +120,31 @@ assert.ok(
   )
 );
 
+const expectSurfaceRejection = async ({ label, operationId, run }) => {
+  let rejection;
+  try {
+    await run();
+  } catch (error) {
+    rejection = error;
+  }
+  assert.ok(rejection, `${label} unexpectedly succeeded`);
+  assert.equal(rejection.status, 403, label);
+  return { label, operationId, status: rejection.status };
+};
+
+const authorizationLayerRejections = [
+  await expectSurfaceRejection({
+    label: "surface-grant-denied-detail",
+    operationId: SUPPORT_TICKET_OPERATION_IDS.detail,
+    run: () => api.detail("ticket_1", requestOptions),
+  }),
+  await expectSurfaceRejection({
+    label: "module-authority-denied-restricted-detail",
+    operationId: SUPPORT_TICKET_OPERATION_IDS.restrictedDetail,
+    run: () => api.restrictedDetail("ticket_1", requestOptions),
+  }),
+];
+
 const acceptedCreateRequest = acceptedRequests.find(
   (request) => request.operationId === "support-ticket/http/POST:/tickets"
 );
@@ -160,10 +189,11 @@ for (const vector of tamperVectors) {
 
 process.stdout.write(
   `${JSON.stringify({
+    authorizationLayerRejections,
     createdTicketId: created.ticket.id,
     finalStatus: closed.ticket.status,
     idempotentCreateReplay: true,
-    operationCount: 4,
+    operationCount: 6,
     positiveInvocationCount: acceptedRequests.length,
     rejectedTamperVectors: tamperVectors.map(({ label }) => label),
   })}\n`

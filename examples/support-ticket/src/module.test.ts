@@ -476,6 +476,51 @@ test("records rejected provider attempts so acceptance can prove Gateway denial"
   }
 });
 
+test("keeps final Module authority after Console grants the restricted detail alias", async () => {
+  configureAcceptanceEnvironment();
+  const temporaryRoot = await mkdtemp(
+    path.join(tmpdir(), "lenso-support-restricted-observation-")
+  );
+  const observationFile = path.join(temporaryRoot, "surface-context.jsonl");
+  await writeFile(observationFile, "", { mode: 0o600 });
+  process.env.LENSO_ACCEPTANCE_OBSERVED_CONTEXT_FILE = observationFile;
+  const served = await serveSupportTicketModule({ port: 0 });
+
+  try {
+    const headers = surfaceHeaders(
+      operationIds.restrictedDetail,
+      "support_ticket.tickets.read"
+    );
+    delete headers["idempotency-key"];
+    const response = await fetch(
+      `${served.baseUrl}/modules/support-ticket/tickets/ticket_1`,
+      { headers }
+    );
+
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), {
+      error: {
+        code: "invalid_console_surface_context",
+        message:
+          "Support Ticket acceptance requires an exact Console Surface Gateway context",
+      },
+    });
+
+    const attempts = (await readFile(observationFile, "utf8"))
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line));
+    assert.equal(attempts.length, 1);
+    assert.equal(attempts[0].accepted, false);
+    assert.equal(attempts[0].operationId, operationIds.restrictedDetail);
+    assert.equal(attempts[0].capability, "support_ticket.tickets.read");
+  } finally {
+    await served.close();
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
 test("requires exact expected acceptance identities from the environment", async () => {
   configureAcceptanceEnvironment();
   const served = await serveSupportTicketModule({ port: 0 });

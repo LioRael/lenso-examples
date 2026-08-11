@@ -2,15 +2,16 @@ import { createHash, sign } from "node:crypto";
 import {
   SUPPORT_TICKET_CONTRACT_DIGEST,
   SUPPORT_TICKET_OPERATION_IDS,
+  SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS,
 } from "../examples/support-ticket/src/contract.ts";
 
-export { SUPPORT_TICKET_CONTRACT_DIGEST, SUPPORT_TICKET_OPERATION_IDS };
+export {
+  SUPPORT_TICKET_CONTRACT_DIGEST,
+  SUPPORT_TICKET_OPERATION_IDS,
+  SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS,
+};
 export const WORKLOAD_CONTROL_SCHEMA_DIGEST =
   "sha256:d3666bb1fd85576f9af4205dbcc70029acd81462678c47d2b315c40ef1a9161d";
-
-const SUPPORT_TICKET_OPERATION_ID_LIST = Object.values(
-  SUPPORT_TICKET_OPERATION_IDS
-).sort();
 
 export const digestJson = (value) =>
   `sha256:${createHash("sha256").update(JSON.stringify(value)).digest("hex")}`;
@@ -143,7 +144,7 @@ const topologyModule = (module, artifacts) => {
       artifactDigest: artifacts.supportTicket.artifactDigest,
       moduleReleaseDigest: module.release.contentDigest,
       contractDigest: SUPPORT_TICKET_CONTRACT_DIGEST,
-      operationIds: SUPPORT_TICKET_OPERATION_ID_LIST,
+      operationIds: [...SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS],
     };
     const { runtimeStatus } = projected;
     delete projected.runtimeStatus;
@@ -237,4 +238,18 @@ export const buildSystemConnectRequest = ({
       policy,
     },
   };
+};
+
+export const storyStatusRequest = (connected, status) => {
+  const request = structuredClone(connected);
+  const story = request.topology.modules.find(
+    (module) => module.moduleId === "lenso/platform-story"
+  );
+  if (!story) {
+    throw new Error("Connected topology does not contain the Story Module");
+  }
+  story.runtimeStatus = status;
+  request.topologyDigest = digestJson(request.topology);
+  request.managementBinding.topologyDigest = request.topologyDigest;
+  return request;
 };

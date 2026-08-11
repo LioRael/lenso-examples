@@ -6,12 +6,15 @@ import test from "node:test";
 
 import {
   SUPPORT_TICKET_CONTRACT_DIGEST,
+  SUPPORT_TICKET_OPERATION_IDS,
   WORKLOAD_CONTROL_SCHEMA_DIGEST,
+  SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS,
   buildEnrollmentExchange,
   buildSystemConnectRequest,
   digestCanonicalJson,
   digestJson,
   publicEd25519KeyBase64url,
+  storyStatusRequest,
 } from "./support-desk-product-acceptance-contract.mjs";
 import {
   assertBrowserSessionDoesNotReuseServerCredential,
@@ -483,10 +486,46 @@ test("builds the exact connected topology from composition, artifacts, and Adapt
   const operationIds = request.topology.modules.find(
     (module) => module.moduleId === "support/tickets"
   )?.surfaceApiGrant?.operationIds;
+  assert.deepEqual(operationIds, SUPPORT_TICKET_SURFACE_GRANT_OPERATION_IDS);
   assert.deepEqual(operationIds, [...new Set(operationIds)].sort());
+  assert.equal(operationIds.includes(SUPPORT_TICKET_OPERATION_IDS.detail), false);
+  assert.equal(
+    operationIds.includes(SUPPORT_TICKET_OPERATION_IDS.restrictedDetail),
+    true
+  );
   assert.equal(
     request.topology.adapters[0]?.workloadControl?.schemaDigest,
     WORKLOAD_CONTROL_SCHEMA_DIGEST
+  );
+
+  const incompatibleStory = storyStatusRequest(request, "incompatible");
+  assert.equal(
+    request.topology.modules.find(
+      (module) => module.moduleId === "lenso/platform-story"
+    )?.runtimeStatus,
+    "active",
+    "the connected request must remain reusable after the negative vector"
+  );
+  assert.equal(
+    incompatibleStory.topology.modules.find(
+      (module) => module.moduleId === "lenso/platform-story"
+    )?.runtimeStatus,
+    "incompatible"
+  );
+  assert.equal(
+    incompatibleStory.topology.modules.find(
+      (module) => module.moduleId === "support/tickets"
+    )?.runtimeStatus,
+    "active",
+    "the incompatibility vector must target only the exact Story Surface"
+  );
+  assert.equal(
+    incompatibleStory.topologyDigest,
+    digestJson(incompatibleStory.topology)
+  );
+  assert.equal(
+    incompatibleStory.managementBinding.topologyDigest,
+    incompatibleStory.topologyDigest
   );
 });
 
@@ -702,7 +741,8 @@ test("acceptance fixture contains only current application-model entrypoints", a
     "const supportNetworkEvidence = await collectBrowserNetworkEvidence()"
   );
   const storiesNavigation = acceptanceSource.indexOf(
-    'await invoke(["goto", `${consoleUrl}/stories`])'
+    'await invoke(["goto", `${consoleUrl}/stories`])',
+    supportNetworkEvidence
   );
   assert.ok(
     supportNetworkEvidence !== -1 &&
@@ -738,6 +778,95 @@ test("acceptance fixture contains only current application-model entrypoints", a
   assert.match(
     acceptanceSource,
     /rejected Surface Gateway tamper vectors must not execute the Provider/u
+  );
+  for (const vector of [
+    "surface-grant-denied-detail",
+    "module-authority-denied-restricted-detail",
+  ]) {
+    assert.match(acceptanceSource, new RegExp(vector, "u"));
+  }
+  assert.match(
+    acceptanceSource,
+    /SUPPORT_TICKET_OPERATION_IDS\.detail\]: 0/u,
+    "the exact Surface Grant denial must prove the Provider did not execute"
+  );
+  assert.match(
+    acceptanceSource,
+    /SUPPORT_TICKET_OPERATION_IDS\.restrictedDetail\]: 1/u,
+    "the Module-authority denial must prove the Gateway forwarded once"
+  );
+  assert.match(
+    acceptanceSource,
+    /assert\.equal\(restrictedContext\.accepted, false\)/u,
+    "the Provider observation must retain the final Module authorization decision"
+  );
+});
+
+test("product acceptance proves unavailable Stories in real browser sessions before the authorized path", async () => {
+  const acceptanceSource = await readFile(
+    path.join(root, "scripts", "support-desk-product-acceptance.mjs"),
+    "utf8"
+  );
+
+  assert.match(
+    acceptanceSource,
+    /Module workload is incompatible with the System topology/u
+  );
+  assert.match(
+    acceptanceSource,
+    /Current operator lacks the required Surface Entry Capability: runtime\.stories\.read/u
+  );
+  assert.match(
+    acceptanceSource,
+    /assert\.doesNotMatch\(overviewPage, availableStoriesNavigation/u,
+    "each negative browser session must prove Stories is absent from available navigation"
+  );
+  assert.match(
+    acceptanceSource,
+    /await invoke\(\["goto", `\$\{consoleUrl\}\/stories`\]\)/u,
+    "each vector must also prove the direct route fails before Story business behavior"
+  );
+  assert.match(
+    acceptanceSource,
+    /api\/console\/v1\/access\/users/u,
+    "the unauthorized vector must use a real password operator rather than a synthetic bearer"
+  );
+  assert.match(
+    acceptanceSource,
+    /assert\.deepEqual\(limitedAccessContext\.body\.capabilities, \[\]\)/u
+  );
+  assert.match(
+    acceptanceSource,
+    /assert\.deepEqual\(\s*limitedAccessContext\.body\.managed_service_capabilities,\s*\{\}\s*\)/u,
+    "actor-scoped managed-service grants must remain empty instead of being unioned globally"
+  );
+
+  const incompatibleProjection = acceptanceSource.search(
+    /storyStatusRequest\(\s*connectedRequest,\s*"incompatible"/u
+  );
+  const incompatibleBrowser = acceptanceSource.indexOf(
+    'scenario: "stories-incompatible"'
+  );
+  const restoredAfterIncompatible = acceptanceSource.indexOf(
+    "const restoredAfterIncompatible"
+  );
+  const unauthorizedBrowser = acceptanceSource.indexOf(
+    'scenario: "stories-unauthorized"'
+  );
+  const restoredForAuthorizedBrowser = acceptanceSource.indexOf(
+    "const restoredForAuthorizedBrowser"
+  );
+  const happyBrowser = acceptanceSource.indexOf(
+    "const browserEvidence = await runBrowserAcceptance"
+  );
+  assert.ok(
+    incompatibleProjection !== -1 &&
+      incompatibleProjection < incompatibleBrowser &&
+      incompatibleBrowser < restoredAfterIncompatible &&
+      restoredAfterIncompatible < unauthorizedBrowser &&
+      unauthorizedBrowser < restoredForAuthorizedBrowser &&
+      restoredForAuthorizedBrowser < happyBrowser,
+    "incompatible and unauthorized browser proofs must restore connected/authorized before CRUD and Story"
   );
 });
 

@@ -21,6 +21,7 @@ import {
   buildSystemConnectRequest,
   digestJson,
   publicEd25519KeyBase64url,
+  storyStatusRequest,
   SUPPORT_TICKET_CONTRACT_DIGEST,
   SUPPORT_TICKET_OPERATION_IDS,
 } from "./support-desk-product-acceptance-contract.mjs";
@@ -77,6 +78,11 @@ const adapterStatusReasons = {
   unavailable: "Workload Control Adapter authority is unavailable",
   unmanaged: "Workload Control Adapter authority is unmanaged",
 };
+const storyIncompatibleReason =
+  "Module workload is incompatible with the System topology";
+const storyUnauthorizedReason =
+  "Current operator lacks the required Surface Entry Capability: runtime.stories.read";
+const availableStoriesNavigation = /^\s*-\s+link "Stories"(?:\s|\[|$)/mu;
 
 const log = (message) => process.stderr.write(`\n[acceptance] ${message}\n`);
 
@@ -234,6 +240,117 @@ const playwrightRefNear = (snapshot, anchor, matcher) => {
     }
   }
   throw new Error(`Playwright snapshot near ${anchor} did not contain ${matcher}`);
+};
+
+const runStoriesAvailabilityAcceptance = async ({
+  cleanup,
+  consoleUrl,
+  evidenceRoot,
+  expectedReason,
+  expectedStatus,
+  operatorIdentifier,
+  operatorPassword,
+  playwrightCli,
+  scenario,
+  temporaryRoot,
+}) => {
+  const session = `support-desk-${scenario}-${process.pid}`;
+  const environment = {
+    PLAYWRIGHT_MCP_OUTPUT_DIR: path.join(
+      temporaryRoot,
+      "playwright-output",
+      scenario
+    ),
+    PLAYWRIGHT_CLI_SESSION: session,
+    PWTEST_DAEMON_SESSION_DIR: path.join(temporaryRoot, "playwright-daemon"),
+  };
+  const snapshotSensitiveValues = [operatorIdentifier, operatorPassword];
+  const invoke = (args, quiet = true) =>
+    runCommand(playwrightCli, ["--session", session, ...args], {
+      cwd: root,
+      env: environment,
+      label: `browser-${scenario}-${args[0]}`,
+      quiet,
+    });
+  const closeBrowser = () => invoke(["close"], true);
+  cleanup.push(closeBrowser);
+  const snapshot = async () => (await invoke(["snapshot", "--raw"])).stdout;
+  const waitSnapshot = async (text) => {
+    let lastSnapshot = "";
+    try {
+      return await waitFor(
+        async () => {
+          lastSnapshot = await snapshot();
+          return lastSnapshot.includes(text) ? lastSnapshot : null;
+        },
+        {
+          description: `${scenario} browser text ${text}`,
+          intervalMs: 300,
+          timeoutMs: 30_000,
+        }
+      );
+    } catch (error) {
+      const safeReason = redactedAccessibleSnapshotDiagnostic(
+        error instanceof Error ? error.message : String(error),
+        { maxChars: 2_048, sensitiveValues: snapshotSensitiveValues }
+      );
+      const diagnostic = redactedAccessibleSnapshotDiagnostic(lastSnapshot, {
+        maxChars: 8_192,
+        sensitiveValues: snapshotSensitiveValues,
+      });
+      throw new Error(
+        `${safeReason}\nLast accessible snapshot (redacted):\n${diagnostic}`
+      );
+    }
+  };
+  try {
+    await invoke(["open", `${consoleUrl}/`, "--json"], false);
+    const signInPage = await waitSnapshot("Sign in");
+    const identifier = playwrightRef(signInPage, /textbox "Identifier"/u);
+    const password = playwrightRef(signInPage, /textbox "Password"/u);
+    const signIn = playwrightRef(signInPage, /button "Sign in"/u);
+    await invoke(["fill", identifier, operatorIdentifier]);
+    await invoke(["fill", password, operatorPassword]);
+    await invoke(["click", signIn]);
+
+    const overviewPage = await waitSnapshot(expectedReason);
+    assert.ok(
+      overviewPage.includes(`Stories · ${expectedStatus}`),
+      `${scenario} must show the object-level Story status on Overview`
+    );
+    assert.doesNotMatch(overviewPage, availableStoriesNavigation);
+    await mkdir(evidenceRoot, { recursive: true });
+    await invoke([
+      "screenshot",
+      "--filename",
+      path.join(evidenceRoot, `${scenario}.png`),
+      "--full-page",
+    ]);
+
+    await invoke(["goto", `${consoleUrl}/stories`]);
+    const routePage = await waitSnapshot(expectedReason);
+    assert.ok(
+      routePage.includes(`Stories ${expectedStatus}`),
+      `${scenario} must stop at the Story route boundary with the exact status`
+    );
+    assert.doesNotMatch(routePage, availableStoriesNavigation);
+    assert.equal(
+      routePage.includes(storyId),
+      false,
+      `${scenario} must not load Story business content`
+    );
+    return {
+      reason: expectedReason,
+      screenshot: `${scenario}.png`,
+      status: expectedStatus.toLowerCase(),
+    };
+  } finally {
+    await closeBrowser();
+    const cleanupIndex = cleanup.indexOf(closeBrowser);
+    if (cleanupIndex !== -1) {
+      cleanup.splice(cleanupIndex, 1);
+    }
+  }
 };
 
 const runBrowserAcceptance = async ({
@@ -1116,6 +1233,104 @@ const main = async () => {
     );
     assert.equal(restored.body.status, "connected");
 
+    log("proving the incompatible Story Surface in a real browser session");
+    const incompatibleStoryRequest = storyStatusRequest(
+      connectedRequest,
+      "incompatible"
+    );
+    const incompatibleStoryProjection = await postJson(
+      `${consoleUrl}/api/console/v1/system/connect`,
+      operatorAuthorization,
+      incompatibleStoryRequest
+    );
+    const incompatibleStoryModule = incompatibleStoryProjection.body.modules.find(
+      (module) => module.moduleId === "lenso/platform-story"
+    );
+    assert.ok(incompatibleStoryModule);
+    assert.equal(incompatibleStoryModule.status, "incompatible");
+    assert.equal(incompatibleStoryModule.reason, storyIncompatibleReason);
+    const incompatibleStoryBrowser = await runStoriesAvailabilityAcceptance({
+      cleanup,
+      consoleUrl,
+      evidenceRoot: path.join(temporaryRoot, "evidence"),
+      expectedReason: storyIncompatibleReason,
+      expectedStatus: "Incompatible",
+      operatorIdentifier,
+      operatorPassword,
+      playwrightCli,
+      scenario: "stories-incompatible",
+      temporaryRoot,
+    });
+    const restoredAfterIncompatible = await postJson(
+      `${consoleUrl}/api/console/v1/system/connect`,
+      operatorAuthorization,
+      connectedRequest
+    );
+    assert.equal(restoredAfterIncompatible.body.status, "connected");
+    assert.equal(
+      restoredAfterIncompatible.body.modules.find(
+        (module) => module.moduleId === "lenso/platform-story"
+      )?.status,
+      "connected"
+    );
+
+    log("proving the unauthorized Story Surface with a limited password user");
+    const limitedOperatorIdentifier = `stories-limited-${randomBytes(8).toString("hex")}@example.test`;
+    const limitedOperatorPassword = randomBytes(24).toString("base64url");
+    const limitedOperator = await postJson(
+      `${consoleUrl}/api/console/v1/access/users`,
+      operatorAuthorization,
+      {
+        identifier: limitedOperatorIdentifier,
+        password: limitedOperatorPassword,
+      }
+    );
+    assert.match(limitedOperator.body.user.id, /^usr_/u);
+    assert.ok(limitedOperator.body.session.token);
+    const limitedAuthorization = `Bearer ${limitedOperator.body.session.token}`;
+    const limitedAccessContext = await getJson(
+      `${consoleUrl}/api/console/v1/access/context`,
+      limitedAuthorization
+    );
+    assert.equal(
+      limitedAccessContext.body.actor.user_id,
+      limitedOperator.body.user.id
+    );
+    assert.deepEqual(limitedAccessContext.body.capabilities, []);
+    assert.deepEqual(
+      limitedAccessContext.body.managed_service_capabilities,
+      {}
+    );
+    const deniedSystem = await getJson(
+      `${consoleUrl}/api/console/v1/system`,
+      limitedAuthorization,
+      [403]
+    );
+    assert.equal(deniedSystem.status, 403);
+    const unauthorizedStoryBrowser = await runStoriesAvailabilityAcceptance({
+      cleanup,
+      consoleUrl,
+      evidenceRoot: path.join(temporaryRoot, "evidence"),
+      expectedReason: storyUnauthorizedReason,
+      expectedStatus: "Unavailable",
+      operatorIdentifier: limitedOperatorIdentifier,
+      operatorPassword: limitedOperatorPassword,
+      playwrightCli,
+      scenario: "stories-unauthorized",
+      temporaryRoot,
+    });
+    const restoredForAuthorizedBrowser = await postJson(
+      `${consoleUrl}/api/console/v1/system/connect`,
+      operatorAuthorization,
+      connectedRequest
+    );
+    assert.equal(restoredForAuthorizedBrowser.body.status, "connected");
+    const authorizedAccessContext = await getJson(
+      `${consoleUrl}/api/console/v1/access/context`,
+      operatorAuthorization
+    );
+    assert.deepEqual(authorizedAccessContext.body.capabilities, ["*"]);
+
     log("running the generated Support Ticket client through Surface Gateway");
     const managedContext = {
       callerModuleId: "support/tickets",
@@ -1173,7 +1388,20 @@ const main = async () => {
       generatedClientRun.stdout
     );
     assert.ok(generatedClientEvidence);
+    assert.equal(generatedClientEvidence.operationCount, 6);
     assert.equal(generatedClientEvidence.positiveInvocationCount, 6);
+    assert.deepEqual(generatedClientEvidence.authorizationLayerRejections, [
+      {
+        label: "surface-grant-denied-detail",
+        operationId: SUPPORT_TICKET_OPERATION_IDS.detail,
+        status: 403,
+      },
+      {
+        label: "module-authority-denied-restricted-detail",
+        operationId: SUPPORT_TICKET_OPERATION_IDS.restrictedDetail,
+        status: 403,
+      },
+    ]);
     assert.deepEqual(generatedClientEvidence.rejectedTamperVectors, [
       "wrong-module-release",
       "wrong-ui-artifact",
@@ -1187,8 +1415,8 @@ const main = async () => {
       .map((line) => JSON.parse(line));
     assert.equal(
       observedContexts.length - observedBeforeGeneratedClient.length,
-      generatedClientEvidence.positiveInvocationCount,
-      "rejected Surface Gateway tamper vectors must not execute the Provider"
+      generatedClientEvidence.positiveInvocationCount + 1,
+      "rejected Surface Gateway tamper vectors must not execute the Provider; the exact Grant denial must also stay before the Provider, while the Module denial must execute it once"
     );
     const generatedObservedContexts = observedContexts.slice(
       observedBeforeGeneratedClient.length
@@ -1204,11 +1432,40 @@ const main = async () => {
     assert.deepEqual(generatedOperationCounts, {
       [SUPPORT_TICKET_OPERATION_IDS.close]: 1,
       [SUPPORT_TICKET_OPERATION_IDS.create]: 2,
+      [SUPPORT_TICKET_OPERATION_IDS.detail]: 0,
       [SUPPORT_TICKET_OPERATION_IDS.list]: 2,
+      [SUPPORT_TICKET_OPERATION_IDS.restrictedDetail]: 1,
       [SUPPORT_TICKET_OPERATION_IDS.update]: 1,
     });
-    for (const operationId of Object.values(SUPPORT_TICKET_OPERATION_IDS)) {
-      const context = observedContexts.find(
+    const restrictedContext = generatedObservedContexts.find(
+      (candidate) =>
+        candidate.operationId === SUPPORT_TICKET_OPERATION_IDS.restrictedDetail
+    );
+    assert.ok(
+      restrictedContext,
+      "Provider did not observe the restricted detail alias"
+    );
+    assert.equal(restrictedContext.accepted, false);
+    assert.equal(restrictedContext.actor, operatorActor);
+    assert.equal(restrictedContext.authority, receiptDigest);
+    assert.equal(restrictedContext.capability, "support_ticket.tickets.read");
+    assert.equal(restrictedContext.serviceId, serviceId);
+    assert.equal(
+      restrictedContext.contractDigest,
+      SUPPORT_TICKET_CONTRACT_DIGEST
+    );
+    assert.equal(restrictedContext.tenantId, tenantId);
+    assert.equal(restrictedContext.story.storyId, storyId);
+    assert.ok(
+      restrictedContext.deadlineUnixMs > restrictedContext.observedAtUnixMs
+    );
+    for (const operationId of [
+      SUPPORT_TICKET_OPERATION_IDS.close,
+      SUPPORT_TICKET_OPERATION_IDS.create,
+      SUPPORT_TICKET_OPERATION_IDS.list,
+      SUPPORT_TICKET_OPERATION_IDS.update,
+    ]) {
+      const context = generatedObservedContexts.find(
         (candidate) => candidate.operationId === operationId
       );
       assert.ok(context, `provider did not observe ${operationId}`);
@@ -1359,6 +1616,10 @@ const main = async () => {
       generatedClient: "list/create/update/close",
       localAdapter: "suspend/resume/unavailable-fail-closed",
       stateProjection: ["connected", "unavailable", "incompatible", "unmanaged"],
+      storyAvailability: {
+        authorized: browserEvidence.storyArtifact,
+        unavailable: [incompatibleStoryBrowser, unauthorizedStoryBrowser],
+      },
       systemId,
     };
     process.stdout.write(`${JSON.stringify(evidence, null, 2)}\n`);

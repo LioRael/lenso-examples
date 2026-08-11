@@ -186,11 +186,14 @@ export const supportTicketModule = defineModule({
         },
       },
     },
-    getRoute("/tickets/{id}", {
-      capability: readCapability,
-      displayName: "Get ticket",
-      storyTitle: "Support ticket viewed",
-    }),
+    {
+      ...getRoute("/tickets/{id}", {
+        capability: readCapability,
+        displayName: "Get ticket",
+        storyTitle: "Support ticket viewed",
+      }),
+      operation: { operationId: supportTicketOperations.detail },
+    },
     {
       ...postRoute("/tickets", {
         capability: writeCapability,
@@ -630,9 +633,12 @@ export const serveSupportTicketModule = async (
               next_cursor: null,
               records: tickets,
             },
-          "GET /tickets/{id}": ({ params }) => ({
-            ticket: findTicket(params.id ?? ""),
-          }),
+          "GET /tickets/{id}": ({ params, request }) =>
+            validateAcceptanceSurfaceContext(request, {
+              capability: readCapability,
+              operationIds: [supportTicketOperations.detail],
+              requiresIdempotency: false,
+            }) ?? { ticket: findTicket(params.id ?? "") },
           "PATCH /tickets/{id}": ({ body, params, request }) =>
             validateAcceptanceSurfaceContext(request, {
               capability: writeCapability,
