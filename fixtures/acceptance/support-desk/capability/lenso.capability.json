@@ -1,0 +1,30 @@
+{
+  "protocol": "lenso.capability-pack.v1",
+  "name": "support-desk-product",
+  "label": "Support Desk Product",
+  "summary": "Adds the Support Ticket business surface and Runtime Story to the Support Desk acceptance.",
+  "supports": {
+    "blueprints": ["support-desk"]
+  },
+  "modules": [
+    {
+      "name": "support/tickets",
+      "manifest": "module/support-ticket/lenso.module.json"
+    },
+    {
+      "name": "lenso/platform-story",
+      "manifest": "module/story/lenso.module.json"
+    }
+  ],
+  "services": [
+    {
+      "provider": "support-suite-provider",
+      "service": "support-ticket",
+      "language": "ts",
+      "manifest": "service/lenso.service.json"
+    }
+  ],
+  "agent": {
+    "defaultTask": "exercise the Support Desk product acceptance"
+  }
+}

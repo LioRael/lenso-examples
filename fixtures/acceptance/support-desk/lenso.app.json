@@ -1,0 +1,119 @@
+{
+  "protocol": "lenso.app-composition.v1",
+  "appId": "support-desk",
+  "revision": 1,
+  "contentDigest": "sha256:8b6c2f4ef1a0d9d7f9b8067643d098e213ac6d871f4fb92fc35da1dc421db1b7",
+  "modules": [
+    {
+      "moduleId": "auth",
+      "release": {
+        "id": "auth",
+        "version": "0.1.0",
+        "owner": "lenso/auth",
+        "contentDigest": "sha256:43d3a59cdc72539879033e6de9aa330c25743b0d6c08cb367b9db68f53d9ae18",
+        "businessContributions": [
+          "auth"
+        ]
+      },
+      "implementation": {
+        "kind": "linked"
+      },
+      "dependencies": []
+    },
+    {
+      "moduleId": "lenso/platform-story",
+      "release": {
+        "id": "lenso/platform-story",
+        "version": "0.1.0",
+        "owner": "capability:support-desk-product",
+        "contentDigest": "sha256:83937411982368e5ce63bbf7f53bddc6305391efbed08074801bb4dd68c0c83c",
+        "businessContributions": [
+          "runtime.stories.read"
+        ]
+      },
+      "implementation": {
+        "kind": "linked"
+      },
+      "dependencies": []
+    },
+    {
+      "moduleId": "notification-worker",
+      "release": {
+        "id": "notification-worker",
+        "version": "0.1.0",
+        "owner": "blueprint:notification-worker",
+        "contentDigest": "sha256:56ae26b4d4e16598236369287c3d66a1771b59e828e34dbcafbe45aa8fa88300",
+        "businessContributions": [
+          "support.notifications.send"
+        ]
+      },
+      "implementation": {
+        "kind": "linked"
+      },
+      "dependencies": [
+        {
+          "requirement": "support.tickets.read",
+          "moduleId": "support-api",
+          "version": "0.1.0",
+          "contentDigest": "sha256:4d6c6e419df180079afc10b8a55572caf3de8959e0e1048796dd1ea5bb57bf55"
+        }
+      ]
+    },
+    {
+      "moduleId": "support-api",
+      "release": {
+        "id": "support-api",
+        "version": "0.1.0",
+        "owner": "blueprint:support-api",
+        "contentDigest": "sha256:4d6c6e419df180079afc10b8a55572caf3de8959e0e1048796dd1ea5bb57bf55",
+        "businessContributions": [
+          "support.tickets.read",
+          "support.tickets.write"
+        ]
+      },
+      "implementation": {
+        "kind": "linked"
+      },
+      "dependencies": [
+        {
+          "requirement": "auth",
+          "moduleId": "auth",
+          "version": "0.1.0",
+          "contentDigest": "sha256:43d3a59cdc72539879033e6de9aa330c25743b0d6c08cb367b9db68f53d9ae18"
+        }
+      ]
+    },
+    {
+      "moduleId": "support/tickets",
+      "release": {
+        "id": "support/tickets",
+        "version": "0.1.0",
+        "owner": "capability:support-desk-product",
+        "contentDigest": "sha256:172d5f1066cd41238ef433bbb9e3556b727b46d10f57bbcac7cbfc6cad77a6b8",
+        "businessContributions": [
+          "support_ticket.tickets.read",
+          "support_ticket.tickets.write"
+        ]
+      },
+      "implementation": {
+        "kind": "service",
+        "serviceReference": "service:support-suite-provider/support-ticket"
+      },
+      "dependencies": [
+        {
+          "requirement": "auth",
+          "moduleId": "auth",
+          "version": "0.1.0",
+          "contentDigest": "sha256:43d3a59cdc72539879033e6de9aa330c25743b0d6c08cb367b9db68f53d9ae18"
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "blueprint": "support-desk",
+    "addons": [],
+    "capabilityPacks": [
+      "support-desk-product"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "protocol": "lenso.service.v1",
+  "name": "support-suite-provider",
+  "services": [
+    {
+      "name": "support-ticket",
+      "manifest": "http://127.0.0.1:4110/lenso/service/v1/manifest"
+    }
+  ]
+}

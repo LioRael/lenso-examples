@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 
 import { serveSupportTicketModule } from "./module.ts";
+import { SUPPORT_TICKET_OPERATION_IDS } from "./contract.ts";
 
 const fetchJson = async (url, init) => {
   const response = await fetch(url, init);
@@ -131,7 +132,7 @@ try {
     (route) => route.method === "GET" && route.path === "/tickets"
   );
   if (
-    listRoute?.operation?.operationId !== "support-ticket/http/GET:/tickets"
+    listRoute?.operation?.operationId !== SUPPORT_TICKET_OPERATION_IDS.list
   ) {
     throw new Error("support-ticket did not declare the tickets HTTP operation");
   }
