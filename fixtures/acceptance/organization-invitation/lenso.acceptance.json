@@ -6,7 +6,7 @@
       "repository": "LioRael/lenso",
       "requiredPackages": {
         "lenso": "0.3.44",
-        "@lenso/service-kit": "0.6.0"
+        "@lenso/service-kit": "0.6.1"
       }
     },
     "organization": {
@@ -28,7 +28,7 @@
       "repository": "LioRael/lenso-email-provider-service",
       "serviceId": "lenso/email-provider-service",
       "moduleId": "lenso/email-delivery",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "delivery": "service",
       "responsibilityProfile": "provider"
     }

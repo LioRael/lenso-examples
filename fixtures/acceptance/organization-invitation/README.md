@@ -20,6 +20,6 @@ invitation token, full recipient address, unrestricted Provider URL, and
 plaintext render snapshots are forbidden from browser and persisted evidence.
 
 The runner must refuse to start until `lenso@0.3.44` and
-`@lenso/service-kit@0.6.0` are available through the explicitly selected
+`@lenso/service-kit@0.6.1` are available through the explicitly selected
 integration set. Local source overrides are allowed only when their exact
 commit and content digest are recorded in the resulting evidence.
