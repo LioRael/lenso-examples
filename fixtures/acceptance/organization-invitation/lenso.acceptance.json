@@ -1,0 +1,65 @@
+{
+  "protocol": "lenso.product-acceptance.v1",
+  "id": "organization-invitation-email",
+  "components": {
+    "framework": {
+      "repository": "LioRael/lenso",
+      "requiredPackages": {
+        "lenso": "0.3.44",
+        "@lenso/service-kit": "0.6.0"
+      }
+    },
+    "organization": {
+      "repository": "LioRael/lenso-organization-module",
+      "package": "lenso-module-organization",
+      "version": "0.1.4",
+      "delivery": "linked",
+      "feature": "notification"
+    },
+    "notification": {
+      "repository": "LioRael/lenso-notification-module",
+      "moduleId": "lenso/notification",
+      "package": "lenso-module-notification",
+      "version": "0.1.0",
+      "delivery": "linked",
+      "surfacePath": "/notifications/deliveries"
+    },
+    "emailProvider": {
+      "repository": "LioRael/lenso-email-provider-service",
+      "serviceId": "lenso/email-provider-service",
+      "moduleId": "lenso/email-delivery",
+      "version": "0.1.0",
+      "delivery": "service",
+      "responsibilityProfile": "provider"
+    }
+  },
+  "contracts": [
+    "lenso.email.dispatch-observed.v1.schema.json",
+    "lenso.email.dispatch-requested.v1.schema.json",
+    "lenso.email.receipt-observed.v1.schema.json"
+  ],
+  "contractDigests": {
+    "lenso.email.dispatch-observed.v1.schema.json": "sha256:2a2d7a84d160901fde4377a33dc026c4c13a7b888e636ea30ea977337333a1b5",
+    "lenso.email.dispatch-requested.v1.schema.json": "sha256:93a95e7f1eb9497373dbf40da77a7ade3b52a721050800e84f425ebfa3939461",
+    "lenso.email.receipt-observed.v1.schema.json": "sha256:1739053994dd77b27db12fbed08491770f15ccf18a4e25754710ef3e341747d8"
+  },
+  "surface": {
+    "ownerModuleId": "lenso/notification",
+    "contractDigest": "sha256:ebbbec96b0657a1158850b1fddbee702367387dfb7f610c9c1ab15d4200089f5",
+    "operations": [
+      "notification/http/GET:/deliveries",
+      "notification/http/GET:/deliveries/{id}",
+      "notification/http/POST:/deliveries/{id}/retry"
+    ]
+  },
+  "scenarios": {
+    "success": ["queued", "attempting", "accepted", "delivered"],
+    "retry": ["queued", "attempting", "retry_scheduled", "attempting", "accepted", "delivered"],
+    "permanent": ["queued", "attempting", "failed"],
+    "ambiguous": ["queued", "attempting", "delivery_unknown"]
+  },
+  "receiptIdentity": {
+    "immutableFields": ["source", "remoteId", "kind"],
+    "sameRemoteIdAcrossLifecycle": true
+  }
+}

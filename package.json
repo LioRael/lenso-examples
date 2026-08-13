@@ -5,6 +5,9 @@
   "description": "Runnable examples for Lenso modules and API clients.",
   "type": "module",
   "scripts": {
+    "acceptance:organization-invitation": "node scripts/organization-invitation-product-acceptance.mjs",
+    "acceptance:notification-console-session": "node scripts/notification-console-session.mjs",
+    "acceptance:organization-invitation:contract": "node --test scripts/organization-invitation-product-acceptance-contract.test.mjs",
     "acceptance:support-desk": "node scripts/support-desk-product-acceptance.mjs",
     "acceptance:support-desk:contract": "node --test scripts/support-desk-product-acceptance-contract.test.mjs",
     "acceptance:m1": "node scripts/m1-acceptance.mjs",
@@ -16,7 +19,7 @@
     "acceptance:m6": "node scripts/m6-acceptance.mjs",
     "acceptance:m6:environment": "node scripts/m6-environment-verification.mjs",
     "test:m6": "node --test scripts/m6-acceptance.test.mjs",
-    "check": "pnpm smoke && pnpm --filter @lenso/example-support-ticket check && pnpm --filter @lenso/example-support-ticket-console test && pnpm --filter @lenso/example-support-ticket-console typecheck && pnpm host-api-smoke:contract && pnpm smoke:support-system:contract && pnpm acceptance:support-desk:contract",
+    "check": "pnpm smoke && pnpm --filter @lenso/example-support-ticket check && pnpm --filter @lenso/example-support-ticket-console test && pnpm --filter @lenso/example-support-ticket-console typecheck && pnpm host-api-smoke:contract && pnpm smoke:support-system:contract && pnpm acceptance:support-desk:contract && pnpm acceptance:organization-invitation:contract",
     "build:console-artifact:support-ticket": "node scripts/build-support-ticket-console-artifact.mjs",
     "integration:prepare": "node scripts/prepare-integration-set.mjs",
     "host-smoke": "pnpm --filter @lenso/example-hello-action host-smoke && pnpm --filter @lenso/example-support-ticket host-smoke && pnpm --filter @lenso/example-account-profile host-smoke",
