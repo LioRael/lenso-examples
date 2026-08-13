@@ -5,7 +5,7 @@
     "framework": {
       "repository": "LioRael/lenso",
       "requiredPackages": {
-        "lenso": "0.3.44",
+        "lenso": "0.3.45",
         "@lenso/service-kit": "0.6.1"
       }
     },

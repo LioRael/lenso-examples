@@ -12,7 +12,7 @@ export const fixtureRoot = path.join(
   "organization-invitation"
 );
 
-export const REQUIRED_LENSO_VERSION = "0.3.44";
+export const REQUIRED_LENSO_VERSION = "0.3.45";
 export const REQUIRED_SERVICE_KIT_VERSION = "0.6.1";
 export const NOTIFICATION_MODULE_ID = "lenso/notification";
 export const EMAIL_PROVIDER_MODULE_ID = "lenso/email-delivery";
