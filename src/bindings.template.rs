@@ -1,8 +1,8 @@
 use std::{fmt, rc::Rc};
 use futures::future::LocalBoxFuture;
 use lenso_kernel::{
-    InvocationContext, NativeApp, NativeRequestEndpoint, NativeRequestHandle, RequestCapability,
-    RuntimeFailure,
+    InvocationContext, ModuleDependencies, NativeRequestEndpoint, NativeRequestHandle,
+    RequestCapability, RuntimeFailure,
 };
 
 pub const GREETING_CAPABILITY_ID: &str = "__CAPABILITY_ID__";
@@ -58,8 +58,11 @@ impl<P: __CAPABILITY__Provider> NativeRequestEndpoint for __CAPABILITY__Endpoint
 #[derive(Debug)]
 pub struct __CAPABILITY__Client { handle: NativeRequestHandle<__CAPABILITY__> }
 impl __CAPABILITY__Client {
-    pub fn new(app: &NativeApp, caller: &str) -> Result<Self, RuntimeFailure> {
-        Ok(Self { handle: app.handle::<__CAPABILITY__>(caller)? })
+    pub fn new(handle: NativeRequestHandle<__CAPABILITY__>) -> Self {
+        Self { handle }
+    }
+    pub fn from_dependencies(dependencies: &ModuleDependencies) -> Result<Self, RuntimeFailure> {
+        dependencies.one::<__CAPABILITY__>().map(Self::new)
     }
     pub async fn __OPERATION_FN__(&self, request: __OPERATION_TYPE__Request) -> Result<__OPERATION_TYPE__Response, __CAPABILITY__InvocationError> {
         self.handle.invoke(GREET_OPERATION, request).await
