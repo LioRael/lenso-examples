@@ -9,9 +9,11 @@ build = "build.rs"
 [dependencies]
 futures.workspace = true
 lenso-kernel = { path = "../lenso-kernel" }
+serde.workspace = true
+serde_json.workspace = true
 
 [build-dependencies]
-serde_json.workspace = true
+lenso-contract-codegen = { path = "../lenso-contract-codegen" }
 
 [lints]
 workspace = true
