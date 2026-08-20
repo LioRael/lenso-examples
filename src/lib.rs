@@ -4,7 +4,7 @@ use futures::future::LocalBoxFuture;
 use lenso_capability_greeting::{
     GreetError, GreetRequest, GreetResponse, GreetingEndpoint, GreetingProvider,
 };
-use lenso_kernel::RuntimeFailure;
+use lenso_kernel::{InvocationContext, RuntimeFailure};
 use lenso_native_adapter::{NativeModuleFactory, NativeModuleInstance};
 use std::rc::Rc;
 
@@ -58,6 +58,7 @@ struct Greeter;
 impl GreetingProvider for Greeter {
     fn greet(
         &self,
+        _context: InvocationContext,
         request: GreetRequest,
     ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetError>> {
         Box::pin(async move {
@@ -78,6 +79,7 @@ struct AlternateGreeter;
 impl GreetingProvider for AlternateGreeter {
     fn greet(
         &self,
+        _context: InvocationContext,
         request: GreetRequest,
     ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetError>> {
         Box::pin(async move {
