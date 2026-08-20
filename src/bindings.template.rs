@@ -1,7 +1,8 @@
 use std::{fmt, rc::Rc};
 use futures::future::LocalBoxFuture;
 use lenso_kernel::{
-    NativeApp, NativeRequestEndpoint, NativeRequestHandle, RequestCapability, RuntimeFailure,
+    InvocationContext, NativeApp, NativeRequestEndpoint, NativeRequestHandle, RequestCapability,
+    RuntimeFailure,
 };
 
 pub const GREETING_CAPABILITY_ID: &str = "__CAPABILITY_ID__";
@@ -26,7 +27,7 @@ impl RequestCapability for __CAPABILITY__ {
 }
 
 pub trait __CAPABILITY__Provider: fmt::Debug + 'static {
-    fn __OPERATION_FN__(&self, request: __OPERATION_TYPE__Request) -> LocalBoxFuture<'static, Result<__OPERATION_TYPE__Response, __OPERATION_TYPE__Error>>;
+    fn __OPERATION_FN__(&self, context: InvocationContext, request: __OPERATION_TYPE__Request) -> LocalBoxFuture<'static, Result<__OPERATION_TYPE__Response, __OPERATION_TYPE__Error>>;
 }
 
 #[derive(Debug)]
@@ -38,7 +39,7 @@ impl<P: __CAPABILITY__Provider> NativeRequestEndpoint for __CAPABILITY__Endpoint
     fn capability_id(&self) -> &'static str { GREETING_CAPABILITY_ID }
     fn descriptor_version(&self) -> &'static str { GREETING_DESCRIPTOR_VERSION }
     fn operations(&self) -> &'static [&'static str] { &[GREET_OPERATION] }
-    fn invoke(&self, operation: &str, request: Box<dyn std::any::Any>) -> LocalBoxFuture<'static, Result<Result<Box<dyn std::any::Any>, Box<dyn std::any::Any>>, RuntimeFailure>> {
+    fn invoke(&self, operation: &str, request: Box<dyn std::any::Any>, context: InvocationContext) -> LocalBoxFuture<'static, Result<Result<Box<dyn std::any::Any>, Box<dyn std::any::Any>>, RuntimeFailure>> {
         if operation != GREET_OPERATION {
             return Box::pin(futures::future::ready(Err(RuntimeFailure::UnknownOperation { capability: GREETING_CAPABILITY_ID, operation: operation.to_owned() })));
         }
@@ -47,7 +48,7 @@ impl<P: __CAPABILITY__Provider> NativeRequestEndpoint for __CAPABILITY__Endpoint
         };
         let provider = Rc::clone(&self.provider);
         Box::pin(async move {
-            Ok(provider.__OPERATION_FN__(*request).await
+            Ok(provider.__OPERATION_FN__(context, *request).await
                 .map(|value| Box::new(value) as Box<dyn std::any::Any>)
                 .map_err(|error| Box::new(error) as Box<dyn std::any::Any>))
         })
@@ -62,6 +63,11 @@ impl __CAPABILITY__Client {
     }
     pub async fn __OPERATION_FN__(&self, request: __OPERATION_TYPE__Request) -> Result<__OPERATION_TYPE__Response, __CAPABILITY__InvocationError> {
         self.handle.invoke(GREET_OPERATION, request).await
+            .map_err(__CAPABILITY__InvocationError::Runtime)?
+            .map_err(__CAPABILITY__InvocationError::Domain)
+    }
+    pub async fn __OPERATION_FN___with_context(&self, context: InvocationContext, request: __OPERATION_TYPE__Request) -> Result<__OPERATION_TYPE__Response, __CAPABILITY__InvocationError> {
+        self.handle.invoke_with_context(GREET_OPERATION, context, request).await
             .map_err(__CAPABILITY__InvocationError::Runtime)?
             .map_err(__CAPABILITY__InvocationError::Domain)
     }
