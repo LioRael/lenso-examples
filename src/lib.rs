@@ -101,10 +101,10 @@ impl GreetingProvider for Greeter {
         &self,
         _context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetError>> {
+    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetingInvocationError>> {
         Box::pin(async move {
             if request.name.is_empty() {
-                Err(GreetError::EmptyName)
+                Err(GreetingInvocationError::Domain(GreetError::EmptyName))
             } else {
                 Ok(GreetResponse {
                     message: format!("Hello, {}!", request.name),
@@ -122,10 +122,10 @@ impl GreetingProvider for AlternateGreeter {
         &self,
         _context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetError>> {
+    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetingInvocationError>> {
         Box::pin(async move {
             if request.name.is_empty() {
-                Err(GreetError::EmptyName)
+                Err(GreetingInvocationError::Domain(GreetError::EmptyName))
             } else {
                 Ok(GreetResponse {
                     message: format!("Ahoy, {}!", request.name),
