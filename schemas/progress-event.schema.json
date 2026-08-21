@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["detail", "run_id", "stage"],
+  "properties": {
+    "detail": { "type": "string" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "stage": { "type": "string", "minLength": 1 }
+  }
+}
