@@ -83,7 +83,7 @@ export interface GreetingClient {
 }
 
 export interface GreetingProvider {
-  greet(context: InvocationContext, request: GreetRequest): Promise<{ readonly ok: true; readonly value: GreetResponse } | { readonly ok: false; readonly error: GreetError }>;
+  greet(context: InvocationContext, request: GreetRequest): Promise<GreetResult>;
 }
 
 export const portableValueProfile = {
