@@ -19,6 +19,9 @@ impl NativeModuleFactory for ConsumerFactory {
     fn package_id(&self) -> &'static str {
         CONSUMER_PACKAGE_ID
     }
+    fn package_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
 
     fn instantiate(
         &self,
@@ -65,6 +68,9 @@ impl NativeModuleFactory for GreeterFactory {
     fn package_id(&self) -> &'static str {
         GREETER_PACKAGE_ID
     }
+    fn package_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
     fn instantiate(
         &self,
         _context: NativeModuleFactoryContext<'_>,
@@ -82,6 +88,9 @@ pub struct AlternateGreeterFactory;
 impl NativeModuleFactory for AlternateGreeterFactory {
     fn package_id(&self) -> &'static str {
         ALTERNATE_GREETER_PACKAGE_ID
+    }
+    fn package_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
     }
 
     fn instantiate(
