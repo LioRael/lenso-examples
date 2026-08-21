@@ -6,6 +6,7 @@ use lenso_kernel::{InvocationContext, ModuleDependencies, RuntimeFailure, EventC
 pub const CAPABILITY_ID: &str = "example.agent.progress@1";
 pub const DESCRIPTOR_VERSION: &str = "1.0.0";
 pub const PORTABLE: bool = true;
+pub const CROSS_LANE_TRANSFER: bool = false;
 pub const PROGRESS_CAPABILITY_ID: &str = CAPABILITY_ID;
 pub const PROGRESS_DESCRIPTOR_VERSION: &str = DESCRIPTOR_VERSION;
 
