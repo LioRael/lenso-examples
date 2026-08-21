@@ -3,7 +3,7 @@
 use std::{fmt, marker::PhantomData, rc::Rc};
 
 use futures::future::LocalBoxFuture;
-use lenso_auth_sdk::{ActorAssertionIssuer, AssertionClock, TypedActor};
+use lenso_auth_sdk::{ActorAssertionVerifier, AssertionClock, TypedActor};
 use lenso_kernel::{InvocationContext, NativeRequestEndpoint, RuntimeFailure};
 
 #[allow(dead_code)]
@@ -30,7 +30,7 @@ pub trait SecureGreetingHandler<A>: fmt::Debug + 'static {
 
 struct ActorBoundProvider<H, A> {
     handler: Rc<H>,
-    verifier: ActorAssertionIssuer,
+    verifier: ActorAssertionVerifier,
     clock: Rc<dyn AssertionClock>,
     actor: PhantomData<fn() -> A>,
 }
@@ -102,10 +102,10 @@ where
     H: SecureGreetingHandler<A>,
     A: TypedActor + 'static,
 {
-    /// Binds one target handler to its configured issuer and wall clock.
+    /// Binds one target handler to verification authority and a wall clock.
     pub fn new(
         handler: H,
-        verifier: ActorAssertionIssuer,
+        verifier: ActorAssertionVerifier,
         clock: impl AssertionClock + 'static,
     ) -> Self {
         Self {

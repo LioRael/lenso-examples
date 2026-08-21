@@ -6,9 +6,9 @@ use lenso_app_plan::{
     ModuleInstancePlan,
 };
 use lenso_auth_sdk::{
-    ActorAssertion, ActorAssertionIssuer, ActorProjectionError, AuthOutcome, CredentialEvidence,
-    FixedClock, TypedActor, Validity, audience, authenticate_request, authenticated_response,
-    decode_auth_response,
+    ActorAssertion, ActorAssertionIssuer, ActorAssertionVerifier, ActorProjectionError,
+    AuthOutcome, CredentialEvidence, FixedClock, TypedActor, Validity, audience,
+    authenticate_request, authenticated_response, decode_auth_response,
 };
 use lenso_capability_auth::{
     AUTHENTICATE_OPERATION, Auth, AuthEndpoint, AuthError, AuthInvocationError, AuthProvider,
@@ -106,7 +106,7 @@ impl AuthProvider for FixtureAuthProvider {
 struct FixtureFactory {
     package: &'static str,
     auth: FixtureAuthProvider,
-    verifier: ActorAssertionIssuer,
+    verifier: ActorAssertionVerifier,
     clock: FixedClock,
 }
 
@@ -196,7 +196,7 @@ fn ingress_invokes_bound_auth_before_the_actor_bound_target() {
             registry.with_factory(FixtureFactory {
                 package,
                 auth: auth.clone(),
-                verifier: issuer.clone(),
+                verifier: issuer.verifier(),
                 clock: FixedClock::new(now),
             })
         });
