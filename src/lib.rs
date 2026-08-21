@@ -55,7 +55,8 @@ where
         &self,
         context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetError>> {
+    ) -> LocalBoxFuture<'static, Result<GreetResponse, generated::SecureGreetingInvocationError>>
+    {
         let actor = self.verifier.project_context::<A>(
             &context,
             CAPABILITY_ID,
@@ -64,8 +65,13 @@ where
         );
         let handler = Rc::clone(&self.handler);
         Box::pin(async move {
-            let actor = actor.map_err(|_| GreetError::ActorRequired)?;
-            handler.greet(actor, request).await
+            let actor = actor.map_err(|_| {
+                generated::SecureGreetingInvocationError::Domain(GreetError::ActorRequired)
+            })?;
+            handler
+                .greet(actor, request)
+                .await
+                .map_err(generated::SecureGreetingInvocationError::Domain)
         })
     }
 }
