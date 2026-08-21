@@ -6,6 +6,7 @@ use lenso_kernel::{InvocationContext, ModuleDependencies, RuntimeFailure, Native
 pub const CAPABILITY_ID: &str = "lenso.web.shell@1";
 pub const DESCRIPTOR_VERSION: &str = "1.0.0";
 pub const PORTABLE: bool = true;
+pub const CROSS_LANE_TRANSFER: bool = false;
 pub const SHELL_CAPABILITY_ID: &str = CAPABILITY_ID;
 pub const SHELL_DESCRIPTOR_VERSION: &str = DESCRIPTOR_VERSION;
 
