@@ -1,0 +1,29 @@
+[package]
+name = "lenso-vnext-web-ui"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+futures.workspace = true
+lenso-app-plan = { path = "../../crates/lenso-app-plan" }
+lenso-authoring = { path = "../../crates/lenso-authoring" }
+lenso-auth-sdk = { path = "../../crates/lenso-auth-sdk" }
+lenso-capability-auth = { path = "../../crates/lenso-capability-auth" }
+lenso-capability-secure-greeting = { path = "../../crates/lenso-capability-secure-greeting" }
+lenso-capability-ui-contribution = { path = "../../crates/lenso-capability-ui-contribution" }
+lenso-capability-web-shell = { path = "../../crates/lenso-capability-web-shell" }
+lenso-kernel = { path = "../../crates/lenso-kernel" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter" }
+lenso-runner = { path = "../../crates/lenso-runner" }
+serde.workspace = true
+serde_json.workspace = true
+time.workspace = true
+tokio = { workspace = true, features = ["process"] }
+
+[build-dependencies]
+lenso-contract-codegen = { path = "../../crates/lenso-contract-codegen" }
+
+[lints]
+workspace = true
