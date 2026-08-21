@@ -21,6 +21,17 @@ export interface InvocationContext {
 export type RuntimeFailure = { readonly kind: "unavailable" | "unknown_operation" | "ambiguous_binding" | "protocol_violation" | "missing_module_factory" | "unavailable_execution_class" | "invalid_resolved_plan" | "admission_closed" | "resource_exhausted" | "deadline_exceeded" | "cancelled" | "internal" | "module_failure" | "module_restart_exhausted"; readonly detail?: unknown; readonly [key: string]: unknown };
 export type UnknownDomainError = { readonly code: string; readonly payload?: unknown; readonly [key: string]: unknown };
 
+export type StreamEvent<Message, DomainError> =
+  | { readonly kind: "message"; readonly message: Message }
+  | { readonly kind: "peer_half_closed" }
+  | { readonly kind: "terminal"; readonly outcome: { readonly ok: true } | { readonly ok: false; readonly error: DomainError } };
+export interface StreamSession<Message, DomainError> {
+  send(message: Message): Promise<void>;
+  receive(): Promise<StreamEvent<Message, DomainError>>;
+  closeSend(): Promise<void>;
+  cancel(): void;
+}
+
 export interface GreetRequest {
   name: string;
 }
