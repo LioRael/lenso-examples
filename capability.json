@@ -1,0 +1,12 @@
+{
+  "id": "lenso.story.query@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [{
+    "name": "timeline",
+    "interaction": "request",
+    "request_schema": "schemas/timeline-request.schema.json",
+    "response_schema": "schemas/timeline-response.schema.json",
+    "domain_error_schema": "schemas/timeline-error.schema.json"
+  }]
+}

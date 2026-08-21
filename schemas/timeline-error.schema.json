@@ -1,0 +1,6 @@
+{
+  "oneOf": [
+    {"const": "unauthorized"},
+    {"const": "invalid_query"}
+  ]
+}
