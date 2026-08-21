@@ -2,6 +2,7 @@
   "id": "example.greeting@1",
   "version": "1.0.0",
   "portable": true,
+  "cross_lane_transfer": true,
   "operations": [{
     "name": "greet",
     "interaction": "request",
