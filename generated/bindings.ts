@@ -2,6 +2,7 @@
 export const CAPABILITY_ID = "lenso.secrets@1";
 export const DESCRIPTOR_VERSION = "1.0.0";
 export const PORTABLE = false;
+export const CROSS_LANE_TRANSFER = false;
 
 export type Int64 = string & { readonly __lensoInt64: unique symbol };
 export type Uint64 = string & { readonly __lensoUint64: unique symbol };
