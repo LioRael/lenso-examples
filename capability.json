@@ -1,0 +1,12 @@
+{
+  "id": "example.game-session@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [{
+    "name": "play",
+    "interaction": "stream",
+    "request_schema": "schemas/play-open.schema.json",
+    "response_schema": "schemas/play-message.schema.json",
+    "domain_error_schema": "schemas/play-error.schema.json"
+  }]
+}
