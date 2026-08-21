@@ -1,0 +1,22 @@
+[package]
+name = "lenso-vnext-agent-harness"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+futures.workspace = true
+lenso-app-plan = { path = "../../crates/lenso-app-plan" }
+lenso-capability-agent = { path = "../../crates/lenso-capability-agent" }
+lenso-capability-agent-memory = { path = "../../crates/lenso-capability-agent-memory" }
+lenso-capability-agent-model = { path = "../../crates/lenso-capability-agent-model" }
+lenso-capability-agent-progress = { path = "../../crates/lenso-capability-agent-progress" }
+lenso-capability-agent-tool = { path = "../../crates/lenso-capability-agent-tool" }
+lenso-kernel = { path = "../../crates/lenso-kernel" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter" }
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true
