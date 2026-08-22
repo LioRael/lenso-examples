@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","oneOf":[{"const":"actor_required"},{"const":"not_allowed"},{"const":"empty_name"}]}

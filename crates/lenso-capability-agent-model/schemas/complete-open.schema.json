@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["memory", "prompt", "tool_output"],
+  "properties": {
+    "memory": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prompt": { "type": "string", "minLength": 1 },
+    "tool_output": { "type": "string" }
+  }
+}

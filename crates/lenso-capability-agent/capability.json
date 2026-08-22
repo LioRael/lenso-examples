@@ -1,0 +1,12 @@
+{
+  "id": "example.agent@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [{
+    "name": "run",
+    "interaction": "request",
+    "request_schema": "schemas/run-request.schema.json",
+    "response_schema": "schemas/run-response.schema.json",
+    "domain_error_schema": "schemas/run-error.schema.json"
+  }]
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "name": "create-owned-counter-state",
+  "description": "Create the durable counter document with a schema version, revision, and owned entries.",
+  "initial_document": {
+    "schema_version": 1,
+    "revision": 0,
+    "entries": {}
+  }
+}

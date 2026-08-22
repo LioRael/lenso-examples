@@ -1,0 +1,24 @@
+name: vNext Rust examples
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.21
+      - run: cargo fmt --all -- --check
+      - run: cargo check --locked --workspace --all-targets
+      - run: cargo test --locked --workspace
+      - name: Run target-owned Web UI conformance
+        run: cargo test --locked -p lenso-vnext-web-ui --test web_ui generated_browser_client_invokes_the_allowlisted_app_capability -- --ignored --test-threads=1
