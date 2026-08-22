@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["event_id", "event_version", "occurred_at", "subject_id", "event_type", "facts", "source_instance", "revision"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "event_version": {"type": "integer"},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "subject_id": {"type": "string"},
+    "event_type": {"type": "string"},
+    "facts": {"type": "object", "additionalProperties": true},
+    "source_instance": {"type": "string"},
+    "revision": {"type": "string", "format": "uint64"}
+  },
+  "additionalProperties": false
+}
