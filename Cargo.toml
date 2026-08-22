@@ -9,8 +9,8 @@ publish.workspace = true
 futures.workspace = true
 lenso-capability-counter = { path = "../../crates/lenso-capability-counter", version = "0.1.0" }
 lenso-capability-secrets = { path = "../../crates/lenso-capability-secrets", version = "0.1.0" }
-lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.0" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.0" }
+lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.1" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.1" }
 serde.workspace = true
 serde_json.workspace = true
 
