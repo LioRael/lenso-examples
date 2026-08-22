@@ -1,0 +1,12 @@
+{
+  "id": "example.agent.progress@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [{
+    "name": "update",
+    "interaction": "event",
+    "request_schema": "schemas/progress-event.schema.json",
+    "response_schema": "schemas/progress-response.schema.json",
+    "domain_error_schema": "schemas/progress-error.schema.json"
+  }]
+}
