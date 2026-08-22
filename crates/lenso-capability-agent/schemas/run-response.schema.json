@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["revision", "text"],
+  "properties": {
+    "revision": { "type": "string", "format": "uint64" },
+    "text": { "type": "string" }
+  }
+}
