@@ -1,0 +1,12 @@
+{
+  "id": "lenso.story.events@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [{
+    "name": "record",
+    "interaction": "request",
+    "request_schema": "schemas/record-event.schema.json",
+    "response_schema": "schemas/record-response.schema.json",
+    "domain_error_schema": "schemas/record-error.schema.json"
+  }]
+}
