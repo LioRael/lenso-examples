@@ -113,6 +113,20 @@ owned by the standalone `lenso-cli` repository.
 
 ## Examples
 
+### vNext target-owned Web UI
+
+[`fixtures/vnext-web-ui`](fixtures/vnext-web-ui) is the runnable Rust proof for
+a target-owned Web Shell, UI Contribution, and Browser Adapter. Its Axum/Tower
+ingress stays behind the Browser Adapter and projects only an explicitly bound
+Capability through a generated browser client.
+
+```sh
+cargo test --locked -p lenso-vnext-web-ui --test web_ui
+```
+
+See the [fixture README](fixtures/vnext-web-ui/README.md) for ownership,
+middleware scope, and the Bun-backed browser-client conformance command.
+
 ### Communicating Support Services
 
 `examples/support-system` extracts the `support-ticket` and `support-sla`

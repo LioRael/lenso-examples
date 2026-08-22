@@ -6,6 +6,7 @@ license.workspace = true
 publish.workspace = true
 
 [dependencies]
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio"] }
 futures.workspace = true
 lenso-app-plan = "0.1.0"
 lenso-authoring = "0.1.1"
@@ -20,7 +21,9 @@ lenso-runner = "0.1.1"
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
-tokio = { workspace = true, features = ["process"] }
+tokio = { workspace = true, features = ["process", "sync"] }
+tower = { version = "0.5", features = ["limit"] }
+tower-http = { version = "0.6", features = ["limit", "request-id", "sensitive-headers", "set-header"] }
 
 [build-dependencies]
 lenso-contract-codegen = "0.1.0"
