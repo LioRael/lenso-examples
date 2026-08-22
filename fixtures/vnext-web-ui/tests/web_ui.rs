@@ -1,4 +1,4 @@
-use std::{net::SocketAddr, time::Duration};
+use std::{collections::BTreeMap, fmt::Write as _, net::SocketAddr, time::Duration};
 
 use lenso_authoring::{
     CapabilityEndpoint, Module, ProjectAuthoring, ResolutionOptions, WebProfile,
@@ -119,6 +119,11 @@ async fn route_assets_and_allowlisted_generated_client_run_after_app_readiness()
 
             let page = request(running.local_addr().unwrap(), "GET", "/orders", None, None).await;
             assert_eq!(page.status, 200);
+            assert!(
+                page.headers
+                    .get("x-request-id")
+                    .is_some_and(|request_id| request_id.starts_with("lenso-"))
+            );
             assert!(page.body.contains("<h1>Orders</h1>"));
             assert!(page.body.contains("/assets/orders.js"));
 
@@ -243,6 +248,74 @@ async fn generated_client_transport_preserves_unknown_and_protocol_errors() {
         .await;
 }
 
+#[tokio::test(flavor = "current_thread")]
+async fn ingress_applies_request_identity_security_headers_and_input_limits() {
+    LocalSet::new()
+        .run_until(async {
+            let running = WebUiFixture::orders().start().await.unwrap();
+            let address = running.local_addr().unwrap();
+
+            let identified = request_with_headers(
+                address,
+                "GET",
+                "/orders",
+                None,
+                None,
+                &[("X-Request-Id", "test-request-123")],
+            )
+            .await;
+            assert_eq!(identified.status, 200);
+            assert_eq!(
+                identified.headers.get("x-request-id").map(String::as_str),
+                Some("test-request-123")
+            );
+            assert_eq!(
+                identified
+                    .headers
+                    .get("x-content-type-options")
+                    .map(String::as_str),
+                Some("nosniff")
+            );
+
+            let oversized_body = "a".repeat(16 * 1024 + 1);
+            let rejected_body = request(
+                address,
+                "POST",
+                "/api/capabilities/example.secure-greeting@1/greet",
+                Some("good-token"),
+                Some(&oversized_body),
+            )
+            .await;
+            assert_eq!(rejected_body.status, 413);
+
+            let oversized_header = "a".repeat(16 * 1024 + 1);
+            let rejected_head = request_with_headers(
+                address,
+                "GET",
+                "/orders",
+                None,
+                None,
+                &[("X-Padding", &oversized_header)],
+            )
+            .await;
+            assert_eq!(rejected_head.status, 431);
+
+            let duplicate_credential = request_with_headers(
+                address,
+                "POST",
+                "/api/capabilities/example.secure-greeting@1/greet",
+                Some("good-token"),
+                Some(r#"{"name":"Ada"}"#),
+                &[("Authorization", "Bearer other-token")],
+            )
+            .await;
+            assert_eq!(duplicate_credential.status, 400);
+
+            running.shutdown(Duration::from_secs(1)).await;
+        })
+        .await;
+}
+
 async fn run_generated_client(address: SocketAddr) -> String {
     let origin = format!("http://{address}");
     let script = r#"
@@ -330,6 +403,7 @@ async fn removing_web_modules_leaves_non_ui_business_invocation_unchanged() {
 #[derive(Debug)]
 struct Response {
     status: u16,
+    headers: BTreeMap<String, String>,
     body: String,
 }
 
@@ -340,6 +414,17 @@ async fn request(
     token: Option<&str>,
     body: Option<&str>,
 ) -> Response {
+    request_with_headers(address, method, path, token, body, &[]).await
+}
+
+async fn request_with_headers(
+    address: SocketAddr,
+    method: &str,
+    path: &str,
+    token: Option<&str>,
+    body: Option<&str>,
+    headers: &[(&str, &str)],
+) -> Response {
     let mut stream = TcpStream::connect(address)
         .await
         .expect("connect to Browser Adapter");
@@ -347,8 +432,14 @@ async fn request(
     let authorization = token.map_or_else(String::new, |token| {
         format!("Authorization: Bearer {token}\r\n")
     });
+    let headers = headers
+        .iter()
+        .fold(String::new(), |mut wire, (name, value)| {
+            write!(wire, "{name}: {value}\r\n").expect("writing to a String cannot fail");
+            wire
+        });
     let wire = format!(
-        "{method} {path} HTTP/1.1\r\nHost: {address}\r\n{authorization}Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        "{method} {path} HTTP/1.1\r\nHost: {address}\r\n{authorization}{headers}Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
         body.len()
     );
     stream
@@ -370,8 +461,15 @@ async fn request(
         .expect("HTTP status")
         .parse()
         .expect("numeric HTTP status");
+    let headers = head
+        .split("\r\n")
+        .skip(1)
+        .filter_map(|line| line.split_once(':'))
+        .map(|(name, value)| (name.to_ascii_lowercase(), value.trim().to_owned()))
+        .collect();
     Response {
         status,
+        headers,
         body: body.to_owned(),
     }
 }
