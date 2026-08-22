@@ -59,17 +59,23 @@ pub fn project(metadata: MetadataScenario, web_enabled: bool) -> ProjectFile {
 
 fn add_contracts(project: &mut ProjectFile) {
     for (directory, capability_id) in [
-        ("lenso-capability-auth", AUTH_CAPABILITY_ID),
-        ("lenso-capability-secure-greeting", GREETING_CAPABILITY_ID),
-        ("lenso-capability-ui-contribution", UI_CAPABILITY_ID),
-        ("lenso-capability-web-shell", SHELL_CAPABILITY_ID),
+        (
+            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1",
+            AUTH_CAPABILITY_ID,
+        ),
+        (
+            "crates/lenso-capability-secure-greeting",
+            GREETING_CAPABILITY_ID,
+        ),
+        ("crates/lenso-capability-ui-contribution", UI_CAPABILITY_ID),
+        ("crates/lenso-capability-web-shell", SHELL_CAPABILITY_ID),
     ] {
         project.contracts_mut().push(ContractInput::new(
             capability_id,
             "1.0.0",
-            format!("crates/{directory}/capability.json"),
-            format!("crates/{directory}/src/generated.rs"),
-            format!("crates/{directory}/generated/bindings.ts"),
+            format!("{directory}/capability.json"),
+            format!("{directory}/src/generated.rs"),
+            format!("{directory}/generated/bindings.ts"),
         ));
     }
 }

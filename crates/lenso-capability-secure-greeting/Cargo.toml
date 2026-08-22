@@ -8,18 +8,18 @@ build = "build.rs"
 
 [dependencies]
 futures.workspace = true
-lenso-auth-sdk = { path = "../lenso-auth-sdk", version = "0.1.1" }
-lenso-kernel = { path = "../lenso-kernel", version = "0.1.1" }
+lenso-auth-sdk = "0.1.1"
+lenso-kernel = "0.1.1"
 serde.workspace = true
 serde_json.workspace = true
 
 [build-dependencies]
-lenso-contract-codegen = { path = "../lenso-contract-codegen", version = "0.1.0" }
+lenso-contract-codegen = "0.1.0"
 
 [dev-dependencies]
-lenso-app-plan = { path = "../lenso-app-plan", version = "0.1.0" }
-lenso-capability-auth = { path = "../lenso-capability-auth", version = "0.1.1" }
-lenso-native-adapter = { path = "../lenso-native-adapter", version = "0.1.1" }
+lenso-app-plan = "0.1.0"
+lenso-capability-auth = "0.1.1"
+lenso-native-adapter = "0.1.1"
 time.workspace = true
 
 [lints]

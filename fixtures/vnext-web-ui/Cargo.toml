@@ -7,23 +7,23 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-app-plan = { path = "../../crates/lenso-app-plan", version = "0.1.0" }
-lenso-authoring = { path = "../../crates/lenso-authoring", version = "0.1.1" }
-lenso-auth-sdk = { path = "../../crates/lenso-auth-sdk", version = "0.1.1" }
-lenso-capability-auth = { path = "../../crates/lenso-capability-auth", version = "0.1.1" }
+lenso-app-plan = "0.1.0"
+lenso-authoring = "0.1.1"
+lenso-auth-sdk = "0.1.1"
+lenso-capability-auth = "0.1.1"
 lenso-capability-secure-greeting = { path = "../../crates/lenso-capability-secure-greeting", version = "0.1.0" }
 lenso-capability-ui-contribution = { path = "../../crates/lenso-capability-ui-contribution", version = "0.1.0" }
 lenso-capability-web-shell = { path = "../../crates/lenso-capability-web-shell", version = "0.1.0" }
-lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.1" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.1" }
-lenso-runner = { path = "../../crates/lenso-runner", version = "0.1.1" }
+lenso-kernel = "0.1.1"
+lenso-native-adapter = "0.1.1"
+lenso-runner = "0.1.1"
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
 tokio = { workspace = true, features = ["process"] }
 
 [build-dependencies]
-lenso-contract-codegen = { path = "../../crates/lenso-contract-codegen", version = "0.1.0" }
+lenso-contract-codegen = "0.1.0"
 
 [lints]
 workspace = true

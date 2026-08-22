@@ -2,6 +2,10 @@
 
 Guidance for coding agents working in this repository.
 
+The `crates/lenso-capability-*` and `fixtures/vnext-*` trees own example and
+product-shaped vNext behavior. Keep Kernel mechanics and host runtime
+implementations in their owning repositories; use versioned dependencies.
+
 ## Agent skills
 
 ### Issue tracker

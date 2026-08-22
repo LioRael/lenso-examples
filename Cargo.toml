@@ -1,0 +1,55 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/lenso-capability-agent",
+    "crates/lenso-capability-agent-memory",
+    "crates/lenso-capability-agent-model",
+    "crates/lenso-capability-agent-progress",
+    "crates/lenso-capability-agent-tool",
+    "crates/lenso-capability-counter",
+    "crates/lenso-capability-game-session",
+    "crates/lenso-capability-greeting",
+    "crates/lenso-capability-secrets",
+    "crates/lenso-capability-secure-greeting",
+    "crates/lenso-capability-story-events",
+    "crates/lenso-capability-story-query",
+    "crates/lenso-capability-ui-contribution",
+    "crates/lenso-capability-web-shell",
+    "fixtures/vnext-agent-harness",
+    "fixtures/vnext-game-session",
+    "fixtures/vnext-native-greeter",
+    "fixtures/vnext-stateful-module",
+    "fixtures/vnext-story-module",
+    "fixtures/vnext-web-ui",
+]
+exclude = [
+    "examples/rust-manifest",
+    "examples/rust-service",
+    "examples/support-system",
+]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+publish = false
+repository = "https://github.com/LioRael/lenso-examples"
+rust-version = "1.94"
+
+[workspace.dependencies]
+futures = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+time = { version = "0.3", features = ["formatting", "parsing"] }
+tokio = { version = "1.52", features = ["io-util", "macros", "net", "rt", "signal", "time"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"

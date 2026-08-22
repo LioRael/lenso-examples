@@ -1,5 +1,11 @@
 # Lenso Examples
 
+This repository also owns the vNext example Capabilities and executable Apps
+extracted from `LioRael/lenso` at monorepo commit
+`67d21499548d07e92c2f6529d7c8345e58c067d9` under ADR 0064. Their imported
+subtrees retain relevant Git history and consume released core, runtime,
+protocol, Auth, and authoring packages through versioned dependencies.
+
 Runnable examples for Lenso module authors.
 
 This repository uses published packages for released contracts where available,
