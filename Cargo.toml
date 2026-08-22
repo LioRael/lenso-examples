@@ -7,19 +7,19 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-app-plan = { path = "../../crates/lenso-app-plan" }
-lenso-auth-sdk = { path = "../../crates/lenso-auth-sdk" }
-lenso-capability-auth = { path = "../../crates/lenso-capability-auth" }
-lenso-capability-game-session = { path = "../../crates/lenso-capability-game-session" }
-lenso-kernel = { path = "../../crates/lenso-kernel" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter" }
+lenso-app-plan = { path = "../../crates/lenso-app-plan", version = "0.1.0" }
+lenso-auth-sdk = { path = "../../crates/lenso-auth-sdk", version = "0.1.0" }
+lenso-capability-auth = { path = "../../crates/lenso-capability-auth", version = "0.1.0" }
+lenso-capability-game-session = { path = "../../crates/lenso-capability-game-session", version = "0.1.0" }
+lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.0" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.0" }
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
 tokio.workspace = true
 
 [dev-dependencies]
-lenso-runner = { path = "../../crates/lenso-runner" }
+lenso-runner = { path = "../../crates/lenso-runner", version = "0.1.0" }
 
 [lints]
 workspace = true
