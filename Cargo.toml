@@ -7,9 +7,9 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-capability-greeting = { path = "../../crates/lenso-capability-greeting" }
-lenso-kernel = { path = "../../crates/lenso-kernel" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter" }
+lenso-capability-greeting = { path = "../../crates/lenso-capability-greeting", version = "0.1.0" }
+lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.0" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.0" }
 
 [lints]
 workspace = true
