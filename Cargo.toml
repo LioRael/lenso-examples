@@ -13,8 +13,8 @@ lenso-capability-agent-memory = { path = "../../crates/lenso-capability-agent-me
 lenso-capability-agent-model = { path = "../../crates/lenso-capability-agent-model", version = "0.1.0" }
 lenso-capability-agent-progress = { path = "../../crates/lenso-capability-agent-progress", version = "0.1.0" }
 lenso-capability-agent-tool = { path = "../../crates/lenso-capability-agent-tool", version = "0.1.0" }
-lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.0" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.0" }
+lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.1" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.1" }
 serde.workspace = true
 serde_json.workspace = true
 
