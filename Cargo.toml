@@ -7,15 +7,15 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-capability-counter = { path = "../../crates/lenso-capability-counter" }
-lenso-capability-secrets = { path = "../../crates/lenso-capability-secrets" }
-lenso-kernel = { path = "../../crates/lenso-kernel" }
-lenso-native-adapter = { path = "../../crates/lenso-native-adapter" }
+lenso-capability-counter = { path = "../../crates/lenso-capability-counter", version = "0.1.0" }
+lenso-capability-secrets = { path = "../../crates/lenso-capability-secrets", version = "0.1.0" }
+lenso-kernel = { path = "../../crates/lenso-kernel", version = "0.1.0" }
+lenso-native-adapter = { path = "../../crates/lenso-native-adapter", version = "0.1.0" }
 serde.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-lenso-app-plan = { path = "../../crates/lenso-app-plan" }
+lenso-app-plan = { path = "../../crates/lenso-app-plan", version = "0.1.0" }
 
 [lints]
 workspace = true
