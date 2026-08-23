@@ -22,12 +22,6 @@ members = [
     "fixtures/vnext-story-module",
     "fixtures/vnext-web-ui",
 ]
-exclude = [
-    "examples/rust-manifest",
-    "examples/rust-service",
-    "examples/support-system",
-]
-
 [workspace.package]
 edition = "2024"
 license = "MIT"

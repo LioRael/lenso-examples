@@ -1,6 +1,0 @@
-{
-  "protocol": "lenso.module.v1",
-  "name": "lenso/platform-story",
-  "version": "0.1.0",
-  "capabilities": ["runtime.stories.read"]
-}

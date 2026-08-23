@@ -16,7 +16,8 @@ them lazily when terminology or architectural decisions are resolved.
 /
 ├── CONTEXT.md
 ├── docs/adr/
-└── examples/
+├── crates/lenso-capability-*/
+└── fixtures/vnext-*/
 ```
 
 ## Use the glossary vocabulary
