@@ -58,25 +58,42 @@ pub fn project(metadata: MetadataScenario, web_enabled: bool) -> ProjectFile {
 }
 
 fn add_contracts(project: &mut ProjectFile) {
-    for (directory, capability_id) in [
-        (
-            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1",
+    project.contracts_mut().push(
+        ContractInput::descriptor_only(
             AUTH_CAPABILITY_ID,
+            "1.0.0",
+            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1/capability.json",
+        )
+        .with_typescript_projection(
+            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1/generated/bindings.ts",
         ),
+    );
+
+    for (directory, typescript_directory, capability_id) in [
         (
             "crates/lenso-capability-secure-greeting",
+            "fixtures/vnext-web-ui/contracts/secure-greeting",
             GREETING_CAPABILITY_ID,
         ),
-        ("crates/lenso-capability-ui-contribution", UI_CAPABILITY_ID),
-        ("crates/lenso-capability-web-shell", SHELL_CAPABILITY_ID),
+        (
+            "crates/lenso-capability-ui-contribution",
+            "fixtures/vnext-web-ui/contracts/ui-contribution",
+            UI_CAPABILITY_ID,
+        ),
+        (
+            "crates/lenso-capability-web-shell",
+            "fixtures/vnext-web-ui/contracts/web-shell",
+            SHELL_CAPABILITY_ID,
+        ),
     ] {
-        project.contracts_mut().push(ContractInput::new(
-            capability_id,
-            "1.0.0",
-            format!("{directory}/capability.json"),
-            format!("{directory}/src/generated.rs"),
-            format!("{directory}/generated/bindings.ts"),
-        ));
+        project.contracts_mut().push(
+            ContractInput::descriptor_only(
+                capability_id,
+                "1.0.0",
+                format!("{directory}/capability.json"),
+            )
+            .with_typescript_projection(format!("{typescript_directory}/generated/bindings.ts")),
+        );
     }
 }
 

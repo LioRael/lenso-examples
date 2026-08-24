@@ -7,8 +7,8 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-app-plan = "0.1.0"
-lenso-authoring = "0.1.1"
+lenso-app-plan = "0.1.2"
+lenso-authoring = "0.1.7"
 lenso-auth-sdk = "0.1.1"
 lenso-capability-auth = "0.1.1"
 lenso-capability-secure-greeting = { path = "../../crates/lenso-capability-secure-greeting", version = "0.1.0" }
