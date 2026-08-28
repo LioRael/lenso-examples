@@ -33,7 +33,7 @@ struct LegacyCounterDocument {
     entries: BTreeMap<String, i64>,
 }
 
-/// A private persistence Adapter owned by the counter Module.
+/// A private persistence Adapter owned by the counter Plugin.
 #[derive(Clone, Debug)]
 pub(super) struct FileStateAdapter {
     path: PathBuf,
@@ -63,13 +63,13 @@ impl FileStateAdapter {
         })
     }
 
-    /// Applies an explicit owned upgrade and never runs from Module preparation.
+    /// Applies an explicit owned upgrade and never runs from Plugin preparation.
     pub(super) fn upgrade(&self) -> Result<UpgradeOutcome, StateStorageError> {
         let parent = self.parent()?;
         let _lock = self.acquire_lock(true)?;
         self.require_recovered()?;
         let migration = Self::owned_migration()?;
-        let value = self.read_json_value(&self.path)?;
+        let value = Self::read_json_value(&self.path)?;
         let version = document_version(&self.path, &value)?;
         match version {
             version if version == migration.version => Ok(UpgradeOutcome::AlreadyCurrent {
@@ -113,7 +113,7 @@ impl FileStateAdapter {
             return Ok(RecoveryOutcome::NoAction);
         }
         if self.path.exists() {
-            let value = self.read_json_value(&self.path)?;
+            let value = Self::read_json_value(&self.path)?;
             document_version(&self.path, &value)?;
             std::fs::remove_file(&temporary_path).map_err(|error| {
                 StateStorageError::io(&temporary_path, "discard interrupted transaction", &error)
@@ -122,7 +122,7 @@ impl FileStateAdapter {
             return Ok(RecoveryOutcome::DiscardedUncommitted);
         }
 
-        let document = self.read_current_document_at(&temporary_path)?;
+        let document = Self::read_current_document_at(&temporary_path)?;
         std::fs::rename(&temporary_path, &self.path)
             .map_err(|error| StateStorageError::io(&self.path, "restore transaction", &error))?;
         sync_directory(parent)?;
@@ -149,7 +149,7 @@ impl FileStateAdapter {
             .map_err(|error| {
                 StateStorageError::io(&self.path, "open storage read-write", &error)
             })?;
-        self.read_current_document_from(&mut file, &self.path)?;
+        Self::read_current_document_from(&mut file, &self.path)?;
         self.probe_parent_writable(parent)
     }
 
@@ -242,17 +242,16 @@ impl FileStateAdapter {
                 StateStorageError::io(&self.path, "read storage", &error)
             }
         })?;
-        self.read_current_document_from(&mut file, &self.path)
+        Self::read_current_document_from(&mut file, &self.path)
     }
 
-    fn read_current_document_at(&self, path: &Path) -> Result<CounterDocument, StateStorageError> {
+    fn read_current_document_at(path: &Path) -> Result<CounterDocument, StateStorageError> {
         let mut file = File::open(path)
             .map_err(|error| StateStorageError::io(path, "read recovery document", &error))?;
-        self.read_current_document_from(&mut file, path)
+        Self::read_current_document_from(&mut file, path)
     }
 
     fn read_current_document_from(
-        &self,
         reader: &mut File,
         path: &Path,
     ) -> Result<CounterDocument, StateStorageError> {
@@ -291,7 +290,7 @@ impl FileStateAdapter {
         {
             return Err(StateStorageError::InvalidMigration {
                 detail: format!(
-                    "artifact version {} does not match its initial document or Module schema {}",
+                    "artifact version {} does not match its initial document or Plugin schema {}",
                     migration.version, CURRENT_SCHEMA_VERSION
                 ),
             });
@@ -299,7 +298,7 @@ impl FileStateAdapter {
         Ok(migration)
     }
 
-    fn read_json_value(&self, path: &Path) -> Result<serde_json::Value, StateStorageError> {
+    fn read_json_value(path: &Path) -> Result<serde_json::Value, StateStorageError> {
         let bytes = std::fs::read(path)
             .map_err(|error| StateStorageError::io(path, "read storage", &error))?;
         serde_json::from_slice(&bytes).map_err(|error| StateStorageError::InvalidDocument {
@@ -469,7 +468,7 @@ pub enum StateStorageError {
     InvalidPath { path: PathBuf },
     /// The document is malformed or cannot be decoded.
     InvalidDocument { path: PathBuf, detail: String },
-    /// The Module's compiled migration artifact is malformed or inconsistent.
+    /// The Plugin's compiled migration artifact is malformed or inconsistent.
     InvalidMigration { detail: String },
     /// The document requires an explicit setup or upgrade decision.
     IncompatibleSchema {

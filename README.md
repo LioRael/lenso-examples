@@ -1,7 +1,7 @@
 # Lenso vNext Examples
 
 Executable, product-shaped examples for the current Lenso architecture. This
-repository contains Capability contracts and Module compositions; Kernel,
+repository contains Capability contracts and Plugin compositions; Kernel,
 Driver, Adapter, Runner, and Host mechanics remain in their owning
 repositories.
 
@@ -21,13 +21,13 @@ generated Rust bindings for:
 - game sessions;
 - agent orchestration, model, tool, memory, and progress boundaries.
 
-`fixtures/vnext-*` contains executable Modules and Apps that prove those
+`fixtures/vnext-*` contains executable Plugins and Apps that prove those
 contracts:
 
 - `vnext-native-greeter`: a minimal native Provider;
-- `vnext-stateful-module`: Module-owned durable state, setup, recovery, and
+- `vnext-stateful-plugin`: Plugin-owned durable state, setup, recovery, and
   upgrade;
-- `vnext-story-module`: typed Story query/event behavior with durable state;
+- `vnext-story-plugin`: typed Story query/event behavior with durable state;
 - `vnext-web-ui`: target-owned Web Shell, Browser Adapter, and UI Contribution
   composition;
 - `vnext-agent-harness`: replaceable model/tool providers, durable memory, and
@@ -35,7 +35,7 @@ contracts:
 - `vnext-game-session`: bounded real-time session behavior and protocol
   conformance.
 
-The Bun Module SDK and its executable generated-Provider golden path live in
+The Bun Plugin SDK and its executable generated-Provider golden path live in
 [`LioRael/lenso-bun-adapter`](https://github.com/LioRael/lenso-bun-adapter),
 next to the Execution Adapter conformance suite. A standalone Bun example can
 join this repository after the SDK and provider codegen releases are publicly

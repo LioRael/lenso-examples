@@ -7,7 +7,7 @@ use std::{
 
 use lenso_app_plan::{
     AppComposition, CapabilityBinding, CapabilityEndpointPlan, CapabilityRequirementPlan,
-    ModuleInstancePlan, ResolvedAppPlan,
+    PluginInstancePlan, ResolvedAppPlan,
 };
 use lenso_capability_story_events::{
     CAPABILITY_ID as EVENTS_ID, DESCRIPTOR_VERSION as EVENTS_VERSION, Events, RECORD_OPERATION,
@@ -18,8 +18,8 @@ use lenso_capability_story_query::{
     TimelineError, TimelineRequest,
 };
 use lenso_kernel::{DeterministicDriver, Kernel, RuntimeFailure, ShutdownOutcome};
-use lenso_native_adapter::NativeModuleRegistry;
-use lenso_vnext_story_module::{
+use lenso_native_adapter::NativePluginRegistry;
+use lenso_vnext_story_plugin::{
     STORY_PACKAGE_ID, StoryFactory, StoryRecoveryOutcome, StorySetupOutcome, StoryStorageError,
     recover_owned_story, setup_owned_story,
 };
@@ -68,7 +68,8 @@ fn plan_with_events(
     idempotency_limit: usize,
     events: Vec<RecordRequest>,
 ) -> ResolvedAppPlan {
-    let producer = ModuleInstancePlan::new("producer", PRODUCER_PACKAGE_ID)
+    let events = events.into_iter().collect::<Vec<_>>();
+    let producer = PluginInstancePlan::new("producer", PRODUCER_PACKAGE_ID)
         .with_configuration(serde_json::json!({"events": events}).to_string())
         .with_requirement(CapabilityRequirementPlan::many(EVENTS_ID, EVENTS_VERSION));
     if !include_story {
@@ -77,7 +78,7 @@ fn plan_with_events(
             .expect("a producer without Story should resolve");
     }
 
-    let story = ModuleInstancePlan::new("story", STORY_PACKAGE_ID)
+    let story = PluginInstancePlan::new("story", STORY_PACKAGE_ID)
         .with_configuration(
             serde_json::json!({
                 "storage_path": storage_path,
@@ -95,9 +96,9 @@ fn plan_with_events(
             CapabilityEndpointPlan::new(QUERY_ID, QUERY_VERSION, [TIMELINE_OPERATION])
                 .with_limits(16, 1),
         );
-    let reader = ModuleInstancePlan::new("reader", READER_PACKAGE_ID)
+    let reader = PluginInstancePlan::new("reader", READER_PACKAGE_ID)
         .with_requirement(CapabilityRequirementPlan::one(QUERY_ID, QUERY_VERSION));
-    let denied = ModuleInstancePlan::new("denied", DENIED_PACKAGE_ID)
+    let denied = PluginInstancePlan::new("denied", DENIED_PACKAGE_ID)
         .with_requirement(CapabilityRequirementPlan::one(QUERY_ID, QUERY_VERSION));
     AppComposition::new(
         vec![producer, reader, denied, story],
@@ -111,8 +112,8 @@ fn plan_with_events(
     .expect("Story Composition should resolve")
 }
 
-fn registry() -> NativeModuleRegistry {
-    NativeModuleRegistry::new()
+fn registry() -> NativePluginRegistry {
+    NativePluginRegistry::new()
         .with_factory(ProducerFactory)
         .with_factory(NoopFactory::new(READER_PACKAGE_ID))
         .with_factory(NoopFactory::new(DENIED_PACKAGE_ID))
@@ -146,7 +147,7 @@ fn record(
 ) -> Result<(), RecordError> {
     driver
         .run(app.invoke::<Events>("producer", RECORD_OPERATION, event))
-        .expect("durable Story recording should reach the Module")
+        .expect("durable Story recording should reach the Plugin")
 }
 
 fn query(
@@ -164,7 +165,7 @@ fn query(
                 limit: 10,
             },
         ))
-        .expect("the Story query should reach the Module")
+        .expect("the Story query should reach the Plugin")
 }
 
 #[test]
@@ -239,7 +240,7 @@ fn story_survives_restart_without_runtime_diagnostics() {
             driver.clone(),
             registry(),
         ))
-        .expect("the Story Module should recover its owned storage after restart");
+        .expect("the Story Plugin should recover its owned storage after restart");
     let response = query(&driver, &app, "reader", "order-2").expect("query is authorized");
     assert_eq!(response.entries.len(), 1);
     assert_eq!(response.entries[0].event_type, "order.paid");
@@ -250,7 +251,7 @@ fn story_survives_restart_without_runtime_diagnostics() {
 }
 
 #[test]
-fn story_retention_is_owned_by_the_story_module() {
+fn story_retention_is_owned_by_the_story_plugin() {
     let storage = TestStorage::new();
     setup_owned_story(&storage.path).expect("Story setup should create owned storage");
     let driver = DeterministicDriver::new();
@@ -425,9 +426,9 @@ fn story_schema_upgrade_is_explicit_and_owned() {
         Err(RuntimeFailure::Internal { detail }) if detail.contains("explicit upgrade workflow")
     ));
     assert_eq!(
-        lenso_vnext_story_module::upgrade_owned_story(&storage.path)
+        lenso_vnext_story_plugin::upgrade_owned_story(&storage.path)
             .expect("the Story owner should apply its migration"),
-        lenso_vnext_story_module::StoryUpgradeOutcome::Applied { from: 0, to: 1 }
+        lenso_vnext_story_plugin::StoryUpgradeOutcome::Applied { from: 0, to: 1 }
     );
 
     let driver = DeterministicDriver::new();
@@ -451,7 +452,7 @@ fn story_schema_upgrade_is_explicit_and_owned() {
 }
 
 #[test]
-fn query_authorization_is_owned_by_story_module() {
+fn query_authorization_is_owned_by_story_plugin() {
     let storage = TestStorage::new();
     setup_owned_story(&storage.path).expect("Story setup should create owned storage");
     let driver = DeterministicDriver::new();
@@ -526,7 +527,7 @@ fn recovery_does_not_discard_a_temporary_document_when_stable_storage_is_invalid
 fn removing_story_leaves_the_kernel_and_producer_composition_valid() {
     let storage = TestStorage::new();
     let driver = DeterministicDriver::new();
-    let registry = NativeModuleRegistry::new().with_factory(ProducerFactory);
+    let registry = NativePluginRegistry::new().with_factory(ProducerFactory);
     let app = driver
         .run(Kernel::start_native(
             plan_with_events(

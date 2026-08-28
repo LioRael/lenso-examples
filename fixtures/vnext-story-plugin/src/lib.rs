@@ -1,27 +1,26 @@
-//! A durable Story Module fixture sourced from explicit business Events.
+//! A durable Story Plugin fixture sourced from explicit business Events.
 
 use std::{collections::BTreeSet, path::PathBuf, rc::Rc};
 
-use futures::future::LocalBoxFuture;
 use lenso_capability_story_events::{
-    EventsEndpoint, EventsInvocationError, EventsProvider, RecordError, RecordRequest,
+    Events, EventsEndpoint, EventsProvider, RecordError, RecordRequest,
 };
 use lenso_capability_story_query::{
-    QueryEndpoint, QueryInvocationError, QueryProvider, TimelineError, TimelineRequest,
-    TimelineResponse, TimelineResponseEntriesItem,
+    Query, QueryEndpoint, QueryProvider, TimelineError, TimelineRequest, TimelineResponse,
+    TimelineResponseEntriesItem,
 };
 use lenso_kernel::{
-    InvocationContext, ModuleFuture, ModuleLifecycle, NativeRequestEndpoint, PrepareContext,
-    RuntimeFailure,
+    InvocationContext, NativeRequestEndpoint, NativeRequestFuture, PluginFuture, PluginLifecycle,
+    PrepareContext, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::Deserialize;
 
 mod storage;
 
 use storage::FileStoryAdapter;
 
-/// Package identity for the optional Story Module fixture.
+/// Package identity for the optional Story Plugin fixture.
 pub const STORY_PACKAGE_ID: &str = "lenso.fixture-story";
 /// Current private Story storage schema.
 pub const CURRENT_SCHEMA_VERSION: u32 = 1;
@@ -73,8 +72,8 @@ struct StoryLifecycle {
     runtime: Rc<StoryRuntime>,
 }
 
-impl ModuleLifecycle for StoryLifecycle {
-    fn prepare(&self, _context: PrepareContext) -> ModuleFuture {
+impl PluginLifecycle for StoryLifecycle {
+    fn prepare(&self, _context: PrepareContext) -> PluginFuture {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
             runtime
@@ -97,30 +96,25 @@ impl EventsProvider for StoryEventsProvider {
         &self,
         context: InvocationContext,
         event: RecordRequest,
-    ) -> LocalBoxFuture<'static, Result<(), EventsInvocationError>> {
+    ) -> NativeRequestFuture<Events> {
         let runtime = Rc::clone(&self.runtime);
         let source_instance = context.caller_instance().unwrap_or("unknown").to_owned();
         Box::pin(async move {
-            runtime
-                .storage
-                .ingest(
-                    &event,
-                    &source_instance,
-                    runtime.retention_limit,
-                    runtime.idempotency_limit,
-                )
-                .map(|_| ())
-                .map_err(|error| match error {
-                    StoryStorageError::InvalidEvent { .. } => {
-                        EventsInvocationError::Domain(RecordError::InvalidEvent)
-                    }
-                    StoryStorageError::ConflictingEventId { .. } => {
-                        EventsInvocationError::Domain(RecordError::ConflictingEventId)
-                    }
-                    error => EventsInvocationError::Runtime(RuntimeFailure::Internal {
-                        detail: error.to_string(),
-                    }),
-                })
+            match runtime.storage.ingest(
+                &event,
+                &source_instance,
+                runtime.retention_limit,
+                runtime.idempotency_limit,
+            ) {
+                Ok(_) => Ok(Ok(())),
+                Err(StoryStorageError::InvalidEvent { .. }) => Ok(Err(RecordError::InvalidEvent)),
+                Err(StoryStorageError::ConflictingEventId { .. }) => {
+                    Ok(Err(RecordError::ConflictingEventId))
+                }
+                Err(error) => Err(RuntimeFailure::Internal {
+                    detail: error.to_string(),
+                }),
+            }
         })
     }
 }
@@ -135,23 +129,25 @@ impl QueryProvider for StoryQueryProvider {
         &self,
         context: InvocationContext,
         request: TimelineRequest,
-    ) -> LocalBoxFuture<'static, Result<TimelineResponse, QueryInvocationError>> {
+    ) -> NativeRequestFuture<Query> {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
             let caller = context.caller_instance().unwrap_or_default();
             if !runtime.authorized_callers.contains(caller) {
-                return Err(QueryInvocationError::Domain(TimelineError::Unauthorized));
+                return Ok(Err(TimelineError::Unauthorized));
             }
             if request.subject_id.is_empty() || !(1..=100).contains(&request.limit) {
-                return Err(QueryInvocationError::Domain(TimelineError::InvalidQuery));
+                return Ok(Err(TimelineError::InvalidQuery));
             }
+            let limit =
+                usize::try_from(request.limit).map_err(|_| RuntimeFailure::PluginFailure {
+                    detail: "validated Story query limit cannot fit this platform".to_owned(),
+                })?;
             let entries = runtime
                 .storage
-                .timeline(&request.subject_id, request.limit as usize)
-                .map_err(|error| {
-                    QueryInvocationError::Runtime(RuntimeFailure::Internal {
-                        detail: error.to_string(),
-                    })
+                .timeline(&request.subject_id, limit)
+                .map_err(|error| RuntimeFailure::Internal {
+                    detail: error.to_string(),
                 })?
                 .into_iter()
                 .map(|entry| TimelineResponseEntriesItem {
@@ -165,27 +161,27 @@ impl QueryProvider for StoryQueryProvider {
                     revision: entry.revision.to_string(),
                 })
                 .collect();
-            Ok(TimelineResponse { entries })
+            Ok(Ok(TimelineResponse { entries }))
         })
     }
 }
 
-/// Statically linked factory for the optional durable Story Module.
+/// Statically linked factory for the optional durable Story Plugin.
 #[derive(Debug)]
 pub struct StoryFactory;
 
-impl NativeModuleFactory for StoryFactory {
+impl NativePluginFactory for StoryFactory {
     fn package_id(&self) -> &'static str {
         STORY_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let configuration: StoryConfiguration = serde_json::from_str(context.configuration())
             .map_err(|error| RuntimeFailure::InvalidResolvedPlan {
-                detail: format!("Story Module configuration is invalid: {error}"),
+                detail: format!("Story Plugin configuration is invalid: {error}"),
             })?;
         if configuration.storage_path.as_os_str().is_empty()
             || configuration.retention_limit == 0
@@ -196,7 +192,7 @@ impl NativeModuleFactory for StoryFactory {
                 .any(String::is_empty)
         {
             return Err(RuntimeFailure::InvalidResolvedPlan {
-                detail: "Story Module requires storage_path, positive retention_limit, idempotency_limit >= retention_limit, and non-empty authorized_callers"
+                detail: "Story Plugin requires storage_path, positive retention_limit, idempotency_limit >= retention_limit, and non-empty authorized_callers"
                     .to_owned(),
             });
         }
@@ -214,7 +210,7 @@ impl NativeModuleFactory for StoryFactory {
             Rc::new(EventsEndpoint::new(StoryEventsProvider {
                 runtime: Rc::clone(&runtime),
             }));
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             vec![query_endpoint, event_endpoint],
             StoryLifecycle { runtime },
         ))

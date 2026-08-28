@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use lenso_auth_sdk::ActorAssertionIssuer;
 use lenso_kernel::{Kernel, NativeApp, ShutdownOutcome};
-use lenso_native_adapter::NativeModuleRegistry;
+use lenso_native_adapter::NativePluginRegistry;
 use lenso_runner::TokioDriver;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
@@ -11,7 +11,7 @@ use tokio::{
     time::{sleep, timeout},
 };
 use vnext_game_session::{
-    AuthModuleFactory, ClientFrame, GameProtocolFactory, GameProviderFactory, ProtocolConfig,
+    AuthPluginFactory, ClientFrame, GameProtocolFactory, GameProviderFactory, ProtocolConfig,
     ProtocolVariant, ServerFrame, SessionMode, TerminalFrame, resolved_plan_with_variants,
 };
 
@@ -38,8 +38,8 @@ async fn start_app_with_variants(
 ) -> (NativeApp, GameProtocolFactory) {
     let issuer = ActorAssertionIssuer::new("fixture.auth", TEST_KEY);
     let protocol = GameProtocolFactory::with_variant(protocol_variant);
-    let registry = NativeModuleRegistry::new()
-        .with_factory(AuthModuleFactory::new(issuer.clone()))
+    let registry = NativePluginRegistry::new()
+        .with_factory(AuthPluginFactory::new(issuer.clone()))
         .with_factory(GameProviderFactory::new(issuer.verifier(), mode))
         .with_factory(protocol.clone());
     let plan = resolved_plan_with_variants(&config, protocol_variant, mode)
@@ -404,12 +404,12 @@ async fn provider_failure_restarts_and_composition_selects_a_replacement() {
             assert_eq!(
                 next_frame(&mut crashing).await.expect("failure outcome"),
                 ServerFrame::Runtime {
-                    code: "module_failure".to_owned()
+                    code: "plugin_failure".to_owned()
                 }
             );
             timeout(Duration::from_secs(1), async {
                 loop {
-                    if app.module_generation("game") == Some(2) {
+                    if app.plugin_generation("game") == Some(2) {
                         break;
                     }
                     sleep(Duration::from_millis(10)).await;

@@ -1,8 +1,9 @@
 use std::{cell::RefCell, rc::Rc};
 
+use futures::future::LocalBoxFuture;
 use lenso_capability_agent_progress::{ProgressEndpoint, ProgressProvider, UpdateRequest};
-use lenso_kernel::{InvocationContext, NoopModuleLifecycle, RuntimeFailure};
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_kernel::{InvocationContext, NoopPluginLifecycle, RuntimeFailure};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 
 use crate::PROGRESS_PACKAGE_ID;
 
@@ -12,8 +13,13 @@ struct ProgressRecorder {
 }
 
 impl ProgressProvider for ProgressRecorder {
-    fn update(&self, _context: InvocationContext, event: UpdateRequest) {
+    fn update(
+        &self,
+        _context: InvocationContext,
+        event: UpdateRequest,
+    ) -> LocalBoxFuture<'static, Result<(), RuntimeFailure>> {
         self.events.borrow_mut().push(event);
+        Box::pin(async { Ok(()) })
     }
 }
 
@@ -28,20 +34,20 @@ impl ProgressFactory {
     }
 }
 
-impl NativeModuleFactory for ProgressFactory {
+impl NativePluginFactory for ProgressFactory {
     fn package_id(&self) -> &'static str {
         PROGRESS_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::with_event_endpoints(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::with_event_endpoints(
             vec![Rc::new(ProgressEndpoint::new(ProgressRecorder {
                 events: self.events.clone(),
             }))],
-            NoopModuleLifecycle,
+            NoopPluginLifecycle,
         ))
     }
 }

@@ -18,7 +18,7 @@ pub use generated::{
     encode_play_error, encode_play_request, encode_play_response,
 };
 
-/// The typed actor owned by the game-session Module.
+/// The typed actor owned by the game-session Plugin.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlayerActor {
     subject: String,
@@ -47,7 +47,7 @@ impl TypedActor for PlayerActor {
     }
 }
 
-/// Game behavior owned by a selected game-session Module.
+/// Game behavior owned by a selected game-session Plugin.
 pub trait GameSessionHandler: fmt::Debug + 'static {
     /// Opens one session after the target has projected and authorized a `PlayerActor`.
     fn play(

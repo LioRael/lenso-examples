@@ -9,9 +9,9 @@ use std::{
 use lenso_capability_auth::AuthClient;
 use lenso_capability_game_session::GameSessionClient;
 use lenso_kernel::{
-    ActivateContext, CancellationToken, ModuleDependencies, ModuleLifecycle, RuntimeFailure,
+    ActivateContext, CancellationToken, PluginDependencies, PluginLifecycle, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 
@@ -20,7 +20,7 @@ use crate::{
     frame::ServerFrame,
 };
 
-/// Native package identity for the primary protocol Module.
+/// Native package identity for the primary protocol Plugin.
 pub const PROTOCOL_PACKAGE_ID: &str = "fixture.game.protocol";
 /// Alternate native package identity proving protocol replacement by Composition.
 pub const PROTOCOL_REPLACEMENT_PACKAGE_ID: &str = "fixture.game.protocol.replacement";
@@ -51,14 +51,14 @@ impl ProtocolVariant {
     }
 }
 
-/// Configuration owned by the protocol Module and selected by Composition.
+/// Configuration owned by the protocol Plugin and selected by Composition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ProtocolConfig {
     /// TCP listen address. Port zero asks the OS for an available fixture port.
     pub bind: String,
     /// Maximum encoded JSON payload in one length-prefixed frame.
     pub max_frame_bytes: usize,
-    /// Maximum number of accepted connections in this Module generation.
+    /// Maximum number of accepted connections in this Plugin generation.
     pub max_connections: usize,
     /// Maximum time without a frame while an established session is active.
     pub idle_timeout_ms: u64,
@@ -79,7 +79,7 @@ impl Default for ProtocolConfig {
 }
 
 impl ProtocolConfig {
-    /// Serializes this immutable Module configuration for an App Plan.
+    /// Serializes this immutable Plugin configuration for an App Plan.
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).expect("protocol configuration must serialize")
     }
@@ -151,7 +151,7 @@ struct ProtocolGenerationState {
     active_connections: Cell<usize>,
 }
 
-/// Factory for a replaceable native protocol Module.
+/// Factory for a replaceable native protocol Plugin.
 #[derive(Clone, Debug)]
 pub struct GameProtocolFactory {
     variant: ProtocolVariant,
@@ -159,7 +159,7 @@ pub struct GameProtocolFactory {
 }
 
 impl GameProtocolFactory {
-    /// Creates the primary protocol Module factory.
+    /// Creates the primary protocol Plugin factory.
     pub fn new() -> Self {
         Self::with_variant(ProtocolVariant::Primary)
     }
@@ -172,7 +172,7 @@ impl GameProtocolFactory {
         }
     }
 
-    /// Returns the concrete address after the Module has prepared its listener.
+    /// Returns the concrete address after the Plugin has prepared its listener.
     pub fn local_addr(&self) -> Option<SocketAddr> {
         self.observer.local_addr.get()
     }
@@ -184,17 +184,17 @@ impl Default for GameProtocolFactory {
     }
 }
 
-impl NativeModuleFactory for GameProtocolFactory {
+impl NativePluginFactory for GameProtocolFactory {
     fn package_id(&self) -> &'static str {
         self.variant.package_id()
     }
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let config = ProtocolConfig::from_json(context.configuration())?;
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             Vec::new(),
             ProtocolLifecycle {
                 config,
@@ -212,22 +212,22 @@ struct ProtocolLifecycle {
     state: Rc<ProtocolGenerationState>,
 }
 
-impl ModuleLifecycle for ProtocolLifecycle {
-    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> lenso_kernel::ModuleFuture {
+impl PluginLifecycle for ProtocolLifecycle {
+    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> lenso_kernel::PluginFuture {
         let config = self.config.clone();
         let observer = self.observer.clone();
         let state = self.state.clone();
         Box::pin(async move {
             let address = config.validate()?;
             let listener = TcpListener::bind(address).await.map_err(|error| {
-                RuntimeFailure::ModuleFailure {
+                RuntimeFailure::PluginFailure {
                     detail: format!("protocol listener bind failed: {error}"),
                 }
             })?;
             let local_addr =
                 listener
                     .local_addr()
-                    .map_err(|error| RuntimeFailure::ModuleFailure {
+                    .map_err(|error| RuntimeFailure::PluginFailure {
                         detail: format!("protocol listener address failed: {error}"),
                     })?;
             observer.local_addr.set(Some(local_addr));
@@ -236,7 +236,7 @@ impl ModuleLifecycle for ProtocolLifecycle {
         })
     }
 
-    fn activate(&self, context: ActivateContext) -> lenso_kernel::ModuleFuture {
+    fn activate(&self, context: ActivateContext) -> lenso_kernel::PluginFuture {
         let auth = match AuthClient::from_dependencies(context.dependencies()) {
             Ok(client) => Rc::new(client),
             Err(error) => return Box::pin(futures::future::ready(Err(error))),
@@ -262,7 +262,7 @@ impl ModuleLifecycle for ProtocolLifecycle {
                 auth,
                 game,
                 dependencies,
-                module_cancellation: cancellation.clone(),
+                plugin_cancellation: cancellation.clone(),
             },
             state,
             tasks: tasks.clone(),
@@ -280,7 +280,7 @@ impl ModuleLifecycle for ProtocolLifecycle {
         }
     }
 
-    fn deactivate(&self, _context: lenso_kernel::DeactivateContext) -> lenso_kernel::ModuleFuture {
+    fn deactivate(&self, _context: lenso_kernel::DeactivateContext) -> lenso_kernel::PluginFuture {
         self.state.listener.borrow_mut().take();
         self.observer.local_addr.set(None);
         Box::pin(futures::future::ready(Ok(())))
@@ -292,8 +292,8 @@ pub(crate) struct ConnectionRuntime {
     pub(crate) config: ProtocolConfig,
     pub(crate) auth: Rc<AuthClient>,
     pub(crate) game: Rc<GameSessionClient>,
-    pub(crate) dependencies: ModuleDependencies,
-    pub(crate) module_cancellation: CancellationToken,
+    pub(crate) dependencies: PluginDependencies,
+    pub(crate) plugin_cancellation: CancellationToken,
 }
 
 #[derive(Clone, Debug)]

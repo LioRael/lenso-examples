@@ -1,17 +1,17 @@
-//! A native stateful Module fixture with owned storage and explicit Secrets.
+//! A native stateful Plugin fixture with owned storage and explicit Secrets.
 
 use std::{cell::Cell, path::PathBuf, rc::Rc};
 
 use lenso_capability_counter::{
-    CounterEndpoint, CounterIncrementInvocationError, CounterProvider, CounterReadInvocationError,
-    IncrementError, IncrementRequest, IncrementResponse, ReadError, ReadRequest, ReadResponse,
+    CounterEndpoint, CounterIncrement, CounterProvider, CounterRead, IncrementError,
+    IncrementRequest, IncrementResponse, ReadError, ReadRequest, ReadResponse,
 };
 use lenso_capability_secrets::{ResolveRequest, SecretsClient};
 use lenso_kernel::{
-    ActivateContext, DeactivateContext, InvocationContext, ModuleFuture, ModuleLifecycle,
-    NativeRequestEndpoint, PrepareContext, RuntimeFailure,
+    ActivateContext, DeactivateContext, InvocationContext, NativeRequestEndpoint,
+    NativeRequestFuture, PluginFuture, PluginLifecycle, PrepareContext, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::Deserialize;
 
 mod storage;
@@ -19,12 +19,12 @@ use storage::FileStateAdapter;
 
 pub use storage::{RecoveryOutcome, SetupOutcome, StateStorageError, UpgradeOutcome};
 
-/// Runs the owned Module setup workflow without exposing its persistence Adapter.
+/// Runs the owned Plugin setup workflow without exposing its persistence Adapter.
 pub fn setup_owned_state(path: impl Into<PathBuf>) -> Result<SetupOutcome, StateStorageError> {
     storage::setup_owned_state(path)
 }
 
-/// Runs the owned Module upgrade workflow without exposing its persistence Adapter.
+/// Runs the owned Plugin upgrade workflow without exposing its persistence Adapter.
 pub fn upgrade_owned_state(path: impl Into<PathBuf>) -> Result<UpgradeOutcome, StateStorageError> {
     storage::upgrade_owned_state(path)
 }
@@ -36,12 +36,12 @@ pub fn recover_owned_state(path: impl Into<PathBuf>) -> Result<RecoveryOutcome, 
 
 /// Package identity for the example state owner.
 pub const COUNTER_PACKAGE_ID: &str = "example.owned-counter";
-/// The only schema version currently accepted by the counter Module.
+/// The only schema version currently accepted by the counter Plugin.
 pub const CURRENT_SCHEMA_VERSION: u32 = 1;
-/// The owned migration artifact compiled into this Module package.
+/// The owned migration artifact compiled into this Plugin package.
 pub const INITIAL_MIGRATION: &str = include_str!("../migrations/001-counter-state-v1.json");
 
-/// Opaque non-sensitive configuration owned by the counter Module.
+/// Opaque non-sensitive configuration owned by the counter Plugin.
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct CounterConfiguration {
@@ -61,8 +61,8 @@ struct CounterLifecycle {
     secret_ref: String,
 }
 
-impl ModuleLifecycle for CounterLifecycle {
-    fn prepare(&self, _context: PrepareContext) -> ModuleFuture {
+impl PluginLifecycle for CounterLifecycle {
+    fn prepare(&self, _context: PrepareContext) -> PluginFuture {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
             runtime
@@ -72,7 +72,7 @@ impl ModuleLifecycle for CounterLifecycle {
         })
     }
 
-    fn activate(&self, context: ActivateContext) -> ModuleFuture {
+    fn activate(&self, context: ActivateContext) -> PluginFuture {
         let runtime = Rc::clone(&self.runtime);
         let secret_ref = self.secret_ref.clone();
         Box::pin(async move {
@@ -85,7 +85,7 @@ impl ModuleLifecycle for CounterLifecycle {
                 .map_err(|error| match error {
                     lenso_capability_secrets::SecretsInvocationError::Runtime(error) => error,
                     lenso_capability_secrets::SecretsInvocationError::Domain(error) => {
-                        RuntimeFailure::ModuleFailure {
+                        RuntimeFailure::PluginFailure {
                             detail: format!(
                                 "required secret reference `{secret_ref}` failed: {error:?}"
                             ),
@@ -93,7 +93,7 @@ impl ModuleLifecycle for CounterLifecycle {
                     }
                 })?;
             if response.value.is_empty() {
-                return Err(RuntimeFailure::ModuleFailure {
+                return Err(RuntimeFailure::PluginFailure {
                     detail: format!(
                         "required secret reference `{secret_ref}` resolved to an empty value"
                     ),
@@ -104,7 +104,7 @@ impl ModuleLifecycle for CounterLifecycle {
         })
     }
 
-    fn deactivate(&self, _context: DeactivateContext) -> ModuleFuture {
+    fn deactivate(&self, _context: DeactivateContext) -> PluginFuture {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
             runtime.secret_ready.set(false);
@@ -123,28 +123,24 @@ impl CounterProvider for CounterProviderImpl {
         &self,
         _context: InvocationContext,
         request: ReadRequest,
-    ) -> futures::future::LocalBoxFuture<'static, Result<ReadResponse, CounterReadInvocationError>>
-    {
+    ) -> NativeRequestFuture<CounterRead> {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
-            ensure_secret_ready(&runtime).map_err(CounterReadInvocationError::Runtime)?;
+            ensure_secret_ready(&runtime)?;
             if request.key.is_empty() {
-                return Err(CounterReadInvocationError::Domain(ReadError::InvalidKey));
+                return Ok(Err(ReadError::InvalidKey));
             }
-            let Some((value, revision)) =
-                runtime
-                    .storage
-                    .read_counter(&request.key)
-                    .map_err(|error| {
-                        CounterReadInvocationError::Runtime(storage_runtime_failure(&error))
-                    })?
+            let Some((value, revision)) = runtime
+                .storage
+                .read_counter(&request.key)
+                .map_err(|error| storage_runtime_failure(&error))?
             else {
-                return Err(CounterReadInvocationError::Domain(ReadError::MissingKey));
+                return Ok(Err(ReadError::MissingKey));
             };
-            Ok(ReadResponse {
+            Ok(Ok(ReadResponse {
                 value,
                 revision: revision.to_string(),
-            })
+            }))
         })
     }
 
@@ -152,28 +148,21 @@ impl CounterProvider for CounterProviderImpl {
         &self,
         _context: InvocationContext,
         request: IncrementRequest,
-    ) -> futures::future::LocalBoxFuture<
-        'static,
-        Result<IncrementResponse, CounterIncrementInvocationError>,
-    > {
+    ) -> NativeRequestFuture<CounterIncrement> {
         let runtime = Rc::clone(&self.runtime);
         Box::pin(async move {
-            ensure_secret_ready(&runtime).map_err(CounterIncrementInvocationError::Runtime)?;
+            ensure_secret_ready(&runtime)?;
             if request.key.is_empty() {
-                return Err(CounterIncrementInvocationError::Domain(
-                    IncrementError::InvalidKey,
-                ));
+                return Ok(Err(IncrementError::InvalidKey));
             }
             let (value, revision) = runtime
                 .storage
                 .increment_counter(&request.key, request.amount)
-                .map_err(|error| {
-                    CounterIncrementInvocationError::Runtime(storage_runtime_failure(&error))
-                })?;
-            Ok(IncrementResponse {
+                .map_err(|error| storage_runtime_failure(&error))?;
+            Ok(Ok(IncrementResponse {
                 value,
                 revision: revision.to_string(),
-            })
+            }))
         })
     }
 }
@@ -183,8 +172,8 @@ fn ensure_secret_ready(runtime: &CounterRuntime) -> Result<(), RuntimeFailure> {
         .secret_ready
         .get()
         .then_some(())
-        .ok_or_else(|| RuntimeFailure::ModuleFailure {
-            detail: "counter Module has no resolved Secrets Capability".to_owned(),
+        .ok_or_else(|| RuntimeFailure::PluginFailure {
+            detail: "counter Plugin has no resolved Secrets Capability".to_owned(),
         })
 }
 
@@ -194,27 +183,27 @@ fn storage_runtime_failure(error: &StateStorageError) -> RuntimeFailure {
     }
 }
 
-/// Statically linked factory for the owned counter Module.
+/// Statically linked factory for the owned counter Plugin.
 #[derive(Debug)]
 pub struct CounterFactory;
 
-impl NativeModuleFactory for CounterFactory {
+impl NativePluginFactory for CounterFactory {
     fn package_id(&self) -> &'static str {
         COUNTER_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let configuration: CounterConfiguration = serde_json::from_str(context.configuration())
             .map_err(|error| RuntimeFailure::InvalidResolvedPlan {
-                detail: format!("counter Module configuration is invalid: {error}"),
+                detail: format!("counter Plugin configuration is invalid: {error}"),
             })?;
         if configuration.secret_ref.is_empty() || configuration.storage_path.as_os_str().is_empty()
         {
             return Err(RuntimeFailure::InvalidResolvedPlan {
-                detail: "counter Module requires storage_path and secret_ref".to_owned(),
+                detail: "counter Plugin requires storage_path and secret_ref".to_owned(),
             });
         }
         let runtime = Rc::new(CounterRuntime {
@@ -225,7 +214,7 @@ impl NativeModuleFactory for CounterFactory {
             Rc::new(CounterEndpoint::new(CounterProviderImpl {
                 runtime: Rc::clone(&runtime),
             }));
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             vec![endpoint],
             CounterLifecycle {
                 runtime,

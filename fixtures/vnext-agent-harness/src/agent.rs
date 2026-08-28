@@ -1,8 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
-use futures::future::LocalBoxFuture;
 use lenso_capability_agent::{
-    AgentEndpoint, AgentInvocationError, AgentProvider, RunError, RunRequest, RunResponse,
+    Agent, AgentEndpoint, AgentInvocationError, AgentProvider, RunError, RunRequest, RunResponse,
 };
 use lenso_capability_agent_memory::{AppendRequest, MemoryAppendInvocationError, MemoryClient};
 use lenso_capability_agent_model::{
@@ -11,10 +10,10 @@ use lenso_capability_agent_model::{
 use lenso_capability_agent_progress::{ProgressClient, UpdateRequest};
 use lenso_capability_agent_tool::{ExecuteRequest, ToolInvocationError};
 use lenso_kernel::{
-    ActivateContext, DeactivateContext, InvocationContext, ModuleFuture, ModuleLifecycle,
-    NativeRequestEndpoint, RuntimeFailure,
+    ActivateContext, DeactivateContext, InvocationContext, NativeRequestEndpoint,
+    NativeRequestFuture, PluginFuture, PluginLifecycle, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::Deserialize;
 
 use crate::AGENT_PACKAGE_ID;
@@ -37,7 +36,7 @@ impl AgentRuntime {
         self.dependencies
             .borrow()
             .clone()
-            .ok_or_else(|| RuntimeFailure::ModuleFailure {
+            .ok_or_else(|| RuntimeFailure::PluginFailure {
                 detail: "agent harness dependencies are not active".to_owned(),
             })
     }
@@ -48,12 +47,12 @@ struct AgentLifecycle {
     runtime: Rc<AgentRuntime>,
 }
 
-impl ModuleLifecycle for AgentLifecycle {
-    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> ModuleFuture {
+impl PluginLifecycle for AgentLifecycle {
+    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> PluginFuture {
         Box::pin(async { Ok(()) })
     }
 
-    fn activate(&self, context: ActivateContext) -> ModuleFuture {
+    fn activate(&self, context: ActivateContext) -> PluginFuture {
         let runtime = self.runtime.clone();
         let dependencies = context.dependencies().clone();
         Box::pin(async move {
@@ -70,7 +69,7 @@ impl ModuleLifecycle for AgentLifecycle {
         })
     }
 
-    fn deactivate(&self, _context: DeactivateContext) -> ModuleFuture {
+    fn deactivate(&self, _context: DeactivateContext) -> PluginFuture {
         let runtime = self.runtime.clone();
         Box::pin(async move {
             runtime.dependencies.borrow_mut().take();
@@ -93,14 +92,16 @@ struct AgentProviderImpl {
 }
 
 impl AgentProvider for AgentProviderImpl {
-    fn run(
-        &self,
-        context: InvocationContext,
-        request: RunRequest,
-    ) -> LocalBoxFuture<'static, Result<RunResponse, AgentInvocationError>> {
+    fn run(&self, context: InvocationContext, request: RunRequest) -> NativeRequestFuture<Agent> {
         let runtime = self.runtime.clone();
         let configuration = self.configuration.clone();
-        Box::pin(async move { run_agent(runtime, configuration, context, request).await })
+        Box::pin(async move {
+            match run_agent(runtime, configuration, context, request).await {
+                Ok(response) => Ok(Ok(response)),
+                Err(AgentInvocationError::Domain(error)) => Ok(Err(error)),
+                Err(AgentInvocationError::Runtime(error)) => Err(error),
+            }
+        })
     }
 }
 
@@ -279,15 +280,15 @@ async fn run_agent(
 #[derive(Debug)]
 pub(crate) struct AgentFactory;
 
-impl NativeModuleFactory for AgentFactory {
+impl NativePluginFactory for AgentFactory {
     fn package_id(&self) -> &'static str {
         AGENT_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let configuration: AgentConfiguration = serde_json::from_str(context.configuration())
             .map_err(|error| RuntimeFailure::InvalidResolvedPlan {
                 detail: format!("agent harness configuration is invalid: {error}"),
@@ -302,7 +303,7 @@ impl NativeModuleFactory for AgentFactory {
             });
         }
         let runtime = Rc::new(AgentRuntime::default());
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             vec![Rc::new(AgentEndpoint::new(AgentProviderImpl {
                 runtime: runtime.clone(),
                 configuration,

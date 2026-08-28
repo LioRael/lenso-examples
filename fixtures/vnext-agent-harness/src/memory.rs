@@ -1,12 +1,11 @@
 use std::rc::Rc;
 
-use futures::future::LocalBoxFuture;
-use lenso_capability_agent_memory::{AppendError, MemoryAppendInvocationError};
+use lenso_capability_agent_memory::{AppendError, MemoryAppend, MemoryRead, ReadError};
 use lenso_kernel::{
-    ActivateContext, DeactivateContext, InvocationContext, ModuleFuture, ModuleLifecycle,
-    RuntimeFailure,
+    ActivateContext, DeactivateContext, InvocationContext, NativeRequestFuture, PluginFuture,
+    PluginLifecycle, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::Deserialize;
 
 use crate::{MEMORY_PACKAGE_ID, storage};
@@ -21,24 +20,19 @@ impl lenso_capability_agent_memory::MemoryProvider for MemoryProvider {
         &self,
         _context: InvocationContext,
         request: lenso_capability_agent_memory::AppendRequest,
-    ) -> LocalBoxFuture<
-        'static,
-        Result<lenso_capability_agent_memory::AppendResponse, MemoryAppendInvocationError>,
-    > {
+    ) -> NativeRequestFuture<MemoryAppend> {
         let storage = self.storage.clone();
         Box::pin(async move {
             if request.key.is_empty() {
-                return Err(MemoryAppendInvocationError::Domain(AppendError::InvalidKey));
+                return Ok(Err(AppendError::InvalidKey));
             }
             let revision = storage
                 .append(request.key, request.entry)
                 .await
-                .map_err(|error| {
-                    MemoryAppendInvocationError::Runtime(memory_runtime_failure(error))
-                })?;
-            Ok(lenso_capability_agent_memory::AppendResponse {
+                .map_err(memory_runtime_failure)?;
+            Ok(Ok(lenso_capability_agent_memory::AppendResponse {
                 revision: revision.to_string(),
-            })
+            }))
         })
     }
 
@@ -46,38 +40,23 @@ impl lenso_capability_agent_memory::MemoryProvider for MemoryProvider {
         &self,
         _context: InvocationContext,
         request: lenso_capability_agent_memory::ReadRequest,
-    ) -> LocalBoxFuture<
-        'static,
-        Result<
-            lenso_capability_agent_memory::ReadResponse,
-            lenso_capability_agent_memory::MemoryReadInvocationError,
-        >,
-    > {
+    ) -> NativeRequestFuture<MemoryRead> {
         let storage = self.storage.clone();
         Box::pin(async move {
             if request.key.is_empty() {
-                return Err(
-                    lenso_capability_agent_memory::MemoryReadInvocationError::Domain(
-                        lenso_capability_agent_memory::ReadError::InvalidKey,
-                    ),
-                );
+                return Ok(Err(ReadError::InvalidKey));
             }
-            let Some((entries, revision)) = storage.read(request.key).await.map_err(|error| {
-                lenso_capability_agent_memory::MemoryReadInvocationError::Runtime(
-                    memory_runtime_failure(error),
-                )
-            })?
+            let Some((entries, revision)) = storage
+                .read(request.key)
+                .await
+                .map_err(memory_runtime_failure)?
             else {
-                return Err(
-                    lenso_capability_agent_memory::MemoryReadInvocationError::Domain(
-                        lenso_capability_agent_memory::ReadError::MissingKey,
-                    ),
-                );
+                return Ok(Err(ReadError::MissingKey));
             };
-            Ok(lenso_capability_agent_memory::ReadResponse {
+            Ok(Ok(lenso_capability_agent_memory::ReadResponse {
                 entries,
                 revision: revision.to_string(),
-            })
+            }))
         })
     }
 }
@@ -87,17 +66,17 @@ struct MemoryLifecycle {
     storage: Rc<storage::MemoryWorker>,
 }
 
-impl ModuleLifecycle for MemoryLifecycle {
-    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> ModuleFuture {
+impl PluginLifecycle for MemoryLifecycle {
+    fn prepare(&self, _context: lenso_kernel::PrepareContext) -> PluginFuture {
         let storage = self.storage.clone();
         Box::pin(async move { storage.verify_ready().await.map_err(memory_runtime_failure) })
     }
 
-    fn activate(&self, _context: ActivateContext) -> ModuleFuture {
+    fn activate(&self, _context: ActivateContext) -> PluginFuture {
         Box::pin(async { Ok(()) })
     }
 
-    fn deactivate(&self, _context: DeactivateContext) -> ModuleFuture {
+    fn deactivate(&self, _context: DeactivateContext) -> PluginFuture {
         let storage = self.storage.clone();
         Box::pin(async move { storage.stop().await.map_err(memory_runtime_failure) })
     }
@@ -111,15 +90,15 @@ struct MemoryConfiguration {
 #[derive(Debug)]
 pub struct MemoryFactory;
 
-impl NativeModuleFactory for MemoryFactory {
+impl NativePluginFactory for MemoryFactory {
     fn package_id(&self) -> &'static str {
         MEMORY_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let configuration: MemoryConfiguration = serde_json::from_str(context.configuration())
             .map_err(|error| RuntimeFailure::InvalidResolvedPlan {
                 detail: format!("agent memory configuration is invalid: {error}"),
@@ -136,7 +115,7 @@ impl NativeModuleFactory for MemoryFactory {
                 }
             })?,
         );
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             vec![Rc::new(lenso_capability_agent_memory::MemoryEndpoint::new(
                 MemoryProvider {
                     storage: storage.clone(),

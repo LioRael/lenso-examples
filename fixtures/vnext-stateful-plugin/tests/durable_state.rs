@@ -7,7 +7,7 @@ use std::{
 
 use lenso_app_plan::{
     AppComposition, CapabilityBinding, CapabilityEndpointPlan, CapabilityRequirementPlan,
-    ModuleInstancePlan, ResolvedAppPlan,
+    PluginInstancePlan, ResolvedAppPlan,
 };
 use lenso_capability_counter::{
     CAPABILITY_ID as COUNTER_ID, CounterIncrement, CounterRead,
@@ -18,8 +18,8 @@ use lenso_capability_secrets::{
     CAPABILITY_ID as SECRETS_ID, DESCRIPTOR_VERSION as SECRETS_VERSION, RESOLVE_OPERATION,
 };
 use lenso_kernel::{DeterministicDriver, Kernel, RuntimeFailure, ShutdownOutcome};
-use lenso_native_adapter::NativeModuleRegistry;
-use lenso_vnext_stateful_module::{
+use lenso_native_adapter::NativePluginRegistry;
+use lenso_vnext_stateful_plugin::{
     COUNTER_PACKAGE_ID, CounterFactory, RecoveryOutcome, SetupOutcome, UpgradeOutcome,
     recover_owned_state, setup_owned_state, upgrade_owned_state,
 };
@@ -55,7 +55,7 @@ impl Drop for TestStorage {
 }
 
 fn plan(storage_path: &Path) -> ResolvedAppPlan {
-    let state = ModuleInstancePlan::new("state", COUNTER_PACKAGE_ID)
+    let state = PluginInstancePlan::new("state", COUNTER_PACKAGE_ID)
         .with_configuration(
             serde_json::json!({
                 "storage_path": storage_path,
@@ -69,10 +69,10 @@ fn plan(storage_path: &Path) -> ResolvedAppPlan {
             [INCREMENT_OPERATION, READ_OPERATION],
         ))
         .with_requirement(CapabilityRequirementPlan::one(SECRETS_ID, SECRETS_VERSION));
-    let secrets = ModuleInstancePlan::new("secrets", SECRETS_PACKAGE_ID).with_capability(
+    let secrets = PluginInstancePlan::new("secrets", SECRETS_PACKAGE_ID).with_capability(
         CapabilityEndpointPlan::new(SECRETS_ID, SECRETS_VERSION, [RESOLVE_OPERATION]),
     );
-    let caller = ModuleInstancePlan::new("caller", CALLER_PACKAGE_ID)
+    let caller = PluginInstancePlan::new("caller", CALLER_PACKAGE_ID)
         .with_requirement(CapabilityRequirementPlan::one(COUNTER_ID, COUNTER_VERSION));
     AppComposition::new(
         vec![caller, state, secrets],
@@ -85,11 +85,11 @@ fn plan(storage_path: &Path) -> ResolvedAppPlan {
     .expect("stateful fixture Composition should resolve")
 }
 
-fn registry(secret: Option<&str>) -> NativeModuleRegistry {
+fn registry(secret: Option<&str>) -> NativePluginRegistry {
     let values = secret
         .map(|value| BTreeMap::from([(String::from("counter-key"), value.to_owned())]))
         .unwrap_or_default();
-    NativeModuleRegistry::new()
+    NativePluginRegistry::new()
         .with_factory(CallerFactory)
         .with_factory(CounterFactory)
         .with_factory(SecretsFactory::new(values))
@@ -114,7 +114,7 @@ fn setup_is_explicit_and_reports_a_reviewable_outcome() {
 }
 
 #[test]
-fn durable_counter_behavior_survives_module_restart_through_the_public_capability() {
+fn durable_counter_behavior_survives_plugin_restart_through_the_public_capability() {
     let storage = TestStorage::new();
     setup_owned_state(&storage.path).expect("explicit setup should create durable storage");
 
@@ -221,7 +221,7 @@ fn unwritable_storage_fails_preparation_before_the_first_operation() {
 }
 
 #[test]
-fn missing_secret_fails_activation_without_starting_the_state_module() {
+fn missing_secret_fails_activation_without_starting_the_state_plugin() {
     let storage = TestStorage::new();
     setup_owned_state(&storage.path).expect("explicit setup should create durable storage");
     let driver = DeterministicDriver::new();
@@ -233,7 +233,7 @@ fn missing_secret_fails_activation_without_starting_the_state_module() {
 
     assert!(matches!(
         result,
-        Err(RuntimeFailure::ModuleFailure { detail })
+        Err(RuntimeFailure::PluginFailure { detail })
             if detail.contains("required secret reference `counter-key`")
     ));
 }

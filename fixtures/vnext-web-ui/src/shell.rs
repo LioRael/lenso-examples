@@ -1,16 +1,17 @@
 use std::{cell::RefCell, collections::BTreeMap, fmt::Write, rc::Rc};
 
-use futures::future::LocalBoxFuture;
 use lenso_capability_ui_contribution::{
     Contribution, DESCRIBE_OPERATION, DescribeRequest, DescribeResponse,
 };
 use lenso_capability_web_shell::{
     ReadAssetError, ReadAssetRequest, ReadAssetResponse, RenderRouteError, RenderRouteRequest,
     RenderRouteResponse, RenderRouteResponseNavigationItem, RenderRouteResponseRequirementsItem,
-    ShellEndpoint, ShellProvider, ShellReadAssetInvocationError, ShellRenderRouteInvocationError,
+    ShellEndpoint, ShellProvider, ShellReadAsset, ShellRenderRoute,
 };
-use lenso_kernel::{ActivateContext, InvocationContext, ModuleLifecycle, RuntimeFailure};
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_kernel::{
+    ActivateContext, InvocationContext, NativeRequestFuture, PluginLifecycle, RuntimeFailure,
+};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 
 const WEB_SHELL_PACKAGE_ID: &str = "lenso.web-shell";
 
@@ -158,7 +159,7 @@ impl ShellProvider for WebShell {
         &self,
         _context: InvocationContext,
         request: ReadAssetRequest,
-    ) -> LocalBoxFuture<'static, Result<ReadAssetResponse, ShellReadAssetInvocationError>> {
+    ) -> NativeRequestFuture<ShellReadAsset> {
         let result = self
             .state
             .borrow()
@@ -168,9 +169,8 @@ impl ShellProvider for WebShell {
                 content_type: asset.content_type.clone(),
                 content: asset.content.clone(),
             })
-            .ok_or(ShellReadAssetInvocationError::Domain(
-                ReadAssetError::AssetNotFound,
-            ));
+            .ok_or(ReadAssetError::AssetNotFound);
+        let result = Ok(result);
         Box::pin(futures::future::ready(result))
     }
 
@@ -178,12 +178,12 @@ impl ShellProvider for WebShell {
         &self,
         _context: InvocationContext,
         request: RenderRouteRequest,
-    ) -> LocalBoxFuture<'static, Result<RenderRouteResponse, ShellRenderRouteInvocationError>> {
+    ) -> NativeRequestFuture<ShellRenderRoute> {
         let state = self.state.borrow();
         let Some(route) = state.routes.get(&request.path) else {
-            return Box::pin(futures::future::ready(Err(
-                ShellRenderRouteInvocationError::Domain(RenderRouteError::RouteNotFound),
-            )));
+            return Box::pin(futures::future::ready(Ok(Err(
+                RenderRouteError::RouteNotFound,
+            ))));
         };
         let navigation = state
             .routes
@@ -218,7 +218,7 @@ impl ShellProvider for WebShell {
             asset_paths: route.asset_paths.clone(),
             requirements: route.requirements.clone(),
         };
-        Box::pin(futures::future::ready(Ok(response)))
+        Box::pin(futures::future::ready(Ok(Ok(response))))
     }
 }
 
@@ -227,8 +227,8 @@ struct ShellLifecycle {
     state: Rc<RefCell<ShellState>>,
 }
 
-impl ModuleLifecycle for ShellLifecycle {
-    fn activate(&self, context: ActivateContext) -> lenso_kernel::ModuleFuture {
+impl PluginLifecycle for ShellLifecycle {
+    fn activate(&self, context: ActivateContext) -> lenso_kernel::PluginFuture {
         let handles = match context.dependencies().many::<Contribution>() {
             Ok(handles) => handles,
             Err(error) => return Box::pin(futures::future::ready(Err(error))),
@@ -239,7 +239,7 @@ impl ModuleLifecycle for ShellLifecycle {
                 let metadata = handle
                     .invoke(DESCRIBE_OPERATION, DescribeRequest {})
                     .await?
-                    .map_err(|error| RuntimeFailure::ModuleFailure {
+                    .map_err(|error| RuntimeFailure::PluginFailure {
                         detail: format!("UI Contribution metadata failed: {error:?}"),
                     })?;
                 state.borrow_mut().register_contribution(metadata)?;
@@ -252,7 +252,7 @@ impl ModuleLifecycle for ShellLifecycle {
 #[derive(Clone, Copy, Debug)]
 pub struct WebShellFactory;
 
-impl NativeModuleFactory for WebShellFactory {
+impl NativePluginFactory for WebShellFactory {
     fn package_id(&self) -> &'static str {
         WEB_SHELL_PACKAGE_ID
     }
@@ -263,10 +263,10 @@ impl NativeModuleFactory for WebShellFactory {
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let state = Rc::new(RefCell::new(ShellState::default()));
-        Ok(NativeModuleInstance::with_lifecycle(
+        Ok(NativePluginInstance::with_lifecycle(
             vec![Rc::new(ShellEndpoint::new(WebShell {
                 state: state.clone(),
             }))],
