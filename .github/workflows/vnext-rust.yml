@@ -16,6 +16,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: oven-sh/setup-bun@v2
         with:
+          bun-version: 1.4.1
+        with:
           bun-version: 1.2.21
       - run: bun install --cwd fixtures/vnext-web-ui --frozen-lockfile
       - run: cargo fmt --all -- --check
