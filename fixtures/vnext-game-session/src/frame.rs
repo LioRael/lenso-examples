@@ -34,7 +34,7 @@ pub enum TerminalFrame {
     Runtime { code: String },
 }
 
-/// Frames emitted by the protocol Module.
+/// Frames emitted by the protocol Plugin.
 #[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum ServerFrame {

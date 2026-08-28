@@ -1,0 +1,8 @@
+{
+  "name": "lenso-vnext-web-ui-fixture",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@lenso/contract-runtime": "0.2.0"
+  }
+}

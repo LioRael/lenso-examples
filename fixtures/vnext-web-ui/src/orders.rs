@@ -7,11 +7,13 @@ use lenso_capability_secure_greeting::{
     SecureGreetingClient, SecureGreetingHandler, UnknownDomainError,
 };
 use lenso_capability_ui_contribution::{
-    ContributionEndpoint, ContributionInvocationError, ContributionProvider, DescribeRequest,
-    DescribeResponse, DescribeResponseAssetsItem, DescribeResponseRequirementsItem,
+    Contribution, ContributionEndpoint, ContributionProvider, DescribeRequest, DescribeResponse,
+    DescribeResponseAssetsItem, DescribeResponseRequirementsItem,
 };
-use lenso_kernel::{ActivateContext, InvocationContext, ModuleLifecycle, RuntimeFailure};
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_kernel::{
+    ActivateContext, InvocationContext, NativeRequestFuture, PluginLifecycle, RuntimeFailure,
+};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use serde::{Deserialize, Serialize};
 
 use crate::{MetadataScenario, auth::fixed_clock};
@@ -144,34 +146,34 @@ impl ContributionProvider for OrdersContribution {
         &self,
         _context: InvocationContext,
         _request: DescribeRequest,
-    ) -> LocalBoxFuture<'static, Result<DescribeResponse, ContributionInvocationError>> {
+    ) -> NativeRequestFuture<Contribution> {
         let metadata = self.metadata.clone();
-        Box::pin(async move { Ok(metadata) })
+        Box::pin(async move { Ok(Ok(metadata)) })
     }
 }
 
 #[derive(Debug)]
 struct UiLifecycle;
 
-impl ModuleLifecycle for UiLifecycle {
-    fn activate(&self, context: ActivateContext) -> lenso_kernel::ModuleFuture {
+impl PluginLifecycle for UiLifecycle {
+    fn activate(&self, context: ActivateContext) -> lenso_kernel::PluginFuture {
         let result = SecureGreetingClient::from_dependencies(context.dependencies()).map(|_| ());
         Box::pin(futures::future::ready(result))
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct OrdersModuleFactory {
+pub struct OrdersPluginFactory {
     verifier: ActorAssertionVerifier,
 }
 
-impl OrdersModuleFactory {
+impl OrdersPluginFactory {
     pub const fn new(verifier: ActorAssertionVerifier) -> Self {
         Self { verifier }
     }
 }
 
-impl NativeModuleFactory for OrdersModuleFactory {
+impl NativePluginFactory for OrdersPluginFactory {
     fn package_id(&self) -> &'static str {
         ORDERS_PACKAGE_ID
     }
@@ -182,17 +184,17 @@ impl NativeModuleFactory for OrdersModuleFactory {
 
     fn instantiate(
         &self,
-        context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         match context.entrypoint() {
-            "backend" => Ok(NativeModuleInstance::new(vec![Rc::new(
+            "backend" => Ok(NativePluginInstance::new(vec![Rc::new(
                 ActorBoundSecureGreetingEndpoint::new(
                     OrdersHandler,
                     self.verifier.clone(),
                     fixed_clock(),
                 ),
             )])),
-            "ui" => Ok(NativeModuleInstance::with_lifecycle(
+            "ui" => Ok(NativePluginInstance::with_lifecycle(
                 vec![Rc::new(ContributionEndpoint::new(
                     OrdersContribution::from_configuration(context.configuration())?,
                 ))],
@@ -206,9 +208,9 @@ impl NativeModuleFactory for OrdersModuleFactory {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct WorkerModuleFactory;
+pub struct WorkerPluginFactory;
 
-impl NativeModuleFactory for WorkerModuleFactory {
+impl NativePluginFactory for WorkerPluginFactory {
     fn package_id(&self) -> &'static str {
         WORKER_PACKAGE_ID
     }
@@ -219,8 +221,8 @@ impl NativeModuleFactory for WorkerModuleFactory {
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::default())
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::default())
     }
 }

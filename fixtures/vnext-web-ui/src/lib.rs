@@ -9,19 +9,18 @@ mod shell;
 use std::{net::SocketAddr, time::Duration};
 
 use lenso_auth_sdk::{AuthOutcome, CredentialEvidence, authenticate_request, decode_auth_response};
-use lenso_authoring::{ProjectAuthoring, ResolutionOptions};
 use lenso_capability_auth::{AUTHENTICATE_OPERATION, Auth};
 use lenso_capability_secure_greeting::{GREET_OPERATION, GreetRequest, SecureGreeting};
 use lenso_kernel::{CancellationToken, Kernel, NativeApp, RuntimeFailure, ShutdownOutcome};
-use lenso_native_adapter::NativeModuleRegistry;
+use lenso_native_adapter::NativePluginRegistry;
 use lenso_runner::TokioDriver;
 
 pub use orders::ORDERS_PACKAGE_ID;
 pub use plan::{UI_CONTRIBUTION_CAPABILITY_ID, WEB_SHELL_CAPABILITY_ID};
 
-use auth::{AuthModuleFactory, fixture_issuer};
+use auth::{AuthPluginFactory, fixture_issuer};
 use browser::BrowserAdapterFactory;
-use orders::{OrdersModuleFactory, WorkerModuleFactory};
+use orders::{OrdersPluginFactory, WorkerPluginFactory};
 use shell::WebShellFactory;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -68,21 +67,15 @@ impl WebUiFixture {
         self
     }
 
-    pub fn project_file(&self) -> lenso_authoring::ProjectFile {
-        plan::project(self.metadata, self.web_enabled)
+    pub fn plugin_root(&self) -> lenso_app_plan::authoring::PluginRootSnapshot {
+        plan::plugin_root(self.web_enabled)
     }
 
     pub fn resolved_plan(
         &self,
-    ) -> Result<lenso_app_plan::ResolvedAppPlan, lenso_authoring::AuthoringError> {
-        let options = if self.web_enabled {
-            ResolutionOptions::default().with_profile("web")
-        } else {
-            ResolutionOptions::default()
-        };
-        self.project_file()
-            .resolve(&plan::workspace_root(), &options)
-            .map(|project| project.plan().clone())
+    ) -> Result<lenso_app_plan::ResolvedAppPlan, lenso_app_plan::authoring::PluginRootResolutionError>
+    {
+        plan::resolve(self.metadata, self.web_enabled)
     }
 
     pub async fn start(&self) -> Result<RunningWebUi, RuntimeFailure> {
@@ -92,12 +85,12 @@ impl WebUiFixture {
         } else {
             BrowserAdapterFactory::new()
         };
-        let registry = NativeModuleRegistry::new()
-            .with_factory(OrdersModuleFactory::new(issuer.verifier()))
-            .with_factory(AuthModuleFactory::new(issuer))
+        let registry = NativePluginRegistry::new()
+            .with_factory(OrdersPluginFactory::new(issuer.verifier()))
+            .with_factory(AuthPluginFactory::new(issuer))
             .with_factory(WebShellFactory)
             .with_factory(browser.clone())
-            .with_factory(WorkerModuleFactory);
+            .with_factory(WorkerPluginFactory);
         let plan = self
             .resolved_plan()
             .map_err(|error| RuntimeFailure::InvalidResolvedPlan {
@@ -134,32 +127,32 @@ impl RunningWebUi {
         let auth = self
             .app
             .invoke::<Auth>(
-                "worker",
+                "worker/default",
                 AUTHENTICATE_OPERATION,
                 authenticate_request(Some(CredentialEvidence::new("bearer", token))),
             )
             .await?
-            .map_err(|error| RuntimeFailure::ModuleFailure {
+            .map_err(|error| RuntimeFailure::PluginFailure {
                 detail: format!("worker authentication rejected: {error:?}"),
             })?;
         let AuthOutcome::Authenticated(assertion) =
-            decode_auth_response(auth).map_err(|error| RuntimeFailure::ModuleFailure {
+            decode_auth_response(auth).map_err(|error| RuntimeFailure::PluginFailure {
                 detail: format!("worker Auth response was invalid: {error:?}"),
             })?
         else {
-            return Err(RuntimeFailure::ModuleFailure {
+            return Err(RuntimeFailure::PluginFailure {
                 detail: "worker authentication was absent".to_owned(),
             });
         };
         let context = assertion
             .attach(self.app.invocation_context(None, CancellationToken::new()))
-            .map_err(|error| RuntimeFailure::ModuleFailure {
+            .map_err(|error| RuntimeFailure::PluginFailure {
                 detail: format!("worker assertion could not attach: {error}"),
             })?;
         let response = self
             .app
             .invoke_with_context::<SecureGreeting>(
-                "worker",
+                "worker/default",
                 GREET_OPERATION,
                 context,
                 GreetRequest {
@@ -167,7 +160,7 @@ impl RunningWebUi {
                 },
             )
             .await?
-            .map_err(|error| RuntimeFailure::ModuleFailure {
+            .map_err(|error| RuntimeFailure::PluginFailure {
                 detail: format!("worker greeting rejected: {error:?}"),
             })?;
         Ok(response.message)

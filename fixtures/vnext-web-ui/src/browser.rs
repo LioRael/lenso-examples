@@ -17,10 +17,10 @@ use lenso_capability_web_shell::{
     ShellReadAssetInvocationError, ShellRenderRouteInvocationError,
 };
 use lenso_kernel::{
-    ActivateContext, CancellationToken, ModuleDependencies, ModuleLifecycle, PrepareContext,
+    ActivateContext, CancellationToken, PluginDependencies, PluginLifecycle, PrepareContext,
     RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
@@ -128,11 +128,11 @@ impl BrowserAdapterFactory {
                 return Ok(());
             }
             if let Some(detail) = self.observer.launch_error.borrow().clone() {
-                return Err(RuntimeFailure::ModuleFailure { detail });
+                return Err(RuntimeFailure::PluginFailure { detail });
             }
             tokio::task::yield_now().await;
         }
-        Err(RuntimeFailure::ModuleFailure {
+        Err(RuntimeFailure::PluginFailure {
             detail: "Browser Adapter did not publish its ready URL".to_owned(),
         })
     }
@@ -144,7 +144,7 @@ impl Default for BrowserAdapterFactory {
     }
 }
 
-impl NativeModuleFactory for BrowserAdapterFactory {
+impl NativePluginFactory for BrowserAdapterFactory {
     fn package_id(&self) -> &'static str {
         BROWSER_PACKAGE_ID
     }
@@ -155,9 +155,9 @@ impl NativeModuleFactory for BrowserAdapterFactory {
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::with_lifecycle(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::with_lifecycle(
             Vec::new(),
             BrowserLifecycle {
                 observer: self.observer.clone(),
@@ -175,19 +175,19 @@ struct BrowserLifecycle {
     generation: Rc<BrowserGeneration>,
 }
 
-impl ModuleLifecycle for BrowserLifecycle {
-    fn prepare(&self, _context: PrepareContext) -> lenso_kernel::ModuleFuture {
+impl PluginLifecycle for BrowserLifecycle {
+    fn prepare(&self, _context: PrepareContext) -> lenso_kernel::PluginFuture {
         let observer = self.observer.clone();
         let generation = self.generation.clone();
         Box::pin(async move {
             let listener = TcpListener::bind("127.0.0.1:0").await.map_err(|error| {
-                RuntimeFailure::ModuleFailure {
+                RuntimeFailure::PluginFailure {
                     detail: format!("Browser Adapter bind failed: {error}"),
                 }
             })?;
             let address = listener
                 .local_addr()
-                .map_err(|error| RuntimeFailure::ModuleFailure {
+                .map_err(|error| RuntimeFailure::PluginFailure {
                     detail: format!("Browser Adapter address failed: {error}"),
                 })?;
             observer.local_addr.set(Some(address));
@@ -196,7 +196,7 @@ impl ModuleLifecycle for BrowserLifecycle {
         })
     }
 
-    fn activate(&self, context: ActivateContext) -> lenso_kernel::ModuleFuture {
+    fn activate(&self, context: ActivateContext) -> lenso_kernel::PluginFuture {
         let shell = match ShellClient::from_dependencies(context.dependencies()) {
             Ok(client) => Rc::new(client),
             Err(error) => return Box::pin(futures::future::ready(Err(error))),
@@ -250,7 +250,7 @@ struct BrowserRuntime {
     shell: Rc<ShellClient>,
     auth: Rc<AuthClient>,
     greeting: Rc<SecureGreetingClient>,
-    dependencies: ModuleDependencies,
+    dependencies: PluginDependencies,
 }
 
 async fn accept(listener: TcpListener, runtime: BrowserRuntime, cancellation: CancellationToken) {
@@ -447,7 +447,7 @@ async fn greet(request: HttpRequest, runtime: &BrowserRuntime) -> HttpResponse {
         return capability_runtime(403, "unavailable", "client_not_projected");
     }
     let Some(token) = request.token else {
-        return capability_runtime(401, "module_failure", "credential_required");
+        return capability_runtime(401, "plugin_failure", "credential_required");
     };
     let auth = match runtime
         .auth
@@ -465,7 +465,7 @@ async fn greet(request: HttpRequest, runtime: &BrowserRuntime) -> HttpResponse {
     let assertion = match decode_auth_response(auth) {
         Ok(AuthOutcome::Authenticated(assertion)) => assertion,
         Ok(AuthOutcome::Absent) => {
-            return capability_runtime(401, "module_failure", "credential_required");
+            return capability_runtime(401, "plugin_failure", "credential_required");
         }
         Err(_) => return capability_runtime(502, "protocol_violation", "invalid_auth_response"),
     };
@@ -479,7 +479,7 @@ async fn greet(request: HttpRequest, runtime: &BrowserRuntime) -> HttpResponse {
         .and_then(|context| {
             assertion
                 .attach(context)
-                .map_err(|error| RuntimeFailure::ModuleFailure {
+                .map_err(|error| RuntimeFailure::PluginFailure {
                     detail: format!("Browser assertion could not attach: {error}"),
                 })
         })
@@ -554,7 +554,7 @@ fn auth_rejection(error: &AuthenticateError) -> HttpResponse {
         AuthenticateError::Unsupported => "unsupported",
         AuthenticateError::Unknown(_) => "unknown_auth_error",
     };
-    capability_runtime(401, "module_failure", code)
+    capability_runtime(401, "plugin_failure", code)
 }
 
 async fn write_response(stream: &mut TcpStream, response: HttpResponse) -> std::io::Result<()> {

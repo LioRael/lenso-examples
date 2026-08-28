@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, rc::Rc};
 use futures::future::LocalBoxFuture;
 use lenso_app_plan::{
     AppComposition, CapabilityBinding, CapabilityEndpointPlan, CapabilityRequirementPlan,
-    ModuleInstancePlan,
+    PluginInstancePlan,
 };
 use lenso_auth_sdk::{
     ActorAssertion, ActorAssertionIssuer, ActorAssertionVerifier, ActorProjectionError,
@@ -11,16 +11,18 @@ use lenso_auth_sdk::{
     authenticate_request, authenticated_response, decode_auth_response,
 };
 use lenso_capability_auth::{
-    AUTHENTICATE_OPERATION, Auth, AuthEndpoint, AuthError, AuthInvocationError, AuthProvider,
-    AuthRequest, AuthResponse, CAPABILITY_ID as AUTH_ID, DESCRIPTOR_VERSION as AUTH_VERSION,
+    AUTHENTICATE_OPERATION, Auth, AuthEndpoint, AuthError, AuthProvider, AuthRequest,
+    CAPABILITY_ID as AUTH_ID, DESCRIPTOR_VERSION as AUTH_VERSION,
 };
 use lenso_capability_secure_greeting::{
     ActorBoundSecureGreetingEndpoint, CAPABILITY_ID, DESCRIPTOR_VERSION, GREET_OPERATION,
     GreetError, GreetRequest, GreetResponse, SecureGreeting, SecureGreetingHandler,
 };
-use lenso_kernel::{CancellationToken, DeterministicDriver, Kernel, RuntimeFailure};
+use lenso_kernel::{
+    CancellationToken, DeterministicDriver, Kernel, NativeRequestFuture, RuntimeFailure,
+};
 use lenso_native_adapter::{
-    NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance, NativeModuleRegistry,
+    NativePluginFactory, NativePluginFactoryContext, NativePluginInstance, NativePluginRegistry,
 };
 use time::{Duration, OffsetDateTime};
 
@@ -73,20 +75,20 @@ impl AuthProvider for FixtureAuthProvider {
         &self,
         _context: lenso_kernel::InvocationContext,
         request: AuthRequest,
-    ) -> LocalBoxFuture<'static, Result<AuthResponse, AuthInvocationError>> {
+    ) -> NativeRequestFuture<Auth> {
         let issuer = self.issuer.clone();
         let now = self.now;
         Box::pin(async move {
-            let credential = request
-                .credential
-                .ok_or(AuthInvocationError::Domain(AuthError::Invalid))?;
+            let Some(credential) = request.credential else {
+                return Ok(Err(AuthError::Invalid));
+            };
             if credential.scheme != "bearer" {
-                return Err(AuthInvocationError::Domain(AuthError::Unsupported));
+                return Ok(Err(AuthError::Unsupported));
             }
             let subject = match credential.value.as_str() {
                 "good-token" => "user-123",
                 "forbidden-token" => "forbidden",
-                _ => return Err(AuthInvocationError::Domain(AuthError::Invalid)),
+                _ => return Ok(Err(AuthError::Invalid)),
             };
             let assertion = issuer.issue(
                 subject,
@@ -97,7 +99,7 @@ impl AuthProvider for FixtureAuthProvider {
                     .expect("fixture interval is valid"),
                 BTreeMap::new(),
             );
-            Ok(authenticated_response(&assertion))
+            Ok(Ok(authenticated_response(&assertion)))
         })
     }
 }
@@ -110,15 +112,15 @@ struct FixtureFactory {
     clock: FixedClock,
 }
 
-impl NativeModuleFactory for FixtureFactory {
+impl NativePluginFactory for FixtureFactory {
     fn package_id(&self) -> &'static str {
         self.package
     }
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let endpoints: Vec<Rc<dyn lenso_kernel::NativeRequestEndpoint>> = match self.package {
             "fixture.auth" => vec![Rc::new(AuthEndpoint::new(self.auth.clone()))],
             "fixture.secure-greeting" => vec![Rc::new(ActorBoundSecureGreetingEndpoint::new(
@@ -129,7 +131,7 @@ impl NativeModuleFactory for FixtureFactory {
             "fixture.ingress" => Vec::new(),
             _ => unreachable!("factory package is fixed"),
         };
-        Ok(NativeModuleInstance::new(endpoints))
+        Ok(NativePluginInstance::new(endpoints))
     }
 }
 
@@ -138,7 +140,6 @@ struct FixtureIngressAdapter;
 
 impl FixtureIngressAdapter {
     fn select_bearer<'a>(
-        &self,
         headers: impl IntoIterator<Item = (&'a str, &'a str)>,
     ) -> Result<Option<CredentialEvidence>, &'static str> {
         let mut selected = None;
@@ -159,16 +160,16 @@ impl FixtureIngressAdapter {
 }
 
 fn plan() -> lenso_app_plan::ResolvedAppPlan {
-    let ingress = ModuleInstancePlan::new("ingress", "fixture.ingress")
+    let ingress = PluginInstancePlan::new("ingress", "fixture.ingress")
         .with_requirement(CapabilityRequirementPlan::one(AUTH_ID, AUTH_VERSION))
         .with_requirement(CapabilityRequirementPlan::one(
             CAPABILITY_ID,
             DESCRIPTOR_VERSION,
         ));
-    let auth = ModuleInstancePlan::new("auth", "fixture.auth").with_capability(
+    let auth = PluginInstancePlan::new("auth", "fixture.auth").with_capability(
         CapabilityEndpointPlan::new(AUTH_ID, AUTH_VERSION, [AUTHENTICATE_OPERATION]),
     );
-    let target = ModuleInstancePlan::new("target", "fixture.secure-greeting").with_capability(
+    let target = PluginInstancePlan::new("target", "fixture.secure-greeting").with_capability(
         CapabilityEndpointPlan::new(CAPABILITY_ID, DESCRIPTOR_VERSION, [GREET_OPERATION]),
     );
     AppComposition::new(
@@ -192,7 +193,7 @@ fn ingress_invokes_bound_auth_before_the_actor_bound_target() {
     };
     let registry = ["fixture.ingress", "fixture.auth", "fixture.secure-greeting"]
         .into_iter()
-        .fold(NativeModuleRegistry::new(), |registry, package| {
+        .fold(NativePluginRegistry::new(), |registry, package| {
             registry.with_factory(FixtureFactory {
                 package,
                 auth: auth.clone(),
@@ -204,8 +205,7 @@ fn ingress_invokes_bound_auth_before_the_actor_bound_target() {
     let app = driver
         .run(Kernel::start_native(plan(), driver.clone(), registry))
         .expect("native fixture starts");
-    let evidence = FixtureIngressAdapter
-        .select_bearer([("Authorization", "Bearer good-token")])
+    let evidence = FixtureIngressAdapter::select_bearer([("Authorization", "Bearer good-token")])
         .expect("one credential is selected");
     let auth_response = driver
         .run(app.invoke::<Auth>(

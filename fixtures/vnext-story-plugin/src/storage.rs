@@ -23,7 +23,7 @@ pub use model::{StoryRecoveryOutcome, StorySetupOutcome, StoryStorageError, Stor
 
 static NEXT_PROBE_ID: AtomicU64 = AtomicU64::new(0);
 
-/// A private persistence Adapter owned by the Story Module.
+/// A private persistence Adapter owned by the Story Plugin.
 #[derive(Clone, Debug)]
 pub(super) struct FileStoryAdapter {
     path: PathBuf,
@@ -53,13 +53,13 @@ impl FileStoryAdapter {
         })
     }
 
-    /// Applies an explicit owner migration and never runs from Module preparation.
+    /// Applies an explicit owner migration and never runs from Plugin preparation.
     pub(super) fn upgrade(&self) -> Result<StoryUpgradeOutcome, StoryStorageError> {
         let parent = self.parent()?;
         let _lock = self.acquire_lock(true)?;
         self.require_recovered()?;
         let migration = Self::owned_migration()?;
-        let value = self.read_json_value(&self.path)?;
+        let value = Self::read_json_value(&self.path)?;
         let version = document_version(&self.path, &value)?;
         match version {
             version if version == migration.version => {
@@ -152,7 +152,7 @@ impl FileStoryAdapter {
             return Ok(StoryRecoveryOutcome::DiscardedUncommitted);
         }
 
-        let document = self.read_current_document_at(&temporary_path)?;
+        let document = Self::read_current_document_at(&temporary_path)?;
         std::fs::rename(&temporary_path, &self.path)
             .map_err(|error| StoryStorageError::io(&self.path, "restore transaction", &error))?;
         sync_directory(parent)?;
@@ -179,7 +179,7 @@ impl FileStoryAdapter {
             .map_err(|error| {
                 StoryStorageError::io(&self.path, "open storage read-write", &error)
             })?;
-        self.read_current_document_from(&mut file, &self.path)?;
+        Self::read_current_document_from(&mut file, &self.path)?;
         self.probe_parent_writable(parent)
     }
 
@@ -315,17 +315,16 @@ impl FileStoryAdapter {
                 StoryStorageError::io(&self.path, "read storage", &error)
             }
         })?;
-        self.read_current_document_from(&mut file, &self.path)
+        Self::read_current_document_from(&mut file, &self.path)
     }
 
-    fn read_current_document_at(&self, path: &Path) -> Result<StoryDocument, StoryStorageError> {
+    fn read_current_document_at(path: &Path) -> Result<StoryDocument, StoryStorageError> {
         let mut file = File::open(path)
             .map_err(|error| StoryStorageError::io(path, "read recovery document", &error))?;
-        self.read_current_document_from(&mut file, path)
+        Self::read_current_document_from(&mut file, path)
     }
 
     fn read_current_document_from(
-        &self,
         reader: &mut File,
         path: &Path,
     ) -> Result<StoryDocument, StoryStorageError> {
@@ -375,7 +374,7 @@ impl FileStoryAdapter {
         Ok(migration)
     }
 
-    fn read_json_value(&self, path: &Path) -> Result<serde_json::Value, StoryStorageError> {
+    fn read_json_value(path: &Path) -> Result<serde_json::Value, StoryStorageError> {
         let bytes = std::fs::read(path)
             .map_err(|error| StoryStorageError::io(path, "read storage", &error))?;
         serde_json::from_slice(&bytes).map_err(|error| StoryStorageError::InvalidDocument {

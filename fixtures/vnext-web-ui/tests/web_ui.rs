@@ -1,9 +1,6 @@
 use std::{net::SocketAddr, time::Duration};
 
-use lenso_authoring::{
-    CapabilityEndpoint, Module, ProjectAuthoring, ResolutionOptions, WebProfile,
-};
-use lenso_capability_secure_greeting::{CAPABILITY_ID, DESCRIPTOR_VERSION, GREET_OPERATION};
+use lenso_capability_secure_greeting::CAPABILITY_ID;
 use lenso_vnext_web_ui::{MetadataScenario, ORDERS_PACKAGE_ID, WebUiFixture};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
@@ -13,27 +10,27 @@ use tokio::{
 };
 
 #[test]
-fn web_profile_materializes_explicit_modules_entrypoints_and_bindings_before_boot() {
+fn plugin_root_materializes_explicit_plugins_entrypoints_and_bindings_before_boot() {
     let fixture = WebUiFixture::orders();
-    let project = fixture.project_file();
-    let project_without_web = fixture.clone().without_web().project_file();
+    let root = fixture.plugin_root();
+    let root_without_web = fixture.clone().without_web().plugin_root();
     assert_ne!(
-        serde_json::to_vec_pretty(&project).unwrap(),
-        serde_json::to_vec_pretty(&project_without_web).unwrap()
+        serde_json::to_vec_pretty(&root).unwrap(),
+        serde_json::to_vec_pretty(&root_without_web).unwrap()
     );
     let plan = fixture
         .resolved_plan()
         .expect("the target-owned Web profile should resolve");
 
-    let instances = plan.module_instances();
+    let instances = plan.plugin_instances();
     let orders_backend = instances
         .iter()
-        .find(|instance| instance.instance_key() == "orders")
-        .expect("business Module should be selected");
+        .find(|instance| instance.instance_key() == "orders/default")
+        .expect("business Plugin should be selected");
     let orders_ui = instances
         .iter()
-        .find(|instance| instance.instance_key() == "orders-ui")
-        .expect("UI Contribution Module should be selected");
+        .find(|instance| instance.instance_key() == "orders-ui/default")
+        .expect("UI Contribution Plugin should be selected");
 
     assert_eq!(orders_backend.package_id(), ORDERS_PACKAGE_ID);
     assert_eq!(orders_backend.entrypoint(), "backend");
@@ -42,64 +39,36 @@ fn web_profile_materializes_explicit_modules_entrypoints_and_bindings_before_boo
     assert!(
         instances
             .iter()
-            .any(|instance| instance.instance_key() == "web-shell")
+            .any(|instance| instance.instance_key() == "web-shell/default")
     );
     assert!(
         instances
             .iter()
-            .any(|instance| instance.instance_key() == "browser-adapter")
+            .any(|instance| instance.instance_key() == "browser-adapter/default")
     );
     assert!(plan.capability_bindings().iter().any(|binding| {
-        binding.consumer_instance() == "web-shell"
-            && binding.provider_instance() == "orders-ui"
+        binding.consumer_instance() == "web-shell/default"
+            && binding.provider_instance() == "orders-ui/default"
             && binding.capability_id() == "lenso.ui.contribution@1"
     }));
 }
 
 #[test]
-fn web_profile_rejects_a_browser_projection_bound_to_another_provider() {
-    let mut project = WebUiFixture::orders().project_file();
-    project.composition_mut().add_module(
-        Module::new("orders-alternate", ORDERS_PACKAGE_ID)
-            .with_entrypoint("backend")
-            .with_capability(CapabilityEndpoint::request(
-                CAPABILITY_ID,
-                DESCRIPTOR_VERSION,
-                [GREET_OPERATION],
-            )),
-    );
-    let binding = project
-        .composition_mut()
-        .bindings_mut()
-        .iter_mut()
-        .find(|binding| {
-            binding.consumer() == "browser-adapter" && binding.capability_id() == CAPABILITY_ID
+fn host_catalog_keeps_browser_and_ui_on_the_same_greeting_provider() {
+    let plan = WebUiFixture::orders().resolved_plan().unwrap();
+    let providers = plan
+        .capability_bindings()
+        .iter()
+        .filter(|binding| {
+            binding.capability_id() == CAPABILITY_ID
+                && matches!(
+                    binding.consumer_instance(),
+                    "browser-adapter/default" | "orders-ui/default"
+                )
         })
-        .unwrap();
-    *binding = lenso_authoring::Binding::new(
-        "browser-adapter",
-        CAPABILITY_ID,
-        DESCRIPTOR_VERSION,
-        "orders-alternate",
-    );
-    project.profiles_mut().insert(
-        "web".to_owned(),
-        WebProfile::new("web-shell", "browser-adapter")
-            .with_ui_contribution("orders-ui")
-            .with_module("orders")
-            .with_module("orders-alternate")
-            .with_module("auth")
-            .with_module("worker"),
-    );
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    let error = project
-        .resolve(&root, &ResolutionOptions::default().with_profile("web"))
-        .expect_err("a browser projection cannot bypass the contribution binding");
-    assert!(
-        error
-            .to_string()
-            .contains("same cardinality and resolved provider")
-    );
+        .map(lenso_app_plan::CapabilityBinding::provider_instance)
+        .collect::<Vec<_>>();
+    assert_eq!(providers, vec!["orders/default", "orders/default"]);
 }
 
 #[tokio::test(flavor = "current_thread")]
@@ -170,7 +139,7 @@ async fn route_assets_and_allowlisted_generated_client_run_after_app_readiness()
             assert_eq!(denied.status, 403);
             assert_eq!(
                 denied.body,
-                r#"{"error":{"error":"not_allowed","kind":"domain"},"ok":false}"#
+                r#"{"ok":false,"error":{"kind":"domain","error":"not_allowed"}}"#
             );
 
             let ambient = request(
@@ -224,7 +193,7 @@ async fn generated_client_transport_preserves_unknown_and_protocol_errors() {
             assert_eq!(unknown.status, 422);
             assert_eq!(
                 unknown.body,
-                r#"{"error":{"error":{"code":"future_rule","payload":{"retry":false},"source":"orders"},"kind":"domain"},"ok":false}"#
+                r#"{"ok":false,"error":{"kind":"domain","error":{"code":"future_rule","payload":{"retry":false},"source":"orders"}}}"#
             );
 
             let malformed = request(
@@ -249,10 +218,9 @@ async fn run_generated_client(address: SocketAddr) -> String {
 const origin = process.argv[1];
 const source = await fetch(`${origin}/assets/generated/secure-greeting.js`).then((response) => response.text());
 const { unlink } = await import("node:fs/promises");
-const { tmpdir } = await import("node:os");
 const { join } = await import("node:path");
 const { pathToFileURL } = await import("node:url");
-const modulePath = join(tmpdir(), `lenso-generated-client-${process.pid}.mjs`);
+const modulePath = join(process.cwd(), `lenso-generated-client-${process.pid}.mjs`);
 await Bun.write(modulePath, source);
 try {
   const { createSecureGreetingClient } = await import(pathToFileURL(modulePath).href);
@@ -273,6 +241,7 @@ try {
 "#;
     let output = Command::new("bun")
         .args(["--eval", script, &origin])
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .await
         .expect("Bun should execute the generated browser client");
@@ -305,7 +274,7 @@ async fn missing_or_colliding_contribution_metadata_fails_before_readiness() {
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn removing_web_modules_leaves_non_ui_business_invocation_unchanged() {
+async fn removing_web_plugins_leaves_non_ui_business_invocation_unchanged() {
     LocalSet::new()
         .run_until(async {
             let running = WebUiFixture::orders()

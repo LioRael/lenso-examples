@@ -1,8 +1,9 @@
-use std::path::{Path, PathBuf};
-
-use lenso_authoring::{
-    Binding, CapabilityEndpoint, CapabilityRequirement, ContractInput, Module, ModuleRole,
-    PackageInput, PackageSource, ProjectFile, WebProfile,
+use lenso_app_plan::{
+    CapabilityEndpointPlan, CapabilityRequirementPlan, ResolvedAppPlan,
+    authoring::{
+        HostBinding, HostCatalog, HostDefaultPlugin, HostPluginRelease, HostSlot, PluginDescriptor,
+        PluginInstanceId, PluginRootResolutionError, PluginRootSnapshot, resolve_plugin_root,
+    },
 };
 use lenso_capability_auth::{
     AUTHENTICATE_OPERATION, CAPABILITY_ID as AUTH_CAPABILITY_ID,
@@ -25,244 +26,191 @@ use crate::{MetadataScenario, ORDERS_PACKAGE_ID, orders::contribution_configurat
 
 pub const UI_CONTRIBUTION_CAPABILITY_ID: &str = UI_CAPABILITY_ID;
 pub const WEB_SHELL_CAPABILITY_ID: &str = SHELL_CAPABILITY_ID;
-const FIXTURE_CRATE: &str = "lenso-vnext-web-ui";
-const FIXTURE_VERSION: &str = "0.1.0";
+const RELEASE_VERSION: &str = "0.1.0";
+const DEFAULT_INSTANCE: &str = "default";
 
-pub fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+const ORDERS: &str = "orders";
+const AUTH: &str = "auth";
+const WORKER: &str = "worker";
+const ORDERS_UI: &str = "orders-ui";
+const ORDERS_UI_COPY: &str = "orders-ui-copy";
+const WEB_SHELL: &str = "web-shell";
+const BROWSER_ADAPTER: &str = "browser-adapter";
+
+pub fn plugin_root(web_enabled: bool) -> PluginRootSnapshot {
+    let disabled = if web_enabled {
+        Vec::new()
+    } else {
+        [ORDERS_UI, WEB_SHELL, BROWSER_ADAPTER]
+            .into_iter()
+            .map(instance_id)
+            .collect()
+    };
+    PluginRootSnapshot::new([], [], disabled)
 }
 
-pub fn project(metadata: MetadataScenario, web_enabled: bool) -> ProjectFile {
-    let mut project = ProjectFile::default();
-    add_contracts(&mut project);
-    for package_id in [
-        ORDERS_PACKAGE_ID,
-        "fixture.web-auth",
-        "fixture.orders-worker",
-        "lenso.web-shell",
-        "lenso.browser-adapter",
-    ] {
-        project.packages_mut().insert(
-            package_id.to_owned(),
-            PackageInput::new(package_id, PackageSource::Cargo, FIXTURE_VERSION)
-                .with_package_name(FIXTURE_CRATE)
-                .with_manifest("Cargo.toml")
-                .with_lockfile("Cargo.lock"),
-        );
-    }
-    add_base_modules(&mut project);
-    if web_enabled {
-        add_web_modules(&mut project, metadata);
-    }
-    project
+pub fn resolve(
+    metadata: MetadataScenario,
+    web_enabled: bool,
+) -> Result<ResolvedAppPlan, PluginRootResolutionError> {
+    resolve_plugin_root(&host_catalog(metadata), &plugin_root(web_enabled))
+        .map(|app| app.plan().clone())
 }
 
-fn add_contracts(project: &mut ProjectFile) {
-    project.contracts_mut().push(
-        ContractInput::descriptor_only(
-            AUTH_CAPABILITY_ID,
-            "1.0.0",
-            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1/capability.json",
-        )
-        .with_typescript_projection(
-            "fixtures/vnext-web-ui/contracts/lenso-capability-auth-0.1.1/generated/bindings.ts",
-        ),
-    );
+fn host_catalog(metadata: MetadataScenario) -> HostCatalog {
+    let slots = vec![
+        HostSlot::one(ORDERS),
+        HostSlot::one(AUTH),
+        HostSlot::one(WORKER),
+        HostSlot::many("ui"),
+        HostSlot::optional(WEB_SHELL),
+        HostSlot::optional(BROWSER_ADAPTER),
+    ];
+    let mut releases = vec![
+        release(orders_backend()),
+        release(auth()),
+        release(worker()),
+        release(orders_ui(
+            ORDERS_UI,
+            &contribution_configuration(metadata, false),
+        )),
+        release(web_shell()),
+        release(browser_adapter()),
+    ];
+    let mut defaults = vec![
+        default(ORDERS, false),
+        default(AUTH, false),
+        default(WORKER, false),
+        default(ORDERS_UI, true),
+        default(WEB_SHELL, true),
+        default(BROWSER_ADAPTER, true),
+    ];
+    let mut bindings = vec![
+        binding(WORKER, AUTH_CAPABILITY_ID, AUTH),
+        binding(WORKER, GREETING_CAPABILITY_ID, ORDERS),
+        binding(ORDERS_UI, GREETING_CAPABILITY_ID, ORDERS),
+        HostBinding::new(instance_id(WEB_SHELL), UI_CAPABILITY_ID, "ui"),
+        binding(BROWSER_ADAPTER, SHELL_CAPABILITY_ID, WEB_SHELL),
+        binding(BROWSER_ADAPTER, AUTH_CAPABILITY_ID, AUTH),
+        binding(BROWSER_ADAPTER, GREETING_CAPABILITY_ID, ORDERS),
+    ];
 
-    for (directory, typescript_directory, capability_id) in [
-        (
-            "crates/lenso-capability-secure-greeting",
-            "fixtures/vnext-web-ui/contracts/secure-greeting",
+    if metadata == MetadataScenario::CollidingRoute {
+        releases.push(release(orders_ui(
+            ORDERS_UI_COPY,
+            &contribution_configuration(metadata, true),
+        )));
+        defaults.push(default(ORDERS_UI_COPY, true));
+        bindings.push(binding(ORDERS_UI_COPY, GREETING_CAPABILITY_ID, ORDERS));
+    }
+
+    HostCatalog::new(slots, releases, defaults).with_bindings(bindings)
+}
+
+fn orders_backend() -> PluginDescriptor {
+    PluginDescriptor::new(ORDERS, RELEASE_VERSION, ORDERS)
+        .with_runtime_package(ORDERS_PACKAGE_ID, RELEASE_VERSION)
+        .with_entrypoint("backend")
+        .with_capability(CapabilityEndpointPlan::new(
             GREETING_CAPABILITY_ID,
-        ),
-        (
-            "crates/lenso-capability-ui-contribution",
-            "fixtures/vnext-web-ui/contracts/ui-contribution",
-            UI_CAPABILITY_ID,
-        ),
-        (
-            "crates/lenso-capability-web-shell",
-            "fixtures/vnext-web-ui/contracts/web-shell",
-            SHELL_CAPABILITY_ID,
-        ),
-    ] {
-        project.contracts_mut().push(
-            ContractInput::descriptor_only(
-                capability_id,
-                "1.0.0",
-                format!("{directory}/capability.json"),
-            )
-            .with_typescript_projection(format!("{typescript_directory}/generated/bindings.ts")),
-        );
-    }
+            GREETING_DESCRIPTOR_VERSION,
+            [GREET_OPERATION],
+        ))
 }
 
-fn add_base_modules(project: &mut ProjectFile) {
-    let composition = project.composition_mut();
-    composition.add_module(
-        Module::new("orders", ORDERS_PACKAGE_ID)
-            .with_entrypoint("backend")
-            .with_capability(CapabilityEndpoint::request(
-                GREETING_CAPABILITY_ID,
-                GREETING_DESCRIPTOR_VERSION,
-                [GREET_OPERATION],
-            )),
-    );
-    composition.add_module(Module::new("auth", "fixture.web-auth").with_capability(
-        CapabilityEndpoint::request(
+fn auth() -> PluginDescriptor {
+    PluginDescriptor::new(AUTH, RELEASE_VERSION, AUTH)
+        .with_runtime_package("fixture.web-auth", RELEASE_VERSION)
+        .with_capability(CapabilityEndpointPlan::new(
             AUTH_CAPABILITY_ID,
             AUTH_DESCRIPTOR_VERSION,
             [AUTHENTICATE_OPERATION],
-        ),
-    ));
-    composition.add_module(
-        Module::new("worker", "fixture.orders-worker")
-            .with_requirement(CapabilityRequirement::one(
-                AUTH_CAPABILITY_ID,
-                AUTH_DESCRIPTOR_VERSION,
-            ))
-            .with_requirement(CapabilityRequirement::one(
-                GREETING_CAPABILITY_ID,
-                GREETING_DESCRIPTOR_VERSION,
-            )),
-    );
-    add_binding(
-        composition,
-        "worker",
-        AUTH_CAPABILITY_ID,
-        AUTH_DESCRIPTOR_VERSION,
-        "auth",
-    );
-    add_binding(
-        composition,
-        "worker",
-        GREETING_CAPABILITY_ID,
-        GREETING_DESCRIPTOR_VERSION,
-        "orders",
-    );
+        ))
 }
 
-fn add_web_modules(project: &mut ProjectFile, metadata: MetadataScenario) {
-    let composition = project.composition_mut();
-    composition.add_module(ui_module(
-        "orders-ui",
-        &contribution_configuration(metadata, false),
-    ));
-    composition.add_module(
-        Module::new("web-shell", "lenso.web-shell")
-            .with_role(ModuleRole::WebShell)
-            .with_capability(CapabilityEndpoint::request(
-                SHELL_CAPABILITY_ID,
-                SHELL_DESCRIPTOR_VERSION,
-                [READ_ASSET_OPERATION, RENDER_ROUTE_OPERATION],
-            ))
-            .with_requirement(CapabilityRequirement::many(
-                UI_CAPABILITY_ID,
-                UI_DESCRIPTOR_VERSION,
-            )),
-    );
-    composition.add_module(
-        Module::new("browser-adapter", "lenso.browser-adapter")
-            .with_role(ModuleRole::BrowserAdapter)
-            .with_requirement(CapabilityRequirement::one(
-                SHELL_CAPABILITY_ID,
-                SHELL_DESCRIPTOR_VERSION,
-            ))
-            .with_requirement(CapabilityRequirement::one(
-                AUTH_CAPABILITY_ID,
-                AUTH_DESCRIPTOR_VERSION,
-            ))
-            .with_requirement(CapabilityRequirement::one(
-                GREETING_CAPABILITY_ID,
-                GREETING_DESCRIPTOR_VERSION,
-            )),
-    );
-    for (consumer, capability, version, provider) in [
-        (
-            "orders-ui",
-            GREETING_CAPABILITY_ID,
-            GREETING_DESCRIPTOR_VERSION,
-            "orders",
-        ),
-        (
-            "web-shell",
-            UI_CAPABILITY_ID,
-            UI_DESCRIPTOR_VERSION,
-            "orders-ui",
-        ),
-        (
-            "browser-adapter",
-            SHELL_CAPABILITY_ID,
-            SHELL_DESCRIPTOR_VERSION,
-            "web-shell",
-        ),
-        (
-            "browser-adapter",
+fn worker() -> PluginDescriptor {
+    PluginDescriptor::new(WORKER, RELEASE_VERSION, WORKER)
+        .with_runtime_package("fixture.orders-worker", RELEASE_VERSION)
+        .with_requirement(CapabilityRequirementPlan::one(
             AUTH_CAPABILITY_ID,
             AUTH_DESCRIPTOR_VERSION,
-            "auth",
-        ),
-        (
-            "browser-adapter",
+        ))
+        .with_requirement(CapabilityRequirementPlan::one(
             GREETING_CAPABILITY_ID,
             GREETING_DESCRIPTOR_VERSION,
-            "orders",
-        ),
-    ] {
-        add_binding(composition, consumer, capability, version, provider);
-    }
-    let mut profile = WebProfile::new("web-shell", "browser-adapter")
-        .with_ui_contribution("orders-ui")
-        .with_module("orders")
-        .with_module("auth")
-        .with_module("worker");
-    if metadata == MetadataScenario::CollidingRoute {
-        composition.add_module(ui_module(
-            "orders-ui-copy",
-            &contribution_configuration(metadata, true),
-        ));
-        add_binding(
-            composition,
-            "orders-ui-copy",
-            GREETING_CAPABILITY_ID,
-            GREETING_DESCRIPTOR_VERSION,
-            "orders",
-        );
-        add_binding(
-            composition,
-            "web-shell",
-            UI_CAPABILITY_ID,
-            UI_DESCRIPTOR_VERSION,
-            "orders-ui-copy",
-        );
-        profile = profile.with_ui_contribution("orders-ui-copy");
-    }
-    project.profiles_mut().insert("web".to_owned(), profile);
+        ))
 }
 
-fn ui_module(key: &str, configuration: &str) -> Module {
-    Module::new(key, ORDERS_PACKAGE_ID)
+fn orders_ui(plugin_id: &str, configuration: &str) -> PluginDescriptor {
+    PluginDescriptor::new(plugin_id, RELEASE_VERSION, "ui")
+        .with_runtime_package(ORDERS_PACKAGE_ID, RELEASE_VERSION)
         .with_entrypoint("ui")
-        .with_configuration(serde_json::from_str(configuration).expect("fixture configuration"))
-        .with_configuration_schema("fixtures/vnext-web-ui/contribution-configuration.schema.json")
-        .with_role(ModuleRole::UiContribution)
-        .with_capability(CapabilityEndpoint::request(
+        .with_configuration_schema(
+            serde_json::from_str(include_str!("../contribution-configuration.schema.json"))
+                .expect("fixture configuration schema is valid"),
+        )
+        .with_configuration_defaults(
+            serde_json::from_str(configuration).expect("fixture configuration is valid"),
+        )
+        .with_capability(CapabilityEndpointPlan::new(
             UI_CAPABILITY_ID,
             UI_DESCRIPTOR_VERSION,
             [DESCRIBE_OPERATION],
         ))
-        .with_requirement(CapabilityRequirement::one(
+        .with_requirement(CapabilityRequirementPlan::one(
             GREETING_CAPABILITY_ID,
             GREETING_DESCRIPTOR_VERSION,
         ))
 }
 
-fn add_binding(
-    composition: &mut lenso_authoring::CompositionFile,
-    consumer: &str,
-    capability: &str,
-    version: &str,
-    provider: &str,
-) {
-    composition.add_binding(Binding::new(consumer, capability, version, provider));
+fn web_shell() -> PluginDescriptor {
+    PluginDescriptor::new(WEB_SHELL, RELEASE_VERSION, WEB_SHELL)
+        .with_runtime_package("lenso.web-shell", RELEASE_VERSION)
+        .with_capability(CapabilityEndpointPlan::new(
+            SHELL_CAPABILITY_ID,
+            SHELL_DESCRIPTOR_VERSION,
+            [READ_ASSET_OPERATION, RENDER_ROUTE_OPERATION],
+        ))
+        .with_requirement(CapabilityRequirementPlan::many(
+            UI_CAPABILITY_ID,
+            UI_DESCRIPTOR_VERSION,
+        ))
+}
+
+fn browser_adapter() -> PluginDescriptor {
+    PluginDescriptor::new(BROWSER_ADAPTER, RELEASE_VERSION, BROWSER_ADAPTER)
+        .with_runtime_package("lenso.browser-adapter", RELEASE_VERSION)
+        .with_requirement(CapabilityRequirementPlan::one(
+            SHELL_CAPABILITY_ID,
+            SHELL_DESCRIPTOR_VERSION,
+        ))
+        .with_requirement(CapabilityRequirementPlan::one(
+            AUTH_CAPABILITY_ID,
+            AUTH_DESCRIPTOR_VERSION,
+        ))
+        .with_requirement(CapabilityRequirementPlan::one(
+            GREETING_CAPABILITY_ID,
+            GREETING_DESCRIPTOR_VERSION,
+        ))
+}
+
+fn release(descriptor: PluginDescriptor) -> HostPluginRelease {
+    HostPluginRelease::new(descriptor)
+}
+
+fn default(plugin_id: &str, disableable: bool) -> HostDefaultPlugin {
+    let plugin = HostDefaultPlugin::new(plugin_id, DEFAULT_INSTANCE);
+    if disableable {
+        plugin.disableable()
+    } else {
+        plugin
+    }
+}
+
+fn instance_id(plugin_id: &str) -> PluginInstanceId {
+    PluginInstanceId::new(plugin_id, DEFAULT_INSTANCE)
+}
+
+fn binding(consumer: &str, capability_id: &str, provider: &str) -> HostBinding {
+    HostBinding::to_instance(instance_id(consumer), capability_id, instance_id(provider))
 }

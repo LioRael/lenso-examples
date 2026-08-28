@@ -1,12 +1,13 @@
-//! Statically linked native Rust Greeting Module fixture.
+//! Statically linked native Rust Greeting Plugin fixture.
 
-use futures::future::LocalBoxFuture;
 use lenso_capability_greeting::{
-    GreetError, GreetRequest, GreetResponse, GreetingClient, GreetingEndpoint,
+    GreetError, GreetRequest, GreetResponse, Greeting, GreetingClient, GreetingEndpoint,
     GreetingInvocationError, GreetingProvider,
 };
-use lenso_kernel::{ActivateContext, InvocationContext, ModuleLifecycle, RuntimeFailure};
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_kernel::{
+    ActivateContext, InvocationContext, NativeRequestFuture, PluginLifecycle, RuntimeFailure,
+};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use std::rc::Rc;
 
 pub const GREETER_PACKAGE_ID: &str = "example.native-greeter";
@@ -15,7 +16,7 @@ pub const CONSUMER_PACKAGE_ID: &str = "example.native-consumer";
 
 #[derive(Debug)]
 pub struct ConsumerFactory;
-impl NativeModuleFactory for ConsumerFactory {
+impl NativePluginFactory for ConsumerFactory {
     fn package_id(&self) -> &'static str {
         CONSUMER_PACKAGE_ID
     }
@@ -25,9 +26,9 @@ impl NativeModuleFactory for ConsumerFactory {
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::with_lifecycle(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::with_lifecycle(
             Vec::new(),
             ConsumerLifecycle,
         ))
@@ -37,8 +38,8 @@ impl NativeModuleFactory for ConsumerFactory {
 #[derive(Debug)]
 struct ConsumerLifecycle;
 
-impl ModuleLifecycle for ConsumerLifecycle {
-    fn activate(&self, context: ActivateContext) -> lenso_kernel::ModuleFuture {
+impl PluginLifecycle for ConsumerLifecycle {
+    fn activate(&self, context: ActivateContext) -> lenso_kernel::PluginFuture {
         let client = (context.dependencies().len() == 1)
             .then(|| GreetingClient::from_dependencies(context.dependencies()));
         Box::pin(async move {
@@ -54,7 +55,7 @@ impl ModuleLifecycle for ConsumerLifecycle {
             {
                 Ok(_) => Ok(()),
                 Err(GreetingInvocationError::Runtime(error)) => Err(error),
-                Err(GreetingInvocationError::Domain(error)) => Err(RuntimeFailure::ModuleFailure {
+                Err(GreetingInvocationError::Domain(error)) => Err(RuntimeFailure::PluginFailure {
                     detail: format!("Greeting activation dependency returned {error:?}"),
                 }),
             }
@@ -64,7 +65,7 @@ impl ModuleLifecycle for ConsumerLifecycle {
 
 #[derive(Debug)]
 pub struct GreeterFactory;
-impl NativeModuleFactory for GreeterFactory {
+impl NativePluginFactory for GreeterFactory {
     fn package_id(&self) -> &'static str {
         GREETER_PACKAGE_ID
     }
@@ -73,9 +74,9 @@ impl NativeModuleFactory for GreeterFactory {
     }
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::new(vec![Rc::new(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::new(vec![Rc::new(
             GreetingEndpoint::new(Greeter),
         )]))
     }
@@ -85,7 +86,7 @@ impl NativeModuleFactory for GreeterFactory {
 #[derive(Debug)]
 pub struct AlternateGreeterFactory;
 
-impl NativeModuleFactory for AlternateGreeterFactory {
+impl NativePluginFactory for AlternateGreeterFactory {
     fn package_id(&self) -> &'static str {
         ALTERNATE_GREETER_PACKAGE_ID
     }
@@ -95,9 +96,9 @@ impl NativeModuleFactory for AlternateGreeterFactory {
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::new(vec![Rc::new(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::new(vec![Rc::new(
             GreetingEndpoint::new(AlternateGreeter),
         )]))
     }
@@ -110,14 +111,14 @@ impl GreetingProvider for Greeter {
         &self,
         _context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetingInvocationError>> {
+    ) -> NativeRequestFuture<Greeting> {
         Box::pin(async move {
             if request.name.is_empty() {
-                Err(GreetingInvocationError::Domain(GreetError::EmptyName))
+                Ok(Err(GreetError::EmptyName))
             } else {
-                Ok(GreetResponse {
+                Ok(Ok(GreetResponse {
                     message: format!("Hello, {}!", request.name),
-                })
+                }))
             }
         })
     }
@@ -131,14 +132,14 @@ impl GreetingProvider for AlternateGreeter {
         &self,
         _context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, GreetingInvocationError>> {
+    ) -> NativeRequestFuture<Greeting> {
         Box::pin(async move {
             if request.name.is_empty() {
-                Err(GreetingInvocationError::Domain(GreetError::EmptyName))
+                Ok(Err(GreetError::EmptyName))
             } else {
-                Ok(GreetResponse {
+                Ok(Ok(GreetResponse {
                     message: format!("Ahoy, {}!", request.name),
-                })
+                }))
             }
         })
     }
