@@ -8,8 +8,8 @@ publish.workspace = true
 [dependencies]
 futures.workspace = true
 lenso-app-plan = { version = "0.3.0", git = "https://github.com/LioRael/lenso", rev = "cd35675a191d815b690c8889756dfe859a0e4d7b" }
-lenso-auth-sdk = { version = "0.2.0", git = "https://github.com/LioRael/lenso-auth-module", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
-lenso-capability-auth = { version = "0.1.1", git = "https://github.com/LioRael/lenso-auth-module", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
+lenso-auth-sdk = { version = "0.2.0", git = "https://github.com/LioRael/lenso-auth-plugin", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
+lenso-capability-auth = { version = "0.1.1", git = "https://github.com/LioRael/lenso-auth-plugin", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
 lenso-capability-secure-greeting = { path = "../../crates/lenso-capability-secure-greeting", version = "0.1.0" }
 lenso-capability-ui-contribution = { path = "../../crates/lenso-capability-ui-contribution", version = "0.1.0" }
 lenso-capability-web-shell = { path = "../../crates/lenso-capability-web-shell", version = "0.1.0" }
