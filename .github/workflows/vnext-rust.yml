@@ -19,6 +19,8 @@ jobs:
           bun-version: 1.4.0
       - run: bun install --cwd fixtures/vnext-web-ui --frozen-lockfile
       - run: cargo fmt --all -- --check
+      - name: Check generated Capability contracts
+        run: cargo install lenso-contract-codegen --version 0.6.5 --locked && lenso-contract-codegen workspace check --manifest-path Cargo.toml
       - run: cargo check --locked --workspace --all-targets
       - run: cargo test --locked --workspace
       - name: Run target-owned Web UI conformance

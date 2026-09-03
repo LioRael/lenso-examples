@@ -7,19 +7,19 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-app-plan = { version = "0.3.0", git = "https://github.com/LioRael/lenso", rev = "cd35675a191d815b690c8889756dfe859a0e4d7b" }
-lenso-auth-sdk = { version = "0.2.0", git = "https://github.com/LioRael/lenso-auth-plugin", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
-lenso-capability-auth = { version = "0.1.1", git = "https://github.com/LioRael/lenso-auth-plugin", rev = "cf7a9095489d2baad72bd8475d27adf54cfda5ad" }
+lenso-app-plan = { version = "0.3.0" }
+lenso-auth-sdk = { version = "0.2.0" }
+lenso-capability-auth = { version = "0.1.1" }
 lenso-capability-game-session = { path = "../../crates/lenso-capability-game-session", version = "0.1.0" }
-lenso-kernel = { version = "0.2.0", git = "https://github.com/LioRael/lenso", rev = "cd35675a191d815b690c8889756dfe859a0e4d7b" }
-lenso-native-adapter = { version = "0.3.0", git = "https://github.com/LioRael/lenso-runtime-rust", rev = "b763a63adc20f1ccc9955e784c0d04c21489126b" }
+lenso-kernel = { version = "0.2.0" }
+lenso-native-adapter = { version = "0.3.0" }
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
 tokio.workspace = true
 
 [dev-dependencies]
-lenso-runner = { version = "0.2.0", git = "https://github.com/LioRael/lenso-runtime-rust", rev = "b763a63adc20f1ccc9955e784c0d04c21489126b" }
+lenso-runner = { version = "0.2.0" }
 
 [lints]
 workspace = true
