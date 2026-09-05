@@ -22,6 +22,9 @@ members = [
     "fixtures/vnext-story-plugin",
     "fixtures/vnext-web-ui",
 ]
+exclude = [
+    "fixtures/vnext-plugin-authoring-v2",
+]
 [workspace.package]
 edition = "2024"
 license = "MIT"

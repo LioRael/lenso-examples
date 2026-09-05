@@ -32,14 +32,18 @@ contracts:
   composition;
 - `vnext-agent-harness`: replaceable model/tool providers, durable memory, and
   progress events;
+- `vnext-plugin-authoring-v2`: one Plugin Contract with Rust Process and
+  TypeScript Bun implementations, typed configuration, and two named
+  dependencies;
+- `vnext-plugin-authoring-v2/agent`: an Agent-owned Tool Provider that consumes
+  the same document-sync Capability through the Rust product SDK;
 - `vnext-game-session`: bounded real-time session behavior and protocol
   conformance.
 
-The Bun Plugin SDK and its executable generated-Provider golden path live in
-[`LioRael/lenso-bun-adapter`](https://github.com/LioRael/lenso-bun-adapter),
-next to the Execution Adapter conformance suite. A standalone Bun example can
-join this repository after the SDK and provider codegen releases are publicly
-installable; this repository does not pin unpublished or local-only packages.
+The Bun Adapter conformance suite remains in
+[`LioRael/lenso-bun-adapter`](https://github.com/LioRael/lenso-bun-adapter).
+The author-facing cross-language example lives here and consumes only published
+packages.
 
 ## Validation
 
@@ -47,6 +51,10 @@ installable; this repository does not pin unpublished or local-only packages.
 cargo fmt --all -- --check
 cargo check --locked --workspace --all-targets
 cargo test --locked --workspace
+cargo check --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml \
+  --workspace --all-targets
+cargo test --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml \
+  --workspace
 cargo test --locked -p lenso-vnext-web-ui --test web_ui \
   generated_browser_client_invokes_the_allowlisted_app_capability \
   -- --ignored --test-threads=1
