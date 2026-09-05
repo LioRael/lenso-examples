@@ -1,0 +1,106 @@
+{
+  "slots": [
+    { "id": "stores", "cardinality": "many", "execution_lane": "main" },
+    { "id": "document-sync", "cardinality": "many", "execution_lane": "main" }
+  ],
+  "plugins": [
+    {
+      "descriptor": {
+        "authoring_version": 1,
+        "runtime_profile": "lenso.native-authoring@1",
+        "plugin_id": "example.document-store.source",
+        "release_version": "1.0.0",
+        "root_slot": "stores",
+        "runtime_package_id": "example.document-store.source",
+        "runtime_package_revision": "1.0.0",
+        "entrypoint": "default",
+        "provided_capabilities": [
+          {
+            "capability_id": "example.document-store@1",
+            "descriptor_version": "1.0.0",
+            "operations": ["put", "read"],
+            "operation_kinds": {},
+            "default_admission": null,
+            "operation_admissions": {},
+            "event_admission": null,
+            "cross_lane_transfer": false
+          }
+        ],
+        "required_capabilities": [],
+        "execution_class": "lenso.native-rust@1",
+        "restart_policy": {
+          "mode": "never",
+          "max_attempts": 0,
+          "window": { "secs": 0, "nanos": 0 },
+          "backoff": { "secs": 0, "nanos": 0 },
+          "jitter": { "secs": 0, "nanos": 0 },
+          "stability": { "secs": 0, "nanos": 0 }
+        },
+        "criticality": "non_critical"
+      }
+    },
+    {
+      "descriptor": {
+        "authoring_version": 1,
+        "runtime_profile": "lenso.native-authoring@1",
+        "plugin_id": "example.document-store.destination",
+        "release_version": "1.0.0",
+        "root_slot": "stores",
+        "runtime_package_id": "example.document-store.destination",
+        "runtime_package_revision": "1.0.0",
+        "entrypoint": "default",
+        "provided_capabilities": [
+          {
+            "capability_id": "example.document-store@1",
+            "descriptor_version": "1.0.0",
+            "operations": ["put", "read"],
+            "operation_kinds": {},
+            "default_admission": null,
+            "operation_admissions": {},
+            "event_admission": null,
+            "cross_lane_transfer": false
+          }
+        ],
+        "required_capabilities": [],
+        "execution_class": "lenso.native-rust@1",
+        "restart_policy": {
+          "mode": "never",
+          "max_attempts": 0,
+          "window": { "secs": 0, "nanos": 0 },
+          "backoff": { "secs": 0, "nanos": 0 },
+          "jitter": { "secs": 0, "nanos": 0 },
+          "stability": { "secs": 0, "nanos": 0 }
+        },
+        "criticality": "non_critical"
+      }
+    }
+  ],
+  "defaults": [
+    {
+      "id": { "plugin_id": "example.document-store.source", "instance_key": "default" },
+      "configuration": {},
+      "disableable": false
+    },
+    {
+      "id": { "plugin_id": "example.document-store.destination", "instance_key": "default" },
+      "configuration": {},
+      "disableable": false
+    }
+  ],
+  "bindings": [
+    {
+      "selection": "fixed",
+      "requirement_id": "source",
+      "consumer": { "plugin_id": "example.document-sync", "instance_key": "default" },
+      "capability_id": "example.document-store@1",
+      "provider_instance": { "plugin_id": "example.document-store.source", "instance_key": "default" }
+    },
+    {
+      "selection": "fixed",
+      "requirement_id": "destination",
+      "consumer": { "plugin_id": "example.document-sync", "instance_key": "default" },
+      "capability_id": "example.document-store@1",
+      "provider_instance": { "plugin_id": "example.document-store.destination", "instance_key": "default" }
+    }
+  ]
+}

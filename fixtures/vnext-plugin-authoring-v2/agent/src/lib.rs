@@ -1,6 +1,6 @@
 use lenso_agent_tool_sdk::prelude::*;
 use lenso_capability_document_sync::{
-    DocumentSyncClient, DocumentSyncInvocationError, SyncRequest,
+    self as document_sync, DocumentSyncInvocationError, SyncRequest,
 };
 use schemars::JsonSchema;
 
@@ -14,7 +14,7 @@ struct SyncDocumentArguments {
 #[lenso::plugin]
 #[derive(Clone, Debug)]
 struct DocumentSyncTools {
-    sync: DocumentSyncClient,
+    sync: lenso::Port<document_sync::DocumentSyncClient>,
 }
 
 #[tool_provider]
@@ -27,12 +27,16 @@ impl DocumentSyncTools {
     async fn sync_document(
         &self,
         arguments: SyncDocumentArguments,
+        context: lenso::Ctx,
     ) -> Result<ExecuteResponse, ExecuteError> {
         let response = self
             .sync
-            .sync(SyncRequest {
-                document: arguments.document,
-            })
+            .sync_with_context(
+                context,
+                SyncRequest {
+                    document: arguments.document,
+                },
+            )
             .await
             .map_err(|error| {
                 let (reason_code, message) = match error {
