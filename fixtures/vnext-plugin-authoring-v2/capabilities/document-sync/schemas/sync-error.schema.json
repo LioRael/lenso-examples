@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SyncError",
+  "oneOf": [
+    { "const": "already_running" },
+    { "const": "not_found" },
+    { "const": "write_failed" }
+  ]
+}

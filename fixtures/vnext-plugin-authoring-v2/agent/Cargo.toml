@@ -1,0 +1,21 @@
+[package]
+name = "lenso-vnext-plugin-authoring-v2-agent"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[package.metadata.lenso]
+plugin-id = "example.document-sync-tools"
+root-slot = "tool-providers"
+
+[dependencies]
+lenso = { version = "0.5.12" }
+lenso-agent-tool-sdk = { version = "0.3.0" }
+lenso-capability-document-sync = { path = "../capabilities/document-sync", version = "0.1.0" }
+schemars = "1"
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

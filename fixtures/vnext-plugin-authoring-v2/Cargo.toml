@@ -1,0 +1,72 @@
+[workspace]
+resolver = "2"
+members = [
+    ".",
+    "agent",
+    "capabilities/document-store",
+    "capabilities/document-sync",
+]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+publish = false
+repository = "https://github.com/LioRael/lenso-examples"
+rust-version = "1.94"
+
+[workspace.dependencies]
+futures = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+
+[package]
+name = "lenso-vnext-plugin-authoring-v2"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[package.metadata.lenso]
+plugin-id = "example.document-sync"
+root-slot = "document-sync"
+
+[package.metadata.lenso-cli]
+implementations = [
+    { id = "rust-process", path = ".", runtime = "process" },
+    { id = "typescript-bun", path = "typescript", runtime = "bun" },
+]
+
+[[bin]]
+name = "lenso-vnext-plugin-authoring-v2"
+path = "src/bin/document_sync_process.rs"
+
+[dependencies]
+futures.workspace = true
+lenso-app-plan = { version = "0.4.1" }
+lenso-bun-adapter = { version = "0.1.7" }
+lenso-capability-document-store = { path = "capabilities/document-store", version = "0.1.0" }
+lenso-capability-document-sync = { path = "capabilities/document-sync", version = "0.1.0" }
+lenso-contract-runtime = { version = "0.2.0" }
+lenso-kernel = { version = "0.3.4" }
+lenso-native-adapter = { version = "0.3.9" }
+lenso-process-adapter = { version = "0.3.5" }
+lenso-plugin-sdk = { version = "0.4.3" }
+lenso-runtime-codec = { version = "0.3.2" }
+serde.workspace = true
+serde_json.workspace = true
+sha2 = "0.10"
+
+[lints]
+workspace = true

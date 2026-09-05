@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DocumentSyncConfig",
+  "type": "object",
+  "properties": {
+    "document": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "ruleset": { "const": "identity-v1" }
+  },
+  "required": ["document", "ruleset"],
+  "additionalProperties": false
+}
+
