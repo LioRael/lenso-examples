@@ -18,6 +18,10 @@ The Host selects one implementation from the packaged Bundle. Plugin code does
 not inspect a generation, choose provider instances, or implement transport
 framing.
 
+[`ACCEPTANCE.md`](ACCEPTANCE.md) records the released dependency set, complete
+installation path, and the owner-local evidence for lifecycle and failure
+cases.
+
 ```sh
 cd typescript
 bun install --frozen-lockfile

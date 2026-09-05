@@ -57,6 +57,19 @@ fn artifact_catalog() -> ArtifactCatalog {
         .expect("register Process artifact")
 }
 
+#[test]
+fn altered_process_artifact_is_rejected_during_offline_verification() {
+    let executable = std::path::Path::new(env!("CARGO_BIN_EXE_lenso-vnext-plugin-authoring-v2"));
+    let bytes = fs::read(executable).expect("read Process artifact");
+    let error = ArtifactHandle::open(
+        executable,
+        &format!("sha256:{}", "0".repeat(64)),
+        bytes.len() as u64,
+    )
+    .expect_err("altered digest must be rejected before the artifact can start");
+    assert!(format!("{error:?}").contains("digest"));
+}
+
 fn bun_artifact_catalog(path: &std::path::Path) -> ArtifactCatalog {
     let bytes = fs::read(path).expect("read Bun artifact");
     let digest = format!("sha256:{:x}", Sha256::digest(&bytes));
@@ -71,6 +84,8 @@ fn composition(
     execution_class: ExecutionClassId,
     runtime_profile: &str,
     entrypoint: &str,
+    source_target: &str,
+    destination_target: &str,
 ) -> lenso_app_plan::ResolvedAppPlan {
     AppComposition::new(
         vec![
@@ -93,7 +108,9 @@ fn composition(
                     CapabilityRequirementPlan::one(STORE_ID, STORE_VERSION)
                         .with_requirement_id("destination"),
                 )
-                .with_capability(CapabilityEndpointPlan::new(SYNC_ID, SYNC_VERSION, ["sync"])),
+                .with_capability(
+                    CapabilityEndpointPlan::new(SYNC_ID, SYNC_VERSION, ["sync"]).with_limits(4, 2),
+                ),
             PluginInstancePlan::new("tools", TOOLS_PACKAGE)
                 .with_authoring(2, "lenso.native-authoring@2")
                 .with_requirement(
@@ -109,9 +126,9 @@ fn composition(
                 .with_requirement(CapabilityRequirementPlan::one(TOOL_ID, TOOL_VERSION)),
         ],
         vec![
-            CapabilityBinding::new("sync", STORE_ID, STORE_VERSION, "source-account")
+            CapabilityBinding::new("sync", STORE_ID, STORE_VERSION, source_target)
                 .with_requirement_id("source"),
-            CapabilityBinding::new("sync", STORE_ID, STORE_VERSION, "destination-account")
+            CapabilityBinding::new("sync", STORE_ID, STORE_VERSION, destination_target)
                 .with_requirement_id("destination"),
             CapabilityBinding::new("tools", SYNC_ID, SYNC_VERSION, "sync")
                 .with_requirement_id("sync"),
@@ -146,6 +163,8 @@ fn rust_process_syncs_between_two_exact_native_accounts() {
                 ExecutionClassId::new(EXECUTION_CLASS),
                 RUNTIME_PROFILE_V2,
                 "plugin",
+                "source-account",
+                "destination-account",
             ),
             driver.clone(),
             adapters,
@@ -203,6 +222,177 @@ fn rust_process_syncs_between_two_exact_native_accounts() {
 }
 
 #[test]
+fn unsupported_process_profile_is_rejected_before_readiness() {
+    let source = Account::with_document("guide", "must not be read");
+    let destination = Account::default();
+    let native = NativePluginRegistry::new()
+        .with_linked_factories()
+        .with_factory(StoreFactory::new(SOURCE_PACKAGE, source.clone()))
+        .with_factory(StoreFactory::new(DESTINATION_PACKAGE, destination.clone()))
+        .with_factory(ConsumerFactory);
+    let process = ProcessAdapter::new(artifact_catalog())
+        .with_codec(DocumentStoreJsonCodec)
+        .with_codec(DocumentSyncJsonCodec);
+    let adapters = ExecutionAdapterCatalog::new()
+        .with_adapter(native)
+        .expect("register Native adapter")
+        .with_adapter(process)
+        .expect("register Process adapter");
+    let driver = DeterministicDriver::new();
+
+    let error = driver
+        .run(Kernel::start(
+            composition(
+                ExecutionClassId::new(EXECUTION_CLASS),
+                "lenso.process-stdio@1",
+                "plugin",
+                "source-account",
+                "destination-account",
+            ),
+            driver.clone(),
+            adapters,
+        ))
+        .expect_err("unsupported Process profile must fail before readiness");
+
+    assert!(
+        format!("{error:?}").contains("does not support authoring 2 profile"),
+        "{error:?}"
+    );
+    assert!(source.calls().is_empty());
+    assert!(destination.calls().is_empty());
+}
+
+#[test]
+fn rust_process_binding_swap_changes_behavior_without_changing_the_plugin() {
+    let source = Account::with_document("guide", "old destination");
+    let destination = Account::with_document("guide", "new source");
+    let native = NativePluginRegistry::new()
+        .with_linked_factories()
+        .with_factory(StoreFactory::new(SOURCE_PACKAGE, source.clone()))
+        .with_factory(StoreFactory::new(DESTINATION_PACKAGE, destination.clone()))
+        .with_factory(ConsumerFactory);
+    let process = ProcessAdapter::new(artifact_catalog())
+        .with_codec(DocumentStoreJsonCodec)
+        .with_codec(DocumentSyncJsonCodec);
+    let adapters = ExecutionAdapterCatalog::new()
+        .with_adapter(native)
+        .expect("register Native adapter")
+        .with_adapter(process)
+        .expect("register Process adapter");
+    let driver = DeterministicDriver::new();
+    let app = driver
+        .run(Kernel::start(
+            composition(
+                ExecutionClassId::new(EXECUTION_CLASS),
+                RUNTIME_PROFILE_V2,
+                "plugin",
+                "destination-account",
+                "source-account",
+            ),
+            driver.clone(),
+            adapters,
+        ))
+        .expect("start App with swapped bindings");
+
+    let response = driver
+        .run(
+            app.handle::<ToolProviderExecute>("consumer")
+                .expect("consumer receives Agent ToolProvider")
+                .invoke(
+                    "execute",
+                    ExecuteRequest {
+                        name: "sync_document".to_owned(),
+                        arguments_json:
+                            r#"{"document":"guide"}"#.try_into().expect("Tool arguments are JSON"),
+                    },
+                ),
+        )
+        .expect("Tool execution Runtime succeeds")
+        .expect("Tool execution domain succeeds");
+
+    assert_eq!(response.content, "updated");
+    assert_eq!(source.text("guide").as_deref(), Some("new source"));
+    assert_eq!(
+        destination.calls(),
+        [StoreCall::Read {
+            document: "guide".to_owned()
+        }]
+    );
+    assert_eq!(
+        driver.run(app.shutdown(Duration::from_secs(1))),
+        lenso_kernel::ShutdownOutcome::Clean
+    );
+}
+
+#[test]
+fn rust_process_can_bind_two_named_roles_to_one_account() {
+    let shared = Account::with_document("guide", "shared account");
+    let unused = Account::default();
+    let native = NativePluginRegistry::new()
+        .with_linked_factories()
+        .with_factory(StoreFactory::new(SOURCE_PACKAGE, shared.clone()))
+        .with_factory(StoreFactory::new(DESTINATION_PACKAGE, unused.clone()))
+        .with_factory(ConsumerFactory);
+    let process = ProcessAdapter::new(artifact_catalog())
+        .with_codec(DocumentStoreJsonCodec)
+        .with_codec(DocumentSyncJsonCodec);
+    let adapters = ExecutionAdapterCatalog::new()
+        .with_adapter(native)
+        .expect("register Native adapter")
+        .with_adapter(process)
+        .expect("register Process adapter");
+    let driver = DeterministicDriver::new();
+    let app = driver
+        .run(Kernel::start(
+            composition(
+                ExecutionClassId::new(EXECUTION_CLASS),
+                RUNTIME_PROFILE_V2,
+                "plugin",
+                "source-account",
+                "source-account",
+            ),
+            driver.clone(),
+            adapters,
+        ))
+        .expect("start App with one account in both roles");
+
+    let response = driver
+        .run(
+            app.handle::<ToolProviderExecute>("consumer")
+                .expect("consumer receives Agent ToolProvider")
+                .invoke(
+                    "execute",
+                    ExecuteRequest {
+                        name: "sync_document".to_owned(),
+                        arguments_json:
+                            r#"{"document":"guide"}"#.try_into().expect("Tool arguments are JSON"),
+                    },
+                ),
+        )
+        .expect("Tool execution Runtime succeeds")
+        .expect("Tool execution domain succeeds");
+
+    assert_eq!(response.content, "updated");
+    assert_eq!(
+        shared.calls(),
+        [
+            StoreCall::Read {
+                document: "guide".to_owned()
+            },
+            StoreCall::Put {
+                document: "guide".to_owned(),
+                text: "shared account".to_owned()
+            }
+        ]
+    );
+    assert!(unused.calls().is_empty());
+    assert_eq!(
+        driver.run(app.shutdown(Duration::from_secs(1))),
+        lenso_kernel::ShutdownOutcome::Clean
+    );
+}
+
+#[test]
 #[ignore = "requires LENSO_DOCUMENT_SYNC_BUN_ARTIFACT from `lenso plugin pack`"]
 fn typescript_bun_syncs_through_the_same_named_host_dependencies() {
     let artifact = std::path::PathBuf::from(
@@ -232,6 +422,8 @@ fn typescript_bun_syncs_through_the_same_named_host_dependencies() {
                 ExecutionClassId::bun_child_process(),
                 "lenso.bun-authoring@2",
                 "plugin.js",
+                "source-account",
+                "destination-account",
             ),
             driver.clone(),
             adapters,

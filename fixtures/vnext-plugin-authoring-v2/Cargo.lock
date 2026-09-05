@@ -880,9 +880,9 @@ dependencies = [
 
 [[package]]
 name = "lenso-bun-adapter"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cc1eea0bcb0654f0128068b720b05b124765f1957abce20ad5fce51fd762973"
+checksum = "1d26508479d5a519a7f07374449365caac97f838dce77d9075acabc3e54dc03d"
 dependencies = [
  "axum",
  "base64",
