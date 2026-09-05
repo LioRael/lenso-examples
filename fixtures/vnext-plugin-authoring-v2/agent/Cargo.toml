@@ -11,7 +11,7 @@ root-slot = "tool-providers"
 
 [dependencies]
 lenso = { version = "0.5.12" }
-lenso-agent-tool-sdk = { version = "0.3.0" }
+lenso-agent-tool-sdk = { version = "0.3.2" }
 lenso-capability-document-sync = { path = "../capabilities/document-sync", version = "0.1.0" }
 schemars = "1"
 serde.workspace = true
