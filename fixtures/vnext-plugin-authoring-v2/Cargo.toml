@@ -55,7 +55,7 @@ path = "src/bin/document_sync_process.rs"
 [dependencies]
 futures.workspace = true
 lenso-app-plan = { version = "0.4.1" }
-lenso-bun-adapter = { version = "0.1.7" }
+lenso-bun-adapter = { version = "0.1.8" }
 lenso-capability-agent-tool-provider = { version = "0.2.2" }
 lenso-capability-document-store = { path = "capabilities/document-store", version = "0.1.0" }
 lenso-capability-document-sync = { path = "capabilities/document-sync", version = "0.1.0" }
