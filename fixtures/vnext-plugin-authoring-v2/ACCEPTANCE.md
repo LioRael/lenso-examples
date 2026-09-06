@@ -34,6 +34,7 @@ released and preserves that slice:
 | Protocols | `lenso-contract-codegen` | `0.9.0` | typed Rust guest Event clients with exact operation validation |
 | Runtime | `lenso-runtime-codec` | `0.4.1` | child Stream scope |
 | Runtime | `lenso-guest-sdk` | `0.5.0` | typed outbound Wasm Events with exact operation validation |
+| Runtime | `lenso-plugin-sdk` | `0.4.5` | official Rust authoring carrier for guest SDK 0.5.0 |
 | Runtime | `lenso-wasm-component-adapter` | `0.2.11` | Wasm Event Host imports |
 | Bun | `lenso-bun-adapter` | `0.1.10` | outbound Request, Stream, and Event clients |
 | Bun | `lenso-host-runtime` | `0.1.5` | matching prepared Host runtime |
