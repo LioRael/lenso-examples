@@ -24,6 +24,28 @@ selected public packages are:
 | CLI | `lenso-cli` | `0.5.1` |
 | CLI | `@lenso/cli` | `0.16.1` |
 
+These versions remain locked to the first Request authoring slice exercised by
+this fixture. The subsequent outbound interaction extension is independently
+released and preserves that slice:
+
+| Owner | Package | Version | Added coverage |
+| --- | --- | --- | --- |
+| Core | `lenso-kernel` | `0.3.5` | child cancellation scope |
+| Protocols | `lenso-contract-codegen` | `0.8.9` | typed Rust guest Event clients |
+| Runtime | `lenso-runtime-codec` | `0.4.1` | child Stream scope |
+| Runtime | `lenso-guest-sdk` | `0.4.1` | typed outbound Wasm Events |
+| Runtime | `lenso-wasm-component-adapter` | `0.2.11` | Wasm Event Host imports |
+| Bun | `lenso-bun-adapter` | `0.1.10` | outbound Request, Stream, and Event clients |
+| Bun | `lenso-host-runtime` | `0.1.5` | matching prepared Host runtime |
+| Bun | `@lenso/bun-plugin` | `0.4.0` | generated outbound interaction clients |
+| Bun | `@lenso/bun` | `0.5.0` | supported Bun authoring SDK carrier |
+
+Post-release clean-room acceptance compiled a `wasm32-unknown-unknown` consumer
+against `lenso-guest-sdk 0.4.1`, generated the typed Event client with
+`lenso-contract-codegen 0.8.9`, and installed and imported both Bun packages
+from the public npm registry. Runtime and bridge integration remain covered by
+their owner repositories; this fixture does not duplicate those mechanics.
+
 ## Reproducible path
 
 Run from this directory. `HOST_TARGET` is `aarch64-apple-darwin` for the

@@ -36,7 +36,7 @@ Contracts are identical. `plugin pack` produces one Bundle 4 archive containing
 the Process executable and Bun artifact. The locked authoring set uses
 `lenso-cli 0.5.0`, `lenso-plugin-sdk 0.4.3`,
 `lenso-agent-tool-sdk 0.3.2`, `lenso-process-adapter 0.3.5`,
-`lenso-bun-adapter 0.1.7`, and `@lenso/bun-plugin 0.2.2`.
+`lenso-bun-adapter 0.1.8`, and `@lenso/bun-plugin 0.2.2`.
 
 The repository CI also exercises the ordinary App commands with
 `host-catalog.json`: `lenso plugins add`, `lenso plugins configure`, and
