@@ -37,8 +37,8 @@ released and preserves that slice:
 | Runtime | `lenso-wasm-component-adapter` | `0.2.11` | Wasm Event Host imports |
 | Bun | `lenso-bun-adapter` | `0.1.10` | outbound Request, Stream, and Event clients |
 | Bun | `lenso-host-runtime` | `0.1.5` | matching prepared Host runtime |
-| Bun | `@lenso/bun-plugin` | `0.4.0` | generated outbound interaction clients |
-| Bun | `@lenso/bun` | `0.5.0` | supported Bun authoring SDK carrier |
+| Bun | `@lenso/bun-plugin` | `0.4.1` | generated outbound interaction clients and corrected public docs |
+| Bun | `@lenso/bun` | `0.5.1` | supported Bun authoring SDK carrier and corrected public docs |
 
 Post-release clean-room acceptance compiled a `wasm32-unknown-unknown` consumer
 against `lenso-guest-sdk 0.4.1`, generated the typed Event client with
