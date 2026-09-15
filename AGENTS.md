@@ -19,3 +19,9 @@ Triage uses the five canonical labels in the central tracker. See `docs/agents/t
 ### Domain docs
 
 Domain documentation uses a single-context layout. See `docs/agents/domain.md`.
+
+### Capability projections
+
+Native Capability crates own only their generated Rust projection. A fixture
+that executes TypeScript owns its projection under that fixture instead of
+vendoring it beside the native crate.

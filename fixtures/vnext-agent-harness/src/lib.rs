@@ -4,13 +4,13 @@ use std::{cell::RefCell, path::Path, rc::Rc};
 
 use lenso_app_plan::{
     AppComposition, CapabilityBinding, CapabilityEndpointPlan, CapabilityRequirementPlan,
-    ModuleInstancePlan, ResolvedAppPlan,
+    PluginInstancePlan, ResolvedAppPlan,
 };
 use lenso_capability_agent::RUN_OPERATION;
 use lenso_capability_agent_progress::UPDATE_OPERATION;
 use lenso_kernel::RuntimeFailure;
 use lenso_native_adapter::{
-    NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance, NativeModuleRegistry,
+    NativePluginFactory, NativePluginFactoryContext, NativePluginInstance, NativePluginRegistry,
 };
 
 mod agent;
@@ -23,11 +23,11 @@ mod tool;
 pub use progress::ProgressFactory;
 pub use storage::{MemorySetupOutcome, MemoryStorageError, setup_owned_memory};
 
-/// Public package identity for the harness Module.
+/// Public package identity for the harness Plugin.
 pub const AGENT_PACKAGE_ID: &str = "example.agent-harness";
-/// Public package identity for the owned durable memory Module.
+/// Public package identity for the owned durable memory Plugin.
 pub const MEMORY_PACKAGE_ID: &str = "example.agent-memory";
-/// Public package identity for the progress subscriber Module.
+/// Public package identity for the progress subscriber Plugin.
 pub const PROGRESS_PACKAGE_ID: &str = "example.agent-progress-recorder";
 /// Package identity for the echo model provider.
 pub const ECHO_MODEL_PACKAGE_ID: &str = "example.agent-model-echo";
@@ -45,16 +45,16 @@ const MAX_MODEL_OUTPUT_BYTES: usize = 64 * 1024;
 #[derive(Debug)]
 struct CallerFactory;
 
-impl NativeModuleFactory for CallerFactory {
+impl NativePluginFactory for CallerFactory {
     fn package_id(&self) -> &'static str {
         CALLER_PACKAGE_ID
     }
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::default())
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::default())
     }
 }
 
@@ -69,7 +69,7 @@ pub fn composition(
     tool_package_id: &'static str,
     include_progress: bool,
 ) -> ResolvedAppPlan {
-    let agent = ModuleInstancePlan::new("agent", AGENT_PACKAGE_ID)
+    let agent = PluginInstancePlan::new("agent", AGENT_PACKAGE_ID)
         .with_configuration(
             serde_json::json!({
                 "memory_key": MEMORY_KEY,
@@ -99,7 +99,7 @@ pub fn composition(
             lenso_capability_agent_progress::CAPABILITY_ID,
             lenso_capability_agent_progress::DESCRIPTOR_VERSION,
         ));
-    let model = ModuleInstancePlan::new("model", model_package_id).with_capability(
+    let model = PluginInstancePlan::new("model", model_package_id).with_capability(
         CapabilityEndpointPlan::new(
             lenso_capability_agent_model::CAPABILITY_ID,
             lenso_capability_agent_model::DESCRIPTOR_VERSION,
@@ -108,7 +108,7 @@ pub fn composition(
         .with_stream_operation(lenso_capability_agent_model::COMPLETE_OPERATION)
         .with_limits(8, 1),
     );
-    let tool = ModuleInstancePlan::new("tool", tool_package_id).with_capability(
+    let tool = PluginInstancePlan::new("tool", tool_package_id).with_capability(
         CapabilityEndpointPlan::new(
             lenso_capability_agent_tool::CAPABILITY_ID,
             lenso_capability_agent_tool::DESCRIPTOR_VERSION,
@@ -116,7 +116,7 @@ pub fn composition(
         )
         .with_limits(8, 1),
     );
-    let memory = ModuleInstancePlan::new("memory", MEMORY_PACKAGE_ID)
+    let memory = PluginInstancePlan::new("memory", MEMORY_PACKAGE_ID)
         .with_configuration(serde_json::json!({ "storage_path": memory_path.as_ref() }).to_string())
         .with_capability(CapabilityEndpointPlan::new(
             lenso_capability_agent_memory::CAPABILITY_ID,
@@ -126,7 +126,7 @@ pub fn composition(
                 lenso_capability_agent_memory::READ_OPERATION,
             ],
         ));
-    let caller = ModuleInstancePlan::new("caller", CALLER_PACKAGE_ID).with_requirement(
+    let caller = PluginInstancePlan::new("caller", CALLER_PACKAGE_ID).with_requirement(
         CapabilityRequirementPlan::one(
             lenso_capability_agent::CAPABILITY_ID,
             lenso_capability_agent::DESCRIPTOR_VERSION,
@@ -161,7 +161,7 @@ pub fn composition(
     ];
     if include_progress {
         instances.push(
-            ModuleInstancePlan::new("progress", PROGRESS_PACKAGE_ID).with_capability(
+            PluginInstancePlan::new("progress", PROGRESS_PACKAGE_ID).with_capability(
                 CapabilityEndpointPlan::new(
                     lenso_capability_agent_progress::CAPABILITY_ID,
                     lenso_capability_agent_progress::DESCRIPTOR_VERSION,
@@ -186,8 +186,8 @@ pub fn composition(
 /// Creates every statically linked provider so Composition alone selects the active ones.
 pub fn registry(
     events: Rc<RefCell<Vec<lenso_capability_agent_progress::UpdateRequest>>>,
-) -> NativeModuleRegistry {
-    NativeModuleRegistry::new()
+) -> NativePluginRegistry {
+    NativePluginRegistry::new()
         .with_factory(CallerFactory)
         .with_factory(agent::AgentFactory)
         .with_factory(memory::MemoryFactory)

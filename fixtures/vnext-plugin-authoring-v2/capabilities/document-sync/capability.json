@@ -1,0 +1,14 @@
+{
+  "id": "example.document-sync@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [
+    {
+      "name": "sync",
+      "interaction": "request",
+      "request_schema": "schemas/sync-request.schema.json",
+      "response_schema": "schemas/sync-response.schema.json",
+      "domain_error_schema": "schemas/sync-error.schema.json"
+    }
+  ]
+}

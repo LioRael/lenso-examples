@@ -6,8 +6,8 @@ use lenso_capability_game_session::{
     ActorBoundGameSessionEndpoint, GameSessionHandler, GameSessionInvocationError, PlayError,
     PlayRequest, PlayerActor,
 };
-use lenso_kernel::{InvocationContext, NativeStreamSession, NoopModuleLifecycle, RuntimeFailure};
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_kernel::{InvocationContext, NativeStreamSession, NoopPluginLifecycle, RuntimeFailure};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 use time::OffsetDateTime;
 
 use crate::{SessionMode, session::GameSession};
@@ -18,7 +18,7 @@ pub const GAME_PACKAGE_ID: &str = "fixture.game.provider";
 /// Alternate package identity selected by Composition for the replacement provider.
 pub const GAME_REPLACEMENT_PACKAGE_ID: &str = "fixture.game.provider.replacement";
 
-/// Creates the selected game provider Module.
+/// Creates the selected game provider Plugin.
 #[derive(Clone, Debug)]
 pub struct GameProviderFactory {
     verifier: ActorAssertionVerifier,
@@ -40,23 +40,23 @@ impl GameProviderFactory {
     }
 }
 
-impl NativeModuleFactory for GameProviderFactory {
+impl NativePluginFactory for GameProviderFactory {
     fn package_id(&self) -> &'static str {
         Self::package_id_for(self.mode)
     }
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
         let endpoint = ActorBoundGameSessionEndpoint::new(
             GameHandler { mode: self.mode },
             self.verifier.clone(),
             WallClock,
         );
-        Ok(NativeModuleInstance::with_stream_endpoints(
+        Ok(NativePluginInstance::with_stream_endpoints(
             vec![Rc::new(endpoint)],
-            NoopModuleLifecycle,
+            NoopPluginLifecycle,
         ))
     }
 }

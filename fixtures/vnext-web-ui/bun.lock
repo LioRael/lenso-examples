@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "lenso-vnext-web-ui-fixture",
+      "devDependencies": {
+        "@lenso/contract-runtime": "0.2.0",
+      },
+    },
+  },
+  "packages": {
+    "@lenso/contract-runtime": ["@lenso/contract-runtime@0.2.0", "", {}, "sha512-y0O2wDwpacXmqO1lt1yL0j6j+U9wI5Jkz0iToNXpYW24Ct97NgtnCFp9WxWXvDj268jWFs0thP5GZlm1r2zwRg=="],
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "example.document-store@1",
+  "version": "1.0.0",
+  "portable": true,
+  "operations": [
+    {
+      "name": "put",
+      "interaction": "request",
+      "request_schema": "schemas/put-request.schema.json",
+      "response_schema": "schemas/put-response.schema.json",
+      "domain_error_schema": "schemas/store-error.schema.json"
+    },
+    {
+      "name": "read",
+      "interaction": "request",
+      "request_schema": "schemas/read-request.schema.json",
+      "response_schema": "schemas/read-response.schema.json",
+      "domain_error_schema": "schemas/store-error.schema.json"
+    }
+  ]
+}

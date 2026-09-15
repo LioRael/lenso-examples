@@ -7,19 +7,19 @@ publish.workspace = true
 
 [dependencies]
 futures.workspace = true
-lenso-app-plan = "0.1.0"
-lenso-auth-sdk = "0.1.1"
-lenso-capability-auth = "0.1.1"
+lenso-app-plan = { version = "0.3.0" }
+lenso-auth-sdk = { version = "0.2.0" }
+lenso-capability-auth = { version = "0.1.1" }
 lenso-capability-game-session = { path = "../../crates/lenso-capability-game-session", version = "0.1.0" }
-lenso-kernel = "0.1.1"
-lenso-native-adapter = "0.1.1"
+lenso-kernel = { version = "0.2.0" }
+lenso-native-adapter = { version = "0.3.0" }
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
 tokio.workspace = true
 
 [dev-dependencies]
-lenso-runner = "0.1.1"
+lenso-runner = { version = "0.2.0" }
 
 [lints]
 workspace = true

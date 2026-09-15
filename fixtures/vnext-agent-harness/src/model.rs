@@ -9,9 +9,9 @@ use lenso_capability_agent_model::{
     CompleteError, CompleteRequest, ModelEndpoint, ModelInvocationError,
 };
 use lenso_kernel::{
-    InvocationContext, NativeStreamItem, NativeStreamSession, NoopModuleLifecycle, RuntimeFailure,
+    InvocationContext, NativeStreamItem, NativeStreamSession, NoopPluginLifecycle, RuntimeFailure,
 };
-use lenso_native_adapter::{NativeModuleFactory, NativeModuleFactoryContext, NativeModuleInstance};
+use lenso_native_adapter::{NativePluginFactory, NativePluginFactoryContext, NativePluginInstance};
 
 #[derive(Clone, Copy, Debug)]
 enum ModelStyle {
@@ -160,20 +160,20 @@ pub(crate) struct ModelFactory {
     style: ModelStyle,
 }
 
-impl NativeModuleFactory for ModelFactory {
+impl NativePluginFactory for ModelFactory {
     fn package_id(&self) -> &'static str {
         self.package_id
     }
 
     fn instantiate(
         &self,
-        _context: NativeModuleFactoryContext<'_>,
-    ) -> Result<NativeModuleInstance, RuntimeFailure> {
-        Ok(NativeModuleInstance::with_stream_endpoints(
+        _context: NativePluginFactoryContext<'_>,
+    ) -> Result<NativePluginInstance, RuntimeFailure> {
+        Ok(NativePluginInstance::with_stream_endpoints(
             vec![Rc::new(ModelEndpoint::new(ModelProvider {
                 style: self.style,
             }))],
-            NoopModuleLifecycle,
+            NoopPluginLifecycle,
         ))
     }
 }

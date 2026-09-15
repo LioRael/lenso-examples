@@ -18,16 +18,13 @@ members = [
     "fixtures/vnext-agent-harness",
     "fixtures/vnext-game-session",
     "fixtures/vnext-native-greeter",
-    "fixtures/vnext-stateful-module",
-    "fixtures/vnext-story-module",
+    "fixtures/vnext-stateful-plugin",
+    "fixtures/vnext-story-plugin",
     "fixtures/vnext-web-ui",
 ]
 exclude = [
-    "examples/rust-manifest",
-    "examples/rust-service",
-    "examples/support-system",
+    "fixtures/vnext-plugin-authoring-v2",
 ]
-
 [workspace.package]
 edition = "2024"
 license = "MIT"

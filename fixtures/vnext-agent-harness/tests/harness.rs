@@ -270,7 +270,7 @@ fn domain_tool_failure_stays_distinct_from_runtime_failure() {
     ));
     assert!(matches!(
         runtime,
-        Err(RuntimeFailure::ModuleFailure { detail })
+        Err(RuntimeFailure::PluginFailure { detail })
             if detail.contains("selected tool provider failed")
     ));
     assert!(matches!(

@@ -4,7 +4,7 @@ use std::{fmt, marker::PhantomData, rc::Rc};
 
 use futures::future::LocalBoxFuture;
 use lenso_auth_sdk::{ActorAssertionVerifier, AssertionClock, TypedActor};
-use lenso_kernel::{InvocationContext, NativeRequestEndpoint, RuntimeFailure};
+use lenso_kernel::{InvocationContext, NativeRequestEndpoint, NativeRequestFuture, RuntimeFailure};
 
 #[allow(dead_code)]
 mod generated {
@@ -55,8 +55,7 @@ where
         &self,
         context: InvocationContext,
         request: GreetRequest,
-    ) -> LocalBoxFuture<'static, Result<GreetResponse, generated::SecureGreetingInvocationError>>
-    {
+    ) -> NativeRequestFuture<SecureGreeting> {
         let actor = self.verifier.project_context::<A>(
             &context,
             CAPABILITY_ID,
@@ -65,13 +64,10 @@ where
         );
         let handler = Rc::clone(&self.handler);
         Box::pin(async move {
-            let actor = actor.map_err(|_| {
-                generated::SecureGreetingInvocationError::Domain(GreetError::ActorRequired)
-            })?;
-            handler
-                .greet(actor, request)
-                .await
-                .map_err(generated::SecureGreetingInvocationError::Domain)
+            let Ok(actor) = actor else {
+                return Ok(Err(GreetError::ActorRequired));
+            };
+            Ok(handler.greet(actor, request).await)
         })
     }
 }

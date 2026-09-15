@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SyncResponse",
+  "type": "object",
+  "properties": {
+    "document": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "text": { "type": "string", "maxLength": 65536 }
+  },
+  "required": ["document", "text"],
+  "additionalProperties": false
+}

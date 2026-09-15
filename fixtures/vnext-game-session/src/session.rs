@@ -123,7 +123,7 @@ impl NativeStreamSession for GameSession {
                     action: "crash".to_owned(),
                 })
             {
-                return Err(RuntimeFailure::ModuleFailure {
+                return Err(RuntimeFailure::PluginFailure {
                     detail: "fixture game provider crashed while handling an action".to_owned(),
                 });
             }

@@ -1,4 +1,4 @@
-//! Private durable storage owned by the memory Module.
+//! Private durable storage owned by the memory Plugin.
 
 use std::{
     collections::BTreeMap,
@@ -22,7 +22,7 @@ struct MemoryDocument {
     entries: BTreeMap<String, Vec<String>>,
 }
 
-/// A file-backed persistence Adapter whose schema is private to the memory Module.
+/// A file-backed persistence Adapter whose schema is private to the memory Plugin.
 #[derive(Clone, Debug)]
 pub(crate) struct FileMemoryAdapter {
     path: PathBuf,

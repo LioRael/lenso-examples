@@ -8,8 +8,8 @@ publish.workspace = true
 [dependencies]
 futures.workspace = true
 lenso-capability-greeting = { path = "../../crates/lenso-capability-greeting", version = "0.1.0" }
-lenso-kernel = "0.1.1"
-lenso-native-adapter = "0.1.1"
+lenso-kernel = { version = "0.2.0" }
+lenso-native-adapter = { version = "0.3.0" }
 
 [lints]
 workspace = true

@@ -16,9 +16,47 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.2.21
+          bun-version: 1.4.0
+      - run: bun install --cwd fixtures/vnext-web-ui --frozen-lockfile
+      - run: bun install --cwd fixtures/vnext-plugin-authoring-v2/typescript --frozen-lockfile
       - run: cargo fmt --all -- --check
+      - name: Check generated Capability contracts
+        run: cargo install lenso-contract-codegen --version 0.6.5 --locked && lenso-contract-codegen workspace check --manifest-path Cargo.toml
       - run: cargo check --locked --workspace --all-targets
       - run: cargo test --locked --workspace
+      - name: Check Plugin authoring v2 generated contracts
+        run: |
+          cargo install lenso-contract-codegen --version 0.8.2 --locked --force
+          lenso-contract-codegen workspace check --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml
+          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-store/capability.json --rust-plugin fixtures/vnext-plugin-authoring-v2/src/generated/document_store.rs
+          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-store/capability.json --typescript fixtures/vnext-plugin-authoring-v2/typescript/generated/document-store.ts
+          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-sync/capability.json --rust-plugin fixtures/vnext-plugin-authoring-v2/src/generated/document_sync.rs
+          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-sync/capability.json --typescript fixtures/vnext-plugin-authoring-v2/typescript/generated/document-sync.ts
+      - run: cargo fmt --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --all -- --check
+      - run: cargo check --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --workspace --all-targets
+      - run: cargo test --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --workspace
+      - run: bun run --cwd fixtures/vnext-plugin-authoring-v2/typescript check
+      - name: Run released Plugin authoring acceptance
+        working-directory: fixtures/vnext-plugin-authoring-v2
+        run: |
+          npx --yes @lenso/cli@0.16.1 plugin check --repo-root . --json
+          npx --yes @lenso/cli@0.16.1 plugin pack --repo-root . --output document-sync.lenso-plugin --json
+          npx --yes @lenso/cli@0.16.1 app build --source acceptance/host.ts --target x86_64-unknown-linux-gnu --out /tmp/document-sync-host
+          npx --yes @lenso/cli@0.16.1 plugins add document-sync.lenso-plugin --root /tmp/document-sync-host
+          npx --yes @lenso/cli@0.16.1 app show --root /tmp/document-sync-host --json
+          npx --yes @lenso/cli@0.16.1 plugins remove example.document-sync --root /tmp/document-sync-host
+          npx --yes @lenso/cli@0.16.1 app check --root /tmp/document-sync-host
+          app_root="$(mktemp -d)"
+          mkdir -p "$app_root/.lenso" "$app_root/plugins"
+          cp host-catalog.json "$app_root/.lenso/host-catalog.json"
+          printf 'document = "guide"\nruleset = "identity-v1"\n' > "$app_root/config.toml"
+          npx --yes @lenso/cli@0.16.1 plugins add document-sync.lenso-plugin --root "$app_root"
+          npx --yes @lenso/cli@0.16.1 plugins configure example.document-sync default --file "$app_root/config.toml" --root "$app_root"
+          npx --yes @lenso/cli@0.16.1 plugins list --root "$app_root" | grep 'example.document-sync/default.*PluginRoot'
+          mkdir /tmp/document-sync-bundle
+          unzip -q document-sync.lenso-plugin -d /tmp/document-sync-bundle
+          LENSO_DOCUMENT_SYNC_BUN_ARTIFACT=/tmp/document-sync-bundle/implementations/typescript-bun/plugin.js \
+            cargo test --locked -p lenso-vnext-plugin-authoring-v2 --test process_sync \
+             typescript_bun_syncs_through_the_same_named_host_dependencies -- --ignored --exact --test-threads=1
       - name: Run target-owned Web UI conformance
         run: cargo test --locked -p lenso-vnext-web-ui --test web_ui generated_browser_client_invokes_the_allowlisted_app_capability -- --ignored --test-threads=1

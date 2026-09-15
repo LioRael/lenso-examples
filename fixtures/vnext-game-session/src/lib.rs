@@ -1,4 +1,4 @@
-//! Native game-session tracer bullet: protocol, Auth, and game Modules.
+//! Native game-session tracer bullet: protocol, Auth, and game Plugins.
 
 mod auth;
 mod connection;
@@ -11,7 +11,7 @@ use std::time::Duration;
 
 use lenso_app_plan::{
     AppComposition, CapabilityBinding, CapabilityEndpointPlan, CapabilityRequirementPlan,
-    ModuleInstancePlan, PlanResolutionError, ResolvedAppPlan, RestartPolicy,
+    PlanResolutionError, PluginInstancePlan, ResolvedAppPlan, RestartPolicy,
 };
 use lenso_auth_sdk::ActorAssertionIssuer;
 use lenso_capability_auth::{
@@ -22,9 +22,9 @@ use lenso_capability_game_session::{
     CAPABILITY_ID as GAME_CAPABILITY_ID, DESCRIPTOR_VERSION as GAME_DESCRIPTOR_VERSION,
     PLAY_OPERATION,
 };
-use lenso_native_adapter::NativeModuleRegistry;
+use lenso_native_adapter::NativePluginRegistry;
 
-pub use auth::{AUTH_PACKAGE_ID, AuthModuleFactory};
+pub use auth::{AUTH_PACKAGE_ID, AuthPluginFactory};
 pub use frame::{ClientFrame, ServerFrame, TerminalFrame};
 pub use game::{GAME_PACKAGE_ID, GAME_REPLACEMENT_PACKAGE_ID, GameProviderFactory};
 pub use protocol::{
@@ -49,7 +49,7 @@ pub fn composition_with_variants(
     protocol_variant: ProtocolVariant,
     mode: SessionMode,
 ) -> AppComposition {
-    let protocol = ModuleInstancePlan::new("protocol", protocol_variant.package_id())
+    let protocol = PluginInstancePlan::new("protocol", protocol_variant.package_id())
         .with_configuration(config.to_json())
         .with_requirement(CapabilityRequirementPlan::one(
             AUTH_CAPABILITY_ID,
@@ -59,7 +59,7 @@ pub fn composition_with_variants(
             GAME_CAPABILITY_ID,
             GAME_DESCRIPTOR_VERSION,
         ));
-    let auth = ModuleInstancePlan::new("auth", AUTH_PACKAGE_ID).with_capability(
+    let auth = PluginInstancePlan::new("auth", AUTH_PACKAGE_ID).with_capability(
         CapabilityEndpointPlan::new(
             AUTH_CAPABILITY_ID,
             AUTH_DESCRIPTOR_VERSION,
@@ -67,7 +67,7 @@ pub fn composition_with_variants(
         )
         .with_limits(4, 4),
     );
-    let game = ModuleInstancePlan::new("game", GameProviderFactory::package_id_for(mode))
+    let game = PluginInstancePlan::new("game", GameProviderFactory::package_id_for(mode))
         .with_restart_policy(RestartPolicy::on_failure(
             2,
             Duration::from_secs(30),
@@ -127,11 +127,11 @@ pub fn resolved_plan_with_variants(
     composition_with_variants(config, protocol_variant, mode).resolve()
 }
 
-/// Assembles the selected native Modules without adding protocol behavior to Kernel.
+/// Assembles the selected native Plugins without adding protocol behavior to Kernel.
 pub fn native_registry(
     issuer: ActorAssertionIssuer,
     session_mode: SessionMode,
-) -> NativeModuleRegistry {
+) -> NativePluginRegistry {
     native_registry_with_variants(issuer, ProtocolVariant::Primary, session_mode)
 }
 
@@ -140,10 +140,10 @@ pub fn native_registry_with_variants(
     issuer: ActorAssertionIssuer,
     protocol_variant: ProtocolVariant,
     session_mode: SessionMode,
-) -> NativeModuleRegistry {
+) -> NativePluginRegistry {
     let verifier = issuer.verifier();
-    NativeModuleRegistry::new()
-        .with_factory(AuthModuleFactory::new(issuer))
+    NativePluginRegistry::new()
+        .with_factory(AuthPluginFactory::new(issuer))
         .with_factory(GameProviderFactory::new(verifier, session_mode))
         .with_factory(GameProtocolFactory::with_variant(protocol_variant))
 }

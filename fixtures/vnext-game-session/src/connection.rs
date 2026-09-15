@@ -44,7 +44,7 @@ pub(crate) async fn serve_connection(mut socket: TcpStream, connection: Connecti
         stream,
         session_deadline,
         session_cancellation,
-        connection.module_cancellation,
+        connection.plugin_cancellation,
     )
     .await;
 }
@@ -161,7 +161,7 @@ async fn run_session_loop<R, W>(
     stream: NativeStream<lenso_capability_game_session::GameSession>,
     session_deadline: Instant,
     session_cancellation: CancellationToken,
-    module_cancellation: CancellationToken,
+    plugin_cancellation: CancellationToken,
 ) where
     R: AsyncRead + Unpin,
     W: AsyncWrite + Unpin,
@@ -178,7 +178,7 @@ async fn run_session_loop<R, W>(
         }
         let activity = futures::future::select(read, receive);
         let activity = tokio::select! {
-            () = module_cancellation.cancelled() => {
+            () = plugin_cancellation.cancelled() => {
                 session_cancellation.cancel();
                 let _ = send_runtime(writer, config, "cancelled").await;
                 return;
@@ -457,7 +457,7 @@ fn runtime_error_code(error: &RuntimeFailure) -> String {
         RuntimeFailure::UnknownOperation { .. } => "unknown_operation".to_owned(),
         RuntimeFailure::AmbiguousBinding { .. } => "ambiguous_binding".to_owned(),
         RuntimeFailure::ProtocolViolation { .. } => "protocol_violation".to_owned(),
-        RuntimeFailure::MissingModuleFactory { .. } => "missing_module_factory".to_owned(),
+        RuntimeFailure::MissingPluginFactory { .. } => "missing_plugin_factory".to_owned(),
         RuntimeFailure::UnavailableExecutionClass { .. } => {
             "unavailable_execution_class".to_owned()
         }
@@ -467,7 +467,7 @@ fn runtime_error_code(error: &RuntimeFailure) -> String {
         RuntimeFailure::DeadlineExceeded { .. } => "deadline_exceeded".to_owned(),
         RuntimeFailure::Cancelled { .. } => "cancelled".to_owned(),
         RuntimeFailure::Internal { .. } => "internal".to_owned(),
-        RuntimeFailure::ModuleFailure { .. } => "module_failure".to_owned(),
-        RuntimeFailure::ModuleRestartExhausted { .. } => "module_restart_exhausted".to_owned(),
+        RuntimeFailure::PluginFailure { .. } => "plugin_failure".to_owned(),
+        RuntimeFailure::PluginRestartExhausted { .. } => "plugin_restart_exhausted".to_owned(),
     }
 }

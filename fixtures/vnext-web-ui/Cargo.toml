@@ -8,16 +8,15 @@ publish.workspace = true
 [dependencies]
 axum = { version = "0.8", default-features = false, features = ["http1", "tokio"] }
 futures.workspace = true
-lenso-app-plan = "0.1.0"
-lenso-authoring = "0.1.1"
-lenso-auth-sdk = "0.1.1"
-lenso-capability-auth = "0.1.1"
+lenso-app-plan = { version = "0.3.0" }
+lenso-auth-sdk = { version = "0.2.0" }
+lenso-capability-auth = { version = "0.1.1" }
 lenso-capability-secure-greeting = { path = "../../crates/lenso-capability-secure-greeting", version = "0.1.0" }
 lenso-capability-ui-contribution = { path = "../../crates/lenso-capability-ui-contribution", version = "0.1.0" }
 lenso-capability-web-shell = { path = "../../crates/lenso-capability-web-shell", version = "0.1.0" }
-lenso-kernel = "0.1.1"
-lenso-native-adapter = "0.1.1"
-lenso-runner = "0.1.1"
+lenso-kernel = { version = "0.2.0" }
+lenso-native-adapter = { version = "0.3.0" }
+lenso-runner = { version = "0.2.0" }
 serde.workspace = true
 serde_json.workspace = true
 time.workspace = true
@@ -26,7 +25,7 @@ tower = { version = "0.5", features = ["limit"] }
 tower-http = { version = "0.6", features = ["limit", "request-id", "sensitive-headers", "set-header"] }
 
 [build-dependencies]
-lenso-contract-codegen = "0.1.0"
+lenso-contract-codegen = { version = "0.6.3" }
 
 [lints]
 workspace = true
