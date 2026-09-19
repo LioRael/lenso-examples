@@ -1,0 +1,27 @@
+{
+  "name": "example-uppercase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lenso/bun-plugin": "0.4.1",
+    "@lenso/contract-runtime": "0.3.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.0",
+    "typescript": "7.0.2"
+  },
+  "lenso": {
+    "pluginId": "example.uppercase",
+    "rootSlot": "tool-providers",
+    "runtime": "bun",
+    "contract": {
+      "descriptor": "../../contracts/text/capability.json",
+      "projection": "typescript",
+      "output": "generated/text.ts"
+    }
+  }
+}
