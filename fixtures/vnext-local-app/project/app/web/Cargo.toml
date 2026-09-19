@@ -1,0 +1,15 @@
+[package]
+name = "local-app-web-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[package.metadata.lenso]
+plugin-id = "example.web"
+root-slot = "web"
+[dependencies]
+lenso = "=0.5.23"
+lenso-capability-http-endpoint = "=0.3.2"
+lenso-capability-agent-tool-provider = "=0.2.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+[workspace]

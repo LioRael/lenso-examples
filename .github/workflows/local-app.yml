@@ -1,0 +1,37 @@
+name: Local App consumer proof
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  local-app:
+    name: Offline mixed local App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      # Test tooling pinned to the reviewed implementation. Replace with a
+      # released CLI after #727's separately authorized publication gate.
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso-cli
+          ref: f7a5303b66e080022d438977f2e83e7549c05c45
+          path: .lenso-ci-cli
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .lenso-ci-cli
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+      - run: cargo build --locked --manifest-path .lenso-ci-cli/Cargo.toml --bin lenso
+      - run: cargo fmt --manifest-path fixtures/vnext-local-app/project/app/web/Cargo.toml -- --check
+      - run: cargo fmt --manifest-path fixtures/vnext-local-app/shared-plugins/audit/Cargo.toml -- --check
+      - run: python3 fixtures/vnext-local-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"
