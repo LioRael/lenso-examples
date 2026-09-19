@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lenso mixed App</title>
+<style>body{font:18px system-ui;max-width:38rem;margin:12vh auto;padding:2rem;color:#152235;background:#f5f7fa}input,button{font:inherit;padding:.7rem;border-radius:.4rem;border:1px solid #b7c4d5}button{background:#152235;color:white}output{display:block;margin-top:1rem}</style>
+<h1>One App, two languages.</h1><p>The Rust Web Plugin calls the Bun uppercase Plugin through its declared Capability.</p>
+<form><label>Text <input name="text" value="Hello Lenso" required></label> <button>Uppercase</button></form><output aria-live="polite"></output>
+<script>document.querySelector('form').onsubmit=async(event)=>{event.preventDefault();const response=await fetch('/uppercase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:new FormData(event.target).get('text')})});const value=await response.json();document.querySelector('output').textContent=value.text||value.detail||'Request failed';};</script></html>
