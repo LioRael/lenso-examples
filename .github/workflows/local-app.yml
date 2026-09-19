@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: LioRael/lenso-cli
-          ref: f7a5303b66e080022d438977f2e83e7549c05c45
+          ref: d97c1b1f1aa35cb615d19eb8cae0554e559a75bd
           path: .lenso-ci-cli
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
@@ -35,3 +35,6 @@ jobs:
       - run: cargo fmt --manifest-path fixtures/vnext-local-app/project/app/web/Cargo.toml -- --check
       - run: cargo fmt --manifest-path fixtures/vnext-local-app/shared-plugins/audit/Cargo.toml -- --check
       - run: python3 fixtures/vnext-local-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"
+      - run: cargo fmt --manifest-path fixtures/vnext-typed-local-app/project/app/web/Cargo.toml -- --check
+      - run: cargo fmt --manifest-path fixtures/vnext-typed-local-app/project/contracts/text/Cargo.toml -- --check
+      - run: python3 fixtures/vnext-typed-local-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"

@@ -1,0 +1,11 @@
+[package]
+name = "local-app-audit-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[package.metadata.lenso]
+plugin-id = "example.audit"
+root-slot = "audit"
+[dependencies]
+lenso = "=0.5.23"
+[workspace]

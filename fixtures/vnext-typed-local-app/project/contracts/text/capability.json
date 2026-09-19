@@ -1,0 +1,15 @@
+{
+  "id": "example.text@1",
+  "version": "1.0.0",
+  "portable": true,
+  "cross_lane_transfer": false,
+  "operations": [
+    {
+      "name": "uppercase",
+      "interaction": "request",
+      "request_schema": "schemas/uppercase-request.schema.json",
+      "response_schema": "schemas/uppercase-response.schema.json",
+      "domain_error_schema": "schemas/uppercase-error.schema.json"
+    }
+  ]
+}
