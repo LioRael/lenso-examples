@@ -1,0 +1,19 @@
+[package]
+name = "lenso-knowledge-base-reference-app"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata.lenso]
+plugin-id = "lenso.reference.knowledge-base"
+root-slot = "web"
+
+[dependencies]
+lenso = "=0.5.23"
+lenso-capability-http-endpoint = "=0.3.2"
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+
+[workspace]

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lenso Knowledge Base</title>
+    <style>
+      :root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; background: #f4f1ea; color: #1f2933; }
+      main { max-width: 44rem; margin: 0 auto; padding: 4rem 1.25rem; }
+      h1 { margin: 0 0 .5rem; font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: -.04em; }
+      p { line-height: 1.6; }
+      form, article { margin-top: 2rem; padding: 1.25rem; border: 1px solid #c9c1b2; border-radius: 1rem; background: #fffdf8; }
+      label { display: grid; gap: .4rem; margin-top: 1rem; font-weight: 650; }
+      input, textarea, button { font: inherit; }
+      input, textarea { padding: .75rem; border: 1px solid #a99f8d; border-radius: .6rem; background: transparent; color: inherit; }
+      textarea { min-height: 8rem; resize: vertical; }
+      button { margin-top: 1rem; padding: .7rem 1rem; border: 0; border-radius: .6rem; background: #22543d; color: white; cursor: pointer; }
+      #status { min-height: 1.5rem; }
+      [hidden] { display: none; }
+      @media (prefers-color-scheme: dark) {
+        body { background: #171914; color: #eef2e8; }
+        form, article { background: #20241d; border-color: #3f4939; }
+        input, textarea { border-color: #596651; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Knowledge base</h1>
+      <p>Create a note through the public App endpoint, then read the stored result back.</p>
+      <form id="note-form">
+        <label>Title <input name="title" autocomplete="off" required /></label>
+        <label>Body <textarea name="body" required></textarea></label>
+        <button type="submit">Create note</button>
+      </form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <article id="note" hidden>
+        <h2></h2>
+        <p></p>
+        <small></small>
+      </article>
+    </main>
+    <script>
+      const form = document.querySelector("#note-form");
+      const status = document.querySelector("#status");
+      const article = document.querySelector("#note");
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status.textContent = "Creating…";
+        article.hidden = true;
+        const data = new FormData(form);
+        try {
+          const createdResponse = await fetch("/notes", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ title: data.get("title"), body: data.get("body") }),
+          });
+          if (!createdResponse.ok) throw new Error(`create failed: ${createdResponse.status}`);
+          const created = await createdResponse.json();
+          const readResponse = await fetch(`/notes/${encodeURIComponent(created.id)}`);
+          if (!readResponse.ok) throw new Error(`read failed: ${readResponse.status}`);
+          const note = await readResponse.json();
+          article.querySelector("h2").textContent = note.title;
+          article.querySelector("p").textContent = note.body;
+          article.querySelector("small").textContent = note.id;
+          article.hidden = false;
+          status.textContent = "Created and read back successfully.";
+        } catch (error) {
+          status.textContent = error instanceof Error ? error.message : String(error);
+        }
+      });
+    </script>
+  </body>
+</html>

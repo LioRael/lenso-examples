@@ -24,6 +24,9 @@ generated Rust bindings for:
 `fixtures/vnext-*` contains executable Plugins and Apps that prove those
 contracts:
 
+- `vnext-knowledge-base-app`: an ordinary source App with a browser UI and a
+  real HTTP create/read notes path, built and run without App-owned Host or
+  Plan documents;
 - `vnext-native-greeter`: a minimal native Provider;
 - `vnext-stateful-plugin`: Plugin-owned durable state, setup, recovery, and
   upgrade;
