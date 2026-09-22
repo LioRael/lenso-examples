@@ -52,7 +52,16 @@ adopts them through `lenso app add`, runs each explicit schema operator, issues
 two short-lived test credentials, builds the distribution, deletes every source
 copy, clears `PATH`, and exercises the real HTTP listener. It checks unauthenticated
 rejection, stale configuration rejection, cross-user denial, upload, processing,
-and a Host restart.
+Jobs disable/enable with preserved records and configuration, and a Host
+restart. While Jobs is disabled, the same TypeScript Plugin follows its declared
+optional dependency and completes deterministic excerpts inline.
+
+For an interactive browser pass, add
+`--browser-handoff /tmp/lenso-browser-handoff.json`. After the scripted checks,
+the verifier writes a mode-`0600` JSON file containing the temporary URL and
+test credential, then keeps the source-deleted Host running for up to ten
+minutes. Delete the handoff file after browser automation completes; the
+verifier will then perform its restart checks and shut down normally.
 
 No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
 credential value is checked in. Auth and Jobs remain local candidate sources

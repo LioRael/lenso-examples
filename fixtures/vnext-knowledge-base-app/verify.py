@@ -23,6 +23,11 @@ parser.add_argument("--auth-source", required=True, help="local API Token Auth s
 parser.add_argument("--jobs-source", required=True, help="local Jobs source crate")
 parser.add_argument("--secrets-source", required=True, help="local environment Secrets source crate")
 parser.add_argument(
+    "--browser-handoff",
+    type=Path,
+    help="optional temporary JSON handoff; delete it after browser acceptance to continue",
+)
+parser.add_argument(
     "--web-client-package",
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
 )
@@ -49,9 +54,12 @@ def operator_environment(**values):
     return os.environ | values
 
 
-def launch(cli, distribution, root, environment):
+def launch(cli, distribution, root, environment, app_root=None):
+    command = [cli, "app", "start", "--from", str(distribution)]
+    if app_root is not None:
+        command.extend(["--root", str(app_root)])
     process = subprocess.Popen(
-        [cli, "app", "start", "--from", str(distribution)],
+        command,
         env=environment,
         cwd=root,
         stdout=subprocess.PIPE,
@@ -253,6 +261,23 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
     run([cli, "app", "build", "--root", str(project), "--out", str(distribution)])
+    lifecycle_root = root / "runtime-app"
+    (lifecycle_root / ".lenso").mkdir(parents=True)
+    host_authority = lifecycle_root / ".lenso" / "host-build.json"
+    shutil.copyfile(
+        distribution / ".lenso" / "host-build.json",
+        host_authority,
+    )
+    shutil.copytree(project / "plugins", lifecycle_root / "plugins")
+    jobs_configuration = lifecycle_root / "plugins" / "lenso.jobs" / "default.toml"
+    jobs_configuration_text = jobs_configuration.read_text()
+    run([
+        cli, "plugins", "bind", "--root", str(lifecycle_root),
+        "lenso.reference.knowledge-excerpt", "jobs", "--absent",
+    ])
+    run([cli, "plugins", "disable", "--root", str(lifecycle_root), "lenso.jobs", "default"])
+    assert jobs_configuration.read_text() == jobs_configuration_text
+    host_authority.unlink()
     shutil.rmtree(source)
     runtime_environment = {
         "PATH": str(root / "no-tools"),
@@ -330,10 +355,48 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         expect_http_error(
             url.rstrip("/") + "/job-status/" + created["job_id"], 404, token=tokens["user-b"]
         )
+        if args.browser_handoff:
+            handoff = args.browser_handoff.resolve()
+            handoff.write_text(json.dumps({"token": tokens["user-a"], "url": url}))
+            handoff.chmod(0o600)
+            deadline = time.monotonic() + 600
+            while handoff.exists() and time.monotonic() < deadline:
+                time.sleep(0.25)
+            if handoff.exists():
+                raise TimeoutError(f"browser handoff was not removed: {handoff}")
     finally:
         stop(process, reader, transcript)
 
-    process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+    process, reader, transcript, url = launch(
+        cli, distribution, root, runtime_environment, app_root=lifecycle_root
+    )
+    try:
+        preserved = http_json(
+            url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
+        )
+        assert preserved == created
+        inline_body = "Jobs is disabled, so deterministic processing completes inline."
+        inline = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201, token=tokens["user-a"],
+            body={"title": "Disabled Jobs", "body": inline_body},
+        )
+        assert inline["excerpt"] == inline_body[:47] + "…"
+        assert inline["job_id"] == "inline:" + inline["id"]
+        assert inline["processing_status"] == "succeeded"
+    finally:
+        stop(process, reader, transcript)
+
+    shutil.copyfile(distribution / ".lenso" / "host-build.json", host_authority)
+    run([cli, "plugins", "enable", "--root", str(lifecycle_root), "lenso.jobs", "default"])
+    run([
+        cli, "plugins", "bind", "--root", str(lifecycle_root),
+        "lenso.reference.knowledge-excerpt", "jobs", "lenso.jobs",
+    ])
+    assert jobs_configuration.read_text() == jobs_configuration_text
+    host_authority.unlink()
+    process, reader, transcript, url = launch(
+        cli, distribution, root, runtime_environment, app_root=lifecycle_root
+    )
     try:
         restarted = http_json(
             url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
@@ -349,5 +412,5 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
 
 print(
     "PASS: source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
-    "Rust-to-TypeScript durable Jobs, and restart"
+    "Rust-to-TypeScript durable Jobs, disable/enable preservation, and restart"
 )

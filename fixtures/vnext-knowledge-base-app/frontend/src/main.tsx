@@ -25,12 +25,25 @@ function App() {
   const [note, setNote] = useState<Note>();
   const [status, setStatus] = useState('Enter an issued API token to begin.');
   const [submitting, setSubmitting] = useState(false);
+  const [settingsLimit, setSettingsLimit] = useState(96);
   const [settingsRevision, setSettingsRevision] = useState(1);
 
   function problem(error: unknown) {
     return error instanceof LensoApiError
       ? `${error.problem.code ?? 'request_failed'}: ${error.message}`
       : error instanceof Error ? error.message : String(error);
+  }
+
+  async function loadSession(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      const settings = unwrap<BusinessSettings>(await api.GET('/settings'));
+      setSettingsLimit(settings.excerpt_limit);
+      setSettingsRevision(settings.revision);
+      setStatus(`Credential verified; loaded excerpt policy revision ${settings.revision}.`);
+    } catch (error) {
+      setStatus(problem(error));
+    }
   }
 
   async function updateSettings(event: FormEvent<HTMLFormElement>) {
@@ -43,6 +56,7 @@ function App() {
           predecessor_revision: settingsRevision,
         },
       }));
+      setSettingsLimit(settings.excerpt_limit);
       setSettingsRevision(settings.revision);
       setStatus(`Excerpt policy updated to ${settings.excerpt_limit} characters at revision ${settings.revision}.`);
     } catch (error) {
@@ -77,7 +91,8 @@ function App() {
   }
 
   async function upload(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.currentTarget.files?.[0];
+    const input = event.currentTarget;
+    const file = input.files?.[0];
     if (!file || !note) return;
     setStatus('Uploading attachment…');
     try {
@@ -90,7 +105,7 @@ function App() {
     } catch (error) {
       setStatus(problem(error));
     } finally {
-      event.currentTarget.value = '';
+      input.value = '';
     }
   }
 
@@ -98,16 +113,17 @@ function App() {
     <p className="eyebrow">Lenso reference app</p>
     <h1>Knowledge base</h1>
     <p className="lede">A normal React interface calling the App’s authenticated, explicitly public, generated TypeScript API.</p>
-    <section className="panel" aria-labelledby="session-heading">
+    <form className="panel" aria-labelledby="session-heading" onSubmit={loadSession}>
       <h2 id="session-heading">Session</h2>
       <label>API token <input type="password" autoComplete="off" onChange={(event) => {
         token.current = event.currentTarget.value.trim();
         setStatus(token.current ? 'Credential ready; requests are user-isolated.' : 'Enter an issued API token to begin.');
       }} /></label>
-    </section>
+      <button type="submit">Load workspace</button>
+    </form>
     <form onSubmit={updateSettings}>
       <h2>Excerpt policy</h2>
-      <label>Character limit <input name="excerpt_limit" type="number" min="16" max="512" defaultValue="96" required /></label>
+      <label>Character limit <input name="excerpt_limit" type="number" min="16" max="512" value={settingsLimit} onChange={(event) => setSettingsLimit(Number(event.currentTarget.value))} required /></label>
       <button type="submit">Update revision {settingsRevision}</button>
     </form>
     <form onSubmit={submit}>
