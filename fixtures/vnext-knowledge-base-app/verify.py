@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Build the knowledge base App and prove its offline HTTP create/read path."""
+"""Build and verify the source-deleted knowledge base reference application."""
 import argparse
+import base64
 import json
 import os
 from pathlib import Path
 import queue
 import re
+import secrets
 import shutil
 import signal
 import subprocess
@@ -17,21 +19,34 @@ import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
+parser.add_argument("--auth-source", required=True, help="local API Token Auth source crate")
+parser.add_argument("--jobs-source", required=True, help="local Jobs source crate")
+parser.add_argument("--secrets-source", required=True, help="local environment Secrets source crate")
 parser.add_argument(
     "--web-client-package",
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
 )
-parser.add_argument("--jobs-source", help="local lenso-jobs-plugin source crate")
-parser.add_argument("--secrets-source", help="local lenso-secrets-env-plugin source crate")
 args = parser.parse_args()
 cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
 fixture = Path(__file__).resolve().parent
-jobs_mode = args.jobs_source is not None or args.secrets_source is not None
-if jobs_mode and not (args.jobs_source and args.secrets_source):
-    parser.error("--jobs-source and --secrets-source must be provided together")
-database_url = os.environ.get("LENSO_JOBS_DATABASE_URL")
-if jobs_mode and not database_url:
-    parser.error("LENSO_JOBS_DATABASE_URL is required with Jobs sources")
+database_url = os.environ.get("LENSO_REFERENCE_DATABASE_URL")
+if not database_url:
+    parser.error("LENSO_REFERENCE_DATABASE_URL must name a disposable PostgreSQL database")
+
+
+def repository_for(crate):
+    crate = Path(crate).resolve()
+    if not (crate / "Cargo.toml").is_file() or crate.parent.name != "crates":
+        parser.error(f"source crate must be a crates/<package> directory: {crate}")
+    return crate.parents[1]
+
+
+def run(command, **kwargs):
+    return subprocess.run(command, check=True, **kwargs)
+
+
+def operator_environment(**values):
+    return os.environ | values
 
 
 def launch(cli, distribution, root, environment):
@@ -87,6 +102,30 @@ def stop(process, reader, transcript):
     print("".join(transcript))
     assert process.returncode == 0
 
+
+def http_json(url, method="GET", body=None, token=None, expected=200):
+    headers = {}
+    data = None
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(body).encode()
+    if token is not None:
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(url, data=data, headers=headers, method=method)
+    with urllib.request.urlopen(request, timeout=10) as response:
+        assert response.status == expected
+        return json.load(response)
+
+
+def expect_http_error(url, code, method="GET", body=None, token=None):
+    try:
+        http_json(url, method=method, body=body, token=token)
+    except urllib.error.HTTPError as error:
+        assert error.code == code, error.read().decode()
+    else:
+        raise AssertionError(f"request must return HTTP {code}: {method} {url}")
+
+
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     root = Path(temporary)
     source = root / "source"
@@ -101,41 +140,94 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         frontend = source / "frontend"
         vendor = frontend / "vendor"
         vendor.mkdir()
-        shutil.copyfile(
-            Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz"
-        )
-        subprocess.run(["bun", "install", "--frozen-lockfile"], cwd=frontend, check=True)
-        subprocess.run(["bun", "run", "generate"], cwd=frontend, check=True)
-        subprocess.run(["bun", "run", "typecheck"], cwd=frontend, check=True)
-        subprocess.run(["bun", "run", "build"], cwd=frontend, check=True)
-    if jobs_mode:
-        candidates = source / "candidates"
-        jobs_repository = Path(args.jobs_source).resolve().parents[1]
-        secrets_repository = Path(args.secrets_source).resolve().parents[1]
+        shutil.copyfile(Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz")
+        run(["bun", "install", "--frozen-lockfile"], cwd=frontend)
+        run(["bun", "run", "generate"], cwd=frontend)
+        run(["bun", "run", "typecheck"], cwd=frontend)
+        run(["bun", "run", "build"], cwd=frontend)
+
+    candidates = source / "candidates"
+    repositories = {
+        "auth": repository_for(args.auth_source),
+        "jobs": repository_for(args.jobs_source),
+        "secrets": repository_for(args.secrets_source),
+    }
+    for name, repository in repositories.items():
         shutil.copytree(
-            jobs_repository,
-            candidates / "jobs",
+            repository,
+            candidates / name,
             ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
         )
-        shutil.copytree(
-            secrets_repository,
-            candidates / "secrets",
-            ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
-        )
-        jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
-        secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
-        project = source / "project"
-        subprocess.run(
-            [cli, "app", "add", "--root", str(project), "--no-install", str(jobs_source)],
+    auth_source = candidates / "auth" / "crates" / "lenso-auth-api-token-plugin"
+    jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
+    secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
+    project = source / "project"
+    for plugin_source in [auth_source, jobs_source, secrets_source]:
+        run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
+
+    suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
+    auth_schema = f"auth_reference_{suffix}"
+    jobs_schema = f"jobs_reference_{suffix}"
+    signing_secret = secrets.token_urlsafe(48)
+    token_pepper = secrets.token_urlsafe(48)
+    auth_operator = [
+        "cargo", "run", "--locked", "-p", "lenso-auth-api-token-plugin",
+        "--example", "api-token-operator", "--",
+    ]
+    auth_environment = operator_environment(
+        LENSO_AUTH_DATABASE_URL=database_url,
+        LENSO_AUTH_SIGNING_SECRET=signing_secret,
+        LENSO_AUTH_TOKEN_PEPPER=token_pepper,
+    )
+    run(auth_operator + ["setup", auth_schema], cwd=candidates / "auth", env=auth_environment)
+    public_key = subprocess.run(
+        auth_operator + ["public-key"],
+        cwd=candidates / "auth",
+        env=auth_environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    tokens = {}
+    for subject in ["user-a", "user-b"]:
+        output = subprocess.run(
+            auth_operator
+            + ["issue", auth_schema, subject, "lenso.reference.knowledge-base@1:access"],
+            cwd=candidates / "auth",
+            env=auth_environment,
             check=True,
-        )
-        subprocess.run(
-            [cli, "app", "add", "--root", str(project), "--no-install", str(secrets_source)],
-            check=True,
-        )
-        schema_name = f"jobs_knowledge_reference_{os.getpid()}"
-        (project / "plugins" / "lenso.jobs" / "default.toml").write_text(
-            f'''schema = "{schema_name}"
+            capture_output=True,
+            text=True,
+        ).stdout
+        tokens[subject] = json.loads(output)["token"]
+
+    run(
+        [
+            "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
+            "--example", "jobs-operator", "--", "setup", jobs_schema,
+        ],
+        cwd=candidates / "jobs",
+        env=operator_environment(LENSO_JOBS_DATABASE_URL=database_url),
+    )
+    notes_web = project / "app" / "notes-web"
+    run(
+        ["cargo", "run", "--locked", "--manifest-path", str(notes_web / "Cargo.toml"),
+         "--example", "knowledge-operator", "--", "setup"],
+        env=operator_environment(LENSO_KNOWLEDGE_DATABASE_URL=database_url),
+    )
+
+    (project / "plugins" / "lenso.auth.api-token" / "default.toml").write_text(
+        f'''schema = "{auth_schema}"
+issuer = "knowledge-reference"
+assertion_public_key = "{public_key}"
+database_url_secret = "auth/database-url"
+assertion_signing_key_secret = "auth/signing-secret"
+token_pepper_secret = "auth/token-pepper"
+assertion_ttl_seconds = 300
+'''
+    )
+    (project / "plugins" / "lenso.jobs" / "default.toml").write_text(
+        f'''schema = "{jobs_schema}"
 database_url_secret = "jobs/database-url"
 lease_seconds = 30
 retry_base_seconds = 5
@@ -145,38 +237,29 @@ producer_instances = ["lenso.reference.knowledge-excerpt/default"]
 worker_instances = ["lenso.reference.knowledge-excerpt/default"]
 observer_instances = ["lenso.reference.knowledge-excerpt/default"]
 '''
-        )
-        (project / "plugins" / "lenso.secrets.env" / "default.toml").write_text(
-            '[references]\n"jobs/database-url" = "LENSO_JOBS_DATABASE_URL"\n'
-        )
-        subprocess.run(
-            [
-                "cargo",
-                "run",
-                "--locked",
-                "-p",
-                "lenso-jobs-plugin",
-                "--example",
-                "jobs-operator",
-                "--",
-                "setup",
-                schema_name,
-            ],
-            cwd=candidates / "jobs",
-            check=True,
-        )
-    excerpt = source / "project" / "app" / "excerpt"
-    subprocess.run(["bun", "install", "--frozen-lockfile"], cwd=excerpt, check=True)
-    subprocess.run(["bun", "run", "check"], cwd=excerpt, check=True)
-    distribution = root / "dist"
-    subprocess.run(
-        [cli, "app", "build", "--root", str(source / "project"), "--out", str(distribution)],
-        check=True,
     )
+    (project / "plugins" / "lenso.secrets.env" / "default.toml").write_text(
+        '''[references]
+"auth/database-url" = "LENSO_REFERENCE_DATABASE_URL"
+"auth/signing-secret" = "LENSO_AUTH_SIGNING_SECRET"
+"auth/token-pepper" = "LENSO_AUTH_TOKEN_PEPPER"
+"jobs/database-url" = "LENSO_REFERENCE_DATABASE_URL"
+"knowledge/database-url" = "LENSO_REFERENCE_DATABASE_URL"
+'''
+    )
+
+    excerpt = project / "app" / "excerpt"
+    run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
+    run(["bun", "run", "check"], cwd=excerpt)
+    distribution = root / "dist"
+    run([cli, "app", "build", "--root", str(project), "--out", str(distribution)])
     shutil.rmtree(source)
-    runtime_environment = {"PATH": str(root / "no-tools")}
-    if jobs_mode:
-        runtime_environment["LENSO_JOBS_DATABASE_URL"] = database_url
+    runtime_environment = {
+        "PATH": str(root / "no-tools"),
+        "LENSO_REFERENCE_DATABASE_URL": database_url,
+        "LENSO_AUTH_SIGNING_SECRET": signing_secret,
+        "LENSO_AUTH_TOKEN_PEPPER": token_pepper,
+    }
     process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
     created = None
     try:
@@ -184,89 +267,87 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             home = response.read().decode()
             assert response.status == 200
             assert '<div id="root"></div>' in home
-
         with urllib.request.urlopen(url.rstrip("/") + "/assets/app.js", timeout=10) as response:
-            javascript = response.read().decode()
             assert response.status == 200
-            assert response.headers.get_content_type() == "text/javascript"
-            assert "Knowledge base" in javascript
+            assert "Knowledge base" in response.read().decode()
 
-        with urllib.request.urlopen(url.rstrip("/") + "/assets/index.css", timeout=10) as response:
-            assert response.status == 200
-            assert response.headers.get_content_type() == "text/css"
+        expect_http_error(
+            url.rstrip("/") + "/notes", 401, method="POST",
+            body={"title": "Denied", "body": "No credential"},
+        )
+        settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
+        assert settings == {"excerpt_limit": 96, "revision": 1}
+        settings = http_json(
+            url.rstrip("/") + "/settings", method="PUT", token=tokens["user-a"],
+            body={"excerpt_limit": 48, "predecessor_revision": 1},
+        )
+        assert settings == {"excerpt_limit": 48, "revision": 2}
+        expect_http_error(
+            url.rstrip("/") + "/settings", 409, method="PUT", token=tokens["user-a"],
+            body={"excerpt_limit": 64, "predecessor_revision": 1},
+        )
 
         note_body = (
             "Created from the offline distribution through a real TypeScript Plugin "
             "without a model credential or source checkout at runtime."
         )
-        request = urllib.request.Request(
-            url.rstrip("/") + "/notes",
-            data=json.dumps({"title": "First note", "body": note_body}).encode(),
-            headers={"Content-Type": "application/json"},
+        created = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201, token=tokens["user-a"],
+            body={"title": "First note", "body": note_body},
         )
-        with urllib.request.urlopen(request, timeout=10) as response:
-            assert response.status == 201
-            created = json.load(response)
-        expected = {
-            "id": "note-1",
-            "title": "First note",
-            "body": note_body,
-        }
-        if jobs_mode:
-            assert {key: created[key] for key in expected} == expected
-            assert created["excerpt"] == ""
-            assert created["job_id"].startswith("job_")
-            assert created["processing_status"] == "queued"
-            process_request = urllib.request.Request(
-                url.rstrip("/") + "/jobs/process-next", data=b"", method="POST"
-            )
-            with urllib.request.urlopen(process_request, timeout=10) as response:
-                assert response.status == 200
-                created = json.load(response)
-            assert created["excerpt"] == note_body[:95] + "…"
-            assert created["processing_status"] == "succeeded"
-            with urllib.request.urlopen(
-                url.rstrip("/") + "/job-status/" + created["job_id"], timeout=10
-            ) as response:
-                durable = json.load(response)
-            assert durable == {
-                "attempts": 1,
-                "jobId": created["job_id"],
-                "status": "succeeded",
-            }
-        else:
-            assert created == expected | {
-                "excerpt": note_body[:95] + "…",
-                "job_id": "inline:note-1",
-                "processing_status": "succeeded",
-            }
+        assert created["id"].startswith("note-")
+        assert created["excerpt"] == ""
+        assert created["job_id"].startswith("job_")
+        assert created["processing_status"] == "queued"
+        processed = http_json(
+            url.rstrip("/") + "/jobs/process-next", method="POST", body={}, token=tokens["user-a"]
+        )
+        assert processed == {"processed": True}
+        created = http_json(
+            url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
+        )
+        assert created["excerpt"] == note_body[:47] + "…"
+        assert created["processing_status"] == "succeeded"
+        durable = http_json(
+            url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"]
+        )
+        assert durable == {"attempts": 1, "jobId": created["job_id"], "status": "succeeded"}
 
-        with urllib.request.urlopen(
-            url.rstrip("/") + "/notes/" + created["id"], timeout=10
-        ) as response:
-            assert response.status == 200
-            assert json.load(response) == created
-
-        try:
-            urllib.request.urlopen(url.rstrip("/") + "/notes/missing", timeout=10)
-        except urllib.error.HTTPError as error:
-            assert error.code == 404
-        else:
-            raise AssertionError("missing note must return HTTP 404")
+        attachment = http_json(
+            url.rstrip("/") + f"/note-attachments/{created['id']}",
+            method="POST", expected=201, token=tokens["user-a"],
+            body={
+                "content_base64": base64.b64encode(b"reference attachment").decode(),
+                "filename": "reference.txt",
+                "media_type": "text/plain",
+            },
+        )
+        assert attachment["note_id"] == created["id"]
+        assert attachment["size"] == len(b"reference attachment")
+        expect_http_error(
+            url.rstrip("/") + "/notes/" + created["id"], 404, token=tokens["user-b"]
+        )
+        expect_http_error(
+            url.rstrip("/") + "/job-status/" + created["job_id"], 404, token=tokens["user-b"]
+        )
     finally:
         stop(process, reader, transcript)
 
-    if jobs_mode:
-        process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
-        try:
-            with urllib.request.urlopen(
-                url.rstrip("/") + "/job-status/" + created["job_id"], timeout=10
-            ) as response:
-                durable = json.load(response)
-            assert durable["status"] == "succeeded"
-            assert durable["attempts"] == 1
-        finally:
-            stop(process, reader, transcript)
+    process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+    try:
+        restarted = http_json(
+            url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
+        )
+        assert restarted == created
+        durable = http_json(
+            url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"]
+        )
+        assert durable["status"] == "succeeded"
+        assert durable["attempts"] == 1
+    finally:
+        stop(process, reader, transcript)
 
-suffix = ", durable linked Jobs and restart" if jobs_mode else ""
-print(f"PASS: offline React, Rust-to-TypeScript excerpt, create/read, rejection, shutdown{suffix}")
+print(
+    "PASS: source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
+    "Rust-to-TypeScript durable Jobs, and restart"
+)

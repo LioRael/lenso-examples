@@ -5,6 +5,7 @@
     "/notes": {
       "post": {
         "operationId": "knowledge-base.notes.create",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateNote" } } }
@@ -18,6 +19,7 @@
     "/notes/{note_id}": {
       "get": {
         "operationId": "knowledge-base.notes.read",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "note_id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": {
           "200": { "description": "Note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
@@ -29,8 +31,9 @@
     "/jobs/process-next": {
       "post": {
         "operationId": "knowledge-base.jobs.process-next",
+        "security": [{ "bearerAuth": [] }],
         "responses": {
-          "200": { "description": "Processed note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "200": { "description": "Processed durable work", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProcessResult" } } } },
           "502": { "description": "Processing failed", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
         }
       }
@@ -38,15 +41,55 @@
     "/job-status/{job_id}": {
       "get": {
         "operationId": "knowledge-base.jobs.inspect",
+        "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "job_id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": {
           "200": { "description": "Durable job state", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobState" } } } },
           "502": { "description": "Inspection failed", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
         }
       }
+    },
+    "/settings": {
+      "get": {
+        "operationId": "knowledge-base.settings.read",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Current request-captured settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BusinessSettings" } } } }
+        }
+      },
+      "put": {
+        "operationId": "knowledge-base.settings.update",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateBusinessSettings" } } }
+        },
+        "responses": {
+          "200": { "description": "Updated settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BusinessSettings" } } } },
+          "409": { "description": "Stale predecessor", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
+        }
+      }
+    },
+    "/note-attachments/{note_id}": {
+      "post": {
+        "operationId": "knowledge-base.attachments.upload",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "note_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UploadAttachment" } } }
+        },
+        "responses": {
+          "201": { "description": "Stored attachment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Attachment" } } } },
+          "404": { "description": "Missing or inaccessible note", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
+        }
+      }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer" }
+    },
     "schemas": {
       "CreateNote": {
         "type": "object",
@@ -74,6 +117,52 @@
           "attempts": { "type": "integer", "minimum": 0 },
           "jobId": { "type": "string" },
           "status": { "type": "string", "enum": ["queued", "running", "succeeded", "failed"] }
+        },
+        "additionalProperties": false
+      },
+      "ProcessResult": {
+        "type": "object",
+        "required": ["processed"],
+        "properties": { "processed": { "type": "boolean" } },
+        "additionalProperties": false
+      },
+      "BusinessSettings": {
+        "type": "object",
+        "required": ["excerpt_limit", "revision"],
+        "properties": {
+          "excerpt_limit": { "type": "integer", "minimum": 16, "maximum": 512 },
+          "revision": { "type": "integer", "minimum": 1 }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBusinessSettings": {
+        "type": "object",
+        "required": ["excerpt_limit", "predecessor_revision"],
+        "properties": {
+          "excerpt_limit": { "type": "integer", "minimum": 16, "maximum": 512 },
+          "predecessor_revision": { "type": "integer", "minimum": 1 }
+        },
+        "additionalProperties": false
+      },
+      "UploadAttachment": {
+        "type": "object",
+        "required": ["content_base64", "filename", "media_type"],
+        "properties": {
+          "content_base64": { "type": "string" },
+          "filename": { "type": "string" },
+          "media_type": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "Attachment": {
+        "type": "object",
+        "required": ["id", "filename", "media_type", "note_id", "size"],
+        "properties": {
+          "id": { "type": "string" },
+          "filename": { "type": "string" },
+          "media_type": { "type": "string" },
+          "note_id": { "type": "string" },
+          "size": { "type": "integer", "minimum": 1 }
         },
         "additionalProperties": false
       },

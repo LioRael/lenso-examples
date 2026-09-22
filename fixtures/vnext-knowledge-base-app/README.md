@@ -1,67 +1,61 @@
 # Knowledge base App
 
-This is the runnable Lenso knowledge base reference App. It
-starts from an ordinary source App: the App owns one linked Rust Plugin under
-`project/app/`, while Engine derives the Host Catalog, bindings, and immutable
-Plan.
+This is the runnable Lenso knowledge base reference App. It starts from an
+ordinary source project: the App owns one linked Rust business Plugin and one
+Bun Plugin under `project/app/`, while Engine derives the Host Catalog,
+bindings, and immutable Plan.
 
-The current slice supports:
+The complete path includes:
 
-- a normal Vite/React browser page at `/`;
-- `POST /notes` to create a note; and
-- `GET /notes/{note_id}` to read it back;
-- deterministic excerpt work through an optional durable Jobs dependency; and
-- `POST /jobs/process-next` plus `GET /job-status/{job_id}` for processing and
-  observing that work.
+- a normal Vite/React browser page at `/` with bearer login, dynamic excerpt
+  policy, note creation, durable processing, and file upload;
+- a real PostgreSQL-backed API Token Auth Plugin with two-user isolation;
+- PostgreSQL note, result, attachment, and per-user settings persistence;
+- a typed Bun-to-Rust Jobs Capability path that persists the excerpt before it
+  completes the job lease, making redelivery idempotent; and
+- source-deleted restart verification for both the business records and durable
+  job state.
 
-Creating a note calls the App-owned Bun Plugin at `project/app/excerpt`. That
-Plugin provides the knowledge tools through the public Agent Tool Capability,
-so the request crosses the Rust/TypeScript boundary before the note is stored.
-When Jobs is not adopted, the Plugin completes the deterministic excerpt
-inline. When Jobs and Secrets are adopted, it enqueues, claims, completes, and
-inspects the same work through the typed Jobs Capability. The excerpt is not
-represented as a model result.
+The excerpt is deterministic and is not represented as a model result. The App
+captures the current settings revision when it accepts a note, and stale
+compare-and-set updates are rejected without changing the active value.
 
 The React source under `frontend/` consumes generated types and the browser
 runtime from an independently packed `@lenso/web-client` candidate. The
-checked-in static assets keep the ordinary App build self-contained. To
-regenerate them from a reviewed package candidate:
+checked-in static assets keep the App build self-contained. To regenerate them:
 
 ```sh
 python3 verify.py \
   --cli /absolute/path/to/lenso \
-  --web-client-package /absolute/path/to/lenso-web-client-0.1.0.tgz
-```
-
-No App-owned Host, Plan, Runtime Profile, or binding document is present.
-
-```sh
-lenso app dev --root project
-lenso app build --root project --out dist
-lenso app start --from dist
-python3 verify.py --cli /absolute/path/to/lenso
-```
-
-`verify.py` can first install the candidate tarball, regenerate the client,
-typecheck React, and rebuild the static assets. It then builds the distribution,
-removes all source, and proves the asset/create/read paths through the real HTTP
-listener. This is the consumer proof for the slice, not a second App definition.
-
-The optional Jobs acceptance also needs local candidate source roots because
-the linked Plugins have not been published. Point it at a disposable PostgreSQL
-database: the command creates a uniquely named schema and intentionally leaves
-it in place for inspection.
-
-```sh
-LENSO_JOBS_DATABASE_URL=postgresql://... python3 verify.py \
-  --cli /absolute/path/to/lenso \
+  --web-client-package /absolute/path/to/lenso-web-client.tgz \
+  --auth-source /absolute/path/to/lenso-auth-plugin/crates/lenso-auth-api-token-plugin \
   --jobs-source /absolute/path/to/lenso-jobs-plugin/crates/lenso-jobs-plugin \
-  --secrets-source /absolute/path/to/lenso-secrets-env-plugin/crates/lenso-secrets-env-plugin
+  --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
 
-This mode proves the source-deleted distribution, real PostgreSQL work, and
-durable job inspection after a Host restart. Notes and generated excerpts are
-still process-local, so this is not yet the complete persistent application.
-Login, user isolation, file upload, persistent note/result storage, and dynamic
-configuration remain to be implemented and must not be inferred from this
-slice.
+## Acceptance
+
+Use a disposable PostgreSQL database. The verifier creates App-owned schemas
+and intentionally leaves them available for inspection; it does not delete or
+reset the supplied database.
+
+```sh
+LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
+  --cli /absolute/path/to/lenso \
+  --auth-source /absolute/path/to/lenso-auth-plugin/crates/lenso-auth-api-token-plugin \
+  --jobs-source /absolute/path/to/lenso-jobs-plugin/crates/lenso-jobs-plugin \
+  --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
+```
+
+The verifier copies all candidate sources into a temporary consumer directory,
+adopts them through `lenso app add`, runs each explicit schema operator, issues
+two short-lived test credentials, builds the distribution, deletes every source
+copy, clears `PATH`, and exercises the real HTTP listener. It checks unauthenticated
+rejection, stale configuration rejection, cross-user denial, upload, processing,
+and a Host restart.
+
+No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
+credential value is checked in. Auth and Jobs remain local candidate sources
+until their exact package cohorts are published; the README does not present
+them as registry-installed defaults. Public publication and deployment are
+separate, unauthorized steps.

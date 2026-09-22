@@ -5,7 +5,8 @@ main { width: min(44rem, calc(100% - 2.5rem)); margin: 0 auto; padding: 4rem 0; 
 h1 { margin: 0; font-size: clamp(2.5rem, 8vw, 4.7rem); letter-spacing: -.055em; line-height: .95; }
 .eyebrow { margin: 0 0 .75rem; color: #526457; font-size: .76rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
 .lede { max-width: 38rem; margin: 1.25rem 0 0; color: #52605a; font-size: 1.12rem; line-height: 1.65; }
-form, article { margin-top: 2rem; padding: 1.4rem; border: 1px solid #c9c1b2; border-radius: 1rem; background: #fffdf8; box-shadow: 0 14px 45px rgb(63 52 35 / 7%); }
+.panel, form, article { margin-top: 2rem; padding: 1.4rem; border: 1px solid #c9c1b2; border-radius: 1rem; background: #fffdf8; box-shadow: 0 14px 45px rgb(63 52 35 / 7%); }
+.panel h2, form h2 { margin: 0; font-size: 1.2rem; }
 label { display: grid; gap: .45rem; margin-top: 1rem; font-weight: 680; }
 label:first-child { margin-top: 0; }
 input, textarea, button { font: inherit; }
@@ -20,6 +21,6 @@ article > p:last-child { white-space: pre-wrap; line-height: 1.6; }
 @media (prefers-color-scheme: dark) {
   :root { color: #eef2e8; background: #171914; }
   .eyebrow, .lede, .status { color: #abb8a5; }
-  form, article { background: #20241d; border-color: #3f4939; box-shadow: none; }
+  .panel, form, article { background: #20241d; border-color: #3f4939; box-shadow: none; }
   input, textarea { background: #171914; border-color: #596651; }
 }
