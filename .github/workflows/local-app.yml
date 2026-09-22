@@ -3,7 +3,7 @@ name: Local App consumer proof
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, "candidate/**"]
 
 permissions:
   contents: read
@@ -16,12 +16,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      # Test tooling pinned to the reviewed implementation. Replace with a
-      # released CLI after #727's separately authorized publication gate.
+      # Test tooling is pinned to the reviewed consolidated Rust candidate.
       - uses: actions/checkout@v6
         with:
-          repository: LioRael/lenso-cli
-          ref: d97c1b1f1aa35cb615d19eb8cae0554e559a75bd
+          repository: LioRael/lenso
+          ref: 8e6eb5eb9f468959eea713eab5f20592dfe65a71
           path: .lenso-ci-cli
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable

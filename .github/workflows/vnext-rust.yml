@@ -3,7 +3,7 @@ name: vNext Rust examples
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, "candidate/**"]
 
 permissions: {}
 
