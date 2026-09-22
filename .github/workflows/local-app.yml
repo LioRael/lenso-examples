@@ -24,6 +24,24 @@ jobs:
           ref: 8e6eb5eb9f468959eea713eab5f20592dfe65a71
           path: .lenso-ci-cli
           persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso-auth-plugin
+          ref: b4a9e5d73d8789c602530a87706e82d129b8fe82
+          path: .lenso-ci-auth
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso-jobs-plugin
+          ref: efb7f5811d998df685b5f441f2cd89a1fdcc537c
+          path: .lenso-ci-jobs
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso-secrets-plugin
+          ref: b2a0dcfc418b5b442d0f40ae199373a2a7070f60
+          path: .lenso-ci-secrets
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
@@ -34,7 +52,13 @@ jobs:
       - run: cargo build --locked --manifest-path .lenso-ci-cli/Cargo.toml --bin lenso
       - run: cargo fmt --manifest-path fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml -- --check
       - run: cargo test --locked --manifest-path fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml
-      - run: python3 fixtures/vnext-knowledge-base-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"
+      - name: Verify the knowledge-base reference App
+        run: |
+          python3 fixtures/vnext-knowledge-base-app/verify.py \
+            --cli "$PWD/.lenso-ci-cli/target/debug/lenso" \
+            --auth-source "$PWD/.lenso-ci-auth/crates/lenso-auth-api-token-plugin" \
+            --jobs-source "$PWD/.lenso-ci-jobs/crates/lenso-jobs-plugin" \
+            --secrets-source "$PWD/.lenso-ci-secrets/crates/lenso-secrets-env-plugin"
       - run: cargo fmt --manifest-path fixtures/vnext-local-app/project/app/web/Cargo.toml -- --check
       - run: cargo fmt --manifest-path fixtures/vnext-local-app/shared-plugins/audit/Cargo.toml -- --check
       - run: python3 fixtures/vnext-local-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"
