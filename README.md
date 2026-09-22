@@ -43,10 +43,10 @@ contracts:
 - `vnext-game-session`: bounded real-time session behavior and protocol
   conformance.
 
-The Bun Adapter conformance suite remains in
-[`LioRael/lenso-bun-adapter`](https://github.com/LioRael/lenso-bun-adapter).
-The author-facing cross-language example lives here and consumes only published
-packages.
+The Rust Bun Adapter conformance suite is owned by the `LioRael/lenso`
+workspace, while the JavaScript SDK and fixtures are owned by `LioRael/lenso-js`.
+The author-facing cross-language example lives here and consumes packaged
+candidates rather than a sibling source checkout.
 
 ## Validation
 
