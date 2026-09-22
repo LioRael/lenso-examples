@@ -1,6 +1,7 @@
 name: vNext Rust examples
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [main, "candidate/**"]
