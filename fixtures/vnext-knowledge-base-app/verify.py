@@ -21,9 +21,71 @@ parser.add_argument(
     "--web-client-package",
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
 )
+parser.add_argument("--jobs-source", help="local lenso-jobs-plugin source crate")
+parser.add_argument("--secrets-source", help="local lenso-secrets-env-plugin source crate")
 args = parser.parse_args()
 cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
 fixture = Path(__file__).resolve().parent
+jobs_mode = args.jobs_source is not None or args.secrets_source is not None
+if jobs_mode and not (args.jobs_source and args.secrets_source):
+    parser.error("--jobs-source and --secrets-source must be provided together")
+database_url = os.environ.get("LENSO_JOBS_DATABASE_URL")
+if jobs_mode and not database_url:
+    parser.error("LENSO_JOBS_DATABASE_URL is required with Jobs sources")
+
+
+def launch(cli, distribution, root, environment):
+    process = subprocess.Popen(
+        [cli, "app", "start", "--from", str(distribution)],
+        env=environment,
+        cwd=root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        start_new_session=True,
+    )
+    events = queue.Queue()
+    transcript = []
+
+    def read_output():
+        for line in process.stdout:
+            transcript.append(line)
+            events.put(line)
+        events.put(None)
+
+    reader = threading.Thread(target=read_output, daemon=True)
+    reader.start()
+    try:
+        deadline = time.monotonic() + 30
+        while time.monotonic() < deadline:
+            line = events.get(timeout=max(0.1, deadline - time.monotonic()))
+            if line is None:
+                raise RuntimeError("Host exited before readiness")
+            match = re.search(r"Listening on (http://\S+)", line)
+            if match:
+                return process, reader, transcript, match[1]
+        raise RuntimeError("Host did not report Web readiness")
+    except BaseException:
+        if process.poll() is None:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait()
+        reader.join(timeout=2)
+        print("".join(transcript))
+        raise
+
+
+def stop(process, reader, transcript):
+    if process.poll() is None:
+        process.send_signal(signal.SIGTERM)
+    try:
+        process.wait(timeout=15)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.wait()
+        raise
+    reader.join(timeout=2)
+    print("".join(transcript))
+    assert process.returncode == 0
 
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     root = Path(temporary)
@@ -46,6 +108,63 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         subprocess.run(["bun", "run", "generate"], cwd=frontend, check=True)
         subprocess.run(["bun", "run", "typecheck"], cwd=frontend, check=True)
         subprocess.run(["bun", "run", "build"], cwd=frontend, check=True)
+    if jobs_mode:
+        candidates = source / "candidates"
+        jobs_repository = Path(args.jobs_source).resolve().parents[1]
+        secrets_repository = Path(args.secrets_source).resolve().parents[1]
+        shutil.copytree(
+            jobs_repository,
+            candidates / "jobs",
+            ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
+        )
+        shutil.copytree(
+            secrets_repository,
+            candidates / "secrets",
+            ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
+        )
+        jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
+        secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
+        project = source / "project"
+        subprocess.run(
+            [cli, "app", "add", "--root", str(project), "--no-install", str(jobs_source)],
+            check=True,
+        )
+        subprocess.run(
+            [cli, "app", "add", "--root", str(project), "--no-install", str(secrets_source)],
+            check=True,
+        )
+        schema_name = f"jobs_knowledge_reference_{os.getpid()}"
+        (project / "plugins" / "lenso.jobs" / "default.toml").write_text(
+            f'''schema = "{schema_name}"
+database_url_secret = "jobs/database-url"
+lease_seconds = 30
+retry_base_seconds = 5
+retry_max_seconds = 300
+queues = ["knowledge"]
+producer_instances = ["lenso.reference.knowledge-excerpt/default"]
+worker_instances = ["lenso.reference.knowledge-excerpt/default"]
+observer_instances = ["lenso.reference.knowledge-excerpt/default"]
+'''
+        )
+        (project / "plugins" / "lenso.secrets.env" / "default.toml").write_text(
+            '[references]\n"jobs/database-url" = "LENSO_JOBS_DATABASE_URL"\n'
+        )
+        subprocess.run(
+            [
+                "cargo",
+                "run",
+                "--locked",
+                "-p",
+                "lenso-jobs-plugin",
+                "--example",
+                "jobs-operator",
+                "--",
+                "setup",
+                schema_name,
+            ],
+            cwd=candidates / "jobs",
+            check=True,
+        )
     excerpt = source / "project" / "app" / "excerpt"
     subprocess.run(["bun", "install", "--frozen-lockfile"], cwd=excerpt, check=True)
     subprocess.run(["bun", "run", "check"], cwd=excerpt, check=True)
@@ -55,40 +174,12 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         check=True,
     )
     shutil.rmtree(source)
-
-    process = subprocess.Popen(
-        [cli, "app", "start", "--from", str(distribution)],
-        env={"PATH": str(root / "no-tools")},
-        cwd=root,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        start_new_session=True,
-    )
-    events = queue.Queue()
-    transcript = []
-
-    def read_output():
-        for line in process.stdout:
-            transcript.append(line)
-            events.put(line)
-        events.put(None)
-
-    reader = threading.Thread(target=read_output, daemon=True)
-    reader.start()
+    runtime_environment = {"PATH": str(root / "no-tools")}
+    if jobs_mode:
+        runtime_environment["LENSO_JOBS_DATABASE_URL"] = database_url
+    process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+    created = None
     try:
-        deadline = time.monotonic() + 30
-        url = None
-        while time.monotonic() < deadline:
-            line = events.get(timeout=max(0.1, deadline - time.monotonic()))
-            if line is None:
-                raise RuntimeError("Host exited before readiness")
-            match = re.search(r"Listening on (http://\S+)", line)
-            if match:
-                url = match[1]
-                break
-        assert url, "Host did not report Web readiness"
-
         with urllib.request.urlopen(url, timeout=10) as response:
             home = response.read().decode()
             assert response.status == 200
@@ -116,12 +207,39 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         with urllib.request.urlopen(request, timeout=10) as response:
             assert response.status == 201
             created = json.load(response)
-        assert created == {
+        expected = {
             "id": "note-1",
             "title": "First note",
             "body": note_body,
-            "excerpt": note_body[:95] + "…",
         }
+        if jobs_mode:
+            assert {key: created[key] for key in expected} == expected
+            assert created["excerpt"] == ""
+            assert created["job_id"].startswith("job_")
+            assert created["processing_status"] == "queued"
+            process_request = urllib.request.Request(
+                url.rstrip("/") + "/jobs/process-next", data=b"", method="POST"
+            )
+            with urllib.request.urlopen(process_request, timeout=10) as response:
+                assert response.status == 200
+                created = json.load(response)
+            assert created["excerpt"] == note_body[:95] + "…"
+            assert created["processing_status"] == "succeeded"
+            with urllib.request.urlopen(
+                url.rstrip("/") + "/job-status/" + created["job_id"], timeout=10
+            ) as response:
+                durable = json.load(response)
+            assert durable == {
+                "attempts": 1,
+                "jobId": created["job_id"],
+                "status": "succeeded",
+            }
+        else:
+            assert created == expected | {
+                "excerpt": note_body[:95] + "…",
+                "job_id": "inline:note-1",
+                "processing_status": "succeeded",
+            }
 
         with urllib.request.urlopen(
             url.rstrip("/") + "/notes/" + created["id"], timeout=10
@@ -136,16 +254,19 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         else:
             raise AssertionError("missing note must return HTTP 404")
     finally:
-        if process.poll() is None:
-            process.send_signal(signal.SIGTERM)
-        try:
-            process.wait(timeout=15)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait()
-            raise
-        reader.join(timeout=2)
-        print("".join(transcript))
-    assert process.returncode == 0
+        stop(process, reader, transcript)
 
-print("PASS: offline React, Rust-to-TypeScript excerpt, create/read, rejection, shutdown")
+    if jobs_mode:
+        process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+        try:
+            with urllib.request.urlopen(
+                url.rstrip("/") + "/job-status/" + created["job_id"], timeout=10
+            ) as response:
+                durable = json.load(response)
+            assert durable["status"] == "succeeded"
+            assert durable["attempts"] == 1
+        finally:
+            stop(process, reader, transcript)
+
+suffix = ", durable linked Jobs and restart" if jobs_mode else ""
+print(f"PASS: offline React, Rust-to-TypeScript excerpt, create/read, rejection, shutdown{suffix}")

@@ -6,7 +6,14 @@ import './styles.css';
 
 const api = createLensoWebClient<paths>({ baseUrl: window.location.origin });
 
-type Note = { id: string; title: string; body: string; excerpt: string };
+type Note = {
+  id: string;
+  title: string;
+  body: string;
+  excerpt: string;
+  job_id: string;
+  processing_status: 'queued' | 'succeeded';
+};
 
 function App() {
   const [note, setNote] = useState<Note>();
@@ -23,11 +30,15 @@ function App() {
       const created = unwrap<Note>(await api.POST('/notes', {
         body: { title: String(data.get('title') ?? ''), body: String(data.get('body') ?? '') },
       }));
+      if (created.processing_status === 'queued') {
+        setStatus('Queued; processing durable excerpt job…');
+        unwrap<Note>(await api.POST('/jobs/process-next'));
+      }
       const read = unwrap<Note>(await api.GET('/notes/{note_id}', {
         params: { path: { note_id: created.id } },
       }));
       setNote(read);
-      setStatus('Created and read back through the typed public API.');
+      setStatus('Created, processed, and read back through the typed public API.');
     } catch (error) {
       setStatus(error instanceof LensoApiError
         ? `${error.problem.code ?? 'request_failed'}: ${error.message}`
@@ -51,6 +62,7 @@ function App() {
       <p className="eyebrow">{note.id}</p>
       <h2>{note.title}</h2>
       <p>{note.body}</p>
+      <p><strong>Processing:</strong> {note.processing_status} · {note.job_id}</p>
       <p><strong>TypeScript excerpt:</strong> {note.excerpt}</p>
     </article>}
   </main>;
