@@ -17,8 +17,12 @@ import urllib.request
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
+parser.add_argument(
+    "--web-client-package",
+    help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
+)
 args = parser.parse_args()
-cli = str(Path(shutil.which(args.cli) or args.cli).resolve())
+cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
 fixture = Path(__file__).resolve().parent
 
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
@@ -27,8 +31,21 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     shutil.copytree(
         fixture,
         source,
-        ignore=shutil.ignore_patterns("target", ".lenso", "dist", "__pycache__"),
+        ignore=shutil.ignore_patterns(
+            "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
+        ),
     )
+    if args.web_client_package:
+        frontend = source / "frontend"
+        vendor = frontend / "vendor"
+        vendor.mkdir()
+        shutil.copyfile(
+            Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz"
+        )
+        subprocess.run(["bun", "install", "--frozen-lockfile"], cwd=frontend, check=True)
+        subprocess.run(["bun", "run", "generate"], cwd=frontend, check=True)
+        subprocess.run(["bun", "run", "typecheck"], cwd=frontend, check=True)
+        subprocess.run(["bun", "run", "build"], cwd=frontend, check=True)
     distribution = root / "dist"
     subprocess.run(
         [cli, "app", "build", "--root", str(source / "project"), "--out", str(distribution)],
@@ -72,7 +89,17 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         with urllib.request.urlopen(url, timeout=10) as response:
             home = response.read().decode()
             assert response.status == 200
-            assert "Knowledge base" in home
+            assert '<div id="root"></div>' in home
+
+        with urllib.request.urlopen(url.rstrip("/") + "/assets/app.js", timeout=10) as response:
+            javascript = response.read().decode()
+            assert response.status == 200
+            assert response.headers.get_content_type() == "text/javascript"
+            assert "Knowledge base" in javascript
+
+        with urllib.request.urlopen(url.rstrip("/") + "/assets/index.css", timeout=10) as response:
+            assert response.status == 200
+            assert response.headers.get_content_type() == "text/css"
 
         request = urllib.request.Request(
             url.rstrip("/") + "/notes",
@@ -115,4 +142,4 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         print("".join(transcript))
     assert process.returncode == 0
 
-print("PASS: offline knowledge base home, create, read, rejection, shutdown")
+print("PASS: offline React assets, knowledge base create/read, rejection, shutdown")

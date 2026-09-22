@@ -8,9 +8,20 @@ Plan.
 The slice intentionally proves one complete user action before adding Auth,
 PostgreSQL, background processing, and dynamic configuration. It supports:
 
-- a browser page at `/`;
+- a normal Vite/React browser page at `/`;
 - `POST /notes` to create a note; and
 - `GET /notes/{note_id}` to read it back.
+
+The React source under `frontend/` consumes generated types and the browser
+runtime from an independently packed `@lenso/web-client` candidate. The
+checked-in static assets keep the ordinary App build self-contained. To
+regenerate them from a reviewed package candidate:
+
+```sh
+python3 verify.py \
+  --cli /absolute/path/to/lenso \
+  --web-client-package /absolute/path/to/lenso-web-client-0.1.0.tgz
+```
 
 No App-owned Host, Plan, Runtime Profile, or binding document is present.
 
@@ -21,7 +32,11 @@ lenso app start --from dist
 python3 verify.py --cli /absolute/path/to/lenso
 ```
 
-`verify.py` copies the source into a clean temporary directory, builds the
-distribution, removes all source, and proves the create/read path through the
-real HTTP listener. This is the consumer proof for the slice, not a second App
-definition.
+`verify.py` can first install the candidate tarball, regenerate the client,
+typecheck React, and rebuild the static assets. It then builds the distribution,
+removes all source, and proves the asset/create/read paths through the real HTTP
+listener. This is the consumer proof for the slice, not a second App definition.
+
+Login, user isolation, upload, background processing, PostgreSQL, and dynamic
+configuration are not implemented by this slice and must not be inferred from
+the typed public API proof.

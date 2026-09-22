@@ -1,0 +1,57 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Lenso Knowledge Base public API", "version": "0.1.0" },
+  "paths": {
+    "/notes": {
+      "post": {
+        "operationId": "knowledge-base.notes.create",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateNote" } } }
+        },
+        "responses": {
+          "201": { "description": "Created note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "400": { "description": "Invalid note", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
+        }
+      }
+    },
+    "/notes/{note_id}": {
+      "get": {
+        "operationId": "knowledge-base.notes.read",
+        "parameters": [{ "name": "note_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "400": { "description": "Invalid path", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } },
+          "404": { "description": "Missing note", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateNote": {
+        "type": "object",
+        "required": ["title", "body"],
+        "properties": { "title": { "type": "string" }, "body": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "Note": {
+        "type": "object",
+        "required": ["id", "title", "body"],
+        "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "body": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "Problem": {
+        "type": "object",
+        "required": ["type", "title", "status", "detail", "code"],
+        "properties": {
+          "type": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" },
+          "code": { "type": "string" }
+        }
+      }
+    }
+  }
+}

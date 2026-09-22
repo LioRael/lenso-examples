@@ -46,6 +46,21 @@ impl KnowledgeBase {
         Ok(response)
     }
 
+    #[get("knowledge-base.assets.js", "/assets/app.js")]
+    async fn javascript(&self) -> Result<HandleResponse, Problem> {
+        let mut response = response::text(StatusCode::OK, include_str!("../public/assets/app.js"));
+        response.headers[0].value = "text/javascript; charset=utf-8".into();
+        Ok(response)
+    }
+
+    #[get("knowledge-base.assets.css", "/assets/index.css")]
+    async fn stylesheet(&self) -> Result<HandleResponse, Problem> {
+        let mut response =
+            response::text(StatusCode::OK, include_str!("../public/assets/index.css"));
+        response.headers[0].value = "text/css; charset=utf-8".into();
+        Ok(response)
+    }
+
     #[post("knowledge-base.notes.create", "/notes")]
     async fn create(
         &self,

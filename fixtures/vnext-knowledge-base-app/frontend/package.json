@@ -1,0 +1,25 @@
+{
+  "name": "lenso-knowledge-base-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "generate": "lenso-web-client generate openapi.json src/generated/api.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lenso/web-client": "file:vendor/lenso-web-client.tgz",
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
