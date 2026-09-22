@@ -6,7 +6,7 @@ import './styles.css';
 
 const api = createLensoWebClient<paths>({ baseUrl: window.location.origin });
 
-type Note = { id: string; title: string; body: string };
+type Note = { id: string; title: string; body: string; excerpt: string };
 
 function App() {
   const [note, setNote] = useState<Note>();
@@ -51,6 +51,7 @@ function App() {
       <p className="eyebrow">{note.id}</p>
       <h2>{note.title}</h2>
       <p>{note.body}</p>
+      <p><strong>TypeScript excerpt:</strong> {note.excerpt}</p>
     </article>}
   </main>;
 }

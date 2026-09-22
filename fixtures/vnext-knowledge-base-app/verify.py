@@ -46,6 +46,9 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         subprocess.run(["bun", "run", "generate"], cwd=frontend, check=True)
         subprocess.run(["bun", "run", "typecheck"], cwd=frontend, check=True)
         subprocess.run(["bun", "run", "build"], cwd=frontend, check=True)
+    excerpt = source / "project" / "app" / "excerpt"
+    subprocess.run(["bun", "install", "--frozen-lockfile"], cwd=excerpt, check=True)
+    subprocess.run(["bun", "run", "check"], cwd=excerpt, check=True)
     distribution = root / "dist"
     subprocess.run(
         [cli, "app", "build", "--root", str(source / "project"), "--out", str(distribution)],
@@ -101,11 +104,13 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             assert response.status == 200
             assert response.headers.get_content_type() == "text/css"
 
+        note_body = (
+            "Created from the offline distribution through a real TypeScript Plugin "
+            "without a model credential or source checkout at runtime."
+        )
         request = urllib.request.Request(
             url.rstrip("/") + "/notes",
-            data=json.dumps(
-                {"title": "First note", "body": "Created from the offline distribution."}
-            ).encode(),
+            data=json.dumps({"title": "First note", "body": note_body}).encode(),
             headers={"Content-Type": "application/json"},
         )
         with urllib.request.urlopen(request, timeout=10) as response:
@@ -114,7 +119,8 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         assert created == {
             "id": "note-1",
             "title": "First note",
-            "body": "Created from the offline distribution.",
+            "body": note_body,
+            "excerpt": note_body[:95] + "…",
         }
 
         with urllib.request.urlopen(
@@ -142,4 +148,4 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         print("".join(transcript))
     assert process.returncode == 0
 
-print("PASS: offline React assets, knowledge base create/read, rejection, shutdown")
+print("PASS: offline React, Rust-to-TypeScript excerpt, create/read, rejection, shutdown")

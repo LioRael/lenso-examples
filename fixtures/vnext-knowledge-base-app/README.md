@@ -12,6 +12,12 @@ PostgreSQL, background processing, and dynamic configuration. It supports:
 - `POST /notes` to create a note; and
 - `GET /notes/{note_id}` to read it back.
 
+Creating a note calls the App-owned Bun Plugin at `project/app/excerpt`. That
+Plugin provides the `knowledge.excerpt` tool through the public Agent Tool
+Capability, so the same request crosses the Rust/TypeScript boundary before the
+note is stored. The excerpt is deterministic and is not represented as a model
+result.
+
 The React source under `frontend/` consumes generated types and the browser
 runtime from an independently packed `@lenso/web-client` candidate. The
 checked-in static assets keep the ordinary App build self-contained. To
@@ -39,4 +45,4 @@ listener. This is the consumer proof for the slice, not a second App definition.
 
 Login, user isolation, upload, background processing, PostgreSQL, and dynamic
 configuration are not implemented by this slice and must not be inferred from
-the typed public API proof.
+the typed public API and cross-language proof.

@@ -37,8 +37,8 @@
       },
       "Note": {
         "type": "object",
-        "required": ["id", "title", "body"],
-        "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "body": { "type": "string" } },
+        "required": ["id", "title", "body", "excerpt"],
+        "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "body": { "type": "string" }, "excerpt": { "type": "string" } },
         "additionalProperties": false
       },
       "Problem": {

@@ -4,6 +4,7 @@ use std::{
     rc::Rc,
 };
 
+use lenso_capability_agent_tool_provider::{self as tools, ExecuteRequest};
 use lenso_capability_http_endpoint::{
     prelude::*,
     response::{self, Problem, StatusCode},
@@ -27,11 +28,14 @@ struct Note {
     id: String,
     title: String,
     body: String,
+    excerpt: String,
 }
 
 #[lenso::plugin]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct KnowledgeBase {
+    #[dependency(id = "excerpt")]
+    excerpt: tools::ToolProviderClient,
     next_id: Rc<Cell<u64>>,
     notes: Rc<RefCell<BTreeMap<String, Note>>>,
 }
@@ -66,22 +70,40 @@ impl KnowledgeBase {
         &self,
         Json(input): Json<CreateNote>,
     ) -> Result<(StatusCode, Json<Note>), Problem> {
-        let title = input.title.trim();
-        let body = input.body.trim();
-        if title.is_empty() || body.is_empty() {
-            return Err(Problem::new(
-                StatusCode::BAD_REQUEST,
-                "invalid_note",
-                "title and body must not be empty",
-            ));
-        }
+        let (title, body) = validated_note(&input)?;
 
+        let arguments =
+            serde_json::to_string(&serde_json::json!({ "text": body })).map_err(|error| {
+                Problem::new(StatusCode::BAD_REQUEST, "invalid_note", error.to_string())
+            })?;
+        let excerpt = self
+            .excerpt
+            .execute(ExecuteRequest {
+                name: "knowledge.excerpt".into(),
+                arguments_json: arguments.try_into().map_err(|error| {
+                    Problem::new(
+                        StatusCode::BAD_REQUEST,
+                        "invalid_note",
+                        format!("{error:?}"),
+                    )
+                })?,
+            })
+            .await
+            .map_err(|error| {
+                Problem::new(
+                    StatusCode::BAD_GATEWAY,
+                    "excerpt_failed",
+                    format!("{error:?}"),
+                )
+            })?;
+        let excerpt = serde_json::from_str::<String>(&excerpt.content).unwrap_or(excerpt.content);
         let sequence = self.next_id.get() + 1;
         self.next_id.set(sequence);
         let note = Note {
             id: format!("note-{sequence}"),
             title: title.to_owned(),
             body: body.to_owned(),
+            excerpt,
         };
         self.notes
             .borrow_mut()
@@ -106,59 +128,45 @@ impl KnowledgeBase {
     }
 }
 
+fn validated_note(input: &CreateNote) -> Result<(&str, &str), Problem> {
+    let title = input.title.trim();
+    let body = input.body.trim();
+    if title.is_empty() || body.is_empty() {
+        return Err(Problem::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_note",
+            "title and body must not be empty",
+        ));
+    }
+    Ok((title, body))
+}
+
 #[cfg(test)]
 mod tests {
-    use lenso_capability_http_endpoint::testing::EndpointTest;
-
     use super::*;
 
-    #[tokio::test(flavor = "current_thread")]
-    async fn creates_and_reads_a_note_without_opening_a_socket() {
-        let endpoint = EndpointTest::new(KnowledgeBase::default());
-        let created = endpoint
-            .request("knowledge-base.notes.create")
-            .json(&CreateNote {
-                title: "First note".to_owned(),
-                body: "Created through the public App path.".to_owned(),
-            })
-            .unwrap()
-            .send()
-            .await
-            .unwrap();
-        assert_eq!(created.status(), StatusCode::CREATED);
-        let note = created.json::<Note>().unwrap();
+    #[test]
+    fn trims_valid_notes_and_rejects_empty_fields_before_invocation() {
+        let valid = CreateNote {
+            title: " First note ".to_owned(),
+            body: " Created through the public App path. ".to_owned(),
+        };
+        assert_eq!(
+            validated_note(&valid).unwrap(),
+            ("First note", "Created through the public App path.")
+        );
 
-        let read = endpoint
-            .request("knowledge-base.notes.read")
-            .path_parameter("note_id", &note.id)
-            .send()
-            .await
-            .unwrap();
-        assert_eq!(read.status(), StatusCode::OK);
-        assert_eq!(read.json::<Note>().unwrap(), note);
-    }
-
-    #[tokio::test(flavor = "current_thread")]
-    async fn rejects_empty_notes_and_missing_ids() {
-        let endpoint = EndpointTest::new(KnowledgeBase::default());
-        let invalid = endpoint
-            .request("knowledge-base.notes.create")
-            .json(&CreateNote {
+        for invalid in [
+            CreateNote {
                 title: " ".to_owned(),
                 body: "content".to_owned(),
-            })
-            .unwrap()
-            .send()
-            .await
-            .unwrap();
-        assert_eq!(invalid.status(), StatusCode::BAD_REQUEST);
-
-        let missing = endpoint
-            .request("knowledge-base.notes.read")
-            .path_parameter("note_id", "missing")
-            .send()
-            .await
-            .unwrap();
-        assert_eq!(missing.status(), StatusCode::NOT_FOUND);
+            },
+            CreateNote {
+                title: "title".to_owned(),
+                body: "\n".to_owned(),
+            },
+        ] {
+            assert!(validated_note(&invalid).is_err());
+        }
     }
 }
