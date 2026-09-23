@@ -2,9 +2,11 @@
 """Build and verify the source-deleted knowledge base reference application."""
 import argparse
 import base64
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
+import platform
 import queue
 import re
 import secrets
@@ -151,39 +153,80 @@ def expect_http_error(url, code, method="GET", body=None, token=None):
         raise AssertionError(f"request must return HTTP {code}: {method} {url}")
 
 
+def tree_logical_bytes(directory):
+    """Count regular-file bytes without following links outside the consumer."""
+    if not directory.exists():
+        return 0
+    total = 0
+    for current, directories, files in os.walk(directory, followlinks=False):
+        directories[:] = [
+            name for name in directories if not (Path(current) / name).is_symlink()
+        ]
+        for name in files:
+            path = Path(current) / name
+            if not path.is_symlink() and path.is_file():
+                total += path.stat().st_size
+    return total
+
+
+def command_version(command):
+    return subprocess.run(
+        command, check=True, capture_output=True, text=True
+    ).stdout.strip()
+
+
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     root = Path(temporary)
     source = root / "source"
-    shutil.copytree(
-        fixture,
-        source,
-        ignore=shutil.ignore_patterns(
-            "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
-        ),
-    )
+    phases = []
+
+    @contextmanager
+    def measured(stage, name):
+        before = tree_logical_bytes(root)
+        started = time.monotonic()
+        yield
+        elapsed = time.monotonic() - started
+        phases.append({
+            "stage": stage,
+            "name": name,
+            "seconds": round(elapsed, 3),
+            "consumer_disk_delta_bytes": tree_logical_bytes(root) - before,
+        })
+
+    with measured("consumer_preparation", "fixture_copy"):
+        shutil.copytree(
+            fixture,
+            source,
+            ignore=shutil.ignore_patterns(
+                "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
+            ),
+        )
     if args.web_client_package:
-        frontend = source / "frontend"
-        vendor = frontend / "vendor"
-        vendor.mkdir()
-        shutil.copyfile(Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz")
-        run(["bun", "install", "--frozen-lockfile"], cwd=frontend)
-        run(["bun", "run", "generate"], cwd=frontend)
-        run(["bun", "run", "typecheck"], cwd=frontend)
-        run(["bun", "run", "build"], cwd=frontend)
+        with measured("frontend_authoring", "packed_web_client_and_react_build"):
+            frontend = source / "frontend"
+            vendor = frontend / "vendor"
+            vendor.mkdir()
+            shutil.copyfile(Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz")
+            run(["bun", "install", "--frozen-lockfile"], cwd=frontend)
+            run(["bun", "run", "generate"], cwd=frontend)
+            run(["bun", "run", "typecheck"], cwd=frontend)
+            run(["bun", "run", "build"], cwd=frontend)
 
     candidates = source / "candidates"
-    for name, repository in repositories.items():
-        shutil.copytree(
-            repository,
-            candidates / name,
-            ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
-        )
+    with measured("consumer_preparation", "candidate_source_copy"):
+        for name, repository in repositories.items():
+            shutil.copytree(
+                repository,
+                candidates / name,
+                ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
+            )
     auth_source = candidates / "auth" / "crates" / "lenso-auth-api-token-plugin"
     jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
     secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
     project = source / "project"
-    for plugin_source in [auth_source, jobs_source, secrets_source]:
-        run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
+    with measured("consumer_preparation", "source_adoption"):
+        for plugin_source in [auth_source, jobs_source, secrets_source]:
+            run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
 
     suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
     auth_schema = f"auth_reference_{suffix}"
@@ -199,42 +242,45 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         LENSO_AUTH_SIGNING_SECRET=signing_secret,
         LENSO_AUTH_TOKEN_PEPPER=token_pepper,
     )
-    run(auth_operator + ["setup", auth_schema], cwd=candidates / "auth", env=auth_environment)
-    public_key = subprocess.run(
-        auth_operator + ["public-key"],
-        cwd=candidates / "auth",
-        env=auth_environment,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    tokens = {}
-    for subject in ["user-a", "user-b"]:
-        output = subprocess.run(
-            auth_operator
-            + ["issue", auth_schema, subject, "lenso.reference.knowledge-base@1:access"],
+    with measured("plugin_candidate_setup", "auth_operator_and_credentials"):
+        run(auth_operator + ["setup", auth_schema], cwd=candidates / "auth", env=auth_environment)
+        public_key = subprocess.run(
+            auth_operator + ["public-key"],
             cwd=candidates / "auth",
             env=auth_environment,
             check=True,
             capture_output=True,
             text=True,
-        ).stdout
-        tokens[subject] = json.loads(output)["token"]
+        ).stdout.strip()
+        tokens = {}
+        for subject in ["user-a", "user-b"]:
+            output = subprocess.run(
+                auth_operator
+                + ["issue", auth_schema, subject, "lenso.reference.knowledge-base@1:access"],
+                cwd=candidates / "auth",
+                env=auth_environment,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+            tokens[subject] = json.loads(output)["token"]
 
-    run(
-        [
-            "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
-            "--example", "jobs-operator", "--", "setup", jobs_schema,
-        ],
-        cwd=candidates / "jobs",
-        env=operator_environment(LENSO_JOBS_DATABASE_URL=database_url),
-    )
+    with measured("plugin_candidate_setup", "jobs_operator_setup"):
+        run(
+            [
+                "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
+                "--example", "jobs-operator", "--", "setup", jobs_schema,
+            ],
+            cwd=candidates / "jobs",
+            env=operator_environment(LENSO_JOBS_DATABASE_URL=database_url),
+        )
     notes_web = project / "app" / "notes-web"
-    run(
-        ["cargo", "run", "--locked", "--manifest-path", str(notes_web / "Cargo.toml"),
-         "--example", "knowledge-operator", "--", "setup"],
-        env=operator_environment(LENSO_KNOWLEDGE_DATABASE_URL=database_url),
-    )
+    with measured("app_authoring", "knowledge_operator_setup"):
+        run(
+            ["cargo", "run", "--locked", "--manifest-path", str(notes_web / "Cargo.toml"),
+             "--example", "knowledge-operator", "--", "setup"],
+            env=operator_environment(LENSO_KNOWLEDGE_DATABASE_URL=database_url),
+        )
 
     (project / "plugins" / "lenso.auth.api-token" / "default.toml").write_text(
         f'''schema = "{auth_schema}"
@@ -269,10 +315,13 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     )
 
     excerpt = project / "app" / "excerpt"
-    run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
-    run(["bun", "run", "check"], cwd=excerpt)
+    with measured("app_authoring", "typescript_install_and_check"):
+        run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
+        run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
-    run([cli, "app", "build", "--root", str(project), "--out", str(distribution)])
+    with measured("consumer_build", "app_build"):
+        run([cli, "app", "build", "--root", str(project), "--out", str(distribution)])
+    distribution_bytes = tree_logical_bytes(distribution)
     lifecycle_root = root / "runtime-app"
     (lifecycle_root / ".lenso").mkdir(parents=True)
     host_authority = lifecycle_root / ".lenso" / "host-build.json"
@@ -475,6 +524,21 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     finally:
         stop(process, reader, transcript)
 
+print("MEASUREMENT " + json.dumps({
+    "kind": "lenso.reference-build-measurement",
+    "environment": {
+        "os": platform.system(),
+        "machine": platform.machine(),
+        "python_version": platform.python_version(),
+        "cli_version": command_version([cli, "--version"]),
+        "cargo_version": command_version(["cargo", "--version"]),
+        "bun_version": command_version(["bun", "--version"]),
+    },
+    "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
+    "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
+    "distribution_bytes": distribution_bytes,
+    "phases": phases,
+}, sort_keys=True))
 print(
     "PASS: source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
     "Rust-to-TypeScript durable Jobs, disable/enable/remove preservation, and restart"

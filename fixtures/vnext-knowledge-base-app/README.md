@@ -61,6 +61,21 @@ knowledge records or uninstall the immutable Host distribution. A separate
 versioned upgrade still requires an exact consumable second Release and is
 not implied by this removal check.
 
+After a successful run, `verify.py` prints one `MEASUREMENT` JSON line. Its
+phases separate consumer preparation, candidate Plugin operator setup, App
+authoring, optional frontend authoring, and the final `lenso app build`. Each
+phase records elapsed seconds and the change in logical regular-file bytes
+inside the disposable consumer directory; `distribution_bytes` is the built
+distribution's logical size. The OS, machine architecture, and CLI/Cargo/Bun
+versions identify the measurement environment. These are single-run local
+observations with ambient package caches, not controlled cold-build or warm
+edit-to-ready numbers. The supplied CLI is already built, so framework
+maintainer build time is outside this measurement; external package caches and
+PostgreSQL storage are outside the disk count. Host recompilation count and
+cross-machine performance remain unmeasured. Auth, Jobs, and Secrets are still
+source candidates during this build, so these figures do not establish the
+separate package-only consumer or publication gates.
+
 For an interactive browser pass, add
 `--browser-handoff /tmp/lenso-browser-handoff.json`. After the scripted checks,
 the verifier writes a mode-`0600` JSON file containing the temporary URL and
