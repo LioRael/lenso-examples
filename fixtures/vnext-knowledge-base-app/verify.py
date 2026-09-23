@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import threading
 import time
+import tomllib
 import urllib.error
 import urllib.request
 
@@ -39,11 +40,27 @@ if not database_url:
     parser.error("LENSO_REFERENCE_DATABASE_URL must name a disposable PostgreSQL database")
 
 
-def repository_for(crate):
+def repository_for(crate, expected_plugin_id):
     crate = Path(crate).resolve()
     if not (crate / "Cargo.toml").is_file() or crate.parent.name != "crates":
         parser.error(f"source crate must be a crates/<package> directory: {crate}")
+    with (crate / "Cargo.toml").open("rb") as manifest:
+        package = tomllib.load(manifest).get("package", {})
+    actual_plugin_id = package.get("metadata", {}).get("lenso", {}).get("plugin-id")
+    if actual_plugin_id != expected_plugin_id:
+        parser.error(
+            f"{crate} must declare package.metadata.lenso.plugin-id = "
+            f"{expected_plugin_id!r}; found {actual_plugin_id!r}. "
+            "Select a source revision that supports linked App adoption."
+        )
     return crate.parents[1]
+
+
+repositories = {
+    "auth": repository_for(args.auth_source, "lenso.auth.api-token"),
+    "jobs": repository_for(args.jobs_source, "lenso.jobs"),
+    "secrets": repository_for(args.secrets_source, "lenso.secrets.env"),
+}
 
 
 def run(command, **kwargs):
@@ -155,11 +172,6 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         run(["bun", "run", "build"], cwd=frontend)
 
     candidates = source / "candidates"
-    repositories = {
-        "auth": repository_for(args.auth_source),
-        "jobs": repository_for(args.jobs_source),
-        "secrets": repository_for(args.secrets_source),
-    }
     for name, repository in repositories.items():
         shutil.copytree(
             repository,
