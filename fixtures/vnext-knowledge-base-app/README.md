@@ -106,15 +106,17 @@ operator has produced the public key used by its configuration. After
 `app build`, the verifier also runs
 `app check` and `app show` on the built distribution and requires all three
 external provider Instances to be present before deleting the source tree.
-In a separate disposable App-root probe, it verifies the adopted Jobs lock
-against the exact `.crate`, selects the optional Jobs dependency as absent,
-restores only that probe's generated, unmodified Jobs Instance intent, and runs
-`lenso app unadopt lenso.jobs@VERSION`. It checks that the selected source and
-intent move to recoverable trash, Auth and Secrets sources remain selected, and
-`app check`/`app show` resolve without a Jobs Instance. The probe reuses the
-built Host authority; it does not rebuild the immutable distribution without
-Jobs code or alter the main runtime-removal scenario. A separate release and
-build remain necessary to prove a versioned upgrade.
+In a separate disposable copy of the complete App, it verifies the adopted
+Jobs lock against the exact `.crate`, selects the optional Jobs dependency as
+absent, restores only that probe's generated, unmodified Jobs Instance intent,
+and runs `lenso app unadopt lenso.jobs@VERSION`. It checks that the selected
+source and intent move to recoverable trash while Auth and Secrets remain
+selected. The prior Host authority validates the explicit optional-dependency
+selection, then is removed before a fresh `app build`. The verifier runs
+`app check`/`app show` on that new distribution and processes a real note
+through the no-Jobs path. This does not alter the main
+runtime-removal scenario. A separate Release remains necessary to prove a
+versioned upgrade.
 
 The signed directory binds the operator's own source to the selected `.crate`;
 it does not sign the resulting machine code or its transitive dependencies, or

@@ -482,7 +482,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         LENSO_AUTH_SIGNING_SECRET=signing_secret,
         LENSO_AUTH_TOKEN_PEPPER=token_pepper,
     )
-    with measured("plugin_candidate_setup", "auth_operator_and_credentials"):
+    with measured("plugin_candidate_setup", "auth_operator_setup"):
         run(auth_operator + ["setup", auth_schema], cwd=auth_operator_cwd, env=auth_environment)
         public_key = subprocess.run(
             auth_operator + ["public-key"],
@@ -492,6 +492,8 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             capture_output=True,
             text=True,
         ).stdout.strip()
+
+    def issue_tokens():
         tokens = {}
         for subject in ["user-a", "user-b"]:
             output = subprocess.run(
@@ -504,6 +506,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
                 text=True,
             ).stdout
             tokens[subject] = json.loads(output)["token"]
+        return tokens
 
     with measured("plugin_candidate_setup", "jobs_operator_setup"):
         run(
@@ -562,6 +565,12 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             if args.package_only else {}
         )
         run([cli, "app", "build", "--root", str(project), "--out", str(distribution)], **build_kwargs)
+    runtime_environment = {
+        "PATH": str(root / "no-tools"),
+        "LENSO_REFERENCE_DATABASE_URL": database_url,
+        "LENSO_AUTH_SIGNING_SECRET": signing_secret,
+        "LENSO_AUTH_TOKEN_PEPPER": token_pepper,
+    }
     unadopt_receipt = None
     if args.package_only:
         with measured("consumer_build", "app_check_show"):
@@ -580,18 +589,14 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             jobs_coordinate, jobs_archive = releases["jobs"]
             jobs_version = jobs_coordinate.rsplit("@", 1)[1]
             with tempfile.TemporaryDirectory(prefix="unadopt-probe-", dir=root) as probe_name:
-                probe = Path(probe_name)
-                shutil.copyfile(project / "lenso.toml", probe / "lenso.toml")
-                workspace_manifest = project / "Cargo.toml"
-                if workspace_manifest.is_file():
-                    shutil.copyfile(workspace_manifest, probe / "Cargo.toml")
-                shutil.copytree(project / "vendor" / "lenso", probe / "vendor" / "lenso")
-                shutil.copytree(project / "plugins", probe / "plugins")
-                (probe / ".lenso").mkdir()
-                shutil.copyfile(
-                    distribution / ".lenso" / "host-build.json",
-                    probe / ".lenso" / "host-build.json",
+                probe = Path(probe_name) / "app"
+                shutil.copytree(
+                    project, probe,
+                    ignore=shutil.ignore_patterns("host-build.json", "host-catalog.json"),
                 )
+                probe_host_authority = probe / ".lenso" / "host-build.json"
+                probe_host_authority.parent.mkdir(exist_ok=True)
+                shutil.copyfile(distribution / ".lenso" / "host-build.json", probe_host_authority)
                 _, jobs_lock = adopted_operator_source(probe, "jobs", jobs_version, jobs_archive)
                 jobs_lock_record = json.loads(jobs_lock)
                 check_environment = package_build_environment(root / "host-build-home")
@@ -599,6 +604,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                     cli, "plugins", "bind", "--root", str(probe),
                     "lenso.reference.knowledge-excerpt", "jobs", "--absent",
                 ], env=check_environment)
+                probe_host_authority.unlink()
                 # A customized Instance is user-owned; only the disposable probe
                 # restores app add's generated intent before source unadoption.
                 (probe / "plugins" / PLUGIN_IDS["jobs"] / "default.toml").write_text(
@@ -628,19 +634,45 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                     raise RuntimeError("Jobs source lock changed during unadopt")
                 if linked_source_digest(trash_sources[0]) != jobs_lock_record["source_digest"]:
                     raise RuntimeError("Jobs recoverable source differs from signed adoption")
-                run([cli, "app", "check", "--root", str(probe)], env=check_environment)
+                if probe_host_authority.exists():
+                    raise RuntimeError("unadopted App build would reuse prior Host authority")
+                removed_distribution = root / "dist-unadopted"
+                run([
+                    cli, "app", "build", "--root", str(probe),
+                    "--out", str(removed_distribution),
+                ], env=check_environment)
+                removed_intent = removed_distribution / "intent"
+                run([cli, "app", "check", "--root", str(removed_intent)], env=check_environment)
                 shown = json.loads(subprocess.run(
-                    [cli, "app", "show", "--root", str(probe), "--json"],
+                    [cli, "app", "show", "--root", str(removed_intent), "--json"],
                     check=True, capture_output=True, text=True, env=check_environment,
                 ).stdout)
                 if shown["kind"] != "lenso.app-show":
-                    raise RuntimeError("unexpected App show response after Jobs unadopt")
+                    raise RuntimeError("unexpected rebuilt App show response after Jobs unadopt")
                 remaining_instances = {instance["id"] for instance in shown["instances"]}
                 if f"{PLUGIN_IDS['jobs']}/default" in remaining_instances:
-                    raise RuntimeError("Jobs Instance remains selected after unadopt")
+                    raise RuntimeError("Jobs Instance remains selected after unadopted App build")
                 for name in ("auth", "secrets"):
                     if f"{PLUGIN_IDS[name]}/default" not in remaining_instances:
-                        raise RuntimeError(f"{name} Instance disappeared with Jobs")
+                        raise RuntimeError(f"{name} Instance disappeared from unadopted App build")
+                tokens = issue_tokens()
+                process, reader, transcript, url = launch(
+                    cli, removed_distribution, root, runtime_environment
+                )
+                try:
+                    removed_note = http_json(
+                        url.rstrip("/") + "/notes", method="POST", expected=201,
+                        token=tokens["user-a"],
+                        body={
+                            "title": "Unadopted Jobs",
+                            "body": "The rebuilt App processes without Jobs.",
+                        },
+                    )
+                    if (removed_note["processing_status"] != "succeeded"
+                            or removed_note["job_id"] != "inline:" + removed_note["id"]):
+                        raise RuntimeError("unadopted App did not process without Jobs")
+                finally:
+                    stop(process, reader, transcript)
                 unadopt_receipt = {
                     "plugin_id": PLUGIN_IDS["jobs"],
                     "version": jobs_version,
@@ -648,8 +680,11 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                     "source_digest": jobs_lock_record["source_digest"],
                     "source_and_intent_removed": True,
                     "recoverable_source_in_trash": True,
-                    "remaining_app_check_show": True,
+                    "rebuilt_app_check_show": True,
+                    "rebuilt_app_processed_without_jobs": True,
                 }
+    with measured("plugin_candidate_setup", "runtime_credentials"):
+        tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
     lifecycle_root = root / "runtime-app"
     (lifecycle_root / ".lenso").mkdir(parents=True)
@@ -669,12 +704,6 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     assert jobs_configuration.read_text() == jobs_configuration_text
     host_authority.unlink()
     shutil.rmtree(source)
-    runtime_environment = {
-        "PATH": str(root / "no-tools"),
-        "LENSO_REFERENCE_DATABASE_URL": database_url,
-        "LENSO_AUTH_SIGNING_SECRET": signing_secret,
-        "LENSO_AUTH_TOKEN_PEPPER": token_pepper,
-    }
     process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
     created = None
     try:
