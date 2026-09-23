@@ -562,6 +562,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             if args.package_only else {}
         )
         run([cli, "app", "build", "--root", str(project), "--out", str(distribution)], **build_kwargs)
+    unadopt_receipt = None
     if args.package_only:
         with measured("consumer_build", "app_check_show"):
             intent = distribution / "intent"
@@ -575,6 +576,80 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             for plugin_id in PLUGIN_IDS.values():
                 if f"{plugin_id}/default" not in instance_ids:
                     raise RuntimeError(f"{plugin_id} is missing from the built App")
+        with measured("consumer_build", "linked_unadopt_check_show"):
+            jobs_coordinate, jobs_archive = releases["jobs"]
+            jobs_version = jobs_coordinate.rsplit("@", 1)[1]
+            with tempfile.TemporaryDirectory(prefix="unadopt-probe-", dir=root) as probe_name:
+                probe = Path(probe_name)
+                shutil.copyfile(project / "lenso.toml", probe / "lenso.toml")
+                workspace_manifest = project / "Cargo.toml"
+                if workspace_manifest.is_file():
+                    shutil.copyfile(workspace_manifest, probe / "Cargo.toml")
+                shutil.copytree(project / "vendor" / "lenso", probe / "vendor" / "lenso")
+                shutil.copytree(project / "plugins", probe / "plugins")
+                (probe / ".lenso").mkdir()
+                shutil.copyfile(
+                    distribution / ".lenso" / "host-build.json",
+                    probe / ".lenso" / "host-build.json",
+                )
+                _, jobs_lock = adopted_operator_source(probe, "jobs", jobs_version, jobs_archive)
+                jobs_lock_record = json.loads(jobs_lock)
+                check_environment = package_build_environment(root / "host-build-home")
+                run([
+                    cli, "plugins", "bind", "--root", str(probe),
+                    "lenso.reference.knowledge-excerpt", "jobs", "--absent",
+                ], env=check_environment)
+                # A customized Instance is user-owned; only the disposable probe
+                # restores app add's generated intent before source unadoption.
+                (probe / "plugins" / PLUGIN_IDS["jobs"] / "default.toml").write_text(
+                    "# Explicit local Plugin adoption\n"
+                )
+                run([
+                    cli, "app", "unadopt", "--root", str(probe), jobs_coordinate,
+                ], env=check_environment)
+                if (probe / "vendor" / "lenso" / PLUGIN_IDS["jobs"] / jobs_version).exists():
+                    raise RuntimeError("Jobs linked source remains after exact unadopt")
+                if (probe / "plugins" / PLUGIN_IDS["jobs"]).exists():
+                    raise RuntimeError("Jobs Plugin Root intent remains after exact unadopt")
+                with (probe / "lenso.toml").open("rb") as manifest:
+                    remaining_sources = tomllib.load(manifest).get("plugin_sources", [])
+                if f"vendor/lenso/{PLUGIN_IDS['jobs']}/{jobs_version}" in remaining_sources:
+                    raise RuntimeError("Jobs linked source remains selected after unadopt")
+                for name in ("auth", "secrets"):
+                    version = releases[name][0].rsplit("@", 1)[1]
+                    if f"vendor/lenso/{PLUGIN_IDS[name]}/{version}" not in remaining_sources:
+                        raise RuntimeError(f"{name} source was removed with Jobs")
+                trash_sources = list(
+                    (probe / ".lenso" / "trash" / "linked-cargo").glob("unadopt-*/source")
+                )
+                if len(trash_sources) != 1:
+                    raise RuntimeError("Jobs unadopt did not leave one recoverable source")
+                if (trash_sources[0] / ".lenso-linked-source.json").read_bytes() != jobs_lock:
+                    raise RuntimeError("Jobs source lock changed during unadopt")
+                if linked_source_digest(trash_sources[0]) != jobs_lock_record["source_digest"]:
+                    raise RuntimeError("Jobs recoverable source differs from signed adoption")
+                run([cli, "app", "check", "--root", str(probe)], env=check_environment)
+                shown = json.loads(subprocess.run(
+                    [cli, "app", "show", "--root", str(probe), "--json"],
+                    check=True, capture_output=True, text=True, env=check_environment,
+                ).stdout)
+                if shown["kind"] != "lenso.app-show":
+                    raise RuntimeError("unexpected App show response after Jobs unadopt")
+                remaining_instances = {instance["id"] for instance in shown["instances"]}
+                if f"{PLUGIN_IDS['jobs']}/default" in remaining_instances:
+                    raise RuntimeError("Jobs Instance remains selected after unadopt")
+                for name in ("auth", "secrets"):
+                    if f"{PLUGIN_IDS[name]}/default" not in remaining_instances:
+                        raise RuntimeError(f"{name} Instance disappeared with Jobs")
+                unadopt_receipt = {
+                    "plugin_id": PLUGIN_IDS["jobs"],
+                    "version": jobs_version,
+                    "crate_digest": jobs_lock_record["crate_digest"],
+                    "source_digest": jobs_lock_record["source_digest"],
+                    "source_and_intent_removed": True,
+                    "recoverable_source_in_trash": True,
+                    "remaining_app_check_show": True,
+                }
     distribution_bytes = tree_logical_bytes(distribution)
     lifecycle_root = root / "runtime-app"
     (lifecycle_root / ".lenso").mkdir(parents=True)
@@ -791,6 +866,7 @@ print("MEASUREMENT " + json.dumps({
     "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
     "provider_input_mode": "signed_crate_derived_operators" if args.package_only else "source_checkout",
     "operator_receipts": operator_receipts,
+    "unadopt_receipt": unadopt_receipt,
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
     "distribution_bytes": distribution_bytes,
     "phases": phases,
