@@ -2,10 +2,9 @@
 """Build and verify the source-deleted knowledge base reference application."""
 import argparse
 import base64
-from contextlib import contextmanager
+import hashlib
 import json
 import os
-from pathlib import Path
 import platform
 import queue
 import re
@@ -16,15 +15,32 @@ import subprocess
 import tempfile
 import threading
 import time
-import tomllib
 import urllib.error
 import urllib.request
+from contextlib import contextmanager
+from pathlib import Path
+
+import tomllib
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
-parser.add_argument("--auth-source", required=True, help="local API Token Auth source crate")
-parser.add_argument("--jobs-source", required=True, help="local Jobs source crate")
-parser.add_argument("--secrets-source", required=True, help="local environment Secrets source crate")
+parser.add_argument("--auth-source", help="local API Token Auth source crate (default mode)")
+parser.add_argument("--jobs-source", help="local Jobs source crate (default mode)")
+parser.add_argument("--secrets-source", help="local environment Secrets source crate (default mode)")
+parser.add_argument(
+    "--package-only", action="store_true",
+    help="adopt Auth, Jobs, and Secrets only from exact catalog-bound .crate inputs",
+)
+parser.add_argument("--linked-snapshot", help="signed linked Cargo snapshot for package-only mode")
+parser.add_argument("--trust", help="public trust configuration for package-only mode")
+for provider in ("auth", "jobs", "secrets"):
+    parser.add_argument(f"--{provider}-version", help=f"exact {provider} Plugin package version")
+    parser.add_argument(f"--{provider}-crate", help=f"signed {provider} .crate archive")
+for provider in ("auth", "jobs"):
+    parser.add_argument(f"--{provider}-operator", help=f"prebuilt {provider} schema operator")
+    parser.add_argument(
+        f"--{provider}-operator-sha256", help=f"SHA-256 of the {provider} operator",
+    )
 parser.add_argument(
     "--browser-handoff",
     type=Path,
@@ -58,11 +74,86 @@ def repository_for(crate, expected_plugin_id):
     return crate.parents[1]
 
 
-repositories = {
-    "auth": repository_for(args.auth_source, "lenso.auth.api-token"),
-    "jobs": repository_for(args.jobs_source, "lenso.jobs"),
-    "secrets": repository_for(args.secrets_source, "lenso.secrets.env"),
+PLUGIN_IDS = {
+    "auth": "lenso.auth.api-token",
+    "jobs": "lenso.jobs",
+    "secrets": "lenso.secrets.env",
 }
+
+
+def regular_file(value, label):
+    path = Path(value).resolve()
+    if not path.is_file():
+        parser.error(f"{label} must be an existing regular file: {path}")
+    return path
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def package_inputs():
+    source_flags = [f"--{name}-source" for name in PLUGIN_IDS if getattr(args, f"{name}_source")]
+    if source_flags:
+        parser.error(f"--package-only cannot use source checkouts: {', '.join(source_flags)}")
+    required = ["linked_snapshot", "trust"]
+    for name in PLUGIN_IDS:
+        required.extend((f"{name}_version", f"{name}_crate"))
+    for name in ("auth", "jobs"):
+        required.extend((f"{name}_operator", f"{name}_operator_sha256"))
+    missing = [f"--{name.replace('_', '-')}" for name in required if not getattr(args, name)]
+    if missing:
+        parser.error(f"--package-only requires {', '.join(missing)}")
+
+    snapshot = regular_file(args.linked_snapshot, "--linked-snapshot")
+    trust = regular_file(args.trust, "--trust")
+    releases = {}
+    for name, plugin_id in PLUGIN_IDS.items():
+        version = getattr(args, f"{name}_version")
+        if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", version):
+            parser.error(f"--{name}-version must be an exact Cargo version: {version!r}")
+        archive = regular_file(getattr(args, f"{name}_crate"), f"--{name}-crate")
+        if archive.suffix != ".crate":
+            parser.error(f"--{name}-crate must name a .crate archive: {archive}")
+        releases[name] = (f"{plugin_id}@{version}", archive)
+
+    operators = {}
+    for name in ("auth", "jobs"):
+        path = regular_file(getattr(args, f"{name}_operator"), f"--{name}-operator")
+        if not os.access(path, os.X_OK):
+            parser.error(f"--{name}-operator must be executable: {path}")
+        expected = getattr(args, f"{name}_operator_sha256").lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", expected):
+            parser.error(f"--{name}-operator-sha256 must be 64 hexadecimal characters")
+        if sha256_file(path) != expected:
+            parser.error(f"--{name}-operator SHA-256 does not match: {path}")
+        operators[name] = (path, expected)
+    return snapshot, trust, releases, operators
+
+
+if args.package_only:
+    repositories = None
+    linked_snapshot, trust, releases, operator_inputs = package_inputs()
+else:
+    package_flags = [
+        "linked_snapshot", "trust",
+        *(f"{name}_{field}" for name in PLUGIN_IDS for field in ("version", "crate")),
+        *(f"{name}_operator{suffix}" for name in ("auth", "jobs") for suffix in ("", "_sha256")),
+    ]
+    supplied = [f"--{name.replace('_', '-')}" for name in package_flags if getattr(args, name)]
+    if supplied:
+        parser.error(f"package inputs require --package-only: {', '.join(supplied)}")
+    missing = [f"--{name}-source" for name in PLUGIN_IDS if not getattr(args, f"{name}_source")]
+    if missing:
+        parser.error(f"source mode requires {', '.join(missing)}")
+    repositories = {
+        name: repository_for(getattr(args, f"{name}_source"), plugin_id)
+        for name, plugin_id in PLUGIN_IDS.items()
+    }
 
 
 def run(command, **kwargs):
@@ -212,41 +303,70 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             run(["bun", "run", "typecheck"], cwd=frontend)
             run(["bun", "run", "build"], cwd=frontend)
 
-    candidates = source / "candidates"
-    with measured("consumer_preparation", "candidate_source_copy"):
-        for name, repository in repositories.items():
-            shutil.copytree(
-                repository,
-                candidates / name,
-                ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
-            )
-    auth_source = candidates / "auth" / "crates" / "lenso-auth-api-token-plugin"
-    jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
-    secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
     project = source / "project"
-    with measured("consumer_preparation", "source_adoption"):
-        for plugin_source in [auth_source, jobs_source, secrets_source]:
-            run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
+    if args.package_only:
+        operator_directory = root / "operators"
+        operator_directory.mkdir()
+        with measured("consumer_preparation", "operator_binary_copy"):
+            copied_operators = {}
+            for name, (operator, expected_digest) in operator_inputs.items():
+                copied = operator_directory / name
+                shutil.copy2(operator, copied)
+                if sha256_file(copied) != expected_digest:
+                    raise RuntimeError(f"{name} operator changed while copying")
+                copied_operators[name] = copied
+        with measured("consumer_preparation", "catalog_bound_crate_adoption"):
+            for coordinate, archive in releases.values():
+                run([
+                    cli, "app", "add", "--root", str(project), "--no-install",
+                    "--linked-snapshot", str(linked_snapshot), "--trust", str(trust),
+                    "--crate", str(archive), coordinate,
+                ])
+        auth_operator = [str(copied_operators["auth"])]
+        jobs_operator = [str(copied_operators["jobs"])]
+        auth_operator_cwd = root
+        jobs_operator_cwd = root
+    else:
+        candidates = source / "candidates"
+        with measured("consumer_preparation", "candidate_source_copy"):
+            for name, repository in repositories.items():
+                shutil.copytree(
+                    repository,
+                    candidates / name,
+                    ignore=shutil.ignore_patterns(".git", ".worktrees", "target"),
+                )
+        auth_source = candidates / "auth" / "crates" / "lenso-auth-api-token-plugin"
+        jobs_source = candidates / "jobs" / "crates" / "lenso-jobs-plugin"
+        secrets_source = candidates / "secrets" / "crates" / "lenso-secrets-env-plugin"
+        with measured("consumer_preparation", "source_adoption"):
+            for plugin_source in (auth_source, jobs_source, secrets_source):
+                run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
+        auth_operator = [
+            "cargo", "run", "--locked", "-p", "lenso-auth-api-token-plugin",
+            "--example", "api-token-operator", "--",
+        ]
+        jobs_operator = [
+            "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
+            "--example", "jobs-operator", "--",
+        ]
+        auth_operator_cwd = candidates / "auth"
+        jobs_operator_cwd = candidates / "jobs"
 
     suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
     auth_schema = f"auth_reference_{suffix}"
     jobs_schema = f"jobs_reference_{suffix}"
     signing_secret = secrets.token_urlsafe(48)
     token_pepper = secrets.token_urlsafe(48)
-    auth_operator = [
-        "cargo", "run", "--locked", "-p", "lenso-auth-api-token-plugin",
-        "--example", "api-token-operator", "--",
-    ]
     auth_environment = operator_environment(
         LENSO_AUTH_DATABASE_URL=database_url,
         LENSO_AUTH_SIGNING_SECRET=signing_secret,
         LENSO_AUTH_TOKEN_PEPPER=token_pepper,
     )
     with measured("plugin_candidate_setup", "auth_operator_and_credentials"):
-        run(auth_operator + ["setup", auth_schema], cwd=candidates / "auth", env=auth_environment)
+        run(auth_operator + ["setup", auth_schema], cwd=auth_operator_cwd, env=auth_environment)
         public_key = subprocess.run(
             auth_operator + ["public-key"],
-            cwd=candidates / "auth",
+            cwd=auth_operator_cwd,
             env=auth_environment,
             check=True,
             capture_output=True,
@@ -257,7 +377,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             output = subprocess.run(
                 auth_operator
                 + ["issue", auth_schema, subject, "lenso.reference.knowledge-base@1:access"],
-                cwd=candidates / "auth",
+                cwd=auth_operator_cwd,
                 env=auth_environment,
                 check=True,
                 capture_output=True,
@@ -267,11 +387,8 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
 
     with measured("plugin_candidate_setup", "jobs_operator_setup"):
         run(
-            [
-                "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
-                "--example", "jobs-operator", "--", "setup", jobs_schema,
-            ],
-            cwd=candidates / "jobs",
+            jobs_operator + ["setup", jobs_schema],
+            cwd=jobs_operator_cwd,
             env=operator_environment(LENSO_JOBS_DATABASE_URL=database_url),
         )
     notes_web = project / "app" / "notes-web"
@@ -535,11 +652,14 @@ print("MEASUREMENT " + json.dumps({
         "bun_version": command_version(["bun", "--version"]),
     },
     "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
+    "provider_input_mode": "signed_crate_with_pinned_operators" if args.package_only else "source_checkout",
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
     "distribution_bytes": distribution_bytes,
     "phases": phases,
 }, sort_keys=True))
 print(
-    "PASS: source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
+    "PASS: "
+    + ("signed-catalog .crate provider adoption with pinned operator binaries, " if args.package_only else "")
+    + "source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
     "Rust-to-TypeScript durable Jobs, disable/enable/remove preservation, and restart"
 )

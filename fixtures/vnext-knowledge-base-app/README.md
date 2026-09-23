@@ -61,6 +61,56 @@ knowledge records or uninstall the immutable Host distribution. A separate
 versioned upgrade still requires an exact consumable second Release and is
 not implied by this removal check.
 
+### Exact package inputs for external providers
+
+The default command above retains source-checkout adoption. To test the separate
+package-consumer gate, use `--package-only` instead of all three `--*-source`
+arguments. Supply one signed linked Cargo snapshot and its independent public
+trust file, plus the exact `.crate` archives and versions for
+`lenso.auth.api-token`, `lenso.jobs`, and `lenso.secrets.env`:
+
+```sh
+LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
+  --cli /absolute/path/to/lenso --package-only \
+  --linked-snapshot "$SIGNED_SNAPSHOT" --trust "$CATALOG_TRUST" \
+  --auth-version "$AUTH_VERSION" --auth-crate "$AUTH_CRATE" \
+  --jobs-version "$JOBS_VERSION" --jobs-crate "$JOBS_CRATE" \
+  --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE" \
+  --auth-operator "$AUTH_OPERATOR" --auth-operator-sha256 "$AUTH_OPERATOR_SHA256" \
+  --jobs-operator "$JOBS_OPERATOR" --jobs-operator-sha256 "$JOBS_OPERATOR_SHA256"
+```
+
+Each version must be an exact Cargo version, not `latest` or a range. The
+verifier rejects source-checkout arguments in this mode, copies no sibling
+Plugin repository, and calls `lenso app add PLUGIN_ID@VERSION` with the signed
+snapshot, trust file, and matching local archive. The CLI verifies the catalog
+signature, exact selected release, target, package and Plugin identity, and
+archive digest before vendoring source into the disposable App. It does not
+download the archive or prove its crates.io provenance. The build still
+requires a compatible published dependency closure and may execute package
+build scripts; review untrusted package source and build in an isolated
+environment. The App's own Rust and TypeScript business Plugin source remains
+part of this fixture, so `--package-only` describes its external provider
+inputs, not a binary-only App build.
+
+The Auth and Jobs schema operators cannot be obtained as executable tools from
+the signed-catalog `.crate` admission API. Pass separately built operator executables
+and their 64-character SHA-256 digests. The verifier checks their executable
+bits and digests before work begins, copies them into the disposable consumer,
+and verifies the copies again before invocation. These digests pin the supplied
+operator bytes but do not establish their provenance or bind them
+cryptographically to the catalog releases. Build and review the operators from
+the approved release cohort, then record that provenance separately; do not
+call this an all-signed-binary supply chain proof. The knowledge-base operator
+is built from the App-owned source fixture.
+
+Run the narrow argument and preflight checks without PostgreSQL using
+`python3 -m unittest discover -s . -p 'test_verify_*.py'`. No exact published
+Auth/Jobs/Secrets package cohort, matching operator binaries, or second
+versioned Release is bundled with this fixture. Until those inputs exist and
+the full verifier succeeds, the package-only, public-registry, and upgrade
+acceptance gates remain unverified.
+
 After a successful run, `verify.py` prints one `MEASUREMENT` JSON line. Its
 phases separate consumer preparation, candidate Plugin operator setup, App
 authoring, optional frontend authoring, and the final `lenso app build`. Each
@@ -72,9 +122,10 @@ observations with ambient package caches, not controlled cold-build or warm
 edit-to-ready numbers. The supplied CLI is already built, so framework
 maintainer build time is outside this measurement; external package caches and
 PostgreSQL storage are outside the disk count. Host recompilation count and
-cross-machine performance remain unmeasured. Auth, Jobs, and Secrets are still
-source candidates during this build, so these figures do not establish the
-separate package-only consumer or publication gates.
+cross-machine performance remain unmeasured. In default mode, Auth, Jobs, and
+Secrets are source candidates, so those figures do not establish the separate
+package-only consumer or publication gates. The `provider_input_mode`
+measurement field distinguishes the modes.
 
 For an interactive browser pass, add
 `--browser-handoff /tmp/lenso-browser-handoff.json`. After the scripted checks,
@@ -84,7 +135,7 @@ minutes. Delete the handoff file after browser automation completes; the
 verifier will then perform its restart checks and shut down normally.
 
 No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
-credential value is checked in. Auth and Jobs remain local candidate sources
-until their exact package cohorts are published; the README does not present
-them as registry-installed defaults. Public publication and deployment are
-separate, unauthorized steps.
+credential value is checked in. The default acceptance uses local candidate
+sources; this README does not present Auth, Jobs, or Secrets as
+registry-installed defaults. Public publication and deployment are separate,
+unauthorized steps.
