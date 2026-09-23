@@ -15,7 +15,10 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         return subprocess.run(
             [sys.executable, str(VERIFY), *map(str, arguments)],
             env=os.environ
-            | {"LENSO_REFERENCE_DATABASE_URL": "postgresql://invalid"}
+            | {
+                "LENSO_REFERENCE_DATABASE_URL": "postgresql://invalid",
+                "CARGO_HOME": "/scratch/test-cargo-home",
+            }
             | (env or {}),
             capture_output=True,
             text=True,
@@ -75,6 +78,13 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             result = self.run_verify(*arguments, "--auth-operator", "/untrusted/operator")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("unrecognized arguments: --auth-operator", result.stderr)
+
+    def test_package_mode_requires_sandbox_cargo_home_before_adoption(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
+            arguments = self.package_arguments(Path(temporary))
+            result = self.run_verify(*arguments, env={"CARGO_HOME": ""})
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("requires a sandbox-local CARGO_HOME before adoption", result.stderr)
 
     def test_complete_package_inputs_reach_exact_signed_adoption(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:

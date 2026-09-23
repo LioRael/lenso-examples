@@ -232,6 +232,8 @@ def package_inputs():
     missing = [f"--{name.replace('_', '-')}" for name in required if not getattr(args, name)]
     if missing:
         parser.error(f"--package-only requires {', '.join(missing)}")
+    if not os.environ.get("CARGO_HOME"):
+        parser.error("--package-only requires a sandbox-local CARGO_HOME before adoption")
 
     snapshot = regular_file(args.linked_snapshot, "--linked-snapshot")
     trust = regular_file(args.trust, "--trust")

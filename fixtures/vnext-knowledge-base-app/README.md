@@ -70,7 +70,7 @@ trust file, plus the exact `.crate` archives and versions for
 `lenso.auth.api-token`, `lenso.jobs`, and `lenso.secrets.env`:
 
 ```sh
-LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
+CARGO_HOME=/scratch/cargo-home LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --cli /absolute/path/to/lenso --package-only \
   --linked-snapshot "$SIGNED_SNAPSHOT" --trust "$CATALOG_TRUST" \
   --auth-version "$AUTH_VERSION" --auth-crate "$AUTH_CRATE" \
