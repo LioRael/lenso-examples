@@ -200,7 +200,15 @@ for up to ten minutes. The parent directory must exist and cannot be
 non-sticky writable by other users; an existing file or symlink at the target
 path is refused. Delete the handoff file after browser automation completes;
 the verifier will then perform its restart checks and shut down normally. On
-timeout or interruption, it removes only its own still-present handoff file.
+timeout or `KeyboardInterrupt`, it attempts to remove the still-present file
+after checking its inode. On POSIX, a handoff running on the main thread also
+temporarily catches `SIGTERM` so normal cleanup can run, then restores the
+previous handler. These are best-effort safeguards: deletion is not atomic with
+the inode check against a process running as the same user, and `SIGKILL`, a
+process crash, or power loss can leave the file behind. If it remains, stop
+the verifier and manually remove it only after confirming that the path still
+names the handoff file; do not delete a replacement path. Do not reuse the
+temporary test credential.
 
 No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
 credential value is checked in. The default acceptance uses local candidate

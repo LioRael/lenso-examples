@@ -2,7 +2,9 @@
 
 import json
 import os
+import signal
 import stat
+import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
@@ -82,7 +84,7 @@ class BrowserHandoff:
             if time.monotonic() >= deadline:
                 raise TimeoutError(
                     f"browser handoff was not removed within {timeout} seconds; "
-                    f"its credential file will be removed: {self.path}"
+                    f"attempting to remove its credential file: {self.path}"
                 )
             time.sleep(poll_interval)
 
@@ -97,36 +99,55 @@ class BrowserHandoff:
 
 
 @contextmanager
-def browser_handoff(path, token, url):
-    payload = json.dumps({"token": token, "url": url}).encode("utf-8")
-    if len(payload) > MAX_PAYLOAD_BYTES:
-        raise ValueError("browser handoff payload is too large")
-    handoff_path, parent_fd = _open_parent(path)
-    file_fd = None
+def _sigterm_cleanup_window():
+    if os.name != "posix" or threading.current_thread() is not threading.main_thread():
+        yield
+        return
+
+    previous = signal.getsignal(signal.SIGTERM)
+
+    def unwind(signum, _frame):
+        raise SystemExit(128 + signum)
+
+    signal.signal(signal.SIGTERM, unwind)
     try:
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
-        file_fd = os.open(handoff_path.name, flags, 0o600, dir_fd=parent_fd)
-        os.fchmod(file_fd, 0o600)
-        metadata = os.fstat(file_fd)
-        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
-            raise RuntimeError("browser handoff was not created as a single regular file")
-        remaining = memoryview(payload)
-        while remaining:
-            written = os.write(file_fd, remaining)
-            if written <= 0:
-                raise OSError("browser handoff write did not make progress")
-            remaining = remaining[written:]
-        os.fsync(file_fd)
-        os.fsync(parent_fd)
-        handoff = BrowserHandoff(handoff_path, parent_fd, file_fd)
-    except BaseException:
-        if file_fd is not None:
-            created = BrowserHandoff(handoff_path, parent_fd, file_fd)
-            created.close()
-        else:
-            os.close(parent_fd)
-        raise
-    try:
-        yield handoff
+        yield
     finally:
-        handoff.close()
+        signal.signal(signal.SIGTERM, previous)
+
+
+@contextmanager
+def browser_handoff(path, token, url):
+    with _sigterm_cleanup_window():
+        payload = json.dumps({"token": token, "url": url}).encode("utf-8")
+        if len(payload) > MAX_PAYLOAD_BYTES:
+            raise ValueError("browser handoff payload is too large")
+        handoff_path, parent_fd = _open_parent(path)
+        file_fd = None
+        try:
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
+            file_fd = os.open(handoff_path.name, flags, 0o600, dir_fd=parent_fd)
+            os.fchmod(file_fd, 0o600)
+            metadata = os.fstat(file_fd)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                raise RuntimeError("browser handoff was not created as a single regular file")
+            remaining = memoryview(payload)
+            while remaining:
+                written = os.write(file_fd, remaining)
+                if written <= 0:
+                    raise OSError("browser handoff write did not make progress")
+                remaining = remaining[written:]
+            os.fsync(file_fd)
+            os.fsync(parent_fd)
+            handoff = BrowserHandoff(handoff_path, parent_fd, file_fd)
+        except BaseException:
+            if file_fd is not None:
+                created = BrowserHandoff(handoff_path, parent_fd, file_fd)
+                created.close()
+            else:
+                os.close(parent_fd)
+            raise
+        try:
+            yield handoff
+        finally:
+            handoff.close()
