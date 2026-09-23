@@ -22,7 +22,8 @@ compare-and-set updates are rejected without changing the active value.
 
 The React source under `project/frontend/` consumes generated types and the
 browser runtime from an independently packed `@lenso/web-client` candidate.
-The checked-in static assets keep the App build self-contained. To regenerate them:
+The checked-in static assets keep the App build self-contained. To validate a
+frontend rebuild in a disposable consumer, supply that package to the verifier:
 
 ```sh
 python3 verify.py \
@@ -33,13 +34,27 @@ python3 verify.py \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
 
-For source development, install the frontend's locked dependencies and generate
-the client first from this fixture directory:
+The following source-development commands require an already prepared App root
+with Auth, Jobs, and Secrets adopted and configured, an excerpt Plugin install,
+and a disposable development database. A clean checkout does not contain those
+provider inputs or configuration. The acceptance verifier below performs that
+setup in a temporary copy; it does not prepare this checkout for `app dev`.
+For an already prepared App, first place the exact packed `@lenso/web-client`
+candidate used by `bun.lock` at its local dependency path, then install and
+generate from this fixture directory:
 
 ```sh
+mkdir -p project/frontend/vendor
+cp /absolute/path/to/lenso-web-client.tgz project/frontend/vendor/lenso-web-client.tgz
 (cd project/frontend && bun install --frozen-lockfile && bun run generate)
 lenso app dev --root project
 ```
+
+The tarball is intentionally untracked and must match the lockfile; the
+frontend cannot install from a clean checkout without it. To update the
+checked-in production page after setup, run
+`(cd project/frontend && bun run build)` explicitly. The verifier's optional
+frontend build does not modify these checked-in files.
 
 `project/frontend/lenso.dev.toml` then opts this App into a loopback Vite page
 when `app dev` runs. Engine writes the current Host URL to
