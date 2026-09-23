@@ -92,16 +92,18 @@ part of this fixture, so `--package-only` describes its external provider
 inputs, not a binary-only App build.
 
 The verifier does not accept detached Auth or Jobs operator executables. After
-`app add` verifies each exact archive and vendors its source, `app assemble`
-checks the adopted source lock. The verifier then checks that the lock names
-the selected Plugin, version, and input `.crate` digest, and that the complete
+`app add` verifies each exact archive and vendors its source, the verifier checks
+that the adopted lock names the selected Plugin, version, and input `.crate`
+digest, and that the complete
 vendored source still matches its recorded source digest. It requires the
 Auth `examples/api-token-operator.rs` and Jobs `examples/jobs-operator.rs`
 inside those adopted packages, builds them offline from the vendored manifests,
 checks the lock and source digest again, and copies the resulting executables
 to the disposable consumer before invocation. Missing packaged examples or
 offline dependencies fail the gate. The knowledge-base operator remains built
-from the App-owned fixture source. After `app build`, the verifier also runs
+from the App-owned fixture source. Full App assembly waits until the Auth
+operator has produced the public key used by its configuration. After
+`app build`, the verifier also runs
 `app check` and `app show` on the built distribution and requires all three
 external provider Instances to be present before deleting the source tree.
 

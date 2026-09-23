@@ -422,10 +422,9 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
                     "--crate", str(archive), coordinate,
                 ])
         with measured("consumer_preparation", "adopted_source_preflight"):
-            run([
-                cli, "app", "assemble", "--root", str(project),
-                "--out", str(root / "verified-provider-source"),
-            ], env=package_build_environment(root / "host-build-home"))
+            # Auth's public key is produced by its operator. Full App resolution
+            # must wait for that configuration; app add has already verified
+            # the signed archive, and these checks bind the adopted source to it.
             for name in OPERATOR_EXAMPLES:
                 coordinate, archive = releases[name]
                 adopted_operator_source(project, name, coordinate.rsplit("@", 1)[1], archive)
