@@ -1,0 +1,4 @@
+schema = "lenso.frontend-dev.v1"
+command = ["bun", "run", "dev"]
+url = "http://127.0.0.1:5173/"
+backend_url_mode = "file"

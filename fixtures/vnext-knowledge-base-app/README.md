@@ -20,9 +20,9 @@ The excerpt is deterministic and is not represented as a model result. The App
 captures the current settings revision when it accepts a note, and stale
 compare-and-set updates are rejected without changing the active value.
 
-The React source under `frontend/` consumes generated types and the browser
-runtime from an independently packed `@lenso/web-client` candidate. The
-checked-in static assets keep the App build self-contained. To regenerate them:
+The React source under `project/frontend/` consumes generated types and the
+browser runtime from an independently packed `@lenso/web-client` candidate.
+The checked-in static assets keep the App build self-contained. To regenerate them:
 
 ```sh
 python3 verify.py \
@@ -32,6 +32,26 @@ python3 verify.py \
   --jobs-source /absolute/path/to/lenso-jobs-plugin/crates/lenso-jobs-plugin \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
+
+For source development, install the frontend's locked dependencies and generate
+the client first from this fixture directory:
+
+```sh
+(cd project/frontend && bun install --frozen-lockfile && bun run generate)
+lenso app dev --root project
+```
+
+`project/frontend/lenso.dev.toml` then opts this App into a loopback Vite page
+when `app dev` runs. Engine writes the current Host URL to
+`project/.lenso/dev-backend-url`; the dev page's `/__lenso/backend` endpoint and
+its proxy read that file on every request, so a successful Host rebuild can
+change ports without restarting Vite. The proxy admits only the public paths in
+`openapi.json`: notes, job processing and status, settings, and attachments.
+Host administration and internal routes are not proxied. If the URL file is
+missing or invalid, these endpoints return 503 instead of using a stale Host.
+`bun run build` still writes the static production page to
+`project/app/notes-web/public`; the dev server does not replace that build or
+add a runtime dependency to the packaged App.
 
 ## Acceptance
 

@@ -65,6 +65,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: node --test fixtures/vnext-knowledge-base-app/project/frontend/dev-backend.test.mjs
       - run: cargo build --locked --manifest-path .lenso-ci-cli/Cargo.toml --bin lenso
       - run: cargo fmt --manifest-path fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml -- --check
       - run: cargo test --locked --manifest-path fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml

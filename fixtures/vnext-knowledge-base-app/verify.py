@@ -408,7 +408,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         )
     if args.web_client_package:
         with measured("frontend_authoring", "packed_web_client_and_react_build"):
-            frontend = source / "frontend"
+            frontend = source / "project" / "frontend"
             vendor = frontend / "vendor"
             vendor.mkdir()
             shutil.copyfile(Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz")
