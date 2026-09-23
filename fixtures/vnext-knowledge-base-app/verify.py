@@ -160,6 +160,11 @@ def adopted_operator_source(project, name, version, archive):
         raise RuntimeError(f"{name} operator example is not a regular packaged source file")
     if linked_source_digest(source) != lock.get("source_digest"):
         raise RuntimeError(f"{name} adopted source differs from its verified source lock")
+    archive_lock_digest = lock.get("archive_cargo_lock_digest")
+    if archive_lock_digest is not None:
+        cargo_lock = source / "Cargo.lock"
+        if not cargo_lock.is_file() or "sha256:" + sha256_file(cargo_lock) != archive_lock_digest:
+            raise RuntimeError(f"{name} signed archive Cargo.lock changed")
     return source, lock_bytes
 
 
@@ -195,10 +200,9 @@ def build_adopted_operator(project, root, name, version, archive):
         ],
         cwd=project, env=cargo_environment,
     )
-    if (source / ".lenso-linked-source.json").read_bytes() != lock_bytes:
+    _, lock_after = adopted_operator_source(project, name, version, archive)
+    if lock_after != lock_bytes:
         raise RuntimeError(f"{name} adopted source lock changed during operator build")
-    if linked_source_digest(source) != json.loads(lock_bytes)["source_digest"]:
-        raise RuntimeError(f"{name} adopted source changed during operator build")
     built = target / "debug" / "examples" / (example + (".exe" if os.name == "nt" else ""))
     if not stat.S_ISREG(built.lstat().st_mode):
         raise RuntimeError(f"{name} operator was not built as a regular file")
