@@ -436,7 +436,46 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     finally:
         stop(process, reader, transcript)
 
+    # Remove the root-supplied Jobs Plugin, not merely its disabled marker.
+    # The CLI validates the candidate App before moving the Plugin Root to
+    # recoverable trash. The immutable Host distribution and business data stay.
+    shutil.copyfile(distribution / ".lenso" / "host-build.json", host_authority)
+    run([
+        cli, "plugins", "bind", "--root", str(lifecycle_root),
+        "lenso.reference.knowledge-excerpt", "jobs", "--absent",
+    ])
+    run([cli, "plugins", "remove", "--root", str(lifecycle_root), "lenso.jobs"])
+    assert not (lifecycle_root / "plugins" / "lenso.jobs").exists()
+    removed_roots = list((lifecycle_root / ".lenso" / "trash").glob("lenso.jobs-*"))
+    assert len(removed_roots) == 1
+    assert (removed_roots[0] / "default.toml").read_text() == jobs_configuration_text
+    run([cli, "app", "check", "--root", str(lifecycle_root)])
+    shown = json.loads(subprocess.run(
+        [cli, "app", "show", "--root", str(lifecycle_root), "--json"],
+        check=True, capture_output=True, text=True,
+    ).stdout)
+    assert shown["kind"] == "lenso.app-show"
+    assert all(not instance["id"].startswith("lenso.jobs/") for instance in shown["instances"])
+    host_authority.unlink()
+    process, reader, transcript, url = launch(
+        cli, distribution, root, runtime_environment, app_root=lifecycle_root
+    )
+    try:
+        assert http_json(url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]) == created
+        assert http_json(url.rstrip("/") + "/settings", token=tokens["user-a"]) == settings
+        expect_http_error(url.rstrip("/") + "/notes/" + created["id"], 404, token=tokens["user-b"])
+        removed_jobs_body = "The persisted workspace survives removal of its optional Jobs Plugin."
+        without_jobs = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201, token=tokens["user-a"],
+            body={"title": "Removed Jobs", "body": removed_jobs_body},
+        )
+        assert without_jobs["job_id"] == "inline:" + without_jobs["id"]
+        assert without_jobs["processing_status"] == "succeeded"
+        assert without_jobs["excerpt"] == removed_jobs_body[:47] + "…"
+    finally:
+        stop(process, reader, transcript)
+
 print(
     "PASS: source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
-    "Rust-to-TypeScript durable Jobs, disable/enable preservation, and restart"
+    "Rust-to-TypeScript durable Jobs, disable/enable/remove preservation, and restart"
 )

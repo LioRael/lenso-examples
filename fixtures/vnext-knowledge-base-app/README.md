@@ -52,9 +52,14 @@ adopts them through `lenso app add`, runs each explicit schema operator, issues
 two short-lived test credentials, builds the distribution, deletes every source
 copy, clears `PATH`, and exercises the real HTTP listener. It checks unauthenticated
 rejection, stale configuration rejection, cross-user denial, upload, processing,
-Jobs disable/enable with preserved records and configuration, and a Host
-restart. While Jobs is disabled, the same TypeScript Plugin follows its declared
-optional dependency and completes deterministic excerpts inline.
+Jobs disable/enable and full Plugin Root removal with preserved business
+records, settings, and user isolation, plus a Host restart. While Jobs is
+disabled or removed, the same TypeScript Plugin follows its declared optional
+dependency and completes deterministic excerpts inline. Removing Jobs moves
+its Plugin Root to recoverable local trash; it does not erase the PostgreSQL
+knowledge records or uninstall the immutable Host distribution. A separate
+versioned upgrade still requires an exact consumable second Release and is
+not implied by this removal check.
 
 For an interactive browser pass, add
 `--browser-handoff /tmp/lenso-browser-handoff.json`. After the scripted checks,
