@@ -23,6 +23,7 @@ from pathlib import Path
 
 import tomllib
 from browser_handoff import browser_handoff
+from runtime_environment import build_runtime_environment
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
@@ -566,12 +567,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             if args.package_only else {}
         )
         run([cli, "app", "build", "--root", str(project), "--out", str(distribution)], **build_kwargs)
-    runtime_environment = {
-        "PATH": str(root / "no-tools"),
-        "LENSO_REFERENCE_DATABASE_URL": database_url,
-        "LENSO_AUTH_SIGNING_SECRET": signing_secret,
-        "LENSO_AUTH_TOKEN_PEPPER": token_pepper,
-    }
+    runtime_environment = build_runtime_environment(
+        root, database_url, signing_secret, token_pepper
+    )
     unadopt_receipt = None
     if args.package_only:
         with measured("consumer_build", "app_check_show"):
