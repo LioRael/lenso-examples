@@ -362,6 +362,20 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         assert attachment["note_id"] == created["id"]
         assert attachment["size"] == len(b"reference attachment")
         expect_http_error(
+            url.rstrip("/") + f"/note-attachments/{created['id']}", 404,
+            method="POST", token=tokens["user-b"],
+            body={
+                "content_base64": base64.b64encode(b"not my note").decode(),
+                "filename": "denied.txt",
+                "media_type": "text/plain",
+            },
+        )
+        expect_http_error(
+            url.rstrip("/") + f"/note-attachments/{created['id']}", 400,
+            method="POST", token=tokens["user-a"],
+            body={"content_base64": "!!!", "filename": "invalid.txt", "media_type": "text/plain"},
+        )
+        expect_http_error(
             url.rstrip("/") + "/notes/" + created["id"], 404, token=tokens["user-b"]
         )
         expect_http_error(

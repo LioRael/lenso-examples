@@ -466,20 +466,7 @@ impl KnowledgeBase {
                 "filename and media_type must be bounded non-empty strings",
             ));
         }
-        let content = STANDARD.decode(&input.content_base64).map_err(|_| {
-            Problem::new(
-                StatusCode::BAD_REQUEST,
-                "invalid_attachment",
-                "content_base64 is not valid Base64",
-            )
-        })?;
-        if content.is_empty() || content.len() > MAX_ATTACHMENT_BYTES {
-            return Err(Problem::new(
-                StatusCode::BAD_REQUEST,
-                "invalid_attachment",
-                "attachment size must be from 1 byte through 1 MiB",
-            ));
-        }
+        let content = decode_attachment_content(&input.content_base64)?;
         let attachment = Attachment {
             id: format!("attachment-{}", Uuid::now_v7()),
             filename: input.filename,
@@ -744,6 +731,33 @@ fn validated_note(input: &CreateNote) -> Result<(&str, &str), Problem> {
     Ok((title, body))
 }
 
+fn decode_attachment_content(encoded: &str) -> Result<Vec<u8>, Problem> {
+    // Bound the decode allocation before inspecting attacker-controlled Base64.
+    let max_encoded_len = MAX_ATTACHMENT_BYTES.div_ceil(3) * 4;
+    if encoded.len() > max_encoded_len {
+        return Err(Problem::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_attachment",
+            "attachment size must be from 1 byte through 1 MiB",
+        ));
+    }
+    let content = STANDARD.decode(encoded).map_err(|_| {
+        Problem::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_attachment",
+            "content_base64 is not valid Base64",
+        )
+    })?;
+    if content.is_empty() || content.len() > MAX_ATTACHMENT_BYTES {
+        return Err(Problem::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_attachment",
+            "attachment size must be from 1 byte through 1 MiB",
+        ));
+    }
+    Ok(content)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -771,5 +785,28 @@ mod tests {
         ] {
             assert!(validated_note(&invalid).is_err());
         }
+    }
+
+    #[test]
+    fn attachment_decoder_bounds_allocations_and_rejects_invalid_payloads() {
+        assert_eq!(
+            decode_attachment_content("cmVmZXJlbmNl").unwrap(),
+            b"reference"
+        );
+        assert!(decode_attachment_content("").is_err());
+        assert!(decode_attachment_content("not Base64").is_err());
+        assert_eq!(
+            decode_attachment_content(&STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES]))
+                .unwrap()
+                .len(),
+            MAX_ATTACHMENT_BYTES
+        );
+        assert!(
+            decode_attachment_content(&STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES + 1])).is_err()
+        );
+        assert!(
+            decode_attachment_content(&"A".repeat(MAX_ATTACHMENT_BYTES.div_ceil(3) * 4 + 1))
+                .is_err()
+        );
     }
 }
