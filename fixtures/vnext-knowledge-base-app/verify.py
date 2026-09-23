@@ -11,6 +11,7 @@ import re
 import secrets
 import shutil
 import signal
+import stat
 import subprocess
 import tempfile
 import threading
@@ -36,11 +37,6 @@ parser.add_argument("--trust", help="public trust configuration for package-only
 for provider in ("auth", "jobs", "secrets"):
     parser.add_argument(f"--{provider}-version", help=f"exact {provider} Plugin package version")
     parser.add_argument(f"--{provider}-crate", help=f"signed {provider} .crate archive")
-for provider in ("auth", "jobs"):
-    parser.add_argument(f"--{provider}-operator", help=f"prebuilt {provider} schema operator")
-    parser.add_argument(
-        f"--{provider}-operator-sha256", help=f"SHA-256 of the {provider} operator",
-    )
 parser.add_argument(
     "--browser-handoff",
     type=Path,
@@ -79,6 +75,12 @@ PLUGIN_IDS = {
     "jobs": "lenso.jobs",
     "secrets": "lenso.secrets.env",
 }
+OPERATOR_EXAMPLES = {
+    "auth": "api-token-operator",
+    "jobs": "jobs-operator",
+}
+MAX_LINKED_SOURCE_FILES = 4096
+MAX_LINKED_SOURCE_BYTES = 128 * 1024 * 1024
 
 
 def regular_file(value, label):
@@ -96,6 +98,126 @@ def sha256_file(path):
     return digest.hexdigest()
 
 
+def linked_source_digest(root):
+    """Match the linked Cargo source lock's digest over regular source files."""
+    def fail_walk(error):
+        raise error
+
+    files = []
+    total = 0
+    for current, directories, names in os.walk(root, followlinks=False, onerror=fail_walk):
+        directory = Path(current)
+        for name in directories:
+            child = directory / name
+            if not stat.S_ISDIR(child.lstat().st_mode):
+                raise RuntimeError(f"linked source contains a non-directory: {child}")
+        if directory == root:
+            directories[:] = [name for name in directories if name != "target"]
+        for name in names:
+            path = directory / name
+            metadata = path.lstat()
+            if not stat.S_ISREG(metadata.st_mode):
+                raise RuntimeError(f"linked source contains a non-file: {path}")
+            if path in (root / ".lenso-linked-source.json", root / "Cargo.lock"):
+                continue
+            total += metadata.st_size
+            if total > MAX_LINKED_SOURCE_BYTES:
+                raise RuntimeError("linked source exceeds size limit")
+            files.append((path, metadata.st_size))
+            if len(files) > MAX_LINKED_SOURCE_FILES:
+                raise RuntimeError("linked source has too many files")
+    digest = hashlib.sha256()
+    for path, size in sorted(files):
+        relative = path.relative_to(root).as_posix().encode("utf-8")
+        contents = path.read_bytes()
+        if len(contents) != size:
+            raise RuntimeError(f"linked source changed while reading: {path}")
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(contents).to_bytes(8, "big"))
+        digest.update(contents)
+    return "sha256:" + digest.hexdigest()
+
+
+def adopted_operator_source(project, name, version, archive):
+    source = project / "vendor" / "lenso" / PLUGIN_IDS[name] / version
+    lock_path = source / ".lenso-linked-source.json"
+    lock_bytes = lock_path.read_bytes()
+    if len(lock_bytes) > 4096:
+        raise RuntimeError(f"{name} linked source lock exceeds size limit")
+    lock = json.loads(lock_bytes)
+    expected = {
+        "schema_version": 1,
+        "plugin_id": PLUGIN_IDS[name],
+        "version": version,
+        "crate_digest": "sha256:" + sha256_file(archive),
+    }
+    for key, value in expected.items():
+        if lock.get(key) != value:
+            raise RuntimeError(f"{name} adopted source {key} differs from exact .crate")
+    example = source / "examples" / f"{OPERATOR_EXAMPLES[name]}.rs"
+    if not stat.S_ISREG(example.lstat().st_mode):
+        raise RuntimeError(f"{name} operator example is not a regular packaged source file")
+    if linked_source_digest(source) != lock.get("source_digest"):
+        raise RuntimeError(f"{name} adopted source differs from its verified source lock")
+    return source, lock_bytes
+
+
+def package_build_environment(home):
+    if not os.environ.get("CARGO_HOME"):
+        raise RuntimeError("--package-only requires an explicit sandbox-local CARGO_HOME")
+    home.mkdir(parents=True, exist_ok=True)
+    environment = {
+        key: os.environ[key]
+        for key in ("PATH", "CARGO_HOME", "RUSTUP_HOME")
+        if key in os.environ
+    }
+    environment["HOME"] = str(home)
+    environment["CARGO_NET_OFFLINE"] = "true"
+    return environment
+
+
+def build_adopted_operator(project, root, name, version, archive):
+    source, lock_bytes = adopted_operator_source(project, name, version, archive)
+    manifest = source / "Cargo.toml"
+    example = OPERATOR_EXAMPLES[name]
+    target = root / "operator-targets" / name
+    cargo_environment = package_build_environment(root / "operator-home" / name)
+    if not (source / "Cargo.lock").is_file():
+        run(
+            ["cargo", "generate-lockfile", "--offline", "--manifest-path", str(manifest)],
+            cwd=project, env=cargo_environment,
+        )
+    run(
+        [
+            "cargo", "build", "--locked", "--offline", "--manifest-path", str(manifest),
+            "--example", example, "--target-dir", str(target),
+        ],
+        cwd=project, env=cargo_environment,
+    )
+    if (source / ".lenso-linked-source.json").read_bytes() != lock_bytes:
+        raise RuntimeError(f"{name} adopted source lock changed during operator build")
+    if linked_source_digest(source) != json.loads(lock_bytes)["source_digest"]:
+        raise RuntimeError(f"{name} adopted source changed during operator build")
+    built = target / "debug" / "examples" / (example + (".exe" if os.name == "nt" else ""))
+    if not stat.S_ISREG(built.lstat().st_mode):
+        raise RuntimeError(f"{name} operator was not built as a regular file")
+    output = root / "operators" / name
+    output.parent.mkdir(exist_ok=True)
+    shutil.copyfile(built, output)
+    output.chmod(0o700)
+    if sha256_file(output) != sha256_file(built):
+        raise RuntimeError(f"{name} operator changed while copying")
+    return output, {
+        "plugin_id": PLUGIN_IDS[name],
+        "version": version,
+        "crate_digest": json.loads(lock_bytes)["crate_digest"],
+        "source_digest": json.loads(lock_bytes)["source_digest"],
+        "cargo_lock_sha256": sha256_file(source / "Cargo.lock"),
+        "operator_sha256": sha256_file(output),
+    }
+
+
 def package_inputs():
     source_flags = [f"--{name}-source" for name in PLUGIN_IDS if getattr(args, f"{name}_source")]
     if source_flags:
@@ -103,8 +225,6 @@ def package_inputs():
     required = ["linked_snapshot", "trust"]
     for name in PLUGIN_IDS:
         required.extend((f"{name}_version", f"{name}_crate"))
-    for name in ("auth", "jobs"):
-        required.extend((f"{name}_operator", f"{name}_operator_sha256"))
     missing = [f"--{name.replace('_', '-')}" for name in required if not getattr(args, name)]
     if missing:
         parser.error(f"--package-only requires {', '.join(missing)}")
@@ -121,28 +241,16 @@ def package_inputs():
             parser.error(f"--{name}-crate must name a .crate archive: {archive}")
         releases[name] = (f"{plugin_id}@{version}", archive)
 
-    operators = {}
-    for name in ("auth", "jobs"):
-        path = regular_file(getattr(args, f"{name}_operator"), f"--{name}-operator")
-        if not os.access(path, os.X_OK):
-            parser.error(f"--{name}-operator must be executable: {path}")
-        expected = getattr(args, f"{name}_operator_sha256").lower()
-        if not re.fullmatch(r"[0-9a-f]{64}", expected):
-            parser.error(f"--{name}-operator-sha256 must be 64 hexadecimal characters")
-        if sha256_file(path) != expected:
-            parser.error(f"--{name}-operator SHA-256 does not match: {path}")
-        operators[name] = (path, expected)
-    return snapshot, trust, releases, operators
+    return snapshot, trust, releases
 
 
 if args.package_only:
     repositories = None
-    linked_snapshot, trust, releases, operator_inputs = package_inputs()
+    linked_snapshot, trust, releases = package_inputs()
 else:
     package_flags = [
         "linked_snapshot", "trust",
         *(f"{name}_{field}" for name in PLUGIN_IDS for field in ("version", "crate")),
-        *(f"{name}_operator{suffix}" for name in ("auth", "jobs") for suffix in ("", "_sha256")),
     ]
     supplied = [f"--{name.replace('_', '-')}" for name in package_flags if getattr(args, name)]
     if supplied:
@@ -304,17 +412,8 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             run(["bun", "run", "build"], cwd=frontend)
 
     project = source / "project"
+    operator_receipts = None
     if args.package_only:
-        operator_directory = root / "operators"
-        operator_directory.mkdir()
-        with measured("consumer_preparation", "operator_binary_copy"):
-            copied_operators = {}
-            for name, (operator, expected_digest) in operator_inputs.items():
-                copied = operator_directory / name
-                shutil.copy2(operator, copied)
-                if sha256_file(copied) != expected_digest:
-                    raise RuntimeError(f"{name} operator changed while copying")
-                copied_operators[name] = copied
         with measured("consumer_preparation", "catalog_bound_crate_adoption"):
             for coordinate, archive in releases.values():
                 run([
@@ -322,8 +421,24 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
                     "--linked-snapshot", str(linked_snapshot), "--trust", str(trust),
                     "--crate", str(archive), coordinate,
                 ])
-        auth_operator = [str(copied_operators["auth"])]
-        jobs_operator = [str(copied_operators["jobs"])]
+        with measured("consumer_preparation", "adopted_source_preflight"):
+            run([
+                cli, "app", "assemble", "--root", str(project),
+                "--out", str(root / "verified-provider-source"),
+            ], env=package_build_environment(root / "host-build-home"))
+            for name in OPERATOR_EXAMPLES:
+                coordinate, archive = releases[name]
+                adopted_operator_source(project, name, coordinate.rsplit("@", 1)[1], archive)
+        with measured("plugin_candidate_setup", "crate_derived_operator_build"):
+            built_operators = {}
+            operator_receipts = {}
+            for name in OPERATOR_EXAMPLES:
+                coordinate, archive = releases[name]
+                built_operators[name], operator_receipts[name] = build_adopted_operator(
+                    project, root, name, coordinate.rsplit("@", 1)[1], archive
+                )
+        auth_operator = [str(built_operators["auth"])]
+        jobs_operator = [str(built_operators["jobs"])]
         auth_operator_cwd = root
         jobs_operator_cwd = root
     else:
@@ -437,7 +552,24 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
     with measured("consumer_build", "app_build"):
-        run([cli, "app", "build", "--root", str(project), "--out", str(distribution)])
+        build_kwargs = (
+            {"env": package_build_environment(root / "host-build-home")}
+            if args.package_only else {}
+        )
+        run([cli, "app", "build", "--root", str(project), "--out", str(distribution)], **build_kwargs)
+    if args.package_only:
+        with measured("consumer_build", "app_check_show"):
+            intent = distribution / "intent"
+            check_environment = package_build_environment(root / "host-build-home")
+            run([cli, "app", "check", "--root", str(intent)], env=check_environment)
+            shown = json.loads(subprocess.run(
+                [cli, "app", "show", "--root", str(intent), "--json"],
+                check=True, capture_output=True, text=True, env=check_environment,
+            ).stdout)
+            instance_ids = {instance["id"] for instance in shown["instances"]}
+            for plugin_id in PLUGIN_IDS.values():
+                if f"{plugin_id}/default" not in instance_ids:
+                    raise RuntimeError(f"{plugin_id} is missing from the built App")
     distribution_bytes = tree_logical_bytes(distribution)
     lifecycle_root = root / "runtime-app"
     (lifecycle_root / ".lenso").mkdir(parents=True)
@@ -652,14 +784,15 @@ print("MEASUREMENT " + json.dumps({
         "bun_version": command_version(["bun", "--version"]),
     },
     "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
-    "provider_input_mode": "signed_crate_with_pinned_operators" if args.package_only else "source_checkout",
+    "provider_input_mode": "signed_crate_derived_operators" if args.package_only else "source_checkout",
+    "operator_receipts": operator_receipts,
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
     "distribution_bytes": distribution_bytes,
     "phases": phases,
 }, sort_keys=True))
 print(
     "PASS: "
-    + ("signed-catalog .crate provider adoption with pinned operator binaries, " if args.package_only else "")
+    + ("signed-catalog .crate provider adoption with crate-derived operators, " if args.package_only else "")
     + "source-deleted React, Auth isolation, PostgreSQL notes/files/settings, "
     "Rust-to-TypeScript durable Jobs, disable/enable/remove preservation, and restart"
 )

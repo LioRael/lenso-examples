@@ -47,7 +47,7 @@ LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
 
-The verifier copies all candidate sources into a temporary consumer directory,
+In default mode, the verifier copies all candidate sources into a temporary consumer directory,
 adopts them through `lenso app add`, runs each explicit schema operator, issues
 two short-lived test credentials, builds the distribution, deletes every source
 copy, clears `PATH`, and exercises the real HTTP listener. It checks unauthenticated
@@ -75,9 +75,7 @@ LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --linked-snapshot "$SIGNED_SNAPSHOT" --trust "$CATALOG_TRUST" \
   --auth-version "$AUTH_VERSION" --auth-crate "$AUTH_CRATE" \
   --jobs-version "$JOBS_VERSION" --jobs-crate "$JOBS_CRATE" \
-  --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE" \
-  --auth-operator "$AUTH_OPERATOR" --auth-operator-sha256 "$AUTH_OPERATOR_SHA256" \
-  --jobs-operator "$JOBS_OPERATOR" --jobs-operator-sha256 "$JOBS_OPERATOR_SHA256"
+  --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE"
 ```
 
 Each version must be an exact Cargo version, not `latest` or a range. The
@@ -93,20 +91,39 @@ environment. The App's own Rust and TypeScript business Plugin source remains
 part of this fixture, so `--package-only` describes its external provider
 inputs, not a binary-only App build.
 
-The Auth and Jobs schema operators cannot be obtained as executable tools from
-the signed-catalog `.crate` admission API. Pass separately built operator executables
-and their 64-character SHA-256 digests. The verifier checks their executable
-bits and digests before work begins, copies them into the disposable consumer,
-and verifies the copies again before invocation. These digests pin the supplied
-operator bytes but do not establish their provenance or bind them
-cryptographically to the catalog releases. Build and review the operators from
-the approved release cohort, then record that provenance separately; do not
-call this an all-signed-binary supply chain proof. The knowledge-base operator
-is built from the App-owned source fixture.
+The verifier does not accept detached Auth or Jobs operator executables. After
+`app add` verifies each exact archive and vendors its source, `app assemble`
+checks the adopted source lock. The verifier then checks that the lock names
+the selected Plugin, version, and input `.crate` digest, and that the complete
+vendored source still matches its recorded source digest. It requires the
+Auth `examples/api-token-operator.rs` and Jobs `examples/jobs-operator.rs`
+inside those adopted packages, builds them offline from the vendored manifests,
+checks the lock and source digest again, and copies the resulting executables
+to the disposable consumer before invocation. Missing packaged examples or
+offline dependencies fail the gate. The knowledge-base operator remains built
+from the App-owned fixture source. After `app build`, the verifier also runs
+`app check` and `app show` on the built distribution and requires all three
+external provider Instances to be present before deleting the source tree.
 
-Run the narrow argument and preflight checks without PostgreSQL using
+The signed directory binds the operator's own source to the selected `.crate`;
+it does not sign the resulting machine code or its transitive dependencies, or
+prove a reproducible build. The operator build may execute package build
+scripts and must run inside a single-owner, network-disabled container with
+read-only original release inputs and toolchain, a scratch-only writable disposable
+consumer, an explicit
+allowlisted environment, and CPU, memory, process, file-size, disk, and time
+limits. Set `CARGO_HOME` explicitly to a sandbox-local, credential-free offline
+cache; the verifier gives Cargo a scratch-local `HOME` and does not pass the
+database URL or signing secrets to the operator build. `--offline` alone is not
+a sandbox. The `operator_receipts` measurement records each selected crate,
+source, Cargo.lock, and operator binary digest; the lock and binary digests are
+observations, not catalog signatures. Do not execute this verifier
+against an unreviewed release on the host. The checks cannot defeat a malicious
+concurrent writer outside that container.
+
+Inside the same sandbox, run the narrow argument and preflight checks without PostgreSQL using
 `python3 -m unittest discover -s . -p 'test_verify_*.py'`. No exact published
-Auth/Jobs/Secrets package cohort, matching operator binaries, or second
+Auth/Jobs/Secrets package cohort, verified crate-derived operators, or second
 versioned Release is bundled with this fixture. Until those inputs exist and
 the full verifier succeeds, the package-only, public-registry, and upgrade
 acceptance gates remain unverified.

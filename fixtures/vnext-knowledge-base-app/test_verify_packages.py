@@ -1,6 +1,5 @@
 """Package-only verifier input and command-path checks."""
 
-import hashlib
 import os
 import subprocess
 import sys
@@ -33,14 +32,6 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             archive = root / f"{name}-1.2.3.crate"
             archive.write_bytes(b"not a valid crate")
             arguments.extend((f"--{name}-version", "1.2.3", f"--{name}-crate", archive))
-        for name in ("auth", "jobs"):
-            operator = root / f"{name}-operator"
-            operator.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-            operator.chmod(0o700)
-            digest = hashlib.sha256(operator.read_bytes()).hexdigest()
-            arguments.extend(
-                (f"--{name}-operator", operator, f"--{name}-operator-sha256", digest)
-            )
         return arguments
 
     def test_source_mode_keeps_required_sources(self):
@@ -56,7 +47,6 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("--linked-snapshot", result.stderr)
         self.assertIn("--secrets-crate", result.stderr)
-        self.assertIn("--jobs-operator-sha256", result.stderr)
 
     def test_package_mode_rejects_source_checkout(self):
         result = self.run_verify("--package-only", "--auth-source", "/source")
@@ -79,14 +69,12 @@ class VerifyPackagePreflightTests(unittest.TestCase):
                 "--jobs-version must be an exact Cargo version", result.stderr
             )
 
-    def test_package_mode_rejects_wrong_operator_digest(self):
+    def test_package_mode_rejects_detached_operator(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
             arguments = self.package_arguments(Path(temporary))
-            position = arguments.index("--auth-operator-sha256") + 1
-            arguments[position] = "0" * 64
-            result = self.run_verify(*arguments)
+            result = self.run_verify(*arguments, "--auth-operator", "/untrusted/operator")
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("--auth-operator SHA-256 does not match", result.stderr)
+            self.assertIn("unrecognized arguments: --auth-operator", result.stderr)
 
     def test_complete_package_inputs_reach_exact_signed_adoption(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
