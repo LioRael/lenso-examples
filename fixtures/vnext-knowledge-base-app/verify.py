@@ -22,6 +22,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import tomllib
+from browser_handoff import browser_handoff
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
@@ -789,14 +790,8 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             url.rstrip("/") + "/job-status/" + created["job_id"], 404, token=tokens["user-b"]
         )
         if args.browser_handoff:
-            handoff = args.browser_handoff.resolve()
-            handoff.write_text(json.dumps({"token": tokens["user-a"], "url": url}))
-            handoff.chmod(0o600)
-            deadline = time.monotonic() + 600
-            while handoff.exists() and time.monotonic() < deadline:
-                time.sleep(0.25)
-            if handoff.exists():
-                raise TimeoutError(f"browser handoff was not removed: {handoff}")
+            with browser_handoff(args.browser_handoff, tokens["user-a"], url) as handoff:
+                handoff.wait_for_removal()
     finally:
         stop(process, reader, transcript)
 

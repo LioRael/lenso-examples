@@ -194,10 +194,13 @@ measurement field distinguishes the modes.
 
 For an interactive browser pass, add
 `--browser-handoff /tmp/lenso-browser-handoff.json`. After the scripted checks,
-the verifier writes a mode-`0600` JSON file containing the temporary URL and
-test credential, then keeps the source-deleted Host running for up to ten
-minutes. Delete the handoff file after browser automation completes; the
-verifier will then perform its restart checks and shut down normally.
+the verifier exclusively creates a mode-`0600` JSON file containing the
+temporary URL and test credential, then keeps the source-deleted Host running
+for up to ten minutes. The parent directory must exist and cannot be
+non-sticky writable by other users; an existing file or symlink at the target
+path is refused. Delete the handoff file after browser automation completes;
+the verifier will then perform its restart checks and shut down normally. On
+timeout or interruption, it removes only its own still-present handoff file.
 
 No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
 credential value is checked in. The default acceptance uses local candidate
