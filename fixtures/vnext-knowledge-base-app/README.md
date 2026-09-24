@@ -93,9 +93,18 @@ that cohort: the verifier checks their package identities and exact direct
 versions, then puts Cargo path overrides in its disposable consumer's private
 `CARGO_HOME`. It never adds an absolute checkout path to this fixture's
 manifest. The checked-in `Cargo.lock` was resolved against these local
-candidates and is not proof that the same versions are available from
-crates.io. This source mode trusts the selected checkouts and reuses the
-caller's Cargo registry cache; it is not an isolated third-party build.
+candidate versions but may need a different dependency graph at a newer
+checkout. Source mode refreshes the temporary business App lock offline under
+the candidate overrides before its `--locked` operator build. Auth and Jobs
+operator builds keep the caller's original Cargo home, so those overrides
+cannot change their independent locks. The temporary Auth operator is built
+once with `--locked` outside the source tree, then its exact binary digest is
+checked before token issuance. A subsequent Host build may rewrite the copied
+Auth lock; it cannot silently cause a second Cargo resolution for credentials.
+The checked-in fixture and original provider checkout locks are not rewritten.
+These locks are not proof that the same versions are available from crates.io.
+Source mode trusts the selected checkouts and reuses the caller's Cargo registry
+cache; it is not an isolated third-party build.
 
 In default mode, the verifier copies all candidate sources into a temporary consumer directory,
 adopts them through `lenso app add`, runs each explicit schema operator, issues

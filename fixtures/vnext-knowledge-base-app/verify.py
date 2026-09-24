@@ -347,8 +347,11 @@ def run(command, **kwargs):
     return subprocess.run(command, check=True, **kwargs)
 
 
-def operator_environment(**values):
-    return os.environ | values
+def operator_environment(*, cargo_home=None, **values):
+    environment = os.environ | values
+    if cargo_home is not None:
+        environment["CARGO_HOME"] = str(cargo_home)
+    return environment
 
 
 def launch(cli, distribution, root, environment, app_root=None):
@@ -455,8 +458,10 @@ def command_version(command):
 
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     root = Path(temporary)
+    provider_cargo_home = Path(os.environ.get("CARGO_HOME", Path.home() / ".cargo")).resolve()
     if candidate_patches:
         use_candidate_cargo_home(root, candidate_patches)
+    candidate_operator_cargo_home = provider_cargo_home if candidate_patches else None
     source = root / "source"
     phases = []
 
@@ -536,10 +541,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         with measured("consumer_preparation", "source_adoption"):
             for plugin_source in (auth_source, jobs_source, secrets_source):
                 run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
-        auth_operator = [
-            "cargo", "run", "--locked", "-p", "lenso-auth-api-token-plugin",
-            "--example", "api-token-operator", "--",
-        ]
+        auth_operator = None
         jobs_operator = [
             "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
             "--example", "jobs-operator", "--",
@@ -553,11 +555,27 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     signing_secret = secrets.token_urlsafe(48)
     token_pepper = secrets.token_urlsafe(48)
     auth_environment = operator_environment(
+        cargo_home=candidate_operator_cargo_home,
         LENSO_AUTH_DATABASE_URL=database_url,
         LENSO_AUTH_SIGNING_SECRET=signing_secret,
         LENSO_AUTH_TOKEN_PEPPER=token_pepper,
     )
+    source_auth_operator_sha256 = None
     with measured("plugin_candidate_setup", "auth_operator_setup"):
+        if not args.package_only:
+            target = root / "operator-targets" / "auth-source"
+            run(
+                ["cargo", "build", "--locked", "-p", "lenso-auth-api-token-plugin",
+                 "--example", "api-token-operator", "--target-dir", str(target)],
+                cwd=auth_operator_cwd, env=auth_environment,
+            )
+            built = target / "debug" / "examples" / (
+                "api-token-operator" + (".exe" if os.name == "nt" else "")
+            )
+            if not stat.S_ISREG(built.lstat().st_mode):
+                raise RuntimeError("source Auth operator was not built as a regular file")
+            source_auth_operator_sha256 = sha256_file(built)
+            auth_operator = [str(built)]
         run(auth_operator + ["setup", auth_schema], cwd=auth_operator_cwd, env=auth_environment)
         public_key = subprocess.run(
             auth_operator + ["public-key"],
@@ -569,6 +587,11 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         ).stdout.strip()
 
     def issue_tokens():
+        if source_auth_operator_sha256 is not None:
+            built = Path(auth_operator[0])
+            if (not stat.S_ISREG(built.lstat().st_mode)
+                    or sha256_file(built) != source_auth_operator_sha256):
+                raise RuntimeError("source Auth operator changed after its locked build")
         tokens = {}
         for subject in ["user-a", "user-b"]:
             output = subprocess.run(
@@ -587,9 +610,15 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         run(
             jobs_operator + ["setup", jobs_schema],
             cwd=jobs_operator_cwd,
-            env=operator_environment(LENSO_JOBS_DATABASE_URL=database_url),
+            env=operator_environment(
+                cargo_home=candidate_operator_cargo_home,
+                LENSO_JOBS_DATABASE_URL=database_url,
+            ),
         )
     notes_web = project / "app" / "notes-web"
+    if candidate_patches:
+        with measured("app_authoring", "candidate_lock_refresh"):
+            run(["cargo", "update", "--offline", "--manifest-path", str(notes_web / "Cargo.toml")])
     with measured("app_authoring", "knowledge_operator_setup"):
         run(
             ["cargo", "run", "--locked", "--manifest-path", str(notes_web / "Cargo.toml"),
