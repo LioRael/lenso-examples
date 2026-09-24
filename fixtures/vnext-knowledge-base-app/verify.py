@@ -616,14 +616,37 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             ),
         )
     notes_web = project / "app" / "notes-web"
-    if candidate_patches:
+    package_only_lock_sha256 = None
+    if args.package_only:
+        # The checked-in lock belongs to source-mode path overrides. Regenerate
+        # only the disposable App copy against the sandbox's packaged sources;
+        # the following operator build remains --locked and offline.
+        with measured("app_authoring", "package_lock_generation"):
+            run(
+                ["cargo", "generate-lockfile", "--offline", "--manifest-path",
+                 str(notes_web / "Cargo.toml")],
+                env=package_build_environment(root / "knowledge-lock-home"),
+            )
+        package_only_lock_sha256 = sha256_file(notes_web / "Cargo.lock")
+    elif candidate_patches:
         with measured("app_authoring", "candidate_lock_refresh"):
             run(["cargo", "update", "--offline", "--manifest-path", str(notes_web / "Cargo.toml")])
     with measured("app_authoring", "knowledge_operator_setup"):
+        knowledge_command = ["cargo", "run", "--locked"]
+        if args.package_only:
+            knowledge_command.append("--offline")
+        knowledge_command += [
+            "--manifest-path", str(notes_web / "Cargo.toml"),
+            "--example", "knowledge-operator", "--", "setup",
+        ]
+        knowledge_environment = (
+            package_build_environment(root / "knowledge-operator-home")
+            if args.package_only else operator_environment()
+        )
+        knowledge_environment["LENSO_KNOWLEDGE_DATABASE_URL"] = database_url
         run(
-            ["cargo", "run", "--locked", "--manifest-path", str(notes_web / "Cargo.toml"),
-             "--example", "knowledge-operator", "--", "setup"],
-            env=operator_environment(LENSO_KNOWLEDGE_DATABASE_URL=database_url),
+            knowledge_command,
+            env=knowledge_environment,
         )
 
     (project / "plugins" / "lenso.auth.api-token" / "default.toml").write_text(
@@ -989,6 +1012,7 @@ print("MEASUREMENT " + json.dumps({
     },
     "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
     "provider_input_mode": "signed_crate_derived_operators" if args.package_only else "source_checkout",
+    "package_only_app_lock_sha256": package_only_lock_sha256,
     "operator_receipts": operator_receipts,
     "unadopt_receipt": unadopt_receipt,
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",

@@ -150,10 +150,13 @@ environment. The App's own Rust and TypeScript business Plugin source remains
 part of this fixture, so `--package-only` describes its external provider
 inputs, not a binary-only App build.
 
-The source-mode candidate arguments are rejected in `--package-only`. After
-the exact framework and Agent Tool Provider versions are published, regenerate
-the business Plugin's `Cargo.lock` from the registry before running this gate;
-the source-candidate lock cannot stand in for registry provenance.
+The source-mode candidate arguments are rejected in `--package-only`. The
+verifier regenerates only the disposable business App copy's `Cargo.lock`
+offline from the sandbox's configured packaged Cargo source, then builds its
+operator with `--locked --offline`; it reports that generated lock's SHA-256.
+The checked-in source-candidate lock is unchanged. This local step does not
+prove that the exact framework and Agent Tool Provider versions are published
+or visible on crates.io; public registry availability needs separate readback.
 
 The verifier does not accept detached Auth or Jobs operator executables. After
 `app add` verifies each exact archive and vendors its source, the verifier checks
