@@ -26,9 +26,11 @@ The checked-in static assets keep the App build self-contained. To validate a
 frontend rebuild in a disposable consumer, supply that package to the verifier:
 
 ```sh
-python3 verify.py \
+LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --cli /absolute/path/to/lenso \
   --web-client-package /absolute/path/to/lenso-web-client.tgz \
+  --framework-source /absolute/path/to/lenso-rust-checkout \
+  --tool-provider-source /absolute/path/to/lenso-capability-agent-tool-provider \
   --auth-source /absolute/path/to/lenso-auth-plugin/crates/lenso-auth-api-token-plugin \
   --jobs-source /absolute/path/to/lenso-jobs-plugin/crates/lenso-jobs-plugin \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
@@ -77,10 +79,23 @@ reset the supplied database.
 ```sh
 LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --cli /absolute/path/to/lenso \
+  --framework-source /absolute/path/to/lenso-rust-checkout \
+  --tool-provider-source /absolute/path/to/lenso-capability-agent-tool-provider \
   --auth-source /absolute/path/to/lenso-auth-plugin/crates/lenso-auth-api-token-plugin \
   --jobs-source /absolute/path/to/lenso-jobs-plugin/crates/lenso-jobs-plugin \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
+
+The Rust business Plugin pins the current candidate `lenso` 0.5.26, HTTP
+Endpoint 0.3.4, and Agent Tool Provider 0.3.0 cohort. These versions are not
+all published. The two explicit source arguments are development inputs for
+that cohort: the verifier checks their package identities and exact direct
+versions, then puts Cargo path overrides in its disposable consumer's private
+`CARGO_HOME`. It never adds an absolute checkout path to this fixture's
+manifest. The checked-in `Cargo.lock` was resolved against these local
+candidates and is not proof that the same versions are available from
+crates.io. This source mode trusts the selected checkouts and reuses the
+caller's Cargo registry cache; it is not an isolated third-party build.
 
 In default mode, the verifier copies all candidate sources into a temporary consumer directory,
 adopts them through `lenso app add`, runs each explicit schema operator, issues
@@ -125,6 +140,11 @@ build scripts; review untrusted package source and build in an isolated
 environment. The App's own Rust and TypeScript business Plugin source remains
 part of this fixture, so `--package-only` describes its external provider
 inputs, not a binary-only App build.
+
+The source-mode candidate arguments are rejected in `--package-only`. After
+the exact framework and Agent Tool Provider versions are published, regenerate
+the business Plugin's `Cargo.lock` from the registry before running this gate;
+the source-candidate lock cannot stand in for registry provenance.
 
 The verifier does not accept detached Auth or Jobs operator executables. After
 `app add` verifies each exact archive and vendors its source, the verifier checks

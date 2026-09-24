@@ -56,6 +56,19 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("cannot use source checkouts: --auth-source", result.stderr)
 
+    def test_package_mode_rejects_framework_candidate_source(self):
+        result = self.run_verify("--package-only", "--framework-source", "/source")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("cannot use source checkouts: --framework-source", result.stderr)
+
+    def test_source_mode_requires_both_candidate_inputs(self):
+        result = self.run_verify("--framework-source", "/source")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "requires both --framework-source and --tool-provider-source",
+            result.stderr,
+        )
+
     def test_source_mode_rejects_package_flags(self):
         result = self.run_verify("--auth-version", "1.2.3")
         self.assertNotEqual(result.returncode, 0)

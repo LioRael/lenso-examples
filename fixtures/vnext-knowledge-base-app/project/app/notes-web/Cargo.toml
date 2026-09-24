@@ -10,11 +10,11 @@ root-slot = "web"
 
 [dependencies]
 base64 = "0.22"
-lenso = "=0.5.23"
+lenso = "=0.5.26"
 lenso-auth-sdk = "=0.2.3"
 lenso-capability-auth = "=0.2.0"
-lenso-capability-http-endpoint = "=0.3.2"
-lenso-capability-agent-tool-provider = "=0.2.2"
+lenso-capability-http-endpoint = "=0.3.4"
+lenso-capability-agent-tool-provider = "=0.3.0"
 lenso-capability-secrets = "=0.1.4"
 lenso-kernel = "=0.3.11"
 serde = { version = "1", features = ["derive"] }

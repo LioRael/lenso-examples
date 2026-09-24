@@ -30,6 +30,8 @@ parser.add_argument("--cli", default="lenso")
 parser.add_argument("--auth-source", help="local API Token Auth source crate (default mode)")
 parser.add_argument("--jobs-source", help="local Jobs source crate (default mode)")
 parser.add_argument("--secrets-source", help="local environment Secrets source crate (default mode)")
+parser.add_argument("--framework-source", help="local Rust framework checkout for unpublished source-mode dependencies")
+parser.add_argument("--tool-provider-source", help="local Agent Tool Provider Capability crate for unpublished source-mode dependencies")
 parser.add_argument(
     "--package-only", action="store_true",
     help="adopt Auth, Jobs, and Secrets only from exact catalog-bound .crate inputs",
@@ -81,6 +83,22 @@ OPERATOR_EXAMPLES = {
     "auth": "api-token-operator",
     "jobs": "jobs-operator",
 }
+FRAMEWORK_PATCH_PACKAGES = (
+    "lenso",
+    "lenso-app-plan",
+    "lenso-capability-http-endpoint",
+    "lenso-capability-http-endpoint-macros",
+    "lenso-contract-authoring",
+    "lenso-contract-authoring-macros",
+    "lenso-contract-codegen",
+    "lenso-contract-runtime",
+    "lenso-guest-sdk",
+    "lenso-kernel",
+    "lenso-native-adapter",
+    "lenso-native-adapter-macros",
+    "lenso-plugin-authoring",
+    "lenso-runtime-codec",
+)
 MAX_LINKED_SOURCE_FILES = 4096
 MAX_LINKED_SOURCE_BYTES = 128 * 1024 * 1024
 
@@ -226,6 +244,12 @@ def build_adopted_operator(project, root, name, version, archive):
 
 def package_inputs():
     source_flags = [f"--{name}-source" for name in PLUGIN_IDS if getattr(args, f"{name}_source")]
+    source_flags.extend(
+        flag for flag, value in (
+            ("--framework-source", args.framework_source),
+            ("--tool-provider-source", args.tool_provider_source),
+        ) if value
+    )
     if source_flags:
         parser.error(f"--package-only cannot use source checkouts: {', '.join(source_flags)}")
     required = ["linked_snapshot", "trust"]
@@ -252,9 +276,55 @@ def package_inputs():
     return snapshot, trust, releases
 
 
+def candidate_framework_inputs():
+    if bool(args.framework_source) != bool(args.tool_provider_source):
+        parser.error("source-mode candidate dependency resolution requires both --framework-source and --tool-provider-source")
+    if not args.framework_source:
+        return None
+    framework = Path(args.framework_source).resolve()
+    provider = Path(args.tool_provider_source).resolve()
+    manifest = fixture / "project" / "app" / "notes-web" / "Cargo.toml"
+    with manifest.open("rb") as stream:
+        direct = tomllib.load(stream)["dependencies"]
+    patches = {name: framework / "crates" / name for name in FRAMEWORK_PATCH_PACKAGES}
+    patches["lenso-capability-agent-tool-provider"] = provider
+    for name, crate in patches.items():
+        manifest = crate / "Cargo.toml"
+        if not manifest.is_file():
+            parser.error(f"candidate {name} is missing Cargo.toml: {manifest}")
+        with manifest.open("rb") as stream:
+            package = tomllib.load(stream)["package"]
+        if package["name"] != name:
+            parser.error(f"candidate source must contain {name}: {manifest}")
+        if name in direct and direct[name] != f"={package['version']}":
+            parser.error(
+                f"candidate {name}@{package['version']} does not match "
+                f"the reference App's exact {direct[name]} pin"
+            )
+    return patches
+
+
+def use_candidate_cargo_home(root, patches):
+    previous = Path(os.environ.get("CARGO_HOME", Path.home() / ".cargo")).resolve()
+    cargo_home = root / "candidate-cargo-home"
+    cargo_home.mkdir(mode=0o700)
+    for name in ("registry", "git"):
+        cache = previous / name
+        if cache.is_dir():
+            (cargo_home / name).symlink_to(cache, target_is_directory=True)
+    lines = ["[patch.crates-io]"]
+    lines.extend(
+        f"{name} = {{ path = {json.dumps(str(crate))} }}"
+        for name, crate in sorted(patches.items())
+    )
+    (cargo_home / "config.toml").write_text("\n".join(lines) + "\n")
+    os.environ["CARGO_HOME"] = str(cargo_home)
+
+
 if args.package_only:
     repositories = None
     linked_snapshot, trust, releases = package_inputs()
+    candidate_patches = None
 else:
     package_flags = [
         "linked_snapshot", "trust",
@@ -263,6 +333,7 @@ else:
     supplied = [f"--{name.replace('_', '-')}" for name in package_flags if getattr(args, name)]
     if supplied:
         parser.error(f"package inputs require --package-only: {', '.join(supplied)}")
+    candidate_patches = candidate_framework_inputs()
     missing = [f"--{name}-source" for name in PLUGIN_IDS if not getattr(args, f"{name}_source")]
     if missing:
         parser.error(f"source mode requires {', '.join(missing)}")
@@ -384,6 +455,8 @@ def command_version(command):
 
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
     root = Path(temporary)
+    if candidate_patches:
+        use_candidate_cargo_home(root, candidate_patches)
     source = root / "source"
     phases = []
 

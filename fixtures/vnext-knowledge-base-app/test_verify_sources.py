@@ -12,6 +12,28 @@ VERIFY = Path(__file__).with_name("verify.py")
 
 
 class VerifySourcePreflightTests(unittest.TestCase):
+    def test_rejects_framework_source_that_does_not_match_exact_pin(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-source-test-") as temporary:
+            root = Path(temporary)
+            lenso = root / "framework" / "crates" / "lenso"
+            lenso.mkdir(parents=True)
+            (lenso / "Cargo.toml").write_text(
+                '[package]\nname = "lenso"\nversion = "0.5.25"\n', encoding="utf-8"
+            )
+            result = subprocess.run(
+                [
+                    sys.executable, str(VERIFY), "--framework-source", str(root / "framework"),
+                    "--tool-provider-source", str(root / "provider"),
+                ],
+                env=os.environ | {"LENSO_REFERENCE_DATABASE_URL": "postgresql://invalid"},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("candidate lenso@0.5.25 does not match", result.stderr)
+            self.assertNotIn("FileNotFoundError", result.stderr)
+
     def test_rejects_a_jobs_checkout_without_plugin_identity(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-source-test-") as temporary:
             root = Path(temporary)
