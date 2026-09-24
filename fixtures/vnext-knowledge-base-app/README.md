@@ -231,8 +231,9 @@ temporary URL and test credential, then keeps the source-deleted Host running
 for up to ten minutes. The parent directory must exist and cannot be
 non-sticky writable by other users; an existing file or symlink at the target
 path is refused. Delete the handoff file after browser automation completes;
-the verifier will then perform its restart checks and shut down normally. On
-timeout or `KeyboardInterrupt`, it attempts to remove the still-present file
+the verifier then reads the browser's final excerpt policy, checks later inline
+processing against that value, performs its restart checks, and shuts down
+normally. On timeout or `KeyboardInterrupt`, it attempts to remove the still-present file
 after checking its inode. On POSIX, a handoff running on the main thread also
 temporarily catches `SIGTERM` so normal cleanup can run, then restores the
 previous handler. These are best-effort safeguards: deletion is not atomic with

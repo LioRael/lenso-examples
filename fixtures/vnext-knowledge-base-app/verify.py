@@ -23,6 +23,7 @@ from pathlib import Path
 
 import tomllib
 from browser_handoff import browser_handoff
+from excerpt_expectations import expected_excerpt
 from runtime_environment import build_runtime_environment
 from unadopt_probe import copy_unadopt_probe
 
@@ -913,6 +914,12 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         if args.browser_handoff:
             with browser_handoff(args.browser_handoff, tokens["user-a"], url) as handoff:
                 handoff.wait_for_removal()
+            # The browser may update this App-owned policy. Subsequent lifecycle
+            # checks must follow the value that the real App will retain.
+            settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
+            assert isinstance(settings["excerpt_limit"], int)
+            assert 16 <= settings["excerpt_limit"] <= 512
+            assert isinstance(settings["revision"], int) and settings["revision"] >= 2
     finally:
         stop(process, reader, transcript)
 
@@ -929,7 +936,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             url.rstrip("/") + "/notes", method="POST", expected=201, token=tokens["user-a"],
             body={"title": "Disabled Jobs", "body": inline_body},
         )
-        assert inline["excerpt"] == inline_body[:47] + "…"
+        assert inline["excerpt"] == expected_excerpt(inline_body, settings["excerpt_limit"])
         assert inline["job_id"] == "inline:" + inline["id"]
         assert inline["processing_status"] == "succeeded"
     finally:
@@ -994,7 +1001,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         )
         assert without_jobs["job_id"] == "inline:" + without_jobs["id"]
         assert without_jobs["processing_status"] == "succeeded"
-        assert without_jobs["excerpt"] == removed_jobs_body[:47] + "…"
+        assert without_jobs["excerpt"] == expected_excerpt(
+            removed_jobs_body, settings["excerpt_limit"]
+        )
     finally:
         stop(process, reader, transcript)
 
