@@ -117,8 +117,8 @@ disabled or removed, the same TypeScript Plugin follows its declared optional
 dependency and completes deterministic excerpts inline. Removing Jobs moves
 its Plugin Root to recoverable local trash; it does not erase the PostgreSQL
 knowledge records or uninstall the immutable Host distribution. A separate
-versioned upgrade still requires an exact consumable second Release and is
-not implied by this removal check.
+versioned upgrade requires two exact signed Releases and is not implied by
+this removal check.
 
 ### Exact package inputs for external providers
 
@@ -136,6 +136,31 @@ CARGO_HOME=/scratch/cargo-home LENSO_REFERENCE_DATABASE_URL=postgresql://... pyt
   --jobs-version "$JOBS_VERSION" --jobs-crate "$JOBS_CRATE" \
   --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE"
 ```
+
+To exercise a controlled Secrets version switch, include the second Release
+in that same signed snapshot:
+
+```sh
+CARGO_HOME=/scratch/cargo-home LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
+  --cli /absolute/path/to/lenso --package-only \
+  --linked-snapshot "$SIGNED_SNAPSHOT" --trust "$CATALOG_TRUST" \
+  --auth-version "$AUTH_VERSION" --auth-crate "$AUTH_CRATE" \
+  --jobs-version "$JOBS_VERSION" --jobs-crate "$JOBS_CRATE" \
+  --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE" \
+  --secrets-upgrade-version "$NEXT_SECRETS_VERSION" \
+  --secrets-upgrade-crate "$NEXT_SECRETS_CRATE"
+```
+
+The verifier first runs the App with the selected Secrets version. It then
+rejects a mismatched archive without changing that selection, uses signed
+`lenso app add --replace` to select the second version, and builds a new Host.
+`app check` and `app show` must pass for the new distribution. After a
+controlled stop and restart, existing notes, settings, and Jobs history must
+remain available, cross-user denial must still hold, and a new Job must
+complete. The old source and App-owned Secrets configuration remain intact.
+This tests a planned restart, not live request draining, a Jobs Plugin upgrade,
+database migration, or automatic rollback. Neither Release is supplied by
+this repository; a local test catalog does not establish official listing.
 
 Each version must be an exact Cargo version, not `latest` or a range. The
 verifier rejects source-checkout arguments in this mode, copies no sibling
@@ -182,8 +207,8 @@ selected. The prior Host authority validates the explicit optional-dependency
 selection, then is removed before a fresh `app build`. The verifier runs
 `app check`/`app show` on that new distribution and processes a real note
 through the no-Jobs path. This does not alter the main
-runtime-removal scenario. A separate Release remains necessary to prove a
-versioned upgrade.
+runtime-removal scenario. The optional Secrets upgrade probe requires a
+separate exact Release; Jobs removal alone does not prove an upgrade.
 
 The signed directory binds the operator's own source to the selected `.crate`;
 it does not sign the resulting machine code or its transitive dependencies, or
@@ -204,9 +229,8 @@ concurrent writer outside that container.
 Inside the same sandbox, run the narrow argument and preflight checks without PostgreSQL using
 `python3 -m unittest discover -s . -p 'test_verify_*.py'`. No exact published
 Auth/Jobs/Secrets package cohort, verified crate-derived operators, or second
-versioned Release is bundled with this fixture. Until those inputs exist and
-the full verifier succeeds, the package-only, public-registry, and upgrade
-acceptance gates remain unverified.
+versioned Release is bundled with this fixture. These tests alone do not
+establish package-only, public-registry, or upgrade acceptance.
 
 After a successful run, `verify.py` prints one `MEASUREMENT` JSON line. Its
 phases separate consumer preparation, candidate Plugin operator setup, App

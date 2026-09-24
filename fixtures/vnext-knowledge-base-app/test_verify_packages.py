@@ -85,6 +85,28 @@ class VerifyPackagePreflightTests(unittest.TestCase):
                 "--jobs-version must be an exact Cargo version", result.stderr
             )
 
+    def test_upgrade_requires_both_exact_distinct_inputs(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
+            root = Path(temporary)
+            arguments = self.package_arguments(root)
+            upgrade = root / "secrets-1.2.4.crate"
+            upgrade.write_bytes(b"second release probe")
+            cases = (
+                (["--secrets-upgrade-version", "1.2.4"], "must be supplied together"),
+                (["--secrets-upgrade-version", "latest", "--secrets-upgrade-crate", upgrade], "must be an exact Cargo version"),
+                (["--secrets-upgrade-version", "1.2.3", "--secrets-upgrade-crate", upgrade], "must differ"),
+            )
+            for flags, expected in cases:
+                with self.subTest(flags=flags):
+                    result = self.run_verify(*arguments, *flags)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(expected, result.stderr)
+
+    def test_source_mode_rejects_upgrade_inputs(self):
+        result = self.run_verify("--secrets-upgrade-version", "1.2.4")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("package inputs require --package-only", result.stderr)
+
     def test_package_mode_rejects_detached_operator(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
             arguments = self.package_arguments(Path(temporary))

@@ -43,6 +43,8 @@ parser.add_argument("--trust", help="public trust configuration for package-only
 for provider in ("auth", "jobs", "secrets"):
     parser.add_argument(f"--{provider}-version", help=f"exact {provider} Plugin package version")
     parser.add_argument(f"--{provider}-crate", help=f"signed {provider} .crate archive")
+parser.add_argument("--secrets-upgrade-version", help="exact second Secrets Release for a controlled upgrade probe")
+parser.add_argument("--secrets-upgrade-crate", help="signed .crate archive for the second Secrets Release")
 parser.add_argument(
     "--browser-handoff",
     type=Path,
@@ -275,7 +277,21 @@ def package_inputs():
             parser.error(f"--{name}-crate must name a .crate archive: {archive}")
         releases[name] = (f"{plugin_id}@{version}", archive)
 
-    return snapshot, trust, releases
+    upgrade = None
+    if bool(args.secrets_upgrade_version) != bool(args.secrets_upgrade_crate):
+        parser.error("--secrets-upgrade-version and --secrets-upgrade-crate must be supplied together")
+    if args.secrets_upgrade_version:
+        version = args.secrets_upgrade_version
+        if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", version):
+            parser.error(f"--secrets-upgrade-version must be an exact Cargo version: {version!r}")
+        if version == args.secrets_version:
+            parser.error("--secrets-upgrade-version must differ from --secrets-version")
+        archive = regular_file(args.secrets_upgrade_crate, "--secrets-upgrade-crate")
+        if archive.suffix != ".crate":
+            parser.error(f"--secrets-upgrade-crate must name a .crate archive: {archive}")
+        upgrade = (f"{PLUGIN_IDS['secrets']}@{version}", archive)
+
+    return snapshot, trust, releases, upgrade
 
 
 def candidate_framework_inputs():
@@ -325,11 +341,11 @@ def use_candidate_cargo_home(root, patches):
 
 if args.package_only:
     repositories = None
-    linked_snapshot, trust, releases = package_inputs()
+    linked_snapshot, trust, releases, upgrade_release = package_inputs()
     candidate_patches = None
 else:
     package_flags = [
-        "linked_snapshot", "trust",
+        "linked_snapshot", "trust", "secrets_upgrade_version", "secrets_upgrade_crate",
         *(f"{name}_{field}" for name in PLUGIN_IDS for field in ("version", "crate")),
     ]
     supplied = [f"--{name.replace('_', '-')}" for name in package_flags if getattr(args, name)]
@@ -343,6 +359,7 @@ else:
         name: repository_for(getattr(args, f"{name}_source"), plugin_id)
         for name, plugin_id in PLUGIN_IDS.items()
     }
+    upgrade_release = None
 
 
 def run(command, **kwargs):
@@ -698,6 +715,8 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         root, database_url, signing_secret, token_pepper
     )
     unadopt_receipt = None
+    upgrade_receipt = None
+    upgrade_probe = None
     if args.package_only:
         with measured("consumer_build", "app_check_show"):
             intent = distribution / "intent"
@@ -806,6 +825,10 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                     "rebuilt_app_check_show": True,
                     "rebuilt_app_processed_without_jobs": True,
                 }
+        if upgrade_release:
+            with measured("consumer_preparation", "upgrade_source_snapshot"):
+                upgrade_probe = root / "upgrade-app"
+                copy_unadopt_probe(project, upgrade_probe)
     with measured("plugin_candidate_setup", "runtime_credentials"):
         tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
@@ -923,6 +946,129 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     finally:
         stop(process, reader, transcript)
 
+    if upgrade_probe:
+        with measured("consumer_build", "signed_secrets_upgrade"):
+            previous_coordinate, previous_archive = releases["secrets"]
+            upgrade_coordinate, upgrade_archive = upgrade_release
+            previous_version = previous_coordinate.rsplit("@", 1)[1]
+            upgrade_version = upgrade_coordinate.rsplit("@", 1)[1]
+            previous_source = upgrade_probe / "vendor" / "lenso" / PLUGIN_IDS["secrets"] / previous_version
+            upgraded_source = upgrade_probe / "vendor" / "lenso" / PLUGIN_IDS["secrets"] / upgrade_version
+            previous_lock = (previous_source / ".lenso-linked-source.json").read_bytes()
+            config = upgrade_probe / "plugins" / PLUGIN_IDS["secrets"] / "default.toml"
+            config_before = config.read_bytes()
+            manifest = upgrade_probe / "lenso.toml"
+            manifest_before = manifest.read_bytes()
+            check_environment = package_build_environment(root / "host-build-home")
+            add = [
+                cli, "app", "add", "--root", str(upgrade_probe), "--no-install",
+                "--replace", "--linked-snapshot", str(linked_snapshot),
+                "--trust", str(trust), "--crate",
+            ]
+            rejected = subprocess.run(
+                add + [str(previous_archive), upgrade_coordinate],
+                env=check_environment, capture_output=True, text=True, check=False,
+            )
+            if rejected.returncode == 0 or "digest" not in rejected.stderr:
+                raise RuntimeError("signed replacement did not reject a mismatched .crate")
+            if (manifest.read_bytes() != manifest_before or config.read_bytes() != config_before
+                    or (previous_source / ".lenso-linked-source.json").read_bytes() != previous_lock
+                    or upgraded_source.exists()):
+                raise RuntimeError("failed signed replacement changed the selected App")
+            run(add + [str(upgrade_archive), upgrade_coordinate], env=check_environment)
+            lock_bytes = (upgraded_source / ".lenso-linked-source.json").read_bytes()
+            lock = json.loads(lock_bytes)
+            if (lock["plugin_id"] != PLUGIN_IDS["secrets"]
+                    or lock["version"] != upgrade_version
+                    or lock["crate_digest"] != "sha256:" + sha256_file(upgrade_archive)
+                    or lock["source_digest"] != linked_source_digest(upgraded_source)):
+                raise RuntimeError("upgraded Secrets source differs from its signed release")
+            if (config.read_bytes() != config_before
+                    or (previous_source / ".lenso-linked-source.json").read_bytes() != previous_lock):
+                raise RuntimeError("Secrets replacement changed App-owned configuration or old source")
+            with manifest.open("rb") as stream:
+                selected_sources = tomllib.load(stream)["plugin_sources"]
+            old_path = f"vendor/lenso/{PLUGIN_IDS['secrets']}/{previous_version}"
+            new_path = f"vendor/lenso/{PLUGIN_IDS['secrets']}/{upgrade_version}"
+            if old_path in selected_sources or selected_sources.count(new_path) != 1:
+                raise RuntimeError("Secrets replacement did not select exactly the new version")
+            upgraded_distribution = root / "dist-upgraded"
+            run([
+                cli, "app", "build", "--root", str(upgrade_probe),
+                "--out", str(upgraded_distribution),
+            ], env=check_environment)
+            upgraded_intent = upgraded_distribution / "intent"
+            run([cli, "app", "check", "--root", str(upgraded_intent)], env=check_environment)
+            shown = json.loads(subprocess.run(
+                [cli, "app", "show", "--root", str(upgraded_intent), "--json"],
+                check=True, capture_output=True, text=True, env=check_environment,
+            ).stdout)
+            if f"{PLUGIN_IDS['secrets']}/default" not in {instance["id"] for instance in shown["instances"]}:
+                raise RuntimeError("upgraded App lost its Secrets Instance")
+            old_host_digest = sha256_file(distribution / ".lenso" / "host-build.json")
+            new_host_digest = sha256_file(upgraded_distribution / ".lenso" / "host-build.json")
+            if old_host_digest == new_host_digest:
+                raise RuntimeError("upgraded App reused the previous Host authority")
+            shutil.rmtree(upgrade_probe)
+
+        upgraded_tokens = issue_tokens()
+        process, reader, transcript, upgraded_url = launch(
+            cli, upgraded_distribution, root, runtime_environment
+        )
+        try:
+            if http_json(
+                upgraded_url.rstrip("/") + "/notes/" + created["id"],
+                token=upgraded_tokens["user-a"],
+            ) != created:
+                raise RuntimeError("Secrets upgrade changed an existing note")
+            if http_json(
+                upgraded_url.rstrip("/") + "/settings", token=upgraded_tokens["user-a"]
+            ) != settings:
+                raise RuntimeError("Secrets upgrade changed App-owned settings")
+            durable = http_json(
+                upgraded_url.rstrip("/") + "/job-status/" + created["job_id"],
+                token=upgraded_tokens["user-a"],
+            )
+            if durable != {"attempts": 1, "jobId": created["job_id"], "status": "succeeded"}:
+                raise RuntimeError("Secrets upgrade changed durable Jobs history")
+            expect_http_error(
+                upgraded_url.rstrip("/") + "/notes/" + created["id"], 404,
+                token=upgraded_tokens["user-b"],
+            )
+            upgraded_note = http_json(
+                upgraded_url.rstrip("/") + "/notes", method="POST", expected=201,
+                token=upgraded_tokens["user-a"],
+                body={"title": "After Secrets upgrade", "body": "The signed upgrade keeps durable work usable."},
+            )
+            if upgraded_note["processing_status"] != "queued":
+                raise RuntimeError("upgraded App did not enqueue new work")
+            if http_json(
+                upgraded_url.rstrip("/") + "/jobs/process-next", method="POST", body={},
+                token=upgraded_tokens["user-a"],
+            ) != {"processed": True}:
+                raise RuntimeError("upgraded App did not process queued work")
+            upgraded_note = http_json(
+                upgraded_url.rstrip("/") + "/notes/" + upgraded_note["id"],
+                token=upgraded_tokens["user-a"],
+            )
+            if upgraded_note["processing_status"] != "succeeded":
+                raise RuntimeError("upgraded App did not complete new work")
+        finally:
+            stop(process, reader, transcript)
+        upgrade_receipt = {
+            "plugin_id": PLUGIN_IDS["secrets"],
+            "from_version": previous_version,
+            "to_version": upgrade_version,
+            "from_crate_digest": "sha256:" + sha256_file(previous_archive),
+            "to_crate_digest": lock["crate_digest"],
+            "old_host_authority_sha256": old_host_digest,
+            "new_host_authority_sha256": new_host_digest,
+            "failed_digest_preserved_old_selection": True,
+            "configuration_and_old_source_preserved": True,
+            "rebuilt_app_check_show": True,
+            "source_deleted_runtime_preserved_data_and_processed_new_job": True,
+        }
+
     process, reader, transcript, url = launch(
         cli, distribution, root, runtime_environment, app_root=lifecycle_root
     )
@@ -1022,6 +1168,7 @@ print("MEASUREMENT " + json.dumps({
     "package_only_app_lock_sha256": package_only_lock_sha256,
     "operator_receipts": operator_receipts,
     "unadopt_receipt": unadopt_receipt,
+    "upgrade_receipt": upgrade_receipt,
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
     "distribution_bytes": distribution_bytes,
     "phases": phases,
