@@ -24,6 +24,7 @@ from pathlib import Path
 import tomllib
 from browser_handoff import browser_handoff
 from runtime_environment import build_runtime_environment
+from unadopt_probe import copy_unadopt_probe
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--cli", default="lenso")
@@ -714,10 +715,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             jobs_version = jobs_coordinate.rsplit("@", 1)[1]
             with tempfile.TemporaryDirectory(prefix="unadopt-probe-", dir=root) as probe_name:
                 probe = Path(probe_name) / "app"
-                shutil.copytree(
-                    project, probe,
-                    ignore=shutil.ignore_patterns("host-build.json", "host-catalog.json"),
-                )
+                copy_unadopt_probe(project, probe)
                 probe_host_authority = probe / ".lenso" / "host-build.json"
                 probe_host_authority.parent.mkdir(exist_ok=True)
                 shutil.copyfile(distribution / ".lenso" / "host-build.json", probe_host_authority)
