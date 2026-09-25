@@ -314,6 +314,16 @@ CARGO_HOME=/scratch/cargo-home LENSO_REFERENCE_DATABASE_URL=postgresql://... pyt
   --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE"
 ```
 
+For a CLI that requires explicit authorization before compiling adopted linked
+Cargo code, add `--trust-linked-build-from-crates` to the verifier command. The
+verifier computes each `--trust-linked-build PLUGIN_ID@VERSION=sha256:DIGEST`
+from the exact `.crate` bytes **after** signed adoption and checks it against
+the adopted source lock. The main build authorizes Auth, Jobs, and Secrets;
+the unadopted build excludes Jobs; a Secrets upgrade authorizes the new exact
+Secrets archive. Omitting this opt-in preserves older CLI compatibility. This
+authorization does not sandbox package build scripts or make an unreviewed
+archive safe to build on a privileged machine.
+
 For the repeated Host and adopted Auth/Jobs operator builds in this verifier,
 `LENSO_REFERENCE_CARGO_TARGET_DIR` may name one absolute, task-owned,
 non-symlink directory. This reuses Cargo build artifacts across the operators

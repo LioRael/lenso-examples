@@ -19,6 +19,75 @@ VERIFY = Path(__file__).with_name("verify.py")
 
 
 class VerifyPackagePreflightTests(unittest.TestCase):
+    def test_linked_build_trust_uses_only_selected_exact_crate_bytes(self):
+        module = ast.parse(VERIFY.read_text(encoding="utf-8"))
+        function = next(
+            node for node in module.body
+            if isinstance(node, ast.FunctionDef) and node.name == "trust_linked_build_flags"
+        )
+        compiled = compile(ast.Module(body=[function], type_ignores=[]), str(VERIFY), "exec")
+        plugin_ids = {
+            "auth": "lenso.auth.api-token",
+            "jobs": "lenso.jobs",
+            "secrets": "lenso.secrets.env",
+        }
+        namespace = {
+            "Path": Path,
+            "PLUGIN_IDS": plugin_ids,
+            "stat": stat,
+            "json": json,
+            "sha256_file": lambda path: hashlib.sha256(path.read_bytes()).hexdigest(),
+        }
+        exec(compiled, namespace)
+        trust_flags = namespace["trust_linked_build_flags"]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            releases = {}
+            for name, plugin_id in plugin_ids.items():
+                archive = root / f"{name}-1.2.3.crate"
+                archive.write_bytes(f"{name} package".encode())
+                source = root / "vendor" / "lenso" / plugin_id / "1.2.3"
+                source.mkdir(parents=True)
+                (source / ".lenso-linked-source.json").write_text(json.dumps({
+                    "schema_version": 1,
+                    "plugin_id": plugin_id,
+                    "version": "1.2.3",
+                    "crate_digest": "sha256:" + hashlib.sha256(archive.read_bytes()).hexdigest(),
+                }), encoding="utf-8")
+                releases[name] = (f"{plugin_id}@1.2.3", archive)
+
+            all_flags = trust_flags(root, releases)
+            self.assertEqual(all_flags[::2], ["--trust-linked-build"] * 3)
+            for name, value in zip(plugin_ids, all_flags[1::2]):
+                coordinate, archive = releases[name]
+                self.assertEqual(
+                    value, f"{coordinate}=sha256:{hashlib.sha256(archive.read_bytes()).hexdigest()}"
+                )
+
+            remaining = {name: releases[name] for name in ("auth", "secrets")}
+            self.assertEqual(len(trust_flags(root, remaining)), 4)
+            self.assertNotIn("lenso.jobs@", " ".join(trust_flags(root, remaining)))
+
+            new_archive = root / "secrets-1.2.4.crate"
+            new_archive.write_bytes(b"new secrets package")
+            new_source = root / "vendor" / "lenso" / plugin_ids["secrets"] / "1.2.4"
+            new_source.mkdir(parents=True)
+            (new_source / ".lenso-linked-source.json").write_text(json.dumps({
+                "schema_version": 1,
+                "plugin_id": plugin_ids["secrets"],
+                "version": "1.2.4",
+                "crate_digest": "sha256:" + hashlib.sha256(new_archive.read_bytes()).hexdigest(),
+            }), encoding="utf-8")
+            upgraded = releases | {"secrets": (f"{plugin_ids['secrets']}@1.2.4", new_archive)}
+            upgraded_flags = trust_flags(root, upgraded)
+            self.assertIn("lenso.secrets.env@1.2.4=sha256:", upgraded_flags[-1])
+            self.assertNotIn("lenso.secrets.env@1.2.3=", " ".join(upgraded_flags))
+
+            releases["jobs"][1].write_bytes(b"changed package")
+            with self.assertRaisesRegex(RuntimeError, "exact signed .crate"):
+                trust_flags(root, releases)
+
     def test_opt_in_task_cargo_target_is_offline_and_shared_across_builds(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -242,6 +311,11 @@ class VerifyPackagePreflightTests(unittest.TestCase):
 
     def test_source_mode_rejects_package_flags(self):
         result = self.run_verify("--auth-version", "1.2.3")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("package inputs require --package-only", result.stderr)
+
+    def test_source_mode_rejects_linked_build_trust(self):
+        result = self.run_verify("--trust-linked-build-from-crates")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("package inputs require --package-only", result.stderr)
 

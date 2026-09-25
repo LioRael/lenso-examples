@@ -44,6 +44,10 @@ parser.add_argument(
 )
 parser.add_argument("--linked-snapshot", help="signed linked Cargo snapshot for package-only mode")
 parser.add_argument("--trust", help="public trust configuration for package-only mode")
+parser.add_argument(
+    "--trust-linked-build-from-crates", action="store_true",
+    help="explicitly allow Host builds of the exact signed .crate inputs in package-only mode",
+)
 for provider in ("auth", "jobs", "secrets"):
     parser.add_argument(f"--{provider}-version", help=f"exact {provider} Plugin package version")
     parser.add_argument(f"--{provider}-crate", help=f"signed {provider} .crate archive")
@@ -138,6 +142,26 @@ def sha256_file(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def trust_linked_build_flags(project, selected_releases):
+    flags = []
+    for name, (coordinate, archive) in selected_releases.items():
+        plugin_id = PLUGIN_IDS[name]
+        version = coordinate.rsplit("@", 1)[1]
+        if coordinate != f"{plugin_id}@{version}":
+            raise RuntimeError(f"{name} release has an unexpected Plugin coordinate")
+        source_lock = project / "vendor" / "lenso" / plugin_id / version / ".lenso-linked-source.json"
+        metadata = source_lock.lstat()
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 4096:
+            raise RuntimeError(f"{name} adopted source lock is not a bounded regular file")
+        lock = json.loads(source_lock.read_bytes())
+        crate_digest = "sha256:" + sha256_file(archive)
+        if (lock.get("schema_version") != 1 or lock.get("plugin_id") != plugin_id
+                or lock.get("version") != version or lock.get("crate_digest") != crate_digest):
+            raise RuntimeError(f"{name} adopted source differs from its exact signed .crate")
+        flags.extend(("--trust-linked-build", f"{coordinate}={crate_digest}"))
+    return flags
 
 
 if args.web_client_package:
@@ -365,7 +389,8 @@ if args.package_only:
     candidate_patches = None
 else:
     package_flags = [
-        "linked_snapshot", "trust", "secrets_upgrade_version", "secrets_upgrade_crate",
+        "linked_snapshot", "trust", "trust_linked_build_from_crates",
+        "secrets_upgrade_version", "secrets_upgrade_crate",
         *(f"{name}_{field}" for name in PLUGIN_IDS for field in ("version", "crate")),
     ]
     supplied = [f"--{name.replace('_', '-')}" for name in package_flags if getattr(args, name)]
@@ -744,7 +769,10 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             {"env": package_build_environment(root / "host-build-home")}
             if args.package_only else {}
         )
-        run([cli, "app", "build", "--root", str(project), "--out", str(distribution)], **build_kwargs)
+        build_command = [cli, "app", "build", "--root", str(project), "--out", str(distribution)]
+        if args.trust_linked_build_from_crates:
+            build_command.extend(trust_linked_build_flags(project, releases))
+        run(build_command, **build_kwargs)
     runtime_environment = build_runtime_environment(
         root, database_url, signing_secret, token_pepper
     )
@@ -814,10 +842,14 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                 if probe_host_authority.exists():
                     raise RuntimeError("unadopted App build would reuse prior Host authority")
                 removed_distribution = root / "dist-unadopted"
-                run([
+                removed_build = [
                     cli, "app", "build", "--root", str(probe),
                     "--out", str(removed_distribution),
-                ], env=check_environment)
+                ]
+                if args.trust_linked_build_from_crates:
+                    remaining_releases = {name: releases[name] for name in ("auth", "secrets")}
+                    removed_build.extend(trust_linked_build_flags(probe, remaining_releases))
+                run(removed_build, env=check_environment)
                 removed_intent = removed_distribution / "intent"
                 run([cli, "app", "check", "--root", str(removed_distribution)], env=check_environment)
                 shown = json.loads(subprocess.run(
@@ -1073,10 +1105,14 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             if old_path in selected_sources or selected_sources.count(new_path) != 1:
                 raise RuntimeError("Secrets replacement did not select exactly the new version")
             upgraded_distribution = root / "dist-upgraded"
-            run([
+            upgraded_build = [
                 cli, "app", "build", "--root", str(upgrade_probe),
                 "--out", str(upgraded_distribution),
-            ], env=check_environment)
+            ]
+            if args.trust_linked_build_from_crates:
+                upgraded_releases = releases | {"secrets": upgrade_release}
+                upgraded_build.extend(trust_linked_build_flags(upgrade_probe, upgraded_releases))
+            run(upgraded_build, env=check_environment)
             upgraded_intent = upgraded_distribution / "intent"
             run([cli, "app", "check", "--root", str(upgraded_distribution)], env=check_environment)
             shown = json.loads(subprocess.run(
