@@ -29,16 +29,58 @@ upload records the request-pinned policy revision as a decimal string in its
 response and attachment row. The database operator adds this nullable column
 without replacing old attachment records.
 
-This is currently the Plugin-side contract only. The generated `lenso app
-build` Host does not yet bind a Host-owned file or HTTPS snapshot to the Plugin,
-so the standard verifier still exercises the unchanged default. Do not treat
-the field as an App-owned `plugins/` option or pass policy data through Plugin
-environment variables. Host bootstrap, polling, expiry/revocation and real
-HTTP acceptance remain separate integration work; this fixture alone is not
-A6 completion or a configuration-center provider. The pending Host binding
-must authorize the exact `lenso.reference.knowledge-base/default` Plugin
-Instance and `attachment-policy` object against the Plugin's
-`attachment_policy_schema()` before opening the listener.
+The generated native Host recognizes this private binding only because the
+selected KnowledgeBase package declares `host-bindings =
+["attachment-policy@1"]`. It does not infer the interface from the Plugin ID.
+The optional `lenso app start --business-snapshot-policy` file is Host-owned,
+not an App-owned `plugins/` option or Plugin environment variable. For a
+prepared App distribution, a file source can be selected with an absolute
+policy path (substitute a real absolute snapshot path):
+
+```json
+{
+  "schema": "lenso.host-business-snapshot-policy.v1",
+  "object": {
+    "plugin_id": "lenso.reference.knowledge-base",
+    "instance_key": "default",
+    "object_key": "attachment-policy"
+  },
+  "source": {
+    "kind": "file",
+    "reference": "operator-attachment-policy",
+    "path": "/absolute/path/attachment-policy.json"
+  },
+  "poll_interval_millis": 1000,
+  "max_stale_millis": 30000
+}
+```
+
+The source file is a separate versioned document, atomically replaced by its
+operator:
+
+```json
+{
+  "schema": "lenso.business-snapshot.v1",
+  "revision": 1,
+  "object": {
+    "plugin_id": "lenso.reference.knowledge-base",
+    "instance_key": "default",
+    "object_key": "attachment-policy"
+  },
+  "value": { "max_attachment_bytes": 262144 }
+}
+```
+
+Run `lenso app start --from dist --business-snapshot-policy
+/absolute/path/host-policy.json --check` to require a valid initial source
+before readiness, then omit `--check` for continuous polling. Source loss,
+wrong object or conflicting revision, and expiry make new uploads unavailable
+until a fresh authorized snapshot is accepted. The Host authorization uses the
+Plugin-owned `attachment_policy_schema()` and exact selected linked `default`
+Instance.
+The standard verifier still exercises the unchanged default; a full
+database-backed HTTP run of this optional binding remains separate acceptance
+work, and this is not a configuration-center provider.
 
 The React source under `project/frontend/` consumes generated types and the
 browser runtime from an independently packed `@lenso/web-client` candidate.
