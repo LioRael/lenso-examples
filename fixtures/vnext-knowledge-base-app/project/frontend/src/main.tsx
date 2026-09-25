@@ -2,6 +2,7 @@ import { StrictMode, useMemo, useRef, useState, type ChangeEvent, type FormEvent
 import { createRoot } from 'react-dom/client';
 import { LensoApiError, createLensoWebClient, unwrap } from '@lenso/web-client';
 import type { paths } from './generated/api';
+import { processQueuedJob, type JobState } from './process-job';
 import './styles.css';
 
 type Note = {
@@ -70,13 +71,22 @@ function App() {
     setNote(undefined);
     setStatus('Creating…');
     const data = new FormData(event.currentTarget);
+    let savedNote: Note | undefined;
     try {
       const created = unwrap<Note>(await api.POST('/notes', {
         body: { title: String(data.get('title') ?? ''), body: String(data.get('body') ?? '') },
       }));
+      savedNote = created;
+      setNote(created);
       if (created.processing_status === 'queued') {
         setStatus('Queued; processing durable excerpt job…');
-        unwrap(await api.POST('/jobs/process-next'));
+        await processQueuedJob(created.job_id, {
+          inspect: async (jobId) => unwrap<JobState>(await api.GET('/job-status/{job_id}', {
+            params: { path: { job_id: jobId } },
+          })),
+          claim: async () => unwrap<{ processed: boolean }>(await api.POST('/jobs/process-next')),
+          isRetryableClaimError: (error) => error instanceof LensoApiError && error.response.status === 502,
+        });
       }
       const read = unwrap<Note>(await api.GET('/notes/{note_id}', {
         params: { path: { note_id: created.id } },
@@ -84,7 +94,7 @@ function App() {
       setNote(read);
       setStatus('Created, processed, and read back through the typed public API.');
     } catch (error) {
-      setStatus(problem(error));
+      setStatus(savedNote ? `Note ${savedNote.id} was saved; follow-up did not complete: ${problem(error)}` : problem(error));
     } finally {
       setSubmitting(false);
     }
