@@ -1,0 +1,47 @@
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/.gitignore
+  s_7d146975368699::t_2d8dc43be5af82 1
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/src/plugin.ts
+  s_7d146975368699::t_2300b38453695f 1-203
+fixtures/vnext-knowledge-base-app/package-candidates/UPGRADE.md
+  s_7d146975368699::t_5d42288dd5e3b8 1-82
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/package.json
+  s_7d146975368699::t_2300b38453695f 1-44
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/src/excerpt.ts
+  s_7d146975368699::t_2300b38453695f 1-9
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/README.md
+  s_7d146975368699::t_2d8dc43be5af82 1-18
+fixtures/vnext-knowledge-base-app/package-candidates/sign-local-upgrade.mjs
+  s_7d146975368699::t_2d8dc43be5af82 1-108
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/LICENSE
+  s_7d146975368699::t_7475c95f082ade 1-21
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/src/jobs.generated.ts
+  s_7d146975368699::t_3c472f383938bd 1-594
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/tsconfig.json
+  s_7d146975368699::t_f686654d4415a9 1-12
+fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/bun.lock
+  s_946f5fc0924703::t_aed6ba3891cbe5 1-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "13e58c74cb799422bc804dbaeebadf35de3699f0",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    },
+    "s_946f5fc0924703": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d9d4-b6f3-70f3-85a2-0e35943eb843",
+        "model": "unknown"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
