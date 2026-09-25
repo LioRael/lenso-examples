@@ -842,6 +842,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         distribution / ".lenso" / "host-build.json",
         host_authority,
     )
+    bundle_inventory = lifecycle_root / "bundles.json"
+    shutil.copyfile(distribution / "bundles.json", bundle_inventory)
+    assert sha256_file(bundle_inventory) == sha256_file(distribution / "bundles.json")
     shutil.copytree(project / "plugins", lifecycle_root / "plugins")
     jobs_configuration = lifecycle_root / "plugins" / "lenso.jobs" / "default.toml"
     jobs_configuration_text = jobs_configuration.read_text()
@@ -1153,6 +1156,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     removed_roots = list((lifecycle_root / ".lenso" / "trash").glob("lenso.jobs-*"))
     assert len(removed_roots) == 1
     assert (removed_roots[0] / "default.toml").read_text() == jobs_configuration_text
+    assert sha256_file(bundle_inventory) == sha256_file(distribution / "bundles.json")
     run([cli, "app", "check", "--root", str(lifecycle_root)])
     shown = json.loads(subprocess.run(
         [cli, "app", "show", "--root", str(lifecycle_root), "--json"],
