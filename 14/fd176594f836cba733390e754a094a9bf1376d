@@ -1,0 +1,21 @@
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml
+  s_7d146975368699::t_36bb765c253ca9 14
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.lock
+  s_7d146975368699::t_6e96e43298c5ba 721,733,800,803,875,912,926,942
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "14fd176594f836cba733390e754a094a9bf1376d",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
