@@ -1,0 +1,34 @@
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_983d1b476e5236 67-69,143-158,539,544-547,1248
+  s_7d146975368699::t_00a2fc8820795a 66
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_0467fadfd2e77b 95-97,103
+fixtures/vnext-knowledge-base-app/test_verify_packages.py
+  s_7d146975368699::t_7c5a4a02108249 199-218
+fixtures/vnext-knowledge-base-app/project/frontend/bun.lock
+  s_79b354079556b6::t_201330fb4e8995 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bcc6a0fccf25fb9828ccd3fd8e568f7cb49b4b62",
+  "prompts": {},
+  "sessions": {
+    "s_79b354079556b6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d8c7-4cad-7041-9eb8-f235301aa5c5",
+        "model": "unknown"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    },
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
