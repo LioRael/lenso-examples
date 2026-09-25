@@ -209,8 +209,8 @@ def build_adopted_operator(project, root, name, version, archive):
     source, lock_bytes = adopted_operator_source(project, name, version, archive)
     manifest = source / "Cargo.toml"
     example = OPERATOR_EXAMPLES[name]
-    target = root / "operator-targets" / name
     cargo_environment = package_build_environment(root / "operator-home" / name)
+    target = Path(cargo_environment.get("CARGO_TARGET_DIR", root / "operator-targets" / name))
     if not (source / "Cargo.lock").is_file():
         run(
             ["cargo", "generate-lockfile", "--offline", "--manifest-path", str(manifest)],

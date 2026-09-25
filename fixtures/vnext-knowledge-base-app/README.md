@@ -311,12 +311,15 @@ CARGO_HOME=/scratch/cargo-home LENSO_REFERENCE_DATABASE_URL=postgresql://... pyt
   --secrets-version "$SECRETS_VERSION" --secrets-crate "$SECRETS_CRATE"
 ```
 
-For the repeated Host builds in this verifier, `LENSO_REFERENCE_CARGO_TARGET_DIR`
-may name one absolute, task-owned, non-symlink directory. This reuses Cargo
-build artifacts across the main, unadopted, and upgraded distributions while
-keeping the sandbox `CARGO_HOME`, offline source, package locks, and each Host
-source/receipt separate. Inspect ownership and running processes before later
-cleaning this target; a reused build cache is not publication evidence.
+For the repeated Host and adopted Auth/Jobs operator builds in this verifier,
+`LENSO_REFERENCE_CARGO_TARGET_DIR` may name one absolute, task-owned,
+non-symlink directory. This reuses Cargo build artifacts across the operators
+and the main, unadopted, and upgraded distributions while keeping the sandbox
+`CARGO_HOME`, offline source, package locks, and each Host source/receipt
+separate. Without the variable, adopted operators retain separate
+`operator-targets/<provider>` directories. Inspect ownership and running
+processes before later cleaning a reused target; a build cache is not
+publication evidence.
 
 To exercise a controlled Secrets version switch, include the second Release
 in that same signed snapshot:

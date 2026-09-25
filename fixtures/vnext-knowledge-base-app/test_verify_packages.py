@@ -1,7 +1,11 @@
 """Package-only verifier input and command-path checks."""
 
 import ast
+import hashlib
+import json
 import os
+import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -47,6 +51,87 @@ class VerifyPackagePreflightTests(unittest.TestCase):
                 }, clear=True):
                     with self.assertRaisesRegex(RuntimeError, "absolute non-symlink task target"):
                         package_build_environment(root / "home")
+
+    def test_adopted_operators_use_shared_target_only_when_opted_in(self):
+        module = ast.parse(VERIFY.read_text(encoding="utf-8"))
+        function = next(
+            node for node in module.body
+            if isinstance(node, ast.FunctionDef) and node.name == "build_adopted_operator"
+        )
+        compiled = compile(ast.Module(body=[function], type_ignores=[]), str(VERIFY), "exec")
+
+        for shared in (False, True):
+            with self.subTest(shared=shared), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                project = root / "project"
+                project.mkdir()
+                build_root = root / "build"
+                source = root / "adopted-source"
+                source.mkdir()
+                (source / "Cargo.toml").write_text('[package]\nname = "operator"\n', encoding="utf-8")
+                (source / "Cargo.lock").write_text("locked\n", encoding="utf-8")
+                lock_bytes = json.dumps({
+                    "crate_digest": "sha256:crate",
+                    "source_digest": "sha256:source",
+                }).encode()
+                builds = []
+
+                def run(command, *, cwd, env):
+                    self.assertEqual(cwd, project)
+                    builds.append((command, env))
+                    target = Path(command[command.index("--target-dir") + 1])
+                    example = command[command.index("--example") + 1]
+                    binary = target / "debug" / "examples" / example
+                    binary.parent.mkdir(parents=True, exist_ok=True)
+                    binary.write_bytes(example.encode())
+
+                def sha256_file(path):
+                    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+                namespace = {
+                    "Path": Path,
+                    "OPERATOR_EXAMPLES": {
+                        "auth": "api-token-operator",
+                        "jobs": "jobs-operator",
+                    },
+                    "PLUGIN_IDS": {
+                        "auth": "lenso.auth.api-token",
+                        "jobs": "lenso.jobs",
+                    },
+                    "adopted_operator_source": lambda *_: (source, lock_bytes),
+                    "package_build_environment": package_build_environment,
+                    "run": run,
+                    "stat": stat,
+                    "os": os,
+                    "shutil": shutil,
+                    "sha256_file": sha256_file,
+                    "json": json,
+                }
+                exec(compiled, namespace)
+                environment = {
+                    "PATH": "/usr/bin",
+                    "CARGO_HOME": str(root / "cargo-home"),
+                }
+                if shared:
+                    environment["LENSO_REFERENCE_CARGO_TARGET_DIR"] = str(root / "shared")
+                with patch.dict(os.environ, environment, clear=True):
+                    for name in ("auth", "jobs"):
+                        output, receipt = namespace["build_adopted_operator"](
+                            project, build_root, name, "1.2.3", root / f"{name}.crate"
+                        )
+                        self.assertEqual(output.read_bytes(), namespace["OPERATOR_EXAMPLES"][name].encode())
+                        self.assertEqual(receipt["operator_sha256"], sha256_file(output))
+
+                self.assertEqual(len(builds), 2)
+                for name, (command, cargo_environment) in zip(("auth", "jobs"), builds):
+                    expected = root / "shared" if shared else build_root / "operator-targets" / name
+                    self.assertEqual(Path(command[command.index("--target-dir") + 1]), expected)
+                    self.assertEqual(cargo_environment.get("CARGO_TARGET_DIR"), str(expected) if shared else None)
+                    self.assertIn("--locked", command)
+                    self.assertIn("--offline", command)
+                    self.assertEqual(cargo_environment["CARGO_NET_OFFLINE"], "true")
+                    self.assertEqual(cargo_environment["CARGO_HOME"], environment["CARGO_HOME"])
+                    self.assertEqual(cargo_environment["HOME"], str(build_root / "operator-home" / name))
 
     def test_built_app_check_uses_distribution_root_not_intent(self):
         source = VERIFY.read_text()
