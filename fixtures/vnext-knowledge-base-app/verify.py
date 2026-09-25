@@ -24,6 +24,7 @@ from pathlib import Path
 import tomllib
 from browser_handoff import browser_handoff
 from excerpt_expectations import expected_excerpt
+from http_problem_diagnostics import report_http_server_error
 from job_processing import process_queued_job
 from package_cargo_environment import package_build_environment
 from runtime_environment import build_runtime_environment
@@ -434,9 +435,13 @@ def http_json(url, method="GET", body=None, token=None, expected=200, idempotenc
     if idempotency_key is not None:
         headers["Idempotency-Key"] = idempotency_key
     request = urllib.request.Request(url, data=data, headers=headers, method=method)
-    with urllib.request.urlopen(request, timeout=10) as response:
-        assert response.status == expected
-        return json.load(response)
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            assert response.status == expected
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        report_http_server_error(error)
+        raise
 
 
 def expect_http_error(url, code, method="GET", body=None, token=None, idempotency_key=None):
