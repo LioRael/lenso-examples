@@ -25,6 +25,7 @@ import tomllib
 from browser_handoff import browser_handoff
 from excerpt_expectations import expected_excerpt
 from job_processing import process_queued_job
+from package_cargo_environment import package_build_environment
 from runtime_environment import build_runtime_environment
 from unadopt_probe import copy_unadopt_probe
 
@@ -196,20 +197,6 @@ def adopted_operator_source(project, name, version, archive):
         if not cargo_lock.is_file() or "sha256:" + sha256_file(cargo_lock) != archive_lock_digest:
             raise RuntimeError(f"{name} signed archive Cargo.lock changed")
     return source, lock_bytes
-
-
-def package_build_environment(home):
-    if not os.environ.get("CARGO_HOME"):
-        raise RuntimeError("--package-only requires an explicit sandbox-local CARGO_HOME")
-    home.mkdir(parents=True, exist_ok=True)
-    environment = {
-        key: os.environ[key]
-        for key in ("PATH", "CARGO_HOME", "RUSTUP_HOME")
-        if key in os.environ
-    }
-    environment["HOME"] = str(home)
-    environment["CARGO_NET_OFFLINE"] = "true"
-    return environment
 
 
 def build_adopted_operator(project, root, name, version, archive):

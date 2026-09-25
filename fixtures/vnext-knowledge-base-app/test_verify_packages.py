@@ -7,11 +7,47 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+from package_cargo_environment import package_build_environment
 
 VERIFY = Path(__file__).with_name("verify.py")
 
 
 class VerifyPackagePreflightTests(unittest.TestCase):
+    def test_opt_in_task_cargo_target_is_offline_and_shared_across_builds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "task-target"
+            with patch.dict(os.environ, {
+                "PATH": "/usr/bin",
+                "CARGO_HOME": str(root / "cargo-home"),
+                "LENSO_REFERENCE_CARGO_TARGET_DIR": str(target),
+            }, clear=True):
+                first = package_build_environment(root / "first-home")
+                second = package_build_environment(root / "second-home")
+            self.assertEqual(first["CARGO_TARGET_DIR"], str(target))
+            self.assertEqual(second["CARGO_TARGET_DIR"], str(target))
+            self.assertEqual(first["CARGO_NET_OFFLINE"], "true")
+            self.assertEqual(first["CARGO_HOME"], str(root / "cargo-home"))
+            self.assertNotEqual(first["HOME"], second["HOME"])
+            self.assertTrue(target.is_dir())
+
+    def test_task_cargo_target_rejects_relative_or_symlink_paths(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            real = root / "real"
+            real.mkdir()
+            link = root / "link"
+            link.symlink_to(real, target_is_directory=True)
+            for target in ("relative-target", "/", str(link)):
+                with self.subTest(target=target), patch.dict(os.environ, {
+                    "CARGO_HOME": str(root / "cargo-home"),
+                    "LENSO_REFERENCE_CARGO_TARGET_DIR": target,
+                }, clear=True):
+                    with self.assertRaisesRegex(RuntimeError, "absolute non-symlink task target"):
+                        package_build_environment(root / "home")
+
     def test_built_app_check_uses_distribution_root_not_intent(self):
         source = VERIFY.read_text()
         roots = []
