@@ -190,7 +190,9 @@ dependency and completes deterministic excerpts inline. Removing Jobs moves
 its Plugin Root to recoverable local trash; it does not erase the PostgreSQL
 knowledge records or uninstall the immutable Host distribution. A separate
 versioned upgrade requires two exact signed Releases and is not implied by
-this removal check.
+this removal check. A local 0.1.1 npm candidate and signed replacement recipe
+live under `package-candidates/`; they do not by themselves prove a runtime
+upgrade.
 
 The Jobs check uses a five-second readiness deadline for the exact newly
 created job to reach `succeeded` with one attempt. A queue claim can initially
@@ -296,7 +298,6 @@ listener, namespace, selected SHA/Plan, and process start evidence. Remove
 the handoff to release the Native verifier only after both phases; then
 remove the local policy and stop only the task-owned processes. A passed
 corpus is local-workerd target evidence, not full-App or production support.
-
 ### Exact package inputs for external providers
 
 The default command above retains source-checkout adoption. To test the separate
@@ -425,9 +426,10 @@ concurrent writer outside that container.
 
 Inside the same sandbox, run the narrow argument and preflight checks without PostgreSQL using
 `python3 -m unittest discover -s . -p 'test_verify_*.py'`. No exact published
-Auth/Jobs/Secrets package cohort, verified crate-derived operators, or second
-versioned Release is bundled with this fixture. These tests alone do not
-establish package-only, public-registry, or upgrade acceptance.
+Auth/Jobs/Secrets package cohort or verified crate-derived operator binaries
+are bundled with this fixture. The second versioned knowledge-excerpt candidate
+is local-only. These tests alone do not establish package-only runtime,
+public-registry, or data-preserving upgrade acceptance.
 
 After a successful run, `verify.py` prints one `MEASUREMENT` JSON line. Its
 phases separate consumer preparation, candidate Plugin operator setup, App

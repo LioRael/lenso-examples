@@ -1,0 +1,44 @@
+{
+  "name": "@lenso/knowledge-excerpt",
+  "version": "0.1.1",
+  "description": "Knowledge excerpt Plugin for the Lenso reference App",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LioRael/lenso-examples.git",
+    "directory": "fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1"
+  },
+  "exports": {
+    ".": "./src/plugin.ts"
+  },
+  "files": [
+    "src/",
+    "bun.lock",
+    "tsconfig.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lenso/agent-tool-sdk": "0.1.0",
+    "@lenso/bun-plugin": "0.4.1",
+    "@lenso/contract-runtime": "0.3.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.0",
+    "typescript": "7.0.2"
+  },
+  "lenso": {
+    "pluginId": "lenso.reference.knowledge-excerpt",
+    "releaseVersion": "0.1.1",
+    "rootSlot": "tool-providers",
+    "runtime": "bun",
+    "source": "src/plugin.ts"
+  }
+}
