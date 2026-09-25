@@ -214,6 +214,24 @@ Worker's explicit `KNOWLEDGE_SETTINGS_BRIDGE_ORIGIN` to that bridge's printed
 disposable PostgreSQL database. No production Workers Auth/DB Capability is
 implied by this local sidecar.
 
+If ArcBox's ordinary host port publisher accepts but resets connections, keep
+all three processes in the same **internal** task-owned Docker network and use
+`verify_workers_settings_tunnel.py` only for PostgreSQL (5432) and workerd
+(8787). Run one tunnel per port, with the exact namespace-anchor container:
+
+```sh
+python3 verify_workers_settings_tunnel.py \
+  --container lenso-kb-settings-ns-925a --inside-port 5432
+python3 verify_workers_settings_tunnel.py \
+  --container lenso-kb-settings-ns-925a --inside-port 8787
+```
+
+Each prints its ephemeral host `127.0.0.1` listener. It refuses non-internal
+or multiply connected networks and never forwards the private bridge. The
+Native App uses the PostgreSQL listener; this corpus uses the workerd
+listener. Record those listener ports and the container's observed ID in the
+receipt. Do not substitute a public or `0.0.0.0` proxy.
+
 After the Native handoff appears, create the short-lived Host policy from
 the Auth-issued credentials without exposing raw tokens to the Guest:
 
