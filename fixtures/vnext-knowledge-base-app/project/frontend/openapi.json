@@ -162,7 +162,8 @@
           "filename": { "type": "string" },
           "media_type": { "type": "string" },
           "note_id": { "type": "string" },
-          "size": { "type": "integer", "minimum": 1 }
+          "size": { "type": "integer", "minimum": 1 },
+          "policy_revision": { "type": "string", "pattern": "^[1-9][0-9]*$" }
         },
         "additionalProperties": false
       },

@@ -20,6 +20,26 @@ The excerpt is deterministic and is not represented as a model result. The App
 captures the current settings revision when it accepts a note, and stale
 compare-and-set updates are rejected without changing the active value.
 
+The linked Rust Plugin also has a separate, optional Host binding for a
+versioned attachment-size ceiling. It preserves the existing 1 MiB default
+and never replaces the per-user PostgreSQL excerpt settings. A bound Host
+source must provide one validated `max_attachment_bytes` value from 1 through
+1,048,576; an unavailable bound source rejects new uploads. Each accepted
+upload records the request-pinned policy revision as a decimal string in its
+response and attachment row. The database operator adds this nullable column
+without replacing old attachment records.
+
+This is currently the Plugin-side contract only. The generated `lenso app
+build` Host does not yet bind a Host-owned file or HTTPS snapshot to the Plugin,
+so the standard verifier still exercises the unchanged default. Do not treat
+the field as an App-owned `plugins/` option or pass policy data through Plugin
+environment variables. Host bootstrap, polling, expiry/revocation and real
+HTTP acceptance remain separate integration work; this fixture alone is not
+A6 completion or a configuration-center provider. The pending Host binding
+must authorize the exact `lenso.reference.knowledge-base/default` Plugin
+Instance and `attachment-policy` object against the Plugin's
+`attachment_policy_schema()` before opening the listener.
+
 The React source under `project/frontend/` consumes generated types and the
 browser runtime from an independently packed `@lenso/web-client` candidate.
 The checked-in static assets keep the App build self-contained. To validate a

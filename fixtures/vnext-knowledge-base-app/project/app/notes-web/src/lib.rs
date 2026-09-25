@@ -19,7 +19,7 @@ use lenso_capability_http_endpoint::{
 use lenso_capability_secrets as secrets;
 use lenso_capability_secrets::{ResolveRequest, SecretsInvocationError};
 use lenso_kernel::{InvocationContext, RuntimeFailure};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 use sqlx::{PgPool, Row, postgres::PgPoolOptions};
 use uuid::Uuid;
 use zeroize::Zeroizing;
@@ -27,6 +27,54 @@ use zeroize::Zeroizing;
 const DATABASE_URL_SECRET: &str = "knowledge/database-url";
 const DEFAULT_EXCERPT_LIMIT: i64 = 96;
 const MAX_ATTACHMENT_BYTES: usize = 1024 * 1024;
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AttachmentPolicy {
+    #[serde(deserialize_with = "bounded_attachment_limit")]
+    pub max_attachment_bytes: u32,
+}
+
+pub fn attachment_policy_schema() -> serde_json::Value {
+    serde_json::json!({
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "max_attachment_bytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": MAX_ATTACHMENT_BYTES
+            }
+        },
+        "required": ["max_attachment_bytes"]
+    })
+}
+
+fn bounded_attachment_limit<'de, D>(deserializer: D) -> Result<u32, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let limit = u32::deserialize(deserializer)?;
+    if (1..=MAX_ATTACHMENT_BYTES as u32).contains(&limit) {
+        Ok(limit)
+    } else {
+        Err(D::Error::custom(
+            "max_attachment_bytes must be from 1 through 1048576",
+        ))
+    }
+}
+
+pub struct PinnedAttachmentPolicy {
+    pub revision: u64,
+    pub value: AttachmentPolicy,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct AttachmentPolicyUnavailable;
+
+pub trait AttachmentPolicySource {
+    fn capture(&self) -> Result<PinnedAttachmentPolicy, AttachmentPolicyUnavailable>;
+}
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -141,6 +189,8 @@ struct Attachment {
     media_type: String,
     note_id: String,
     size: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    policy_revision: Option<String>,
 }
 
 #[derive(Debug)]
@@ -155,6 +205,7 @@ pub struct KnowledgeBase {
     next_id: Rc<Cell<u64>>,
     notes: Rc<RefCell<BTreeMap<String, (String, Note)>>>,
     database: Rc<RefCell<Option<PgPool>>>,
+    attachment_policy: Option<Rc<dyn AttachmentPolicySource>>,
 }
 
 impl fmt::Debug for KnowledgeBase {
@@ -162,6 +213,7 @@ impl fmt::Debug for KnowledgeBase {
         formatter
             .debug_struct("KnowledgeBase")
             .field("database_ready", &self.database.borrow().is_some())
+            .field("attachment_policy_bound", &self.attachment_policy.is_some())
             .finish_non_exhaustive()
     }
 }
@@ -266,6 +318,10 @@ impl FromRequest<KnowledgeBase> for AuthenticatedUser {
 #[endpoint]
 #[allow(unknown_lints, clippy::unused_async, clippy::unused_async_trait_impl)]
 impl KnowledgeBase {
+    pub fn bind_attachment_policy(&mut self, source: Rc<dyn AttachmentPolicySource>) {
+        self.attachment_policy = Some(source);
+    }
+
     #[get("knowledge-base.home", "/")]
     async fn home(&self) -> Result<HandleResponse, Problem> {
         let mut response = response::text(StatusCode::OK, include_str!("../public/index.html"));
@@ -448,6 +504,7 @@ impl KnowledgeBase {
         Json(input): Json<UploadAttachment>,
     ) -> Result<(StatusCode, Json<Attachment>), Problem> {
         self.load_note(&user.0, &path.note_id).await?;
+        let policy = capture_attachment_policy(self.attachment_policy.as_ref())?;
         let Some(database) = self.database() else {
             return Err(Problem::new(
                 StatusCode::CONFLICT,
@@ -455,39 +512,8 @@ impl KnowledgeBase {
                 "file upload requires the PostgreSQL-backed application mode",
             ));
         };
-        if input.filename.trim().is_empty()
-            || input.filename.len() > 255
-            || input.media_type.trim().is_empty()
-            || input.media_type.len() > 127
-        {
-            return Err(Problem::new(
-                StatusCode::BAD_REQUEST,
-                "invalid_attachment",
-                "filename and media_type must be bounded non-empty strings",
-            ));
-        }
-        let content = decode_attachment_content(&input.content_base64)?;
-        let attachment = Attachment {
-            id: format!("attachment-{}", Uuid::now_v7()),
-            filename: input.filename,
-            media_type: input.media_type,
-            note_id: path.note_id,
-            size: content.len(),
-        };
-        sqlx::query(
-            "INSERT INTO knowledge_reference.attachments \
-             (owner_id, attachment_id, note_id, filename, media_type, content) \
-             VALUES ($1, $2, $3, $4, $5, $6)",
-        )
-        .bind(&user.0)
-        .bind(&attachment.id)
-        .bind(&attachment.note_id)
-        .bind(&attachment.filename)
-        .bind(&attachment.media_type)
-        .bind(&content)
-        .execute(&database)
-        .await
-        .map_err(database_error)?;
+        let (attachment, content) = prepare_attachment(path.note_id, input, policy)?;
+        store_attachment(&database, &user.0, &attachment, &content).await?;
         Ok((StatusCode::CREATED, Json(attachment)))
     }
 }
@@ -731,14 +757,102 @@ fn validated_note(input: &CreateNote) -> Result<(&str, &str), Problem> {
     Ok((title, body))
 }
 
-fn decode_attachment_content(encoded: &str) -> Result<Vec<u8>, Problem> {
+struct CapturedAttachmentPolicy {
+    max_bytes: usize,
+    revision: Option<u64>,
+}
+
+fn prepare_attachment(
+    note_id: String,
+    input: UploadAttachment,
+    policy: CapturedAttachmentPolicy,
+) -> Result<(Attachment, Vec<u8>), Problem> {
+    if input.filename.trim().is_empty()
+        || input.filename.len() > 255
+        || input.media_type.trim().is_empty()
+        || input.media_type.len() > 127
+    {
+        return Err(Problem::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_attachment",
+            "filename and media_type must be bounded non-empty strings",
+        ));
+    }
+    let content = decode_attachment_content(&input.content_base64, policy.max_bytes)?;
+    let attachment = Attachment {
+        id: format!("attachment-{}", Uuid::now_v7()),
+        filename: input.filename,
+        media_type: input.media_type,
+        note_id,
+        size: content.len(),
+        policy_revision: policy.revision.map(|revision| revision.to_string()),
+    };
+    Ok((attachment, content))
+}
+
+async fn store_attachment(
+    database: &PgPool,
+    owner_id: &str,
+    attachment: &Attachment,
+    content: &[u8],
+) -> Result<(), Problem> {
+    sqlx::query(
+        "INSERT INTO knowledge_reference.attachments \
+         (owner_id, attachment_id, note_id, filename, media_type, content, policy_revision) \
+         VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    )
+    .bind(owner_id)
+    .bind(&attachment.id)
+    .bind(&attachment.note_id)
+    .bind(&attachment.filename)
+    .bind(&attachment.media_type)
+    .bind(content)
+    .bind(&attachment.policy_revision)
+    .execute(database)
+    .await
+    .map_err(database_error)?;
+    Ok(())
+}
+
+fn capture_attachment_policy(
+    source: Option<&Rc<dyn AttachmentPolicySource>>,
+) -> Result<CapturedAttachmentPolicy, Problem> {
+    let Some(source) = source else {
+        return Ok(CapturedAttachmentPolicy {
+            max_bytes: MAX_ATTACHMENT_BYTES,
+            revision: None,
+        });
+    };
+    let pinned = source
+        .capture()
+        .map_err(|_| attachment_policy_unavailable())?;
+    let max_bytes = usize::try_from(pinned.value.max_attachment_bytes)
+        .map_err(|_| attachment_policy_unavailable())?;
+    if !(1..=MAX_ATTACHMENT_BYTES).contains(&max_bytes) || pinned.revision == 0 {
+        return Err(attachment_policy_unavailable());
+    }
+    Ok(CapturedAttachmentPolicy {
+        max_bytes,
+        revision: Some(pinned.revision),
+    })
+}
+
+fn attachment_policy_unavailable() -> Problem {
+    Problem::new(
+        StatusCode::SERVICE_UNAVAILABLE,
+        "attachment_policy_unavailable",
+        "the authorized attachment policy is unavailable",
+    )
+}
+
+fn decode_attachment_content(encoded: &str, max_bytes: usize) -> Result<Vec<u8>, Problem> {
     // Bound the decode allocation before inspecting attacker-controlled Base64.
-    let max_encoded_len = MAX_ATTACHMENT_BYTES.div_ceil(3) * 4;
+    let max_encoded_len = max_bytes.div_ceil(3) * 4;
     if encoded.len() > max_encoded_len {
         return Err(Problem::new(
             StatusCode::BAD_REQUEST,
             "invalid_attachment",
-            "attachment size must be from 1 byte through 1 MiB",
+            format!("attachment size must be from 1 through {max_bytes} bytes"),
         ));
     }
     let content = STANDARD.decode(encoded).map_err(|_| {
@@ -748,11 +862,11 @@ fn decode_attachment_content(encoded: &str) -> Result<Vec<u8>, Problem> {
             "content_base64 is not valid Base64",
         )
     })?;
-    if content.is_empty() || content.len() > MAX_ATTACHMENT_BYTES {
+    if content.is_empty() || content.len() > max_bytes {
         return Err(Problem::new(
             StatusCode::BAD_REQUEST,
             "invalid_attachment",
-            "attachment size must be from 1 byte through 1 MiB",
+            format!("attachment size must be from 1 through {max_bytes} bytes"),
         ));
     }
     Ok(content)
@@ -761,6 +875,27 @@ fn decode_attachment_content(encoded: &str) -> Result<Vec<u8>, Problem> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    struct TestAttachmentPolicySource {
+        revision: Cell<u64>,
+        calls: Cell<u32>,
+    }
+
+    impl AttachmentPolicySource for TestAttachmentPolicySource {
+        fn capture(&self) -> Result<PinnedAttachmentPolicy, AttachmentPolicyUnavailable> {
+            self.calls.set(self.calls.get() + 1);
+            let revision = self.revision.get();
+            if revision == 0 {
+                return Err(AttachmentPolicyUnavailable);
+            }
+            Ok(PinnedAttachmentPolicy {
+                revision,
+                value: AttachmentPolicy {
+                    max_attachment_bytes: if revision == 1 { 32 } else { 64 },
+                },
+            })
+        }
+    }
 
     #[test]
     fn trims_valid_notes_and_rejects_empty_fields_before_invocation() {
@@ -790,23 +925,165 @@ mod tests {
     #[test]
     fn attachment_decoder_bounds_allocations_and_rejects_invalid_payloads() {
         assert_eq!(
-            decode_attachment_content("cmVmZXJlbmNl").unwrap(),
+            decode_attachment_content("cmVmZXJlbmNl", MAX_ATTACHMENT_BYTES).unwrap(),
             b"reference"
         );
-        assert!(decode_attachment_content("").is_err());
-        assert!(decode_attachment_content("not Base64").is_err());
+        assert!(decode_attachment_content("", MAX_ATTACHMENT_BYTES).is_err());
+        assert!(decode_attachment_content("not Base64", MAX_ATTACHMENT_BYTES).is_err());
         assert_eq!(
-            decode_attachment_content(&STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES]))
-                .unwrap()
-                .len(),
+            decode_attachment_content(
+                &STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES]),
+                MAX_ATTACHMENT_BYTES
+            )
+            .unwrap()
+            .len(),
             MAX_ATTACHMENT_BYTES
         );
         assert!(
-            decode_attachment_content(&STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES + 1])).is_err()
+            decode_attachment_content(
+                &STANDARD.encode(vec![0; MAX_ATTACHMENT_BYTES + 1]),
+                MAX_ATTACHMENT_BYTES
+            )
+            .is_err()
         );
         assert!(
-            decode_attachment_content(&"A".repeat(MAX_ATTACHMENT_BYTES.div_ceil(3) * 4 + 1))
-                .is_err()
+            decode_attachment_content(
+                &"A".repeat(MAX_ATTACHMENT_BYTES.div_ceil(3) * 4 + 1),
+                MAX_ATTACHMENT_BYTES
+            )
+            .is_err()
         );
+    }
+
+    #[test]
+    fn attachment_policy_is_pinned_once_per_upload() {
+        let default = capture_attachment_policy(None).unwrap();
+        assert_eq!(default.max_bytes, MAX_ATTACHMENT_BYTES);
+        assert_eq!(default.revision, None);
+
+        let source = Rc::new(TestAttachmentPolicySource {
+            revision: Cell::new(1),
+            calls: Cell::new(0),
+        });
+        let bound: Rc<dyn AttachmentPolicySource> = source.clone();
+        let first = capture_attachment_policy(Some(&bound)).unwrap();
+        assert_eq!((first.max_bytes, first.revision), (32, Some(1)));
+        source.revision.set(2);
+        assert!(decode_attachment_content(&STANDARD.encode(vec![0; 33]), first.max_bytes).is_err());
+        assert_eq!(source.calls.get(), 1);
+
+        let second = capture_attachment_policy(Some(&bound)).unwrap();
+        assert_eq!((second.max_bytes, second.revision), (64, Some(2)));
+        assert_eq!(
+            decode_attachment_content(&STANDARD.encode(vec![0; 33]), second.max_bytes)
+                .unwrap()
+                .len(),
+            33
+        );
+        assert_eq!(source.calls.get(), 2);
+        source.revision.set(0);
+        assert!(capture_attachment_policy(Some(&bound)).is_err());
+    }
+
+    #[test]
+    fn attachment_policy_rejects_unbounded_or_unknown_values() {
+        for value in [
+            serde_json::json!({"max_attachment_bytes": 0}),
+            serde_json::json!({"max_attachment_bytes": MAX_ATTACHMENT_BYTES + 1}),
+            serde_json::json!({"max_attachment_bytes": 32, "extra": true}),
+        ] {
+            assert!(serde_json::from_value::<AttachmentPolicy>(value).is_err());
+        }
+        assert!(
+            serde_json::from_value::<AttachmentPolicy>(
+                serde_json::json!({"max_attachment_bytes": 32})
+            )
+            .is_ok()
+        );
+        assert_eq!(
+            attachment_policy_schema()["properties"]["max_attachment_bytes"]["maximum"],
+            serde_json::json!(MAX_ATTACHMENT_BYTES)
+        );
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    #[ignore = "requires a disposable PostgreSQL database prepared by knowledge-operator setup"]
+    async fn pinned_attachment_revision_reaches_the_durable_write() {
+        let database_url = std::env::var("LENSO_KNOWLEDGE_DATABASE_URL")
+            .expect("set LENSO_KNOWLEDGE_DATABASE_URL to a disposable PostgreSQL database");
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&database_url)
+            .await
+            .unwrap();
+        let owner = format!("policy-test-{}", Uuid::now_v7());
+        let note_id = format!("note-{}", Uuid::now_v7());
+        let job_id = format!("job-{}", Uuid::now_v7());
+        sqlx::query(
+            "INSERT INTO knowledge_reference.settings (owner_id, revision, excerpt_limit) VALUES ($1, 2, 48)",
+        )
+        .bind(&owner)
+        .execute(&pool)
+        .await
+        .unwrap();
+        sqlx::query(
+            "INSERT INTO knowledge_reference.notes \
+             (owner_id, note_id, title, body, excerpt, job_id, processing_status, config_revision) \
+             VALUES ($1, $2, 'policy test', 'body', '', $3, 'succeeded', 2)",
+        )
+        .bind(&owner)
+        .bind(&note_id)
+        .bind(&job_id)
+        .execute(&pool)
+        .await
+        .unwrap();
+
+        let source = Rc::new(TestAttachmentPolicySource {
+            revision: Cell::new(1),
+            calls: Cell::new(0),
+        });
+        let bound: Rc<dyn AttachmentPolicySource> = source.clone();
+        let pinned = capture_attachment_policy(Some(&bound)).unwrap();
+        source.revision.set(2);
+        let (attachment, content) = prepare_attachment(
+            note_id,
+            UploadAttachment {
+                content_base64: STANDARD.encode(b"policy write"),
+                filename: "policy.txt".to_owned(),
+                media_type: "text/plain".to_owned(),
+            },
+            pinned,
+        )
+        .unwrap();
+        store_attachment(&pool, &owner, &attachment, &content)
+            .await
+            .unwrap();
+        let row = sqlx::query(
+            "SELECT policy_revision, content FROM knowledge_reference.attachments \
+             WHERE owner_id = $1 AND attachment_id = $2",
+        )
+        .bind(&owner)
+        .bind(&attachment.id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(
+            row.get::<Option<String>, _>("policy_revision"),
+            Some("1".to_owned())
+        );
+        assert_eq!(row.get::<Vec<u8>, _>("content"), b"policy write");
+        assert_eq!(attachment.policy_revision.as_deref(), Some("1"));
+        assert_eq!(source.calls.get(), 1);
+
+        let settings = sqlx::query(
+            "SELECT revision, excerpt_limit FROM knowledge_reference.settings WHERE owner_id = $1",
+        )
+        .bind(&owner)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+        assert_eq!(settings.get::<i64, _>("revision"), 2);
+        assert_eq!(settings.get::<i64, _>("excerpt_limit"), 48);
+        pool.close().await;
     }
 }

@@ -63,10 +63,14 @@ async fn setup(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
              filename TEXT NOT NULL, \
              media_type TEXT NOT NULL, \
              content BYTEA NOT NULL CHECK (octet_length(content) BETWEEN 1 AND 1048576), \
+             policy_revision TEXT, \
              created_at TIMESTAMPTZ NOT NULL DEFAULT transaction_timestamp(), \
              PRIMARY KEY (owner_id, attachment_id), \
              FOREIGN KEY (owner_id, note_id) REFERENCES knowledge_reference.notes(owner_id, note_id) ON DELETE CASCADE)",
         )
+        .await?;
+    transaction
+        .execute("ALTER TABLE knowledge_reference.attachments ADD COLUMN IF NOT EXISTS policy_revision TEXT")
         .await?;
     transaction.commit().await
 }
@@ -85,6 +89,18 @@ async fn check(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
                 "knowledge_reference.{table} is missing"
             )));
         }
+    }
+    let policy_revision_exists: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM information_schema.columns \
+         WHERE table_schema = 'knowledge_reference' \
+         AND table_name = 'attachments' AND column_name = 'policy_revision')",
+    )
+    .fetch_one(pool)
+    .await?;
+    if !policy_revision_exists {
+        return Err(sqlx::Error::Protocol(
+            "knowledge_reference.attachments.policy_revision is missing".to_owned(),
+        ));
     }
     Ok(())
 }
