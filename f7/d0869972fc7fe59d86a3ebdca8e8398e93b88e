@@ -7,6 +7,8 @@ fixtures/vnext-knowledge-base-app/verify.py
   s_7d146975368699::t_8a6922f890c0be 595-600,632-640
   s_7d146975368699::t_9adbc7d922758e 655
   s_7d146975368699::t_30201be187354c 468-469
+  s_7d146975368699::t_2b2478561a3ddc 952-953,956
+  s_7d146975368699::t_68c0919df91fad 571-573,589,631,647
 fixtures/vnext-knowledge-base-app/package-candidates/UPGRADE.md
   s_7d146975368699::t_2ce03a67148397 80-105
 fixtures/vnext-knowledge-base-app/test_verify_packages.py
