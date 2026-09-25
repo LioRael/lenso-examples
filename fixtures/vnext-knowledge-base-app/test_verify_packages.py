@@ -319,6 +319,32 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("package inputs require --package-only", result.stderr)
 
+    def test_signed_excerpt_upgrade_requires_all_five_inputs(self):
+        result = self.run_verify("--excerpt-snapshot-r1", "/missing/snapshot.json")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("signed excerpt upgrade requires", result.stderr)
+        self.assertIn("--excerpt-snapshot-r2", result.stderr)
+        self.assertIn("--excerpt-trust", result.stderr)
+        self.assertIn("--excerpt-tgz-r1", result.stderr)
+        self.assertIn("--excerpt-tgz-r2", result.stderr)
+
+    def test_signed_excerpt_upgrade_rejects_package_provider_mode(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-upgrade-test-") as temporary:
+            root = Path(temporary)
+            snapshot = root / "snapshot.json"
+            trust = root / "trust.json"
+            tgz = root / "excerpt.tgz"
+            snapshot.write_text("{}", encoding="utf-8")
+            trust.write_text("{}", encoding="utf-8")
+            tgz.write_bytes(b"not a valid archive")
+            result = self.run_verify(
+                "--package-only", "--excerpt-snapshot-r1", snapshot,
+                "--excerpt-snapshot-r2", snapshot, "--excerpt-trust", trust,
+                "--excerpt-tgz-r1", tgz, "--excerpt-tgz-r2", tgz,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("requires source Auth/Jobs/Secrets inputs", result.stderr)
+
     def test_package_mode_rejects_non_exact_version(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
             arguments = self.package_arguments(Path(temporary))

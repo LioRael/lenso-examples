@@ -77,6 +77,29 @@ body contains a combining character or joined emoji; its new excerpt must
 end at a complete grapheme. Do not rerun schema operators against existing
 tables or reset the database for this check.
 
-This full runtime/data step has **not** been established merely by packing or
-signed adoption. Neither local success nor the registry URL in a snapshot
-means that 0.1.1 is available on npm.
+The optional `verify.py` path automates that focused check with the same
+temporary App and database across both builds. Supply the ordinary source
+Auth/Jobs/Secrets inputs plus all five excerpt inputs:
+
+```sh
+LENSO_REFERENCE_DATABASE_URL="$DISPOSABLE_DB_URL" python3 verify.py \
+  --cli "$CLI" \
+  --auth-source "$AUTH_SOURCE" --jobs-source "$JOBS_SOURCE" \
+  --secrets-source "$SECRETS_SOURCE" \
+  --excerpt-snapshot-r1 "$CANDIDATES/knowledge-excerpt-0.1.1/dist/package-snapshot-r1.json" \
+  --excerpt-snapshot-r2 "$CANDIDATES/knowledge-excerpt-0.1.1/dist/package-snapshot-r2.json" \
+  --excerpt-trust "$CANDIDATES/knowledge-excerpt-0.1.1/dist/trust.json" \
+  --excerpt-tgz-r1 "$CANDIDATES/../project/app/excerpt/dist/lenso-knowledge-excerpt-0.1.0.tgz" \
+  --excerpt-tgz-r2 "$CANDIDATES/knowledge-excerpt-0.1.1/dist/lenso-knowledge-excerpt-0.1.1.tgz"
+```
+
+Run this only in an offline OS sandbox with read-only inputs and bounded
+resources. The opt-in path omits the fixture's local excerpt source, adopts
+both signed npm versions, installs frozen dependencies without lifecycle
+scripts, and grants build trust only for each exact adopted version. It does
+not exercise the separate `--package-only` Auth/Jobs/Secrets provider path.
+
+This full runtime/data step still requires a successful execution with a
+coherent current CLI and provider dependency closure; packing and signed
+adoption alone do not establish it. Neither local success nor the registry URL
+in a snapshot means that 0.1.1 is available on npm.

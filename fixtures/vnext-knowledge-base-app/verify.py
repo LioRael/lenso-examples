@@ -75,6 +75,11 @@ parser.add_argument(
     "--verify-business-snapshot", action="store_true",
     help="opt in to a Host-owned file policy and live PostgreSQL attachment probe",
 )
+parser.add_argument("--excerpt-snapshot-r1", help="signed 0.1.0 npm package snapshot")
+parser.add_argument("--excerpt-snapshot-r2", help="signed 0.1.1 npm package snapshot")
+parser.add_argument("--excerpt-trust", help="public trust configuration for both npm snapshots")
+parser.add_argument("--excerpt-tgz-r1", help="exact signed 0.1.0 npm archive")
+parser.add_argument("--excerpt-tgz-r2", help="exact signed 0.1.1 npm archive")
 args = parser.parse_args()
 cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
 fixture = Path(__file__).resolve().parent
@@ -288,6 +293,30 @@ def build_adopted_operator(project, root, name, version, archive):
         "cargo_lock_sha256": sha256_file(source / "Cargo.lock"),
         "operator_sha256": sha256_file(output),
     }
+EXCERPT_PLUGIN_ID = "lenso.reference.knowledge-excerpt"
+
+
+def excerpt_inputs():
+    names = (
+        "excerpt_snapshot_r1", "excerpt_snapshot_r2", "excerpt_trust",
+        "excerpt_tgz_r1", "excerpt_tgz_r2",
+    )
+    supplied = [name for name in names if getattr(args, name)]
+    if not supplied:
+        return None
+    missing = [f"--{name.replace('_', '-')}" for name in names if name not in supplied]
+    if missing:
+        parser.error(f"signed excerpt upgrade requires {', '.join(missing)}")
+    inputs = {name: regular_file(getattr(args, name), f"--{name.replace('_', '-')}") for name in names}
+    for name in ("excerpt_tgz_r1", "excerpt_tgz_r2"):
+        if inputs[name].suffix != ".tgz":
+            parser.error(f"--{name.replace('_', '-')} must name a .tgz archive")
+    return inputs
+
+
+upgrade_inputs = excerpt_inputs()
+if upgrade_inputs and args.package_only:
+    parser.error("signed excerpt upgrade currently requires source Auth/Jobs/Secrets inputs, not --package-only")
 
 
 def package_inputs():
@@ -411,6 +440,33 @@ def run(command, **kwargs):
     return subprocess.run(command, check=True, **kwargs)
 
 
+def adopt_excerpt(cli, project, inputs, revision, replace=False):
+    version = "0.1.0" if revision == 1 else "0.1.1"
+    command = [
+        cli, "app", "add", f"{EXCERPT_PLUGIN_ID}@{version}", "--root", str(project),
+        "--package-snapshot", str(inputs[f"excerpt_snapshot_r{revision}"]),
+        "--trust", str(inputs["excerpt_trust"]),
+        "--tgz", str(inputs[f"excerpt_tgz_r{revision}"]),
+    ]
+    if replace:
+        command.append("--replace")
+    result = run(command, capture_output=True, text=True)
+    print(result.stdout, end="")
+    grants = re.findall(r"--trust-adopted-build '([^']+)'", result.stdout)
+    expected = rf"{re.escape(EXCERPT_PLUGIN_ID)}@{re.escape(version)}=sha256:[0-9a-f]{{64}}"
+    if len(grants) != 1 or re.fullmatch(expected, grants[0]) is None:
+        raise RuntimeError(f"signed excerpt {version} adoption did not return one exact build grant")
+    return grants[0]
+
+
+def trusted_build(cli, project, distribution, grant):
+    run([
+        cli, "app", "build", "--root", str(project), "--out", str(distribution),
+        "--trust-adopted-build", grant,
+    ])
+    run([cli, "app", "check", "--root", str(distribution)])
+
+
 def operator_environment(*, cargo_home=None, **values):
     environment = os.environ | values
     if cargo_home is not None:
@@ -509,6 +565,96 @@ def expect_http_error(url, code, method="GET", body=None, token=None, idempotenc
         raise AssertionError(f"request must return HTTP {code}: {method} {url}")
 
 
+def verify_excerpt_upgrade(
+    cli, root, source, project, distribution, inputs, tokens, signing_secret, token_pepper
+):
+    runtime_environment = build_runtime_environment(
+        root, database_url, signing_secret, token_pepper
+    )
+    process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+    try:
+        settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
+        assert settings == {"excerpt_limit": 96, "revision": 1}
+        settings = http_json(
+            url.rstrip("/") + "/settings", method="PUT", token=tokens["user-a"],
+            body={"excerpt_limit": 48, "predecessor_revision": 1},
+        )
+        assert settings == {"excerpt_limit": 48, "revision": 2}
+        original_body = "The same stored note and durable job must survive the signed excerpt upgrade."
+        created = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201,
+            token=tokens["user-a"], body={"title": "Before upgrade", "body": original_body},
+        )
+        assert created["processing_status"] == "queued" and created["job_id"].startswith("job_")
+        process_queued_job(url, created["job_id"], tokens["user-a"], http_json)
+        note = http_json(url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"])
+        assert note["excerpt"] == expected_excerpt(original_body, settings["excerpt_limit"])
+        assert note["processing_status"] == "succeeded"
+        job = http_json(url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"])
+        assert job == {"attempts": 1, "jobId": created["job_id"], "status": "succeeded"}
+        pending = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201,
+            token=tokens["user-a"],
+            body={"title": "Queued before upgrade", "body": "This queued job crosses the upgrade."},
+        )
+        assert pending["processing_status"] == "queued" and pending["job_id"].startswith("job_")
+    finally:
+        stop(process, reader, transcript)
+
+    grant = adopt_excerpt(cli, project, inputs, 2, replace=True)
+    discovered = json.loads(run(
+        [cli, "app", "discover", "--root", str(project), "--json"],
+        capture_output=True, text=True,
+    ).stdout)
+    selected = [
+        candidate for candidate in discovered["candidates"]
+        if candidate["plugin_id"] == EXCERPT_PLUGIN_ID
+    ]
+    assert len(selected) == 1 and selected[0]["release_version"] == "0.1.1"
+    upgraded_source = project / "vendor" / "lenso" / "npm" / EXCERPT_PLUGIN_ID / "0.1.1"
+    run(["bun", "run", "check"], cwd=upgraded_source)
+    upgraded_distribution = root / "dist-upgraded"
+    trusted_build(cli, project, upgraded_distribution, grant)
+    shutil.rmtree(source)
+
+    process, reader, transcript, url = launch(
+        cli, upgraded_distribution, root, runtime_environment
+    )
+    try:
+        assert http_json(url.rstrip("/") + "/settings", token=tokens["user-a"]) == settings
+        assert http_json(
+            url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
+        ) == note
+        assert http_json(
+            url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"]
+        ) == job
+        process_queued_job(url, pending["job_id"], tokens["user-a"], http_json)
+        processed_pending = http_json(
+            url.rstrip("/") + "/notes/" + pending["id"], token=tokens["user-a"]
+        )
+        assert processed_pending["id"] == pending["id"]
+        assert processed_pending["job_id"] == pending["job_id"]
+        assert processed_pending["processing_status"] == "succeeded"
+        assert http_json(
+            url.rstrip("/") + "/job-status/" + pending["job_id"], token=tokens["user-a"]
+        ) == {"attempts": 1, "jobId": pending["job_id"], "status": "succeeded"}
+        unicode_body = "x" * 46 + "e\u0301" + " more text after the grapheme boundary"
+        upgraded_note = http_json(
+            url.rstrip("/") + "/notes", method="POST", expected=201,
+            token=tokens["user-a"], body={"title": "After upgrade", "body": unicode_body},
+        )
+        assert upgraded_note["processing_status"] == "queued"
+        process_queued_job(url, upgraded_note["job_id"], tokens["user-a"], http_json)
+        upgraded_note = http_json(
+            url.rstrip("/") + "/notes/" + upgraded_note["id"], token=tokens["user-a"]
+        )
+        assert upgraded_note["excerpt"] == "x" * 46 + "e\u0301…"
+        assert upgraded_note["processing_status"] == "succeeded"
+    finally:
+        stop(process, reader, transcript)
+    return upgraded_distribution
+
+
 def tree_logical_bytes(directory):
     """Count regular-file bytes without following links outside the consumer."""
     if not directory.exists():
@@ -529,6 +675,25 @@ def command_version(command):
     return subprocess.run(
         command, check=True, capture_output=True, text=True
     ).stdout.strip()
+
+
+def print_measurement(distribution_bytes, phases, provider_input_mode):
+    print("MEASUREMENT " + json.dumps({
+        "kind": "lenso.reference-build-measurement",
+        "environment": {
+            "os": platform.system(),
+            "machine": platform.machine(),
+            "python_version": platform.python_version(),
+            "cli_version": command_version([cli, "--version"]),
+            "cargo_version": command_version(["cargo", "--version"]),
+            "bun_version": command_version(["bun", "--version"]),
+        },
+        "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
+        "provider_input_mode": provider_input_mode,
+        "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
+        "distribution_bytes": distribution_bytes,
+        "phases": phases,
+    }, sort_keys=True))
 
 
 with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
@@ -553,14 +718,16 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             "consumer_disk_delta_bytes": tree_logical_bytes(root) - before,
         })
 
+    def fixture_ignore(directory, names):
+        ignored = set(shutil.ignore_patterns(
+            "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
+        )(directory, names))
+        if upgrade_inputs and Path(directory) == fixture / "project" / "app":
+            ignored.add("excerpt")
+        return ignored
+
     with measured("consumer_preparation", "fixture_copy"):
-        shutil.copytree(
-            fixture,
-            source,
-            ignore=shutil.ignore_patterns(
-                "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
-            ),
-        )
+        shutil.copytree(fixture, source, ignore=fixture_ignore)
     if web_client_package:
         with measured("frontend_authoring", "packed_web_client_and_react_build"):
             frontend = source / "project" / "frontend"
@@ -626,6 +793,12 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         ]
         auth_operator_cwd = candidates / "auth"
         jobs_operator_cwd = candidates / "jobs"
+
+    excerpt_grant = None
+    if upgrade_inputs:
+        assert not (project / "app" / "excerpt").exists()
+        with measured("consumer_preparation", "signed_excerpt_0_1_0_adoption"):
+            excerpt_grant = adopt_excerpt(cli, project, upgrade_inputs, 1)
 
     suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
     auth_schema = f"auth_reference_{suffix}"
@@ -759,9 +932,13 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
 '''
     )
 
-    excerpt = project / "app" / "excerpt"
+    excerpt = (
+        project / "vendor" / "lenso" / "npm" / EXCERPT_PLUGIN_ID / "0.1.0"
+        if upgrade_inputs else project / "app" / "excerpt"
+    )
     with measured("app_authoring", "typescript_install_and_check"):
-        run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
+        if not upgrade_inputs:
+            run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
         run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
     with measured("consumer_build", "app_build"):
@@ -772,7 +949,11 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         build_command = [cli, "app", "build", "--root", str(project), "--out", str(distribution)]
         if args.trust_linked_build_from_crates:
             build_command.extend(trust_linked_build_flags(project, releases))
+        if upgrade_inputs:
+            build_command.extend(("--trust-adopted-build", excerpt_grant))
         run(build_command, **build_kwargs)
+        if upgrade_inputs:
+            run([cli, "app", "check", "--root", str(distribution)])
     runtime_environment = build_runtime_environment(
         root, database_url, signing_secret, token_pepper
     )
@@ -899,6 +1080,18 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     with measured("plugin_candidate_setup", "runtime_credentials"):
         tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
+    if upgrade_inputs:
+        with measured("consumer_upgrade", "signed_excerpt_runtime_upgrade"):
+            upgraded_distribution = verify_excerpt_upgrade(
+                cli, root, source, project, distribution, upgrade_inputs, tokens,
+                signing_secret, token_pepper,
+            )
+        print_measurement(
+            tree_logical_bytes(upgraded_distribution), phases,
+            "signed_npm_excerpt_with_source_providers",
+        )
+        print("PASS: signed npm excerpt 0.1.0 to 0.1.1 replacement, readiness, PostgreSQL settings/note/job preservation, and grapheme-safe new excerpt")
+        raise SystemExit(0)
     lifecycle_root = root / "runtime-app"
     (lifecycle_root / ".lenso").mkdir(parents=True)
     host_authority = lifecycle_root / ".lenso" / "host-build.json"
