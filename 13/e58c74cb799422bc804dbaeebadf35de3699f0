@@ -20,6 +20,8 @@ fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/tsc
   s_7d146975368699::t_f686654d4415a9 1-12
 fixtures/vnext-knowledge-base-app/package-candidates/knowledge-excerpt-0.1.1/bun.lock
   s_946f5fc0924703::t_aed6ba3891cbe5 1-91
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_b262efb1d6ec6a 193-195,429-432
 ---
 {
   "schema_version": "authorship/3.0.0",
