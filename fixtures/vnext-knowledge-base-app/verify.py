@@ -64,6 +64,10 @@ parser.add_argument(
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
 )
 parser.add_argument(
+    "--web-client-sha256",
+    help="independently pinned SHA-256 of --web-client-package",
+)
+parser.add_argument(
     "--verify-business-snapshot", action="store_true",
     help="opt in to a Host-owned file policy and live PostgreSQL attachment probe",
 )
@@ -134,6 +138,22 @@ def sha256_file(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+if args.web_client_package:
+    if not args.web_client_sha256:
+        parser.error("--web-client-sha256 is required with --web-client-package")
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", args.web_client_sha256):
+        parser.error("--web-client-sha256 must be 64 hexadecimal characters")
+    web_client_package = regular_file(args.web_client_package, "--web-client-package")
+    web_client_sha256 = args.web_client_sha256.lower()
+    if sha256_file(web_client_package) != web_client_sha256:
+        parser.error("--web-client-package SHA-256 mismatch")
+else:
+    if args.web_client_sha256:
+        parser.error("--web-client-sha256 requires --web-client-package")
+    web_client_package = None
+    web_client_sha256 = None
 
 
 def linked_source_digest(root):
@@ -516,12 +536,15 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
                 "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
             ),
         )
-    if args.web_client_package:
+    if web_client_package:
         with measured("frontend_authoring", "packed_web_client_and_react_build"):
             frontend = source / "project" / "frontend"
             vendor = frontend / "vendor"
             vendor.mkdir()
-            shutil.copyfile(Path(args.web_client_package).resolve(), vendor / "lenso-web-client.tgz")
+            installed_package = vendor / "lenso-web-client.tgz"
+            shutil.copyfile(web_client_package, installed_package)
+            if sha256_file(installed_package) != web_client_sha256:
+                raise RuntimeError("copied --web-client-package SHA-256 mismatch")
             run(["bun", "install", "--frozen-lockfile"], cwd=frontend)
             run(["bun", "run", "generate"], cwd=frontend)
             run(["bun", "run", "typecheck"], cwd=frontend)
@@ -1222,6 +1245,7 @@ print("MEASUREMENT " + json.dumps({
     },
     "cache_state": "ambient Cargo and Bun caches; not a controlled cold or warm build",
     "provider_input_mode": "signed_crate_derived_operators" if args.package_only else "source_checkout",
+    "web_client_package_sha256": web_client_sha256,
     "package_only_app_lock_sha256": package_only_lock_sha256,
     "operator_receipts": operator_receipts,
     "unadopt_receipt": unadopt_receipt,

@@ -20,7 +20,7 @@
     },
   },
   "packages": {
-    "@lenso/web-client": ["@lenso/web-client@vendor/lenso-web-client.tgz", { "dependencies": { "openapi-fetch": "0.17.0" }, "bin": { "lenso-web-client": "./dist/cli.js" } }, "sha512-12ovH4rXRGChN2VRS3aeWxUW5uiLhkUJstjzaWpCAt6Rk99IiiMte8WsSzCwEIBJuBzLYXF+KNl9GEST3nCDbg=="],
+    "@lenso/web-client": ["@lenso/web-client@vendor/lenso-web-client.tgz", { "dependencies": { "openapi-fetch": "0.17.0" }, "bin": { "lenso-web-client": "./dist/cli.js" } }, "sha512-bP7dyuqZdSr5OjSGHVz9mvEx92UcgtNPaz5bIsA0HCTdsNERs9oWS+/lTVpnfzt1xlk6MMVpYqO7hFtYYwY5nw=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.150.0", "", {}, "sha512-rDS5/31E9HfPl/CIzGrn0DOlvBbXFseQ5URJ9sYMfstbKLD/c6Gm9vmRzRGDdAXyOIL4zmO37lc9RIwYqVruZw=="],
 

@@ -92,12 +92,15 @@ provider or a production source adapter.
 The React source under `project/frontend/` consumes generated types and the
 browser runtime from an independently packed `@lenso/web-client` candidate.
 The checked-in static assets keep the App build self-contained. To validate a
-frontend rebuild in a disposable consumer, supply that package to the verifier:
+frontend rebuild in a disposable consumer, supply that package and its
+independently recorded SHA-256 to the verifier. A frozen Bun install alone
+does not establish the identity of a local `file:` tarball:
 
 ```sh
 LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --cli /absolute/path/to/lenso \
   --web-client-package /absolute/path/to/lenso-web-client.tgz \
+  --web-client-sha256 "$EXPECTED_WEB_CLIENT_SHA256" \
   --framework-source /absolute/path/to/lenso-rust-checkout \
   --tool-provider-source /absolute/path/to/lenso-capability-agent-tool-provider \
   --auth-source /absolute/path/to/lenso-auth-plugin/crates/lenso-auth-api-token-plugin \

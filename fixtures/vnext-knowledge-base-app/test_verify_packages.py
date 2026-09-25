@@ -196,6 +196,26 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             result.stderr,
         )
 
+    def test_web_client_package_requires_matching_sha256_before_other_inputs(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-web-client-test-") as temporary:
+            package = Path(temporary) / "lenso-web-client.tgz"
+            package.write_bytes(b"candidate tarball")
+            missing = self.run_verify("--web-client-package", package)
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertIn("--web-client-sha256 is required", missing.stderr)
+            mismatch = self.run_verify(
+                "--web-client-package", package,
+                "--web-client-sha256", "0" * 64,
+            )
+            self.assertNotEqual(mismatch.returncode, 0)
+            self.assertIn("--web-client-package SHA-256 mismatch", mismatch.stderr)
+            self.assertNotIn("source mode requires", mismatch.stderr)
+            matching = self.run_verify(
+                "--web-client-package", package,
+                "--web-client-sha256", hashlib.sha256(b"candidate tarball").hexdigest(),
+            )
+            self.assertIn("source mode requires", matching.stderr)
+
     def test_package_mode_requires_complete_input_set(self):
         result = self.run_verify("--package-only", "--cli", "/no/cli")
         self.assertNotEqual(result.returncode, 0)
