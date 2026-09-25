@@ -795,7 +795,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                     "--out", str(removed_distribution),
                 ], env=check_environment)
                 removed_intent = removed_distribution / "intent"
-                run([cli, "app", "check", "--root", str(removed_intent)], env=check_environment)
+                run([cli, "app", "check", "--root", str(removed_distribution)], env=check_environment)
                 shown = json.loads(subprocess.run(
                     [cli, "app", "show", "--root", str(removed_intent), "--json"],
                     check=True, capture_output=True, text=True, env=check_environment,
@@ -1035,7 +1035,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                 "--out", str(upgraded_distribution),
             ], env=check_environment)
             upgraded_intent = upgraded_distribution / "intent"
-            run([cli, "app", "check", "--root", str(upgraded_intent)], env=check_environment)
+            run([cli, "app", "check", "--root", str(upgraded_distribution)], env=check_environment)
             shown = json.loads(subprocess.run(
                 [cli, "app", "show", "--root", str(upgraded_intent), "--json"],
                 check=True, capture_output=True, text=True, env=check_environment,

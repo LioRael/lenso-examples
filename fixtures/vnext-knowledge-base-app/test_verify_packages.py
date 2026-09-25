@@ -1,5 +1,6 @@
 """Package-only verifier input and command-path checks."""
 
+import ast
 import os
 import subprocess
 import sys
@@ -13,9 +14,27 @@ VERIFY = Path(__file__).with_name("verify.py")
 class VerifyPackagePreflightTests(unittest.TestCase):
     def test_built_app_check_uses_distribution_root_not_intent(self):
         source = VERIFY.read_text()
-        self.assertIn(
-            'run([cli, "app", "check", "--root", str(distribution)], env=check_environment)',
-            source,
+        roots = []
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name) or node.func.id != "run":
+                continue
+            if not node.args or not isinstance(node.args[0], ast.List):
+                continue
+            command = node.args[0].elts
+            if len(command) < 5 or not all(
+                isinstance(command[index], ast.Constant) and command[index].value == value
+                for index, value in ((1, "app"), (2, "check"), (3, "--root"))
+            ):
+                continue
+            root = command[4]
+            self.assertIsInstance(root, ast.Call)
+            self.assertIsInstance(root.func, ast.Name)
+            self.assertEqual(root.func.id, "str")
+            self.assertIsInstance(root.args[0], ast.Name)
+            roots.append(root.args[0].id)
+        self.assertCountEqual(
+            roots,
+            ("distribution", "removed_distribution", "upgraded_distribution", "lifecycle_root"),
         )
         self.assertIn(
             '[cli, "app", "show", "--root", str(intent), "--json"]',
