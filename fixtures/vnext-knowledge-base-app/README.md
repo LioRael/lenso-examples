@@ -158,7 +158,7 @@ LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
 
-The Rust business Plugin pins the current candidate `lenso` 0.5.26, HTTP
+The Rust business Plugin pins the current candidate `lenso` 0.5.27, HTTP
 Endpoint 0.3.4, and Agent Tool Provider 0.3.0 cohort. These versions are not
 all published. The two explicit source arguments are development inputs for
 that cohort: the verifier checks their package identities and exact direct
