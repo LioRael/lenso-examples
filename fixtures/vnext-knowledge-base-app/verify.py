@@ -24,6 +24,7 @@ from pathlib import Path
 import tomllib
 from browser_handoff import browser_handoff
 from excerpt_expectations import expected_excerpt
+from job_processing import process_queued_job
 from runtime_environment import build_runtime_environment
 from unadopt_probe import copy_unadopt_probe
 
@@ -911,10 +912,12 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         assert created["excerpt"] == ""
         assert created["job_id"].startswith("job_")
         assert created["processing_status"] == "queued"
-        processed = http_json(
-            url.rstrip("/") + "/jobs/process-next", method="POST", body={}, token=tokens["user-a"]
+        processed_status = process_queued_job(
+            url, created["job_id"], tokens["user-a"], http_json
         )
-        assert processed == {"processed": True}
+        assert processed_status == {
+            "attempts": 1, "jobId": created["job_id"], "status": "succeeded"
+        }
         created = http_json(
             url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
         )
@@ -1064,10 +1067,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             )
             if upgraded_note["processing_status"] != "queued":
                 raise RuntimeError("upgraded App did not enqueue new work")
-            if http_json(
-                upgraded_url.rstrip("/") + "/jobs/process-next", method="POST", body={},
-                token=upgraded_tokens["user-a"],
-            ) != {"processed": True}:
+            if process_queued_job(
+                upgraded_url, upgraded_note["job_id"], upgraded_tokens["user-a"], http_json
+            ) != {"attempts": 1, "jobId": upgraded_note["job_id"], "status": "succeeded"}:
                 raise RuntimeError("upgraded App did not process queued work")
             upgraded_note = http_json(
                 upgraded_url.rstrip("/") + "/notes/" + upgraded_note["id"],

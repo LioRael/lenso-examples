@@ -182,6 +182,12 @@ knowledge records or uninstall the immutable Host distribution. A separate
 versioned upgrade requires two exact signed Releases and is not implied by
 this removal check.
 
+The Jobs check uses a five-second readiness deadline for the exact newly
+created job to reach `succeeded` with one attempt. A queue claim can initially
+find no due job when the Host and disposable PostgreSQL clocks differ, or
+process older work first; neither outcome is treated as success for the new
+note.
+
 ### Exact package inputs for external providers
 
 The default command above retains source-checkout adoption. To test the separate
