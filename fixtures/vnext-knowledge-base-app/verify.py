@@ -23,6 +23,7 @@ from pathlib import Path
 
 import tomllib
 from browser_handoff import browser_handoff
+from business_snapshot_probe import verify_live_attachment_policy
 from excerpt_expectations import expected_excerpt
 from http_problem_diagnostics import report_http_server_error
 from job_processing import process_queued_job
@@ -61,6 +62,10 @@ parser.add_argument(
 parser.add_argument(
     "--web-client-package",
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
+)
+parser.add_argument(
+    "--verify-business-snapshot", action="store_true",
+    help="opt in to a Host-owned file policy and live PostgreSQL attachment probe",
 )
 args = parser.parse_args()
 cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
@@ -367,10 +372,12 @@ def operator_environment(*, cargo_home=None, **values):
     return environment
 
 
-def launch(cli, distribution, root, environment, app_root=None):
+def launch(cli, distribution, root, environment, app_root=None, business_snapshot_policy=None):
     command = [cli, "app", "start", "--from", str(distribution)]
     if app_root is not None:
         command.extend(["--root", str(app_root)])
+    if business_snapshot_policy is not None:
+        command.extend(["--business-snapshot-policy", str(business_snapshot_policy)])
     process = subprocess.Popen(
         command,
         env=environment,
@@ -719,6 +726,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     )
     unadopt_receipt = None
     upgrade_receipt = None
+    attachment_policy_receipt = None
     upgrade_probe = None
     if args.package_only:
         with measured("consumer_build", "app_check_show"):
@@ -978,6 +986,22 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     finally:
         stop(process, reader, transcript)
 
+    if args.verify_business_snapshot:
+        with measured("consumer_runtime", "host_business_snapshot_policy"):
+            attachment_policy_receipt = verify_live_attachment_policy(
+                cli=cli,
+                distribution=distribution,
+                root=root,
+                environment=runtime_environment,
+                database_url=database_url,
+                note_id=created["id"],
+                token=tokens["user-a"],
+                expected_settings=settings,
+                launch=launch,
+                stop=stop,
+                http_json=http_json,
+            )
+
     if upgrade_probe:
         with measured("consumer_build", "signed_secrets_upgrade"):
             previous_coordinate, previous_archive = releases["secrets"]
@@ -1201,6 +1225,7 @@ print("MEASUREMENT " + json.dumps({
     "operator_receipts": operator_receipts,
     "unadopt_receipt": unadopt_receipt,
     "upgrade_receipt": upgrade_receipt,
+    "attachment_policy_receipt": attachment_policy_receipt,
     "disk_scope": "logical regular-file bytes in the temporary consumer tree; external caches and databases excluded",
     "distribution_bytes": distribution_bytes,
     "phases": phases,

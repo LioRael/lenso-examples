@@ -78,9 +78,16 @@ wrong object or conflicting revision, and expiry make new uploads unavailable
 until a fresh authorized snapshot is accepted. The Host authorization uses the
 Plugin-owned `attachment_policy_schema()` and exact selected linked `default`
 Instance.
-The standard verifier still exercises the unchanged default; a full
-database-backed HTTP run of this optional binding remains separate acceptance
-work, and this is not a configuration-center provider.
+The standard verifier still exercises the unchanged default. To opt in to a
+disposable database-backed HTTP check of this Host binding, add
+`--verify-business-snapshot` to the verifier command below. It creates a
+private Host-owned file outside the App's Plugin Root, starts the exact built
+distribution with that policy, and checks revision 1, a revision 2 update,
+source loss and same-revision conflict failing closed, and revision 3 recovery.
+Three accepted uploads must persist their pinned policy revisions in the
+PostgreSQL attachment rows while the per-user settings remain unchanged. The
+probe uses only a fresh disposable database; it is not a configuration-center
+provider or a production source adapter.
 
 The React source under `project/frontend/` consumes generated types and the
 browser runtime from an independently packed `@lenso/web-client` candidate.
