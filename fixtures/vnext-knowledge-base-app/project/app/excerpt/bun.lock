@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "lenso-knowledge-excerpt",
+      "name": "@lenso/knowledge-excerpt",
       "dependencies": {
         "@lenso/agent-tool-sdk": "0.1.0",
         "@lenso/bun-plugin": "0.4.1",
