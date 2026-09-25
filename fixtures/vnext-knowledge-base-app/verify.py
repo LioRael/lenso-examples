@@ -52,6 +52,11 @@ parser.add_argument(
     help="optional temporary JSON handoff; delete it after browser acceptance to continue",
 )
 parser.add_argument(
+    "--workers-settings-handoff",
+    type=Path,
+    help="optional 0600 two-user Auth token handoff for the local-workerd settings corpus",
+)
+parser.add_argument(
     "--web-client-package",
     help="optional @lenso/web-client .tgz used to rebuild and typecheck the React UI",
 )
@@ -964,6 +969,13 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                 handoff.wait_for_removal()
             # The browser may update this App-owned policy. Subsequent lifecycle
             # checks must follow the value that the real App will retain.
+            settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
+            assert isinstance(settings["excerpt_limit"], int)
+            assert 16 <= settings["excerpt_limit"] <= 512
+            assert isinstance(settings["revision"], int) and settings["revision"] >= 2
+        if args.workers_settings_handoff:
+            with browser_handoff(args.workers_settings_handoff, tokens, url) as handoff:
+                handoff.wait_for_removal(timeout=1800)
             settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
             assert isinstance(settings["excerpt_limit"], int)
             assert 16 <= settings["excerpt_limit"] <= 512

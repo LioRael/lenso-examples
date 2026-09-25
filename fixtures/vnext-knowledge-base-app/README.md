@@ -188,6 +188,81 @@ find no due job when the Host and disposable PostgreSQL clocks differ, or
 process older work first; neither outcome is treated as success for the new
 note.
 
+### Local workerd `/settings` persistence slice
+
+`verify_workers_settings.py` is one cross-target HTTP corpus for the same
+business settings source and the same disposable PostgreSQL rows. Run the
+Native verifier with `--workers-settings-handoff /private/path/handoff.json`.
+At the handoff it has issued two high-entropy credentials through the real
+Auth Plugin operator and is holding the Native App open. The handoff is a
+mode-0600 file containing the two tokens; do not print it, copy it into the
+Workers distribution, or commit it. The verifier removes its own handoff
+automatically on timeout or shutdown, and resumes only after the acceptance
+operator removes that exact file.
+
+The selected Workers App must be built by the specialized Rust builder from
+the exact locally verified `lenso.reference.knowledge-settings` Bundle and
+the `@lenso/workers-runtime` 0.1.5 candidate. It is a separate Plugin/Instance
+from the full Native knowledge-base Plugin; only `/settings` is portable.
+Build and run the local workerd App, its dedicated settings bridge, and a
+disposable PostgreSQL instance in one task-owned Linux network namespace.
+Publish the PostgreSQL and workerd listeners to **host 127.0.0.1 only** so
+Native and this corpus can reach them; leave the bridge bound to the same
+namespace's **127.0.0.1 only** and do not publish or proxy it. Set the
+Worker's explicit `KNOWLEDGE_SETTINGS_BRIDGE_ORIGIN` to that bridge's printed
+`http://127.0.0.1:<port>`. Configure both Native and bridge for that one
+disposable PostgreSQL database. No production Workers Auth/DB Capability is
+implied by this local sidecar.
+
+After the Native handoff appears, create the short-lived Host policy from
+the Auth-issued credentials without exposing raw tokens to the Guest:
+
+```sh
+python3 verify_workers_settings.py prepare-policy \
+  --handoff /private/path/handoff.json \
+  --policy /private/path/bridge-policy.json
+```
+
+Bind-mount that mode-0600 policy **only** into the bridge process and set
+`LENSO_KNOWLEDGE_BRIDGE_AUTH_POLICY` to its in-container path. Give the bridge
+the same disposable PostgreSQL URL through `LENSO_KNOWLEDGE_DATABASE_URL`.
+The policy has a 30-minute default expiry and maps only `user-a` and `user-b`
+to SHA-256 token digests; source Auth issues the opaque token with 32 bytes of
+OS randomness. Do not use low-entropy credentials with an unsalted digest.
+
+With `workers-build.json` from that same workerd distribution, run the two
+phases. `--workerd-generation` must be the observed start identity of the
+task-owned workerd process/container, not an invented label; record both
+values in the final receipt. Restart **only** that workerd process/container
+between phases, leaving the bridge, Native App, and PostgreSQL intact:
+
+```sh
+python3 verify_workers_settings.py before-restart \
+  --handoff /private/path/handoff.json \
+  --workers-url http://127.0.0.1:WORKER_PORT \
+  --workers-build /absolute/path/to/dist-workers/workers-build.json \
+  --state /private/path/settings-state.json \
+  --workerd-generation OBSERVED_FIRST_START
+python3 verify_workers_settings.py after-restart \
+  --handoff /private/path/handoff.json \
+  --workers-url http://127.0.0.1:WORKER_PORT \
+  --workers-build /absolute/path/to/dist-workers/workers-build.json \
+  --state /private/path/settings-state.json \
+  --workerd-generation OBSERVED_SECOND_START
+```
+
+The state file is created mode 0600 without credentials. The corpus verifies
+two-user isolation, Native write → workerd read/CAS → Native readback, stale
+and malformed requests, optional/no-key CAS, replay and payload conflict,
+cross-target same-key concurrency, query-path parity, and settings plus
+idempotency persistence after the workerd restart. It rehashes the Bundle,
+Component, Jco core, and pinned runtime modules against the build receipt;
+the operator must additionally record the actual workerd command, version,
+listener, namespace, selected SHA/Plan, and process start evidence. Remove
+the handoff to release the Native verifier only after both phases; then
+remove the local policy and stop only the task-owned processes. A passed
+corpus is local-workerd target evidence, not full-App or production support.
+
 ### Exact package inputs for external providers
 
 The default command above retains source-checkout adoption. To test the separate
