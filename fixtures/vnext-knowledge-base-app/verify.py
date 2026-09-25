@@ -392,6 +392,9 @@ def candidate_framework_inputs():
                 f"candidate {name}@{package['version']} does not match "
                 f"the reference App's exact {direct[name]} pin"
             )
+        if (name == "lenso-capability-agent-tool-provider"
+                and package.get("metadata", {}).get("lenso", {}).get("contract", {}).get("projection") != "rust-runtime"):
+            parser.error("candidate Agent Tool Provider must provide a rust-runtime contract")
     return patches
 
 

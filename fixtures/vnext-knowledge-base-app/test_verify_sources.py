@@ -1,6 +1,7 @@
 """Public verifier preflight: stale sibling checkouts fail before side effects."""
 
 import ast
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -8,6 +9,7 @@ import sys
 import tempfile
 import tomllib
 import unittest
+from unittest.mock import patch
 
 
 VERIFY = Path(__file__).with_name("verify.py")
@@ -42,7 +44,8 @@ class VerifySourcePreflightTests(unittest.TestCase):
             provider = root / "provider" / "crates" / "lenso-capability-agent-tool-provider"
             provider.mkdir(parents=True)
             (provider / "Cargo.toml").write_text(
-                '[package]\nname = "lenso-capability-agent-tool-provider"\nversion = "0.3.0"\n',
+                '[package]\nname = "lenso-capability-agent-tool-provider"\nversion = "0.3.0"\n'
+                '[package.metadata.lenso.contract]\nprojection = "rust-runtime"\n',
                 encoding="utf-8",
             )
             sources = {}
@@ -172,6 +175,32 @@ class VerifySourcePreflightTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("candidate lenso@0.5.25 does not match", result.stderr)
             self.assertNotIn("FileNotFoundError", result.stderr)
+
+    def test_rejects_tool_provider_without_runtime_projection(self):
+        function = next(
+            node for node in ast.parse(VERIFY.read_text()).body
+            if isinstance(node, ast.FunctionDef) and node.name == "candidate_framework_inputs"
+        )
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-source-test-") as temporary:
+            root = Path(temporary)
+            provider = root / "provider"
+            provider.mkdir()
+            (provider / "Cargo.toml").write_text(
+                '[package]\nname = "lenso-capability-agent-tool-provider"\nversion = "0.3.0"\n'
+            )
+            parser = argparse.ArgumentParser()
+            namespace = {
+                "Path": Path, "tomllib": tomllib, "parser": parser,
+                "fixture": VERIFY.parent, "FRAMEWORK_PATCH_PACKAGES": (),
+                "args": argparse.Namespace(
+                    framework_source=str(root / "framework"),
+                    tool_provider_source=str(provider),
+                ),
+            }
+            exec(compile(ast.Module(body=[function], type_ignores=[]), str(VERIFY), "exec"), namespace)
+            with patch.object(parser, "error", side_effect=ValueError):
+                with self.assertRaisesRegex(ValueError, "rust-runtime contract"):
+                    namespace["candidate_framework_inputs"]()
 
     def test_rejects_a_jobs_checkout_without_plugin_identity(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-source-test-") as temporary:

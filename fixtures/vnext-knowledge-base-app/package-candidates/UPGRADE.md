@@ -80,7 +80,9 @@ tables or reset the database for this check.
 
 The optional `verify.py` path automates that focused check with the same
 temporary App and database across both builds. Supply the ordinary source
-Auth/Jobs/Secrets inputs plus all five excerpt inputs:
+Auth/Jobs/Secrets inputs plus all five excerpt inputs. For the unpublished
+0.4-Codec cohort, supply both the framework checkout and the exact Agent Tool
+Provider 0.3.0 source crate:
 
 ```sh
 LENSO_REFERENCE_BUN_CACHE="$SCRATCH_VERIFIED_BUN_CACHE" \
@@ -88,6 +90,7 @@ LENSO_REFERENCE_DATABASE_URL="$DISPOSABLE_DB_URL" python3 verify.py \
   --cli "$CLI" \
   --auth-source "$AUTH_SOURCE" --jobs-source "$JOBS_SOURCE" \
   --secrets-source "$SECRETS_SOURCE" \
+  --framework-source "$FRAMEWORK_SOURCE" --tool-provider-source "$TOOL_PROVIDER_SOURCE" \
   --excerpt-snapshot-r1 "$CANDIDATES/knowledge-excerpt-0.1.1/dist/package-snapshot-r1.json" \
   --excerpt-snapshot-r2 "$CANDIDATES/knowledge-excerpt-0.1.1/dist/package-snapshot-r2.json" \
   --excerpt-trust "$CANDIDATES/knowledge-excerpt-0.1.1/dist/trust.json" \
@@ -103,6 +106,12 @@ omits the fixture's local excerpt source, adopts both signed npm versions with
 `--offline`, then requires an untrusted build to fail closed and print the
 exact installed-content grant before each authorized build. It does
 not exercise the separate `--package-only` Auth/Jobs/Secrets provider path.
+The fixture already pins Lenso 0.5.27, Web Endpoint 0.3.4, and Agent Tool
+Provider 0.3.0. The paired source flags verify those exact package versions
+and the Tool Provider's Rust-runtime projection, then use only a temporary
+Cargo patch. They do not change the checked-in App or signed npm archives.
+Agent Tool Provider 0.3.0 is an unpublished local candidate, so this remains
+source-mode evidence, not a registry-only qualification.
 
 This full runtime/data step still requires a successful execution with a
 coherent current CLI and provider dependency closure; packing and signed
