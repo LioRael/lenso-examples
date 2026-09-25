@@ -435,6 +435,17 @@ else:
     }
     upgrade_release = None
 
+offline_bun_cache = None
+if upgrade_inputs:
+    cache_value = os.environ.get("LENSO_REFERENCE_BUN_CACHE")
+    if not cache_value:
+        parser.error("signed excerpt upgrade requires LENSO_REFERENCE_BUN_CACHE")
+    offline_bun_cache = Path(cache_value).resolve()
+    if not offline_bun_cache.is_dir():
+        parser.error(
+            f"LENSO_REFERENCE_BUN_CACHE must be an existing directory: {offline_bun_cache}"
+        )
+
 
 def run(command, **kwargs):
     return subprocess.run(command, check=True, **kwargs)
@@ -447,19 +458,42 @@ def adopt_excerpt(cli, project, inputs, revision, replace=False):
         "--package-snapshot", str(inputs[f"excerpt_snapshot_r{revision}"]),
         "--trust", str(inputs["excerpt_trust"]),
         "--tgz", str(inputs[f"excerpt_tgz_r{revision}"]),
+        "--no-install",
     ]
     if replace:
         command.append("--replace")
     result = run(command, capture_output=True, text=True)
     print(result.stdout, end="")
-    grants = re.findall(r"--trust-adopted-build '([^']+)'", result.stdout)
+    return project / "vendor" / "lenso" / "npm" / EXCERPT_PLUGIN_ID / version
+
+
+def install_excerpt_dependencies(adopted_source):
+    run([
+        "bun", "install", "--ignore-scripts", "--frozen-lockfile", "--offline",
+        "--backend=copyfile", "--linker=hoisted",
+    ], cwd=adopted_source, env=os.environ | {"BUN_INSTALL_CACHE_DIR": str(offline_bun_cache)})
+
+
+def build_grant_from_denial(cli, project, distribution, version):
+    rejected = subprocess.run([
+        cli, "app", "build", "--root", str(project),
+        "--out", str(distribution.with_name(distribution.name + "-untrusted")),
+    ], capture_output=True, text=True, check=False)
+    message = rejected.stdout + rejected.stderr
     expected = rf"{re.escape(EXCERPT_PLUGIN_ID)}@{re.escape(version)}=sha256:[0-9a-f]{{64}}"
-    if len(grants) != 1 or re.fullmatch(expected, grants[0]) is None:
-        raise RuntimeError(f"signed excerpt {version} adoption did not return one exact build grant")
+    grants = re.findall(
+        rf"adopted npm build-time code is not trusted: ({expected}); review the exact archive",
+        message,
+    )
+    if rejected.returncode == 0 or len(grants) != 1:
+        raise RuntimeError(
+            f"untrusted {version} build did not fail closed with one exact grant: {message}"
+        )
     return grants[0]
 
 
-def trusted_build(cli, project, distribution, grant):
+def trusted_build(cli, project, distribution, version):
+    grant = build_grant_from_denial(cli, project, distribution, version)
     run([
         cli, "app", "build", "--root", str(project), "--out", str(distribution),
         "--trust-adopted-build", grant,
@@ -601,7 +635,8 @@ def verify_excerpt_upgrade(
     finally:
         stop(process, reader, transcript)
 
-    grant = adopt_excerpt(cli, project, inputs, 2, replace=True)
+    upgraded_source = adopt_excerpt(cli, project, inputs, 2, replace=True)
+    install_excerpt_dependencies(upgraded_source)
     discovered = json.loads(run(
         [cli, "app", "discover", "--root", str(project), "--json"],
         capture_output=True, text=True,
@@ -611,10 +646,9 @@ def verify_excerpt_upgrade(
         if candidate["plugin_id"] == EXCERPT_PLUGIN_ID
     ]
     assert len(selected) == 1 and selected[0]["release_version"] == "0.1.1"
-    upgraded_source = project / "vendor" / "lenso" / "npm" / EXCERPT_PLUGIN_ID / "0.1.1"
     run(["bun", "run", "check"], cwd=upgraded_source)
     upgraded_distribution = root / "dist-upgraded"
-    trusted_build(cli, project, upgraded_distribution, grant)
+    trusted_build(cli, project, upgraded_distribution, "0.1.1")
     shutil.rmtree(source)
 
     process, reader, transcript, url = launch(
@@ -794,11 +828,12 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         auth_operator_cwd = candidates / "auth"
         jobs_operator_cwd = candidates / "jobs"
 
-    excerpt_grant = None
+    adopted_excerpt = None
     if upgrade_inputs:
         assert not (project / "app" / "excerpt").exists()
         with measured("consumer_preparation", "signed_excerpt_0_1_0_adoption"):
-            excerpt_grant = adopt_excerpt(cli, project, upgrade_inputs, 1)
+            adopted_excerpt = adopt_excerpt(cli, project, upgrade_inputs, 1)
+            install_excerpt_dependencies(adopted_excerpt)
 
     suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
     auth_schema = f"auth_reference_{suffix}"
@@ -932,10 +967,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
 '''
     )
 
-    excerpt = (
-        project / "vendor" / "lenso" / "npm" / EXCERPT_PLUGIN_ID / "0.1.0"
-        if upgrade_inputs else project / "app" / "excerpt"
-    )
+    excerpt = adopted_excerpt if upgrade_inputs else project / "app" / "excerpt"
     with measured("app_authoring", "typescript_install_and_check"):
         if not upgrade_inputs:
             run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
@@ -950,7 +982,10 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         if args.trust_linked_build_from_crates:
             build_command.extend(trust_linked_build_flags(project, releases))
         if upgrade_inputs:
-            build_command.extend(("--trust-adopted-build", excerpt_grant))
+            build_command.extend((
+                "--trust-adopted-build",
+                build_grant_from_denial(cli, project, distribution, "0.1.0"),
+            ))
         run(build_command, **build_kwargs)
         if upgrade_inputs:
             run([cli, "app", "check", "--root", str(distribution)])

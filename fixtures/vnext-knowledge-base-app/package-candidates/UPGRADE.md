@@ -68,9 +68,10 @@ PostgreSQL database. Before replacement, record one owner's `/settings`, an
 existing `/notes/{note_id}`, and a durable `/job-status/{job_id}` through the
 public bearer-authenticated API. Adopt/build/start 0.1.0, then replace with
 0.1.1 using the same signed inputs and database. Install only the pinned Bun
-dependencies with scripts disabled, approve the exact printed
-`--trust-adopted-build` digest for each build, and require the new App to pass
-readiness before routing traffic. Re-read those three records after restart:
+dependencies with scripts disabled, use an untrusted build rejection to inspect
+the exact installed-content `--trust-adopted-build` digest for each build, and
+require the new App to pass readiness before routing traffic. Re-read those
+three records after restart:
 settings revision/value, note body/excerpt, and job identity/status must be
 unchanged. Process a pre-upgrade queued job once and create a new note whose
 body contains a combining character or joined emoji; its new excerpt must
@@ -82,6 +83,7 @@ temporary App and database across both builds. Supply the ordinary source
 Auth/Jobs/Secrets inputs plus all five excerpt inputs:
 
 ```sh
+LENSO_REFERENCE_BUN_CACHE="$SCRATCH_VERIFIED_BUN_CACHE" \
 LENSO_REFERENCE_DATABASE_URL="$DISPOSABLE_DB_URL" python3 verify.py \
   --cli "$CLI" \
   --auth-source "$AUTH_SOURCE" --jobs-source "$JOBS_SOURCE" \
@@ -94,9 +96,12 @@ LENSO_REFERENCE_DATABASE_URL="$DISPOSABLE_DB_URL" python3 verify.py \
 ```
 
 Run this only in an offline OS sandbox with read-only inputs and bounded
-resources. The opt-in path omits the fixture's local excerpt source, adopts
-both signed npm versions, installs frozen dependencies without lifecycle
-scripts, and grants build trust only for each exact adopted version. It does
+resources. Seed `SCRATCH_VERIFIED_BUN_CACHE` only with locally verified locked
+packages; do not inherit the host home or allow network access. The opt-in path
+omits the fixture's local excerpt source, adopts both signed npm versions with
+`--no-install`, installs frozen dependencies without lifecycle scripts using
+`--offline`, then requires an untrusted build to fail closed and print the
+exact installed-content grant before each authorized build. It does
 not exercise the separate `--package-only` Auth/Jobs/Secrets provider path.
 
 This full runtime/data step still requires a successful execution with a

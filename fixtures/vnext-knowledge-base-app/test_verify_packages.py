@@ -345,6 +345,67 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("requires source Auth/Jobs/Secrets inputs", result.stderr)
 
+    def test_signed_excerpt_upgrade_installs_offline_before_exact_build_grant(self):
+        source = VERIFY.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        functions = {
+            node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)
+        }
+        adoption = next(
+            node.value for node in ast.walk(functions["adopt_excerpt"])
+            if isinstance(node, ast.Assign)
+            and any(isinstance(target, ast.Name) and target.id == "command" for target in node.targets)
+        )
+        self.assertIn("--no-install", [
+            item.value for item in adoption.elts if isinstance(item, ast.Constant)
+        ])
+        install = next(
+            node for node in ast.walk(functions["install_excerpt_dependencies"])
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "run"
+        )
+        self.assertEqual(
+            [item.value for item in install.args[0].elts],
+            ["bun", "install", "--ignore-scripts", "--frozen-lockfile", "--offline",
+             "--backend=copyfile", "--linker=hoisted"],
+        )
+
+        def call_line(name, argument):
+            matches = [
+                node.lineno for node in ast.walk(tree)
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name) and node.func.id == name
+                and any(
+                    isinstance(value, ast.Constant) and value.value == argument
+                    or isinstance(value, ast.Name) and value.id == argument
+                    for value in node.args
+                )
+            ]
+            self.assertEqual(len(matches), 1, (name, argument, matches))
+            return matches[0]
+
+        self.assertLess(
+            call_line("adopt_excerpt", 1),
+            call_line("install_excerpt_dependencies", "adopted_excerpt"),
+        )
+        self.assertLess(
+            call_line("install_excerpt_dependencies", "adopted_excerpt"),
+            call_line("trusted_build", "0.1.0"),
+        )
+        self.assertLess(
+            call_line("adopt_excerpt", 2),
+            call_line("install_excerpt_dependencies", "upgraded_source"),
+        )
+        self.assertLess(
+            call_line("install_excerpt_dependencies", "upgraded_source"),
+            call_line("trusted_build", "0.1.1"),
+        )
+
+        denial = functions["build_grant_from_denial"]
+        self.assertNotIn("--trust-adopted-build", ast.get_source_segment(source, denial))
+        authorized = functions["trusted_build"]
+        self.assertIn("build_grant_from_denial", ast.get_source_segment(source, authorized))
+        self.assertIn("--trust-adopted-build", ast.get_source_segment(source, authorized))
+
     def test_package_mode_rejects_non_exact_version(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-package-test-") as temporary:
             arguments = self.package_arguments(Path(temporary))
