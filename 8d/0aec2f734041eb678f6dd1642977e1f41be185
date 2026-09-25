@@ -1,5 +1,11 @@
 fixtures/vnext-knowledge-base-app/test_verify_sources.py
   s_7d146975368699::t_a380d372b0dc10 3,12,180,183,185,190,204
+  s_7d146975368699::t_fbf398af4074ea 4,179,181-182,184,186-189,191-203
+  s_7d146975368699::t_7e25ccb9519206 47-48
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_7e25ccb9519206 395-397
+fixtures/vnext-knowledge-base-app/package-candidates/UPGRADE.md
+  s_7d146975368699::t_7e25ccb9519206 83-85,93,109-114
 ---
 {
   "schema_version": "authorship/3.0.0",
