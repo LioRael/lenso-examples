@@ -11,15 +11,19 @@ use axum::{
     http::{HeaderMap, header},
     routing::post,
 };
-use lenso_knowledge_base_reference_app::{
-    settings_core::{SettingsCommand, UpdateBusinessSettings, prepare_settings_command},
-    settings_store::{SettingsStoreOutcome, compare_and_set_settings, get_or_create_settings},
-};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use subtle::ConstantTimeEq;
+
+#[path = "../../src/settings_core.rs"]
+mod settings_core;
+#[path = "../../src/settings_store.rs"]
+mod settings_store;
+
+use settings_core::{BusinessSettings, SettingsCommand, UpdateBusinessSettings, prepare_settings_command};
+use settings_store::{SettingsStoreOutcome, compare_and_set_settings, get_or_create_settings};
 
 const AUTH_POLICY_ENV: &str = "LENSO_KNOWLEDGE_BRIDGE_AUTH_POLICY";
 const DATABASE_URL_ENV: &str = "LENSO_KNOWLEDGE_DATABASE_URL";
@@ -63,7 +67,7 @@ struct BridgeResult {
     schema: &'static str,
     kind: &'static str,
     #[serde(skip_serializing_if = "Option::is_none")]
-    settings: Option<lenso_knowledge_base_reference_app::settings_core::BusinessSettings>,
+    settings: Option<BusinessSettings>,
 }
 
 impl BridgeResult {
@@ -75,7 +79,7 @@ impl BridgeResult {
         }
     }
 
-    fn ok(settings: lenso_knowledge_base_reference_app::settings_core::BusinessSettings) -> Self {
+    fn ok(settings: BusinessSettings) -> Self {
         Self {
             schema: "lenso.knowledge-settings-result.v1",
             kind: "ok",
