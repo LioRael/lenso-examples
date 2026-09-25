@@ -1,0 +1,24 @@
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_c02e12e8226072 314-322
+fixtures/vnext-knowledge-base-app/test_verify_packages.py
+  s_7d146975368699::t_2479fef7df7fb8 4-5,7-8,55-134
+  s_7d146975368699::t_25421e6e577cf8 135
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_c02e12e8226072 213
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2cea73ec2f86aeeb9edc654111e0644978ca6639",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
