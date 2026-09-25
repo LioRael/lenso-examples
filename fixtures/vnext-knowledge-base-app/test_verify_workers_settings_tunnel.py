@@ -24,10 +24,15 @@ class WorkersSettingsTunnelTests(unittest.TestCase):
         container = {
             "Id": "verified-container-id",
             "State": {"Status": "running"},
-            "NetworkSettings": {"Networks": {"lenso-kb-settings-net-925a": {}}},
+            "HostConfig": {"NetworkMode": "lenso-kb-settings-net-925a"},
+            "NetworkSettings": {"Networks": {"lenso-kb-settings-net-925a": {
+                "NetworkID": "verified-network-id"
+            }}},
         }
         with patch("verify_workers_settings_tunnel.subprocess.run",
-                   side_effect=[result(container), result({"Internal": True})]) as run:
+                   side_effect=[result(container), result({
+                       "Internal": True, "Id": "verified-network-id"
+                   })]) as run:
             self.assertEqual(exact_internal_container("lenso-kb-settings-ns-925a"),
                              "verified-container-id")
             self.assertEqual(run.call_args_list[1].args[0],
@@ -40,15 +45,26 @@ class WorkersSettingsTunnelTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     exact_internal_container("lenso-kb-settings-ns-925a")
         with patch("verify_workers_settings_tunnel.subprocess.run",
-                   side_effect=[result(container), result({"Internal": False})]):
+                   side_effect=[result(container), result({
+                       "Internal": False, "Id": "verified-network-id"
+                   })]):
+            with self.assertRaises(ValueError):
+                exact_internal_container("lenso-kb-settings-ns-925a")
+        with patch("verify_workers_settings_tunnel.subprocess.run",
+                   side_effect=[result(container), result({
+                       "Internal": True, "Id": "different-network-id"
+                   })]):
             with self.assertRaises(ValueError):
                 exact_internal_container("lenso-kb-settings-ns-925a")
 
     def test_postgres_relay_requires_the_exact_task_anchor_network_chain(self):
         anchor = {
             "Id": "verified-anchor-id",
-            "State": {"Status": "running"},
-            "NetworkSettings": {"Networks": {"lenso-kb-settings-net-925a": {}}},
+            "State": {"Status": "exited"},
+            "HostConfig": {"NetworkMode": "lenso-kb-settings-net-925a"},
+            "NetworkSettings": {"Networks": {"lenso-kb-settings-net-925a": {
+                "NetworkID": "verified-network-id"
+            }}},
         }
         postgres = {
             "Id": "verified-postgres-id",
@@ -57,7 +73,7 @@ class WorkersSettingsTunnelTests(unittest.TestCase):
             "NetworkSettings": {"Networks": {}},
         }
         with patch("verify_workers_settings_tunnel.subprocess.run", side_effect=[
-            result(postgres), result(anchor), result({"Internal": True}),
+            result(postgres), result(anchor), result({"Internal": True, "Id": "verified-network-id"}),
         ]) as run:
             self.assertEqual(exact_postgres_relay("lenso-kb-settings-pg-925a"),
                              "verified-postgres-id")
@@ -65,7 +81,12 @@ class WorkersSettingsTunnelTests(unittest.TestCase):
                              ["docker", "inspect", "lenso-kb-settings-ns-925a"])
         with patch("verify_workers_settings_tunnel.subprocess.run", side_effect=[
             result({**postgres, "HostConfig": {"NetworkMode": "bridge"}}),
-            result(anchor), result({"Internal": True}),
+            result(anchor), result({"Internal": True, "Id": "verified-network-id"}),
+        ]):
+            with self.assertRaises(ValueError):
+                exact_postgres_relay("lenso-kb-settings-pg-925a")
+        with patch("verify_workers_settings_tunnel.subprocess.run", side_effect=[
+            result(postgres), result({**anchor, "State": {"Status": "paused"}}),
         ]):
             with self.assertRaises(ValueError):
                 exact_postgres_relay("lenso-kb-settings-pg-925a")

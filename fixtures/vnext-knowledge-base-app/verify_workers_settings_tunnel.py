@@ -24,14 +24,16 @@ socket.on('close', () => process.stdin.destroy());
 """
 
 
-def exact_internal_container(name):
+def exact_internal_container(name, *, allow_exited=False):
     if not re.fullmatch(r"lenso-kb-settings-ns-[a-z0-9]+", name):
         raise ValueError("tunnel is limited to a task-owned KB namespace container")
     result = subprocess.run(
         ["docker", "inspect", name], check=True, capture_output=True, text=True
     )
     container, = json.loads(result.stdout)
-    if container["State"]["Status"] != "running":
+    if container["State"]["Status"] != "running" and not (
+        allow_exited and container["State"]["Status"] == "exited"
+    ):
         raise ValueError("KB namespace container is not running")
     networks = container["NetworkSettings"]["Networks"]
     if len(networks) != 1:
@@ -42,7 +44,8 @@ def exact_internal_container(name):
         check=True, capture_output=True, text=True,
     )
     network, = json.loads(result.stdout)
-    if not network["Internal"]:
+    if (not network["Internal"] or networks[network_name]["NetworkID"] != network["Id"]
+            or container["HostConfig"]["NetworkMode"] != network_name):
         raise ValueError("KB namespace must be on an internal Docker network")
     return container["Id"]
 
@@ -57,7 +60,9 @@ def exact_postgres_relay(name):
     container, = json.loads(result.stdout)
     if container["State"]["Status"] != "running":
         raise ValueError("KB PostgreSQL relay is not running")
-    anchor = exact_internal_container("lenso-kb-settings-ns-" + match[1])
+    # The anchor can expire while a still-running PostgreSQL container retains
+    # its network namespace. Relay only through that exact container.
+    anchor = exact_internal_container("lenso-kb-settings-ns-" + match[1], allow_exited=True)
     if container["HostConfig"]["NetworkMode"] != "container:" + anchor:
         raise ValueError("KB PostgreSQL relay does not share the internal namespace")
     if container["NetworkSettings"]["Networks"]:
@@ -71,6 +76,8 @@ async def serve(container_id, inside_port, relay_kind):
     async def relay(reader, writer):
         async with slots:
             process = None
+            upstream_task = None
+            downstream_task = None
             try:
                 command = (
                     ["node", "-e", NODE_RELAY, str(inside_port)]
@@ -100,11 +107,30 @@ async def serve(container_id, inside_port, relay_kind):
                     finally:
                         writer.close()
 
-                await asyncio.gather(upstream(), downstream())
-                await process.wait()
+                upstream_task = asyncio.create_task(upstream())
+                downstream_task = asyncio.create_task(downstream())
+                done, _ = await asyncio.wait(
+                    (upstream_task, downstream_task), return_when=asyncio.FIRST_COMPLETED
+                )
+                for task in done:
+                    task.result()
+                if upstream_task in done and downstream_task not in done:
+                    # Some nc implementations keep stdout open after client EOF.
+                    # Allow a final response, then reap the task-owned exec.
+                    try:
+                        await asyncio.wait_for(downstream_task, timeout=2)
+                    except asyncio.TimeoutError:
+                        pass
             except (BrokenPipeError, ConnectionError, OSError):
                 pass
             finally:
+                for task in (upstream_task, downstream_task):
+                    if task is not None and not task.done():
+                        task.cancel()
+                await asyncio.gather(
+                    *(task for task in (upstream_task, downstream_task) if task is not None),
+                    return_exceptions=True,
+                )
                 writer.close()
                 if process is not None and process.returncode is None:
                     process.terminate()
