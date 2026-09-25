@@ -5,7 +5,7 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-from verify_workers_settings_tunnel import exact_internal_container
+from verify_workers_settings_tunnel import exact_internal_container, exact_postgres_relay
 
 
 def result(value):
@@ -43,6 +43,32 @@ class WorkersSettingsTunnelTests(unittest.TestCase):
                    side_effect=[result(container), result({"Internal": False})]):
             with self.assertRaises(ValueError):
                 exact_internal_container("lenso-kb-settings-ns-925a")
+
+    def test_postgres_relay_requires_the_exact_task_anchor_network_chain(self):
+        anchor = {
+            "Id": "verified-anchor-id",
+            "State": {"Status": "running"},
+            "NetworkSettings": {"Networks": {"lenso-kb-settings-net-925a": {}}},
+        }
+        postgres = {
+            "Id": "verified-postgres-id",
+            "State": {"Status": "running"},
+            "HostConfig": {"NetworkMode": "container:verified-anchor-id"},
+            "NetworkSettings": {"Networks": {}},
+        }
+        with patch("verify_workers_settings_tunnel.subprocess.run", side_effect=[
+            result(postgres), result(anchor), result({"Internal": True}),
+        ]) as run:
+            self.assertEqual(exact_postgres_relay("lenso-kb-settings-pg-925a"),
+                             "verified-postgres-id")
+            self.assertEqual(run.call_args_list[1].args[0],
+                             ["docker", "inspect", "lenso-kb-settings-ns-925a"])
+        with patch("verify_workers_settings_tunnel.subprocess.run", side_effect=[
+            result({**postgres, "HostConfig": {"NetworkMode": "bridge"}}),
+            result(anchor), result({"Internal": True}),
+        ]):
+            with self.assertRaises(ValueError):
+                exact_postgres_relay("lenso-kb-settings-pg-925a")
 
 
 if __name__ == "__main__":

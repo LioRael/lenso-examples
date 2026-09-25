@@ -1,9 +1,10 @@
 """Local-only ArcBox fallback for public workerd and disposable PostgreSQL TCP.
 
-The selected container must have exactly one internal Docker network. This
-tool never forwards the private settings bridge, which stays on loopback in
-the workerd network namespace. It is needed only when ArcBox's ordinary
-127.0.0.1 port publisher accepts connections but fails to pass their bytes.
+The namespace anchor must have exactly one internal Docker network. If ArcBox
+cannot exec into that anchor, the task-owned PostgreSQL container may relay
+only when it shares that exact namespace and has no other network. This tool
+never forwards the private settings bridge, which stays on loopback in the
+workerd network namespace.
 """
 
 import argparse
@@ -46,16 +47,39 @@ def exact_internal_container(name):
     return container["Id"]
 
 
-async def serve(container_id, inside_port):
+def exact_postgres_relay(name):
+    match = re.fullmatch(r"lenso-kb-settings-pg-([a-z0-9]+)", name)
+    if not match:
+        raise ValueError("PostgreSQL relay must be a task-owned KB container")
+    result = subprocess.run(
+        ["docker", "inspect", name], check=True, capture_output=True, text=True
+    )
+    container, = json.loads(result.stdout)
+    if container["State"]["Status"] != "running":
+        raise ValueError("KB PostgreSQL relay is not running")
+    anchor = exact_internal_container("lenso-kb-settings-ns-" + match[1])
+    if container["HostConfig"]["NetworkMode"] != "container:" + anchor:
+        raise ValueError("KB PostgreSQL relay does not share the internal namespace")
+    if container["NetworkSettings"]["Networks"]:
+        raise ValueError("KB PostgreSQL relay has an additional network")
+    return container["Id"]
+
+
+async def serve(container_id, inside_port, relay_kind):
     slots = asyncio.Semaphore(16)
 
     async def relay(reader, writer):
         async with slots:
             process = None
             try:
+                command = (
+                    ["node", "-e", NODE_RELAY, str(inside_port)]
+                    if relay_kind == "node" else
+                    ["nc", "-n", "127.0.0.1", str(inside_port)]
+                )
                 process = await asyncio.create_subprocess_exec(
-                    "docker", "exec", "-i", container_id, "node", "-e", NODE_RELAY,
-                    str(inside_port), stdin=asyncio.subprocess.PIPE,
+                    "docker", "exec", "-i", container_id, *command,
+                    stdin=asyncio.subprocess.PIPE,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.DEVNULL,
                 )
@@ -93,7 +117,8 @@ async def serve(container_id, inside_port):
     server = await asyncio.start_server(relay, "127.0.0.1", 0, limit=65_536)
     port = server.sockets[0].getsockname()[1]
     print(json.dumps({"listen_host": "127.0.0.1", "listen_port": port,
-                      "inside_port": inside_port, "container_id": container_id}), flush=True)
+                      "inside_port": inside_port, "container_id": container_id,
+                      "relay_kind": relay_kind}), flush=True)
     async with server:
         await server.serve_forever()
 
@@ -103,8 +128,13 @@ def main():
     parser.add_argument("--container", required=True)
     parser.add_argument("--inside-port", type=int, choices=(5432, 8787), required=True)
     args = parser.parse_args()
-    container_id = exact_internal_container(args.container)
-    asyncio.run(serve(container_id, args.inside_port))
+    if args.container.startswith("lenso-kb-settings-pg-"):
+        container_id = exact_postgres_relay(args.container)
+        relay_kind = "postgres_nc"
+    else:
+        container_id = exact_internal_container(args.container)
+        relay_kind = "node"
+    asyncio.run(serve(container_id, args.inside_port, relay_kind))
 
 
 if __name__ == "__main__":

@@ -11,6 +11,17 @@ VERIFY = Path(__file__).with_name("verify.py")
 
 
 class VerifyPackagePreflightTests(unittest.TestCase):
+    def test_built_app_check_uses_distribution_root_not_intent(self):
+        source = VERIFY.read_text()
+        self.assertIn(
+            'run([cli, "app", "check", "--root", str(distribution)], env=check_environment)',
+            source,
+        )
+        self.assertIn(
+            '[cli, "app", "show", "--root", str(intent), "--json"]',
+            source,
+        )
+
     def run_verify(self, *arguments, env=None):
         return subprocess.run(
             [sys.executable, str(VERIFY), *map(str, arguments)],

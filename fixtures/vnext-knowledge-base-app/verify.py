@@ -732,7 +732,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         with measured("consumer_build", "app_check_show"):
             intent = distribution / "intent"
             check_environment = package_build_environment(root / "host-build-home")
-            run([cli, "app", "check", "--root", str(intent)], env=check_environment)
+            run([cli, "app", "check", "--root", str(distribution)], env=check_environment)
             shown = json.loads(subprocess.run(
                 [cli, "app", "show", "--root", str(intent), "--json"],
                 check=True, capture_output=True, text=True, env=check_environment,

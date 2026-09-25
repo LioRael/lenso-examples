@@ -232,6 +232,12 @@ Native App uses the PostgreSQL listener; this corpus uses the workerd
 listener. Record those listener ports and the container's observed ID in the
 receipt. Do not substitute a public or `0.0.0.0` proxy.
 
+If ArcBox cannot exec into the namespace anchor, `--container` may instead
+select its task-owned `lenso-kb-settings-pg-925a` container. The tunnel then
+uses that image's `nc`, after verifying that PostgreSQL shares the exact
+internal anchor namespace and has no second network. The allowed ports stay
+5432 and 8787; the bridge remains inaccessible from the host.
+
 After the Native handoff appears, create the short-lived Host policy from
 the Auth-issued credentials without exposing raw tokens to the Guest:
 
