@@ -24,8 +24,16 @@ use sqlx::{PgPool, Row, postgres::PgPoolOptions};
 use uuid::Uuid;
 use zeroize::Zeroizing;
 
+pub mod settings_core;
+pub mod settings_store;
+
+use settings_core::{
+    BusinessSettings, DEFAULT_EXCERPT_LIMIT, SettingsCommandError, SettingsFailure,
+    UpdateBusinessSettings, prepare_settings_command, problem_spec,
+};
+use settings_store::{SettingsStoreOutcome, compare_and_set_settings, get_or_create_settings};
+
 const DATABASE_URL_SECRET: &str = "knowledge/database-url";
-const DEFAULT_EXCERPT_LIMIT: i64 = 96;
 const MAX_ATTACHMENT_BYTES: usize = 1024 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -161,19 +169,6 @@ struct InspectExcerptResponse {
     status: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-struct BusinessSettings {
-    excerpt_limit: i64,
-    revision: i64,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct UpdateBusinessSettings {
-    excerpt_limit: i64,
-    predecessor_revision: i64,
-}
-
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct UploadAttachment {
@@ -195,6 +190,9 @@ struct Attachment {
 
 #[derive(Debug)]
 struct AuthenticatedUser(String);
+
+#[derive(Debug)]
+struct IdempotencyKey(Option<String>);
 
 #[lenso::plugin(lifecycle)]
 #[derive(Clone)]
@@ -311,6 +309,31 @@ impl FromRequest<KnowledgeBase> for AuthenticatedUser {
                 })
             })?;
             Ok(Self(subject))
+        })
+    }
+}
+
+impl FromRequest<KnowledgeBase> for IdempotencyKey {
+    fn from_request<'a>(
+        _provider: &'a KnowledgeBase,
+        _context: &'a mut InvocationContext,
+        request: &'a HandleRequest,
+    ) -> ExtractorFuture<'a, Self> {
+        Box::pin(async move {
+            let mut matching = request
+                .headers
+                .iter()
+                .filter(|header| header.name.eq_ignore_ascii_case("idempotency-key"));
+            let key = matching.next().map(|header| header.value.clone());
+            if matching.next().is_some() {
+                return Err(response::problem(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_idempotency_key",
+                    "Provide at most one Idempotency-Key header.",
+                )
+                .into());
+            }
+            Ok(Self(key))
         })
     }
 }
@@ -456,15 +479,11 @@ impl KnowledgeBase {
     async fn update_settings(
         &self,
         user: AuthenticatedUser,
+        idempotency_key: IdempotencyKey,
         Json(input): Json<UpdateBusinessSettings>,
     ) -> Result<Json<BusinessSettings>, Problem> {
-        if !(16..=512).contains(&input.excerpt_limit) {
-            return Err(Problem::new(
-                StatusCode::BAD_REQUEST,
-                "invalid_excerpt_limit",
-                "excerpt_limit must be from 16 through 512",
-            ));
-        }
+        let command = prepare_settings_command(input, idempotency_key.0.as_deref())
+            .map_err(settings_command_problem)?;
         let Some(database) = self.database() else {
             return Err(Problem::new(
                 StatusCode::CONFLICT,
@@ -472,28 +491,18 @@ impl KnowledgeBase {
                 "dynamic settings require the PostgreSQL-backed application mode",
             ));
         };
-        self.settings_for(&user.0).await?;
-        let row = sqlx::query(
-            "UPDATE knowledge_reference.settings SET revision = revision + 1, excerpt_limit = $1 \
-             WHERE owner_id = $2 AND revision = $3 RETURNING revision, excerpt_limit",
-        )
-        .bind(input.excerpt_limit)
-        .bind(&user.0)
-        .bind(input.predecessor_revision)
-        .fetch_optional(&database)
-        .await
-        .map_err(database_error)?
-        .ok_or_else(|| {
-            Problem::new(
-                StatusCode::CONFLICT,
-                "stale_settings_revision",
-                "the settings predecessor revision is stale",
-            )
-        })?;
-        Ok(Json(BusinessSettings {
-            excerpt_limit: row.get("excerpt_limit"),
-            revision: row.get("revision"),
-        }))
+        match compare_and_set_settings(&database, &user.0, &command)
+            .await
+            .map_err(database_error)?
+        {
+            SettingsStoreOutcome::Applied(settings) => Ok(Json(settings)),
+            SettingsStoreOutcome::StaleRevision => {
+                Err(settings_failure_problem(SettingsFailure::StaleRevision))
+            }
+            SettingsStoreOutcome::IdempotencyConflict => Err(settings_failure_problem(
+                SettingsFailure::IdempotencyConflict,
+            )),
+        }
     }
 
     #[post("knowledge-base.attachments.upload", "/note-attachments/{note_id}")]
@@ -530,26 +539,9 @@ impl KnowledgeBase {
                 revision: 1,
             });
         };
-        sqlx::query(
-            "INSERT INTO knowledge_reference.settings (owner_id, revision, excerpt_limit) \
-             VALUES ($1, 1, $2) ON CONFLICT (owner_id) DO NOTHING",
-        )
-        .bind(owner_id)
-        .bind(DEFAULT_EXCERPT_LIMIT)
-        .execute(&database)
-        .await
-        .map_err(database_error)?;
-        let row = sqlx::query(
-            "SELECT revision, excerpt_limit FROM knowledge_reference.settings WHERE owner_id = $1",
-        )
-        .bind(owner_id)
-        .fetch_one(&database)
-        .await
-        .map_err(database_error)?;
-        Ok(BusinessSettings {
-            excerpt_limit: row.get("excerpt_limit"),
-            revision: row.get("revision"),
-        })
+        get_or_create_settings(&database, owner_id)
+            .await
+            .map_err(database_error)
     }
 
     async fn store_note(
@@ -729,6 +721,19 @@ fn database_error(_error: sqlx::Error) -> Problem {
         StatusCode::SERVICE_UNAVAILABLE,
         "knowledge_storage_unavailable",
         "knowledge storage is temporarily unavailable",
+    )
+}
+
+fn settings_command_problem(error: SettingsCommandError) -> Problem {
+    settings_failure_problem(error.into())
+}
+
+fn settings_failure_problem(failure: SettingsFailure) -> Problem {
+    let spec = problem_spec(failure);
+    Problem::new(
+        StatusCode::from_u16(spec.status).expect("settings problem has valid HTTP status"),
+        spec.code,
+        spec.detail,
     )
 }
 

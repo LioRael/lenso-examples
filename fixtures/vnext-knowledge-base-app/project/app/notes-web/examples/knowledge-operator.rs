@@ -41,6 +41,19 @@ async fn setup(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
         .await?;
     transaction
         .execute(
+            "CREATE TABLE IF NOT EXISTS knowledge_reference.settings_idempotency (\
+             owner_id TEXT NOT NULL REFERENCES knowledge_reference.settings(owner_id) ON DELETE CASCADE, \
+             idempotency_key TEXT NOT NULL CHECK (length(idempotency_key) BETWEEN 1 AND 128), \
+             payload_sha256 TEXT NOT NULL, \
+             outcome_kind TEXT NOT NULL CHECK (outcome_kind IN ('pending', 'applied', 'stale')), \
+             result_revision BIGINT, \
+             result_excerpt_limit BIGINT, \
+             created_at TIMESTAMPTZ NOT NULL DEFAULT transaction_timestamp(), \
+             PRIMARY KEY (owner_id, idempotency_key))",
+        )
+        .await?;
+    transaction
+        .execute(
             "CREATE TABLE IF NOT EXISTS knowledge_reference.notes (\
              owner_id TEXT NOT NULL, \
              note_id TEXT NOT NULL, \
@@ -76,7 +89,7 @@ async fn setup(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
 }
 
 async fn check(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
-    for table in ["settings", "notes", "attachments"] {
+    for table in ["settings", "settings_idempotency", "notes", "attachments"] {
         let exists: bool = sqlx::query_scalar(
             "SELECT EXISTS(SELECT 1 FROM information_schema.tables \
              WHERE table_schema = 'knowledge_reference' AND table_name = $1)",

@@ -430,7 +430,7 @@ def stop(process, reader, transcript):
     assert process.returncode == 0
 
 
-def http_json(url, method="GET", body=None, token=None, expected=200):
+def http_json(url, method="GET", body=None, token=None, expected=200, idempotency_key=None):
     headers = {}
     data = None
     if body is not None:
@@ -438,15 +438,20 @@ def http_json(url, method="GET", body=None, token=None, expected=200):
         data = json.dumps(body).encode()
     if token is not None:
         headers["Authorization"] = f"Bearer {token}"
+    if idempotency_key is not None:
+        headers["Idempotency-Key"] = idempotency_key
     request = urllib.request.Request(url, data=data, headers=headers, method=method)
     with urllib.request.urlopen(request, timeout=10) as response:
         assert response.status == expected
         return json.load(response)
 
 
-def expect_http_error(url, code, method="GET", body=None, token=None):
+def expect_http_error(url, code, method="GET", body=None, token=None, idempotency_key=None):
     try:
-        http_json(url, method=method, body=body, token=token)
+        http_json(
+            url, method=method, body=body, token=token,
+            idempotency_key=idempotency_key,
+        )
     except urllib.error.HTTPError as error:
         assert error.code == code, error.read().decode()
     else:
@@ -870,12 +875,29 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         settings = http_json(
             url.rstrip("/") + "/settings", method="PUT", token=tokens["user-a"],
             body={"excerpt_limit": 48, "predecessor_revision": 1},
+            idempotency_key="reference-settings-user-a-first",
         )
         assert settings == {"excerpt_limit": 48, "revision": 2}
+        assert http_json(
+            url.rstrip("/") + "/settings", method="PUT", token=tokens["user-a"],
+            body={"excerpt_limit": 48, "predecessor_revision": 1},
+            idempotency_key="reference-settings-user-a-first",
+        ) == settings
+        expect_http_error(
+            url.rstrip("/") + "/settings", 409, method="PUT", token=tokens["user-a"],
+            body={"excerpt_limit": 64, "predecessor_revision": 1},
+            idempotency_key="reference-settings-user-a-first",
+        )
         expect_http_error(
             url.rstrip("/") + "/settings", 409, method="PUT", token=tokens["user-a"],
             body={"excerpt_limit": 64, "predecessor_revision": 1},
         )
+        for predecessor_revision in (0, -1):
+            expect_http_error(
+                url.rstrip("/") + "/settings", 409, method="PUT",
+                token=tokens["user-a"],
+                body={"excerpt_limit": 64, "predecessor_revision": predecessor_revision},
+            )
 
         note_body = (
             "Created from the offline distribution through a real TypeScript Plugin "
