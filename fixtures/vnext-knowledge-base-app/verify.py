@@ -114,6 +114,7 @@ FRAMEWORK_PATCH_PACKAGES = (
     "lenso-native-adapter",
     "lenso-native-adapter-macros",
     "lenso-plugin-authoring",
+    "lenso-runner",
     "lenso-runtime-codec",
 )
 MAX_LINKED_SOURCE_FILES = 4096
