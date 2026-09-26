@@ -315,8 +315,6 @@ def excerpt_inputs():
 
 
 upgrade_inputs = excerpt_inputs()
-if upgrade_inputs and args.package_only:
-    parser.error("signed excerpt upgrade currently requires source Auth/Jobs/Secrets inputs, not --package-only")
 
 
 def package_inputs():
@@ -419,6 +417,10 @@ if args.package_only:
     repositories = None
     linked_snapshot, trust, releases, upgrade_release = package_inputs()
     candidate_patches = None
+    if upgrade_inputs and not args.trust_linked_build_from_crates:
+        parser.error("package-only signed excerpt upgrade requires --trust-linked-build-from-crates")
+    if upgrade_inputs and upgrade_release:
+        parser.error("signed excerpt and Secrets upgrades are separate acceptance runs")
 else:
     package_flags = [
         "linked_snapshot", "trust", "trust_linked_build_from_crates",
@@ -477,11 +479,12 @@ def install_excerpt_dependencies(adopted_source):
     ], cwd=adopted_source, env=os.environ | {"BUN_INSTALL_CACHE_DIR": str(offline_bun_cache)})
 
 
-def build_grant_from_denial(cli, project, distribution, version):
+def build_grant_from_denial(cli, project, distribution, version, *, linked_flags=(), env=None):
     rejected = subprocess.run([
         cli, "app", "build", "--root", str(project),
         "--out", str(distribution.with_name(distribution.name + "-untrusted")),
-    ], capture_output=True, text=True, check=False)
+        *linked_flags,
+    ], env=env, capture_output=True, text=True, check=False)
     message = rejected.stdout + rejected.stderr
     expected = rf"{re.escape(EXCERPT_PLUGIN_ID)}@{re.escape(version)}=sha256:[0-9a-f]{{64}}"
     grants = re.findall(
@@ -495,13 +498,39 @@ def build_grant_from_denial(cli, project, distribution, version):
     return grants[0]
 
 
-def trusted_build(cli, project, distribution, version):
-    grant = build_grant_from_denial(cli, project, distribution, version)
+def trusted_build(cli, project, distribution, version, *, linked_flags=(), env=None):
+    grant = build_grant_from_denial(
+        cli, project, distribution, version, linked_flags=linked_flags, env=env
+    )
     run([
         cli, "app", "build", "--root", str(project), "--out", str(distribution),
+        *linked_flags,
         "--trust-adopted-build", grant,
-    ])
-    run([cli, "app", "check", "--root", str(distribution)])
+    ], env=env)
+    run([cli, "app", "check", "--root", str(distribution)], env=env)
+
+
+def excerpt_build_kwargs(project, root):
+    if not args.package_only:
+        return {}
+    return {
+        "linked_flags": trust_linked_build_flags(project, releases),
+        "env": package_build_environment(root / "host-build-home"),
+    }
+
+
+def check_package_distribution(cli, distribution, root):
+    intent = distribution / "intent"
+    check_environment = package_build_environment(root / "host-build-home")
+    run([cli, "app", "check", "--root", str(distribution)], env=check_environment)
+    shown = json.loads(subprocess.run(
+        [cli, "app", "show", "--root", str(intent), "--json"],
+        check=True, capture_output=True, text=True, env=check_environment,
+    ).stdout)
+    instance_ids = {instance["id"] for instance in shown["instances"]}
+    for plugin_id in PLUGIN_IDS.values():
+        if f"{plugin_id}/default" not in instance_ids:
+            raise RuntimeError(f"{plugin_id} is missing from the built App")
 
 
 def operator_environment(*, cargo_home=None, **values):
@@ -651,7 +680,10 @@ def verify_excerpt_upgrade(
     assert len(selected) == 1 and selected[0]["release_version"] == "0.1.1"
     run(["bun", "run", "check"], cwd=upgraded_source)
     upgraded_distribution = root / "dist-upgraded"
-    trusted_build(cli, project, upgraded_distribution, "0.1.1")
+    trusted_build(
+        cli, project, upgraded_distribution, "0.1.1",
+        **excerpt_build_kwargs(project, root),
+    )
     shutil.rmtree(source)
 
     process, reader, transcript, url = launch(
@@ -978,7 +1010,10 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     distribution = root / "dist"
     with measured("consumer_build", "app_build"):
         if upgrade_inputs:
-            trusted_build(cli, project, distribution, "0.1.0")
+            trusted_build(
+                cli, project, distribution, "0.1.0",
+                **excerpt_build_kwargs(project, root),
+            )
         else:
             build_kwargs = (
                 {"env": package_build_environment(root / "host-build-home")}
@@ -995,19 +1030,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     upgrade_receipt = None
     attachment_policy_receipt = None
     upgrade_probe = None
-    if args.package_only:
+    if args.package_only and not upgrade_inputs:
         with measured("consumer_build", "app_check_show"):
-            intent = distribution / "intent"
-            check_environment = package_build_environment(root / "host-build-home")
-            run([cli, "app", "check", "--root", str(distribution)], env=check_environment)
-            shown = json.loads(subprocess.run(
-                [cli, "app", "show", "--root", str(intent), "--json"],
-                check=True, capture_output=True, text=True, env=check_environment,
-            ).stdout)
-            instance_ids = {instance["id"] for instance in shown["instances"]}
-            for plugin_id in PLUGIN_IDS.values():
-                if f"{plugin_id}/default" not in instance_ids:
-                    raise RuntimeError(f"{plugin_id} is missing from the built App")
+            check_package_distribution(cli, distribution, root)
         with measured("consumer_build", "linked_unadopt_check_show"):
             jobs_coordinate, jobs_archive = releases["jobs"]
             jobs_version = jobs_coordinate.rsplit("@", 1)[1]
@@ -1111,6 +1136,9 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             with measured("consumer_preparation", "upgrade_source_snapshot"):
                 upgrade_probe = root / "upgrade-app"
                 copy_unadopt_probe(project, upgrade_probe)
+    if args.package_only and upgrade_inputs:
+        with measured("consumer_build", "app_check_show"):
+            check_package_distribution(cli, distribution, root)
     with measured("plugin_candidate_setup", "runtime_credentials"):
         tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
@@ -1122,7 +1150,8 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             )
         print_measurement(
             tree_logical_bytes(upgraded_distribution), phases,
-            "signed_npm_excerpt_with_source_providers",
+            ("signed_npm_excerpt_with_package_providers" if args.package_only
+             else "signed_npm_excerpt_with_source_providers"),
         )
         print("PASS: signed npm excerpt 0.1.0 to 0.1.1 replacement, readiness, PostgreSQL settings/note/job preservation, and grapheme-safe new excerpt")
         raise SystemExit(0)

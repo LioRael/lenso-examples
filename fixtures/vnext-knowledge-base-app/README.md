@@ -381,6 +381,19 @@ The checked-in source-candidate lock is unchanged. This local step does not
 prove that the exact framework and Agent Tool Provider versions are published
 or visible on crates.io; public registry availability needs separate readback.
 
+To combine these exact signed `.crate` inputs with the signed npm knowledge-
+excerpt 0.1.0 → 0.1.1 runtime upgrade, add
+`--trust-linked-build-from-crates`, both `--excerpt-snapshot-r1/r2`,
+`--excerpt-trust`, and both `--excerpt-tgz-r1/r2` to the package-only command.
+Set `LENSO_REFERENCE_BUN_CACHE` to an existing sandbox-local offline Bun cache.
+For each Host build, the verifier first supplies grants derived from the
+selected adopted `.crate` locks and confirms that the untrusted npm build is
+denied. It then grants only the denied exact npm archive and checks the built
+App. The combined mode exercises the excerpt replacement and preserved
+PostgreSQL note/job/settings state; it ends there instead of also running the
+separate Jobs-unadoption or Secrets-upgrade probes. These inputs remain local
+candidate packages until their public registry availability is verified.
+
 The verifier does not accept detached Auth or Jobs operator executables. After
 `app add` verifies each exact archive and vendors its source, the verifier checks
 that the adopted lock names the selected Plugin, version, and input `.crate`

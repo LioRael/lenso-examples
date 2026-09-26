@@ -4,6 +4,7 @@ import ast
 import hashlib
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -11,6 +12,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from package_cargo_environment import package_build_environment
@@ -328,7 +330,7 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertIn("--excerpt-tgz-r1", result.stderr)
         self.assertIn("--excerpt-tgz-r2", result.stderr)
 
-    def test_signed_excerpt_upgrade_rejects_package_provider_mode(self):
+    def test_package_excerpt_upgrade_requires_explicit_crate_build_trust(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-upgrade-test-") as temporary:
             root = Path(temporary)
             snapshot = root / "snapshot.json"
@@ -338,12 +340,107 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             trust.write_text("{}", encoding="utf-8")
             tgz.write_bytes(b"not a valid archive")
             result = self.run_verify(
-                "--package-only", "--excerpt-snapshot-r1", snapshot,
+                *self.package_arguments(root), "--excerpt-snapshot-r1", snapshot,
                 "--excerpt-snapshot-r2", snapshot, "--excerpt-trust", trust,
                 "--excerpt-tgz-r1", tgz, "--excerpt-tgz-r2", tgz,
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("requires source Auth/Jobs/Secrets inputs", result.stderr)
+            self.assertIn("requires --trust-linked-build-from-crates", result.stderr)
+
+    def test_excerpt_build_denial_and_grant_keep_exact_crate_trust_and_environment(self):
+        source = VERIFY.read_text(encoding="utf-8")
+        functions = {
+            node.name: node for node in ast.parse(source).body
+            if isinstance(node, ast.FunctionDef)
+        }
+        compiled = compile(ast.Module(body=[
+            functions["build_grant_from_denial"], functions["trusted_build"],
+        ], type_ignores=[]), str(VERIFY), "exec")
+        calls = []
+        grant = "lenso.reference.knowledge-excerpt@0.1.0=sha256:" + "a" * 64
+        environment = {"CARGO_HOME": "/scratch/cargo-home", "CARGO_NET_OFFLINE": "true"}
+        linked_flags = [
+            "--trust-linked-build", "lenso.auth.api-token@0.1.2=sha256:" + "b" * 64,
+        ]
+
+        def denied(command, **kwargs):
+            calls.append(("denied", command, kwargs))
+            return SimpleNamespace(
+                returncode=2, stdout="",
+                stderr=f"adopted npm build-time code is not trusted: {grant}; review the exact archive",
+            )
+
+        def accepted(command, **kwargs):
+            calls.append(("accepted", command, kwargs))
+
+        namespace = {
+            "subprocess": SimpleNamespace(run=denied), "run": accepted,
+            "re": re,
+            "EXCERPT_PLUGIN_ID": "lenso.reference.knowledge-excerpt",
+        }
+        exec(compiled, namespace)
+        distribution = Path("/scratch/dist")
+        namespace["trusted_build"](
+            "/scratch/lenso", Path("/scratch/app"), distribution, "0.1.0",
+            linked_flags=linked_flags, env=environment,
+        )
+        self.assertEqual([kind for kind, _, _ in calls], ["denied", "accepted", "accepted"])
+        denial, authorized, check = (command for _, command, _ in calls)
+        self.assertEqual(denial[-2:], linked_flags)
+        self.assertNotIn("--trust-adopted-build", denial)
+        self.assertEqual(authorized[-4:], linked_flags + ["--trust-adopted-build", grant])
+        self.assertEqual(check, ["/scratch/lenso", "app", "check", "--root", str(distribution)])
+        self.assertTrue(all(kwargs["env"] is environment for _, _, kwargs in calls))
+
+    def test_package_excerpt_upgrade_reaches_signed_adoption_with_both_trust_gates(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-upgrade-test-") as temporary:
+            root = Path(temporary)
+            snapshot = root / "excerpt-snapshot.json"
+            trust = root / "excerpt-trust.json"
+            tgz = root / "excerpt.tgz"
+            snapshot.write_text("{}", encoding="utf-8")
+            trust.write_text("{}", encoding="utf-8")
+            tgz.write_bytes(b"not a valid archive")
+            capture = root / "cli-arguments.txt"
+            cli = root / "cli"
+            cli.write_text(
+                '#!/bin/sh\nprintf "%s\\n" "$@" > "$LENSO_VERIFY_CAPTURE"\nexit 29\n',
+                encoding="utf-8",
+            )
+            cli.chmod(0o700)
+            result = self.run_verify(
+                "--cli", cli, *self.package_arguments(root),
+                "--trust-linked-build-from-crates",
+                "--excerpt-snapshot-r1", snapshot,
+                "--excerpt-snapshot-r2", snapshot, "--excerpt-trust", trust,
+                "--excerpt-tgz-r1", tgz, "--excerpt-tgz-r2", tgz,
+                env={"LENSO_REFERENCE_BUN_CACHE": str(root), "LENSO_VERIFY_CAPTURE": str(capture)},
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertTrue(capture.is_file(), result.stderr)
+            invoked = capture.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(invoked[:2], ["app", "add"])
+            self.assertIn("lenso.auth.api-token@1.2.3", invoked)
+            self.assertNotIn("requires source Auth/Jobs/Secrets", result.stderr)
+
+    def test_package_excerpt_and_secrets_upgrades_require_separate_runs(self):
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-upgrade-test-") as temporary:
+            root = Path(temporary)
+            snapshot = root / "excerpt-snapshot.json"
+            trust = root / "excerpt-trust.json"
+            tgz = root / "excerpt.tgz"
+            archive = root / "secrets-next.crate"
+            for path in (snapshot, trust, tgz, archive):
+                path.write_bytes(b"test input")
+            result = self.run_verify(
+                *self.package_arguments(root), "--trust-linked-build-from-crates",
+                "--excerpt-snapshot-r1", snapshot,
+                "--excerpt-snapshot-r2", snapshot, "--excerpt-trust", trust,
+                "--excerpt-tgz-r1", tgz, "--excerpt-tgz-r2", tgz,
+                "--secrets-upgrade-version", "1.2.4", "--secrets-upgrade-crate", archive,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("signed excerpt and Secrets upgrades are separate", result.stderr)
 
     def test_signed_excerpt_upgrade_installs_offline_before_exact_build_grant(self):
         source = VERIFY.read_text(encoding="utf-8")
