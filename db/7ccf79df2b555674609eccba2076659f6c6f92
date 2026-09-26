@@ -1,0 +1,36 @@
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_32c087d62ed3c5 422-423,522-533,1033,1035,1139-1141
+  s_7d146975368699::t_4e7e806589763d 420-421,482,486-487,501-504,507,509-519,683-686,1013-1016,1153-1154
+  s_5858929d54403d::t_cf973731218ab6 520-521
+fixtures/vnext-knowledge-base-app/test_verify_packages.py
+  s_7d146975368699::t_684707b293ac8a 15,333,343,348-377,379-393
+  s_7d146975368699::t_9c3d629c5b5a55 7,378,394-424
+  s_7d146975368699::t_4450ff14f2a35a 426-443
+  s_5858929d54403d::t_999051c4e95695 425
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_ed72b1e6da7c21 384-396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "db7ccf79df2b555674609eccba2076659f6c6f92",
+  "prompts": {},
+  "sessions": {
+    "s_5858929d54403d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54d-2b89-77c1-80a6-820d459160ce",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    },
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
