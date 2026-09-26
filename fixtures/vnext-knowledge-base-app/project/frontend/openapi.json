@@ -106,7 +106,7 @@
           "body": { "type": "string" },
           "excerpt": { "type": "string" },
           "job_id": { "type": "string" },
-          "processing_status": { "type": "string", "enum": ["queued", "succeeded"] }
+          "processing_status": { "type": "string" }
         },
         "additionalProperties": false
       },
@@ -116,7 +116,7 @@
         "properties": {
           "attempts": { "type": "integer", "minimum": 0 },
           "jobId": { "type": "string" },
-          "status": { "type": "string", "enum": ["queued", "running", "succeeded", "failed"] }
+          "status": { "type": "string" }
         },
         "additionalProperties": false
       },
@@ -140,7 +140,7 @@
         "required": ["excerpt_limit", "predecessor_revision"],
         "properties": {
           "excerpt_limit": { "type": "integer", "minimum": 16, "maximum": 512 },
-          "predecessor_revision": { "type": "integer", "minimum": 1 }
+          "predecessor_revision": { "type": "integer" }
         },
         "additionalProperties": false
       },

@@ -898,6 +898,7 @@ dependencies = [
  "lenso-capability-http-endpoint",
  "lenso-capability-secrets",
  "lenso-kernel",
+ "schemars",
  "serde",
  "serde_json",
  "sha2 0.10.9",

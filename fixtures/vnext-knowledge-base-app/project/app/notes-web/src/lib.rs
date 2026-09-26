@@ -13,6 +13,7 @@ use lenso_capability_agent_tool_provider::{self as tools, ExecuteRequest};
 use lenso_capability_auth as auth;
 use lenso_capability_http_endpoint::{
     EndpointHandleInvocationError, ExtractorFuture, ExtractorRejection, FromRequest, HandleRequest,
+    JsonSchema,
     prelude::*,
     response::{self, Problem, StatusCode},
 };
@@ -84,24 +85,24 @@ pub trait AttachmentPolicySource {
     fn capture(&self) -> Result<PinnedAttachmentPolicy, AttachmentPolicyUnavailable>;
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, JsonSchema, Serialize)]
 #[serde(deny_unknown_fields)]
 struct CreateNote {
     title: String,
     body: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 struct NotePath {
     note_id: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 struct JobPath {
     job_id: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, JsonSchema, PartialEq, Serialize)]
 struct Note {
     id: String,
     title: String,
@@ -150,7 +151,7 @@ struct CompleteExcerptResponse {
     completed: bool,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, JsonSchema, Serialize)]
 struct ProcessExcerptResult {
     processed: bool,
 }
@@ -161,7 +162,7 @@ struct InspectExcerptRequest<'a> {
     job_id: &'a str,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, JsonSchema, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct InspectExcerptResponse {
     attempts: u64,
@@ -169,7 +170,7 @@ struct InspectExcerptResponse {
     status: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, JsonSchema, Serialize)]
 #[serde(deny_unknown_fields)]
 struct UploadAttachment {
     content_base64: String,
@@ -177,7 +178,7 @@ struct UploadAttachment {
     media_type: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, JsonSchema, PartialEq, Serialize)]
 struct Attachment {
     id: String,
     filename: String,
@@ -1224,3 +1225,6 @@ mod tests {
         pool.close().await;
     }
 }
+
+#[cfg(test)]
+mod openapi_schema_tests;

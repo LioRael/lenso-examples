@@ -11,7 +11,7 @@ type Note = {
   body: string;
   excerpt: string;
   job_id: string;
-  processing_status: 'queued' | 'succeeded';
+  processing_status: string;
 };
 
 type BusinessSettings = { excerpt_limit: number; revision: number };

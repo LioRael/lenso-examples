@@ -104,11 +104,17 @@ snapshot's info and components into that Plugin's App-owned configuration.
 The resulting Host `/openapi.json` must equal the snapshot, including every
 operation and schema, plus the three known home and asset routes that the
 React client does not call. The source-mode `--openapi-only` option stops after
-this live comparison. The schemas remain authored JSON; this check does not
-derive them from the custom Auth and idempotency extractors or prove handler
-response bodies against the schemas. `lenso-openapi-plugin` 0.2.5 is not yet
-published, so source-mode `--no-install` adoption and a Cargo path patch do
-not establish a package-only install.
+this live comparison. The schemas remain authored JSON. A focused Rust test
+uses the same `OpenApiContract` schema generator to compare the eight public
+request and success DTO wire shapes, plus the path parameter shapes, with this
+snapshot. It checks field names, types, and requiredness. The two status fields
+remain strings in the Rust DTOs, so the snapshot does not claim closed enums.
+The test does not derive numeric or pattern constraints, Problem responses, or
+security semantics from the custom Auth and idempotency extractors. The live
+comparison checks the document, not actual response bodies.
+`lenso-openapi-plugin` 0.2.5 is not yet published, so source-mode
+`--no-install` adoption and a Cargo path patch do not establish a package-only
+install.
 
 ```sh
 LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
