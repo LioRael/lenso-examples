@@ -368,6 +368,17 @@ impl KnowledgeBase {
     }
 
     #[post("knowledge-base.notes.create", "/notes")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+            "required": true,
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateNote"}}}
+        },
+        "responses": {
+            "201": {"description": "Created note", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Note"}}}},
+            "400": {"description": "Invalid note", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn create(
         &self,
         user: AuthenticatedUser,
@@ -409,6 +420,15 @@ impl KnowledgeBase {
     }
 
     #[get("knowledge-base.notes.read", "/notes/{note_id}")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "note_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+            "200": {"description": "Note", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Note"}}}},
+            "400": {"description": "Invalid path", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}},
+            "404": {"description": "Missing note", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn read(
         &self,
         user: AuthenticatedUser,
@@ -418,6 +438,13 @@ impl KnowledgeBase {
     }
 
     #[post("knowledge-base.jobs.process-next", "/jobs/process-next")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "responses": {
+            "200": {"description": "Processed durable work", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessResult"}}}},
+            "502": {"description": "Processing failed", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn process_next(
         &self,
         _user: AuthenticatedUser,
@@ -451,6 +478,14 @@ impl KnowledgeBase {
     }
 
     #[get("knowledge-base.jobs.inspect", "/job-status/{job_id}")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "job_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+            "200": {"description": "Durable job state", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/JobState"}}}},
+            "502": {"description": "Inspection failed", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn inspect_job(
         &self,
         user: AuthenticatedUser,
@@ -468,6 +503,12 @@ impl KnowledgeBase {
     }
 
     #[get("knowledge-base.settings.read", "/settings")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "responses": {
+            "200": {"description": "Current request-captured settings", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BusinessSettings"}}}}
+        }
+    }"##)]
     async fn read_settings(
         &self,
         user: AuthenticatedUser,
@@ -476,6 +517,17 @@ impl KnowledgeBase {
     }
 
     #[put("knowledge-base.settings.update", "/settings")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+            "required": true,
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UpdateBusinessSettings"}}}
+        },
+        "responses": {
+            "200": {"description": "Updated settings", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BusinessSettings"}}}},
+            "409": {"description": "Stale predecessor", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn update_settings(
         &self,
         user: AuthenticatedUser,
@@ -506,6 +558,18 @@ impl KnowledgeBase {
     }
 
     #[post("knowledge-base.attachments.upload", "/note-attachments/{note_id}")]
+    #[openapi(r##"{
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "note_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+            "required": true,
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UploadAttachment"}}}
+        },
+        "responses": {
+            "201": {"description": "Stored attachment", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Attachment"}}}},
+            "404": {"description": "Missing or inaccessible note", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
+        }
+    }"##)]
     async fn upload_attachment(
         &self,
         user: AuthenticatedUser,

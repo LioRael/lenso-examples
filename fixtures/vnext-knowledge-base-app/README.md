@@ -96,6 +96,20 @@ frontend rebuild in a disposable consumer, supply that package and its
 independently recorded SHA-256 to the verifier. A frozen Bun install alone
 does not establish the identity of a local `file:` tarball:
 
+`project/frontend/openapi.json` is the checked-in input to React client
+generation. Its seven business operations also appear as `#[openapi]` metadata
+on the corresponding Rust Endpoint handlers. With the framework source
+candidate selected, the verifier adopts `@lenso/openapi` and copies the
+snapshot's info and components into that Plugin's App-owned configuration.
+The resulting Host `/openapi.json` must equal the snapshot, including every
+operation and schema, plus the three known home and asset routes that the
+React client does not call. The source-mode `--openapi-only` option stops after
+this live comparison. The schemas remain authored JSON; this check does not
+derive them from the custom Auth and idempotency extractors or prove handler
+response bodies against the schemas. `lenso-openapi-plugin` 0.2.5 is not yet
+published, so source-mode `--no-install` adoption and a Cargo path patch do
+not establish a package-only install.
+
 ```sh
 LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --cli /absolute/path/to/lenso \
@@ -177,6 +191,10 @@ The checked-in fixture and original provider checkout locks are not rewritten.
 These locks are not proof that the same versions are available from crates.io.
 Source mode trusts the selected checkouts and reuses the caller's Cargo registry
 cache; it is not an isolated third-party build.
+For an offline candidate, set `CARGO_HOME` to a vendor-only Cargo configuration
+for the independent Auth and Jobs operators, and set
+`LENSO_REFERENCE_CARGO_VENDOR_DIR` to the same host-accessible vendor directory.
+The verifier carries that directory into its separate, path-patched App build.
 
 In default mode, the verifier copies all candidate sources into a temporary consumer directory,
 adopts them through `lenso app add`, runs each explicit schema operator, issues

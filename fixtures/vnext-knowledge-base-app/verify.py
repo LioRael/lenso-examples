@@ -27,6 +27,7 @@ from business_snapshot_probe import verify_live_attachment_policy
 from excerpt_expectations import expected_excerpt
 from http_problem_diagnostics import report_http_server_error
 from job_processing import process_queued_job
+from openapi_snapshot import select_runtime_document, verify_runtime_document
 from package_cargo_environment import package_build_environment
 from runtime_environment import build_runtime_environment
 from unadopt_probe import copy_unadopt_probe
@@ -38,6 +39,10 @@ parser.add_argument("--jobs-source", help="local Jobs source crate (default mode
 parser.add_argument("--secrets-source", help="local environment Secrets source crate (default mode)")
 parser.add_argument("--framework-source", help="local Rust framework checkout for unpublished source-mode dependencies")
 parser.add_argument("--tool-provider-source", help="local Agent Tool Provider Capability crate for unpublished source-mode dependencies")
+parser.add_argument(
+    "--openapi-only", action="store_true",
+    help="build and check the live OpenAPI document against the React snapshot, then stop",
+)
 parser.add_argument(
     "--package-only", action="store_true",
     help="adopt Auth, Jobs, and Secrets only from exact catalog-bound .crate inputs",
@@ -126,6 +131,7 @@ FRAMEWORK_PATCH_PACKAGES = (
     "lenso-kernel",
     "lenso-native-adapter",
     "lenso-native-adapter-macros",
+    "lenso-openapi-plugin",
     "lenso-plugin-authoring",
     "lenso-runner",
     "lenso-runtime-codec",
@@ -409,11 +415,23 @@ def use_candidate_cargo_home(root, patches):
         f"{name} = {{ path = {json.dumps(str(crate))} }}"
         for name, crate in sorted(patches.items())
     )
+    vendor = os.environ.get("LENSO_REFERENCE_CARGO_VENDOR_DIR")
+    if vendor:
+        vendor = Path(vendor).resolve(strict=True)
+        if not vendor.is_dir():
+            parser.error("LENSO_REFERENCE_CARGO_VENDOR_DIR must be a directory")
+        lines.extend([
+            "", "[source.crates-io]", 'replace-with = "exact-local"',
+            "", "[source.exact-local]", f"directory = {json.dumps(str(vendor))}",
+            "", "[net]", "offline = true",
+        ])
     (cargo_home / "config.toml").write_text("\n".join(lines) + "\n")
     os.environ["CARGO_HOME"] = str(cargo_home)
 
 
 if args.package_only:
+    if args.openapi_only:
+        parser.error("--openapi-only requires the unpublished 0.2.5 source candidate, not --package-only")
     repositories = None
     linked_snapshot, trust, releases, upgrade_release = package_inputs()
     candidate_patches = None
@@ -431,6 +449,8 @@ else:
     if supplied:
         parser.error(f"package inputs require --package-only: {', '.join(supplied)}")
     candidate_patches = candidate_framework_inputs()
+    if args.openapi_only and not candidate_patches:
+        parser.error("--openapi-only requires --framework-source and --tool-provider-source")
     missing = [f"--{name}-source" for name in PLUGIN_IDS if not getattr(args, f"{name}_source")]
     if missing:
         parser.error(f"source mode requires {', '.join(missing)}")
@@ -809,6 +829,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
             run(["bun", "run", "build"], cwd=frontend)
 
     project = source / "project"
+    openapi_snapshot = None
     operator_receipts = None
     if args.package_only:
         with measured("consumer_preparation", "catalog_bound_crate_adoption"):
@@ -852,6 +873,11 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         with measured("consumer_preparation", "source_adoption"):
             for plugin_source in (auth_source, jobs_source, secrets_source):
                 run([cli, "app", "add", "--root", str(project), "--no-install", str(plugin_source)])
+            if candidate_patches:
+                run([cli, "app", "add", "--root", str(project), "--no-install", "@lenso/openapi"])
+                openapi_snapshot = select_runtime_document(
+                    project, fixture / "project" / "frontend" / "openapi.json"
+                )
         auth_operator = None
         jobs_operator = [
             "cargo", "run", "--locked", "-p", "lenso-jobs-plugin",
@@ -1023,6 +1049,22 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     runtime_environment = build_runtime_environment(
         root, database_url, signing_secret, token_pepper
     )
+    if args.openapi_only:
+        process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+        try:
+            public_operations, runtime_operations = verify_runtime_document(url, openapi_snapshot)
+            if args.browser_handoff:
+                tokens = issue_tokens()
+                with browser_handoff(args.browser_handoff, tokens["user-a"], url) as handoff:
+                    handoff.wait_for_removal()
+        finally:
+            stop(process, reader, transcript)
+        print(
+            f"PASS: live Host /openapi.json matches the React snapshot's "
+            f"{public_operations} public operations and all components, plus "
+            f"{runtime_operations - public_operations} known static routes"
+        )
+        raise SystemExit(0)
     unadopt_receipt = None
     upgrade_receipt = None
     attachment_policy_receipt = None
@@ -1176,6 +1218,8 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
     created = None
     try:
+        if openapi_snapshot is not None:
+            verify_runtime_document(url, openapi_snapshot)
         with urllib.request.urlopen(url, timeout=10) as response:
             home = response.read().decode()
             assert response.status == 200
