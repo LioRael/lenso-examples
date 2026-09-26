@@ -1,0 +1,49 @@
+fixtures/vnext-knowledge-base-app/project/frontend/openapi.json
+  s_7d146975368699::t_b270380fdeab44 143
+  s_7d146975368699::t_a0aa6caaf04088 109,119
+fixtures/vnext-knowledge-base-app/project/app/notes-web/src/lib.rs
+  s_7d146975368699::t_b270380fdeab44 16,88,95,100,105,154,165,173,181,1228-1230
+fixtures/vnext-knowledge-base-app/project/frontend/src/main.tsx
+  s_7d146975368699::t_a0aa6caaf04088 14
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_3f20b358f96d62 114
+  s_7d146975368699::t_f6fadde00d4df7 107-109
+  s_7d146975368699::t_b979945431fd43 115-117
+  s_7d146975368699::t_d20c7ac346c6bb 110-113
+fixtures/vnext-knowledge-base-app/project/app/notes-web/src/openapi_schema_tests.rs
+  s_7d146975368699::t_babe3be65e5e5b 11,56-60
+  s_7d146975368699::t_e20caa4da8e66a 15-18,26,31-32,38,68,74
+  s_7d146975368699::t_386ca8ea6dc8d4 22-25,40-45
+  s_7d146975368699::t_0f1f8b783a2f7f 27-30,147
+  s_7d146975368699::t_e584e34d613744 1-10,12-14,19-21,33-37,39,46-55,61-67,69-73,75-146
+fixtures/vnext-knowledge-base-app/project/app/notes-web/src/settings_core.rs
+  s_7d146975368699::t_b270380fdeab44 1,7,14
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml
+  s_7d146975368699::t_0696ed3049a448 21
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.lock
+  s_a39a347eff349b::t_adbd4c075a6c5e 901
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ba14c3e5df4f19f87938fa0476651f79c61a5afc",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    },
+    "s_a39a347eff349b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0deef-d2ca-7cc1-b8a1-2eac06539788",
+        "model": "unknown"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
