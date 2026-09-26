@@ -1,0 +1,38 @@
+fixtures/vnext-knowledge-base-app/project/app/notes-web/src/lib.rs
+  s_7d146975368699::t_f4428f6680e0bd 371,381,423,431,441,447,481,488,506,511,520,530,561,572
+  s_7d146975368699::t_e1bff840bb317b 372-380,424-430,442-446,482-487,507-510,521-529,562-571
+fixtures/vnext-knowledge-base-app/test_openapi_snapshot.py
+  s_7d146975368699::t_49ab11bcd26c96 1-42,44,46-60
+  s_7d146975368699::t_2f3be66b814ad0 45
+  s_7d146975368699::t_60916b945e202f 43
+fixtures/vnext-knowledge-base-app/openapi_snapshot.py
+  s_7d146975368699::t_fc1b3fd04baf91 1-87
+  s_7d146975368699::t_60916b945e202f 88-91
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_57d61f3b157ab3 877
+  s_7d146975368699::t_6c5cad0e73a377 1056,1058-1059
+  s_7d146975368699::t_fd05d87984ada1 1057
+  s_7d146975368699::t_a47d81d9912a15 433-434,832,876,878-880,1052-1054,1060-1063,1066-1067,1221-1222
+  s_7d146975368699::t_5cb099ddcdc6b3 30,42-45,134,452-453
+  s_7d146975368699::t_60916b945e202f 1055,1064-1065
+  s_7d146975368699::t_6eb6c7b8f2088d 418-427
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_84c0a825a8fd13 194-197
+  s_7d146975368699::t_0a00b7cb137c94 99-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2dc8ec6f1e317d7503a9e1d920dd81cf6f660f6e",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
