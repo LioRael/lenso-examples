@@ -224,7 +224,7 @@ class VerifyPackagePreflightTests(unittest.TestCase):
             roots.append(root.args[0].id)
         self.assertCountEqual(
             roots,
-            ("distribution", "removed_distribution", "upgraded_distribution", "lifecycle_root"),
+            ("distribution", "distribution", "removed_distribution", "upgraded_distribution", "lifecycle_root"),
         )
         self.assertIn(
             '[cli, "app", "show", "--root", str(intent), "--json"]',

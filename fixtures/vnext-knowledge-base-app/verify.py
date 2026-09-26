@@ -977,21 +977,17 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
     with measured("consumer_build", "app_build"):
-        build_kwargs = (
-            {"env": package_build_environment(root / "host-build-home")}
-            if args.package_only else {}
-        )
-        build_command = [cli, "app", "build", "--root", str(project), "--out", str(distribution)]
-        if args.trust_linked_build_from_crates:
-            build_command.extend(trust_linked_build_flags(project, releases))
         if upgrade_inputs:
-            build_command.extend((
-                "--trust-adopted-build",
-                build_grant_from_denial(cli, project, distribution, "0.1.0"),
-            ))
-        run(build_command, **build_kwargs)
-        if upgrade_inputs:
-            run([cli, "app", "check", "--root", str(distribution)])
+            trusted_build(cli, project, distribution, "0.1.0")
+        else:
+            build_kwargs = (
+                {"env": package_build_environment(root / "host-build-home")}
+                if args.package_only else {}
+            )
+            build_command = [cli, "app", "build", "--root", str(project), "--out", str(distribution)]
+            if args.trust_linked_build_from_crates:
+                build_command.extend(trust_linked_build_flags(project, releases))
+            run(build_command, **build_kwargs)
     runtime_environment = build_runtime_environment(
         root, database_url, signing_secret, token_pepper
     )

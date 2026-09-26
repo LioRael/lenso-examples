@@ -198,9 +198,12 @@ class VerifySourcePreflightTests(unittest.TestCase):
                 ),
             }
             exec(compile(ast.Module(body=[function], type_ignores=[]), str(VERIFY), "exec"), namespace)
-            with patch.object(parser, "error", side_effect=ValueError):
-                with self.assertRaisesRegex(ValueError, "rust-runtime contract"):
+            with patch.object(parser, "error", side_effect=ValueError) as error:
+                with self.assertRaises(ValueError):
                     namespace["candidate_framework_inputs"]()
+                error.assert_called_once_with(
+                    "candidate Agent Tool Provider must provide a rust-runtime contract"
+                )
 
     def test_rejects_a_jobs_checkout_without_plugin_identity(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-source-test-") as temporary:
