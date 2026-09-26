@@ -632,11 +632,8 @@ def expect_http_error(url, code, method="GET", body=None, token=None, idempotenc
 
 
 def verify_excerpt_upgrade(
-    cli, root, source, project, distribution, inputs, tokens, signing_secret, token_pepper
+    cli, root, source, project, distribution, inputs, tokens, runtime_environment
 ):
-    runtime_environment = build_runtime_environment(
-        root, database_url, signing_secret, token_pepper
-    )
     process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
     try:
         settings = http_json(url.rstrip("/") + "/settings", token=tokens["user-a"])
@@ -1146,7 +1143,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         with measured("consumer_upgrade", "signed_excerpt_runtime_upgrade"):
             upgraded_distribution = verify_excerpt_upgrade(
                 cli, root, source, project, distribution, upgrade_inputs, tokens,
-                signing_secret, token_pepper,
+                runtime_environment,
             )
         print_measurement(
             tree_logical_bytes(upgraded_distribution), phases,
