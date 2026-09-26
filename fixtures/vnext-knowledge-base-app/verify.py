@@ -1050,12 +1050,13 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         root, database_url, signing_secret, token_pepper
     )
     if args.openapi_only:
+        browser_token = issue_tokens()["user-a"] if args.browser_handoff else None
+        shutil.rmtree(source)
         process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
         try:
             public_operations, runtime_operations = verify_runtime_document(url, openapi_snapshot)
             if args.browser_handoff:
-                tokens = issue_tokens()
-                with browser_handoff(args.browser_handoff, tokens["user-a"], url) as handoff:
+                with browser_handoff(args.browser_handoff, browser_token, url) as handoff:
                     handoff.wait_for_removal()
         finally:
             stop(process, reader, transcript)
