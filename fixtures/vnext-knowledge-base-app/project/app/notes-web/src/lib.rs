@@ -881,6 +881,74 @@ fn decode_attachment_content(encoded: &str, max_bytes: usize) -> Result<Vec<u8>,
 mod tests {
     use super::*;
 
+    #[test]
+    fn public_openapi_operations_match_compiled_endpoint_routes() {
+        use std::collections::BTreeSet;
+
+        let document: serde_json::Value =
+            serde_json::from_str(include_str!("../../../frontend/openapi.json")).unwrap();
+        let paths = document["paths"].as_object().unwrap();
+        let mut documented = BTreeSet::new();
+        for (path, item) in paths {
+            for (method, operation) in item.as_object().unwrap() {
+                let operation_id = operation["operationId"].as_str().unwrap();
+                assert_eq!(
+                    operation["security"],
+                    serde_json::json!([{"bearerAuth": []}]),
+                    "{method} {path} must require the public bearer scheme"
+                );
+                assert!(documented.insert((
+                    path.to_owned(),
+                    method.to_ascii_uppercase(),
+                    operation_id.to_owned(),
+                )));
+            }
+        }
+
+        let routes = <KnowledgeBase as lenso_capability_http_endpoint::HttpEndpoint>::ROUTES;
+        let static_routes = routes
+            .iter()
+            .filter(|route| {
+                matches!(
+                    route.route_id(),
+                    "knowledge-base.home"
+                        | "knowledge-base.assets.js"
+                        | "knowledge-base.assets.css"
+                )
+            })
+            .map(|route| (route.path(), route.method(), route.route_id()))
+            .collect::<BTreeSet<_>>();
+        assert_eq!(
+            static_routes,
+            BTreeSet::from([
+                ("/", "GET", "knowledge-base.home"),
+                ("/assets/app.js", "GET", "knowledge-base.assets.js"),
+                ("/assets/index.css", "GET", "knowledge-base.assets.css"),
+            ])
+        );
+
+        let public_routes = routes
+            .iter()
+            .filter(|route| {
+                !matches!(
+                    route.route_id(),
+                    "knowledge-base.home"
+                        | "knowledge-base.assets.js"
+                        | "knowledge-base.assets.css"
+                )
+            })
+            .map(|route| {
+                (
+                    route.path().to_owned(),
+                    route.method().to_owned(),
+                    route.route_id().to_owned(),
+                )
+            })
+            .collect::<BTreeSet<_>>();
+        assert_eq!(public_routes.len(), 7);
+        assert_eq!(documented, public_routes);
+    }
+
     struct TestAttachmentPolicySource {
         revision: Cell<u64>,
         calls: Cell<u32>,

@@ -1,12 +1,51 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { once } from 'node:events';
 import test from 'node:test';
 
-import { createDevBackendMiddleware } from './dev-backend.mjs';
+import { createDevBackendMiddleware, publicRoutesFromOpenApi } from './dev-backend.mjs';
+
+const publicApi = JSON.parse(await readFile(new URL('./openapi.json', import.meta.url), 'utf8'));
+
+test('the editable OpenAPI document cannot expand the dev proxy boundary', () => {
+  assert.equal(publicRoutesFromOpenApi(publicApi).length, 6);
+
+  const extraPath = structuredClone(publicApi);
+  extraPath.paths['/admin'] = { get: { operationId: 'knowledge-base.admin.read' } };
+  assert.throws(() => publicRoutesFromOpenApi(extraPath), /unapproved public API operation/);
+
+  const extraMethod = structuredClone(publicApi);
+  extraMethod.paths['/notes'].get = structuredClone(extraMethod.paths['/notes'].post);
+  assert.throws(() => publicRoutesFromOpenApi(extraMethod), /unapproved public API operation/);
+
+  const changedTemplate = structuredClone(publicApi);
+  changedTemplate.paths['/notes/{note_id}/../admin'] = changedTemplate.paths['/notes/{note_id}'];
+  delete changedTemplate.paths['/notes/{note_id}'];
+  assert.throws(() => publicRoutesFromOpenApi(changedTemplate), /invalid public API path template/);
+
+  const wrongIdentity = structuredClone(publicApi);
+  wrongIdentity.paths['/notes'].post.operationId = 'knowledge-base.internal.run';
+  assert.throws(() => publicRoutesFromOpenApi(wrongIdentity), /unapproved public API operation/);
+
+  const missingOperation = structuredClone(publicApi);
+  delete missingOperation.paths['/settings'].put;
+  assert.throws(() => publicRoutesFromOpenApi(missingOperation), /omits an approved operation/);
+
+  const wrongParameter = structuredClone(publicApi);
+  wrongParameter.paths['/notes/{note_id}'].get.parameters[0].name = 'other_id';
+  assert.throws(() => publicRoutesFromOpenApi(wrongParameter), /path parameters do not match/);
+
+  const missingSecurity = structuredClone(publicApi);
+  delete missingSecurity.paths['/notes'].post.security;
+  assert.throws(() => publicRoutesFromOpenApi(missingSecurity), /must require bearer auth/);
+
+  const wrongScheme = structuredClone(publicApi);
+  wrongScheme.components.securitySchemes.bearerAuth.scheme = 'basic';
+  assert.throws(() => publicRoutesFromOpenApi(wrongScheme), /must define bearer authentication/);
+});
 
 async function listen(handler) {
   const server = createServer(handler);

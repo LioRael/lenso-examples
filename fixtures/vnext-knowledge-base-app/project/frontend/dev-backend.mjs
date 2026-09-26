@@ -1,14 +1,94 @@
-import { closeSync, constants, fstatSync, openSync, readSync } from 'node:fs';
+import { closeSync, constants, fstatSync, openSync, readFileSync, readSync } from 'node:fs';
 import { request as httpRequest } from 'node:http';
 
-const publicRoutes = [
-  [/^\/notes$/, ['POST']],
-  [/^\/notes\/[^/]+$/, ['GET']],
-  [/^\/jobs\/process-next$/, ['POST']],
-  [/^\/job-status\/[^/]+$/, ['GET']],
-  [/^\/settings$/, ['GET', 'PUT']],
-  [/^\/note-attachments\/[^/]+$/, ['POST']],
-];
+const allowedPublicOperations = new Map([
+  ['POST /notes', 'knowledge-base.notes.create'],
+  ['GET /notes/{note_id}', 'knowledge-base.notes.read'],
+  ['POST /jobs/process-next', 'knowledge-base.jobs.process-next'],
+  ['GET /job-status/{job_id}', 'knowledge-base.jobs.inspect'],
+  ['GET /settings', 'knowledge-base.settings.read'],
+  ['PUT /settings', 'knowledge-base.settings.update'],
+  ['POST /note-attachments/{note_id}', 'knowledge-base.attachments.upload'],
+]);
+
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function compilePath(template) {
+  if (!template.startsWith('/') || template === '/' || template.endsWith('/')) {
+    throw new Error(`invalid public API path template: ${template}`);
+  }
+  const parameters = [];
+  const segments = template.slice(1).split('/').map((segment) => {
+    const parameter = /^\{([a-z][a-z0-9_]*)\}$/.exec(segment);
+    if (parameter) {
+      if (parameters.includes(parameter[1])) throw new Error(`duplicate path parameter: ${template}`);
+      parameters.push(parameter[1]);
+      return '[^/]+';
+    }
+    if (!/^[a-z][a-z0-9-]*$/.test(segment)) {
+      throw new Error(`invalid public API path template: ${template}`);
+    }
+    return segment;
+  });
+  return { pattern: new RegExp(`^/${segments.join('/')}$`), parameters };
+}
+
+export function publicRoutesFromOpenApi(document) {
+  if (document?.openapi !== '3.1.0' || !isRecord(document.paths)) {
+    throw new Error('the public API document must be OpenAPI 3.1 with paths');
+  }
+  const bearer = document.components?.securitySchemes?.bearerAuth;
+  if (!isRecord(bearer) || bearer.type !== 'http' || bearer.scheme !== 'bearer') {
+    throw new Error('the public API document must define bearer authentication');
+  }
+  const routes = [];
+  const observed = new Set();
+  for (const [path, item] of Object.entries(document.paths)) {
+    if (!isRecord(item) || Object.keys(item).length === 0) {
+      throw new Error(`invalid public API path item: ${path}`);
+    }
+    const { pattern, parameters } = compilePath(path);
+    const methods = [];
+    for (const [method, operation] of Object.entries(item)) {
+      const key = `${method.toUpperCase()} ${path}`;
+      if (!['get', 'post', 'put'].includes(method) || !isRecord(operation)
+        || allowedPublicOperations.get(key) !== operation.operationId || observed.has(key)) {
+        throw new Error(`unapproved public API operation: ${key}`);
+      }
+      const security = operation.security;
+      if (!Array.isArray(security) || security.length !== 1 || !isRecord(security[0])
+        || Object.keys(security[0]).length !== 1 || !Array.isArray(security[0].bearerAuth)
+        || security[0].bearerAuth.length !== 0) {
+        throw new Error(`public API operation must require bearer auth: ${key}`);
+      }
+      const declared = operation.parameters ?? [];
+      if (!Array.isArray(declared) || declared.some((value) => !isRecord(value))) {
+        throw new Error(`invalid public API parameters: ${key}`);
+      }
+      const declaredPath = declared.filter((value) => value.in === 'path');
+      if (declaredPath.length !== parameters.length
+        || new Set(declaredPath.map((value) => value.name)).size !== parameters.length
+        || declaredPath.some((value) =>
+          value.required !== true || value.schema?.type !== 'string'
+          || !parameters.includes(value.name))) {
+        throw new Error(`public API path parameters do not match: ${key}`);
+      }
+      observed.add(key);
+      methods.push(method.toUpperCase());
+    }
+    routes.push([pattern, methods]);
+  }
+  if (observed.size !== allowedPublicOperations.size) {
+    throw new Error('the public API document omits an approved operation');
+  }
+  return routes;
+}
+
+const publicRoutes = publicRoutesFromOpenApi(JSON.parse(
+  readFileSync(new URL('./openapi.json', import.meta.url), 'utf8'),
+));
 const hopHeaders = ['connection', 'proxy-connection', 'keep-alive', 'upgrade',
   'te', 'trailer', 'transfer-encoding', 'proxy-authenticate', 'proxy-authorization'];
 
