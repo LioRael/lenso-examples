@@ -22,8 +22,8 @@ compare-and-set updates are rejected without changing the active value.
 
 For an independent Agent using staged package candidates rather than private
 provider checkouts, read [the exact KB input contract](AGENT_INPUT.md) first.
-It distinguishes the local test-signed path from an official publication and
-from the still-unverified Agent authoring acceptance.
+It specifies the local test-signed path and its stop conditions; these
+candidate inputs are not an official registry release.
 
 The linked Rust Plugin also has a separate, optional Host binding for a
 versioned attachment-size ceiling. It preserves the existing 1 MiB default
