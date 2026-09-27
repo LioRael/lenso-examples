@@ -1,0 +1,30 @@
+fixtures/vnext-knowledge-base-app/verify.py
+  s_7d146975368699::t_19f2fd448511c9 849
+  s_7d146975368699::t_05abeae2a50de7 471,499
+  s_7d146975368699::t_3a148617390a3d 353-354,470,472,496,928,931,1066,1068,1073,1145,1251,1257,1260
+  s_7d146975368699::t_4b3a841855b6f8 92-94,313-335,512-517,930,1075
+fixtures/vnext-knowledge-base-app/test_verify_packages.py
+  s_7d146975368699::t_feef1378bfa11a 388
+  s_7d146975368699::t_3ff4f96230e255 538-541
+  s_7d146975368699::t_ec8d24f77eca3e 333-387,389-393
+fixtures/vnext-knowledge-base-app/AGENT_INPUT.md
+  s_7d146975368699::t_f9a7be94c84be9 1-96
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_0fb246dad67976 23-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2ff0c4bc26a30c6338e3e79fd28e07f04d2984d0",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
