@@ -20,6 +20,7 @@ type Attachment = { id: string; filename: string; media_type: string; note_id: s
 function App() {
   const token = useRef('');
   const sessionEpoch = useRef(0);
+  const noteEpoch = useRef<number | null>(null);
   const noteForm = useRef<HTMLFormElement>(null);
   const [note, setNote] = useState<Note>();
   const [status, setStatus] = useState('Enter an issued API token to begin.');
@@ -91,6 +92,7 @@ function App() {
     event.preventDefault();
     const { api, epoch } = currentSession();
     setSubmitting(true);
+    noteEpoch.current = null;
     setNote(undefined);
     setStatus('Creating…');
     const data = new FormData(event.currentTarget);
@@ -101,6 +103,7 @@ function App() {
       }));
       if (!isCurrentSession(epoch)) return;
       savedNote = created;
+      noteEpoch.current = epoch;
       setNote(created);
       if (created.processing_status === 'queued') {
         setStatus('Queued; processing durable excerpt job…');
@@ -141,8 +144,8 @@ function App() {
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const file = input.files?.[0];
-    if (!file || !note) return;
     const { api, epoch } = currentSession();
+    if (!file || !note || noteEpoch.current !== epoch) return;
     const noteId = note.id;
     setStatus('Uploading attachment…');
     try {
@@ -170,6 +173,7 @@ function App() {
       <label>API token <input type="password" autoComplete="off" onChange={(event) => {
         token.current = event.currentTarget.value.trim();
         sessionEpoch.current += 1;
+        noteEpoch.current = null;
         setNote(undefined);
         setSettingsLimit(96);
         setSettingsRevision(1);
