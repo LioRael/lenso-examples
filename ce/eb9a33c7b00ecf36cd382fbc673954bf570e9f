@@ -1,0 +1,24 @@
+fixtures/vnext-knowledge-base-app/project/app/excerpt/src/plugin.ts
+  s_7d146975368699::t_f2c3e6766c0055 8
+fixtures/vnext-knowledge-base-app/project/app/excerpt/src/excerpt.ts
+  s_7d146975368699::t_f2c3e6766c0055 1-9
+fixtures/vnext-knowledge-base-app/project/app/excerpt/tests/excerpt.test.ts
+  s_7d146975368699::t_f2c3e6766c0055 1-4,6
+  s_7d146975368699::t_409d02980682d4 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ceeb9a33c7b00ecf36cd382fbc673954bf570e9f",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
