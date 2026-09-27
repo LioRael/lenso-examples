@@ -330,6 +330,67 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertIn("--excerpt-tgz-r1", result.stderr)
         self.assertIn("--excerpt-tgz-r2", result.stderr)
 
+    def test_single_excerpt_requires_exact_release_and_background_package_mode(self):
+        result = self.run_verify("--excerpt-version", "0.1.2")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires --package-only --background-only", result.stderr)
+        with tempfile.TemporaryDirectory(prefix="lenso-kb-single-test-") as temporary:
+            root = Path(temporary)
+            result = self.run_verify(
+                "--package-only", "--background-only", "--excerpt-version", "0.1.2",
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--excerpt-snapshot", result.stderr)
+            self.assertIn("--excerpt-trust", result.stderr)
+            self.assertIn("--excerpt-tgz", result.stderr)
+
+            snapshot = root / "excerpt-snapshot.json"
+            trust = root / "excerpt-trust.json"
+            archive = root / "excerpt.tgz"
+            for path in (snapshot, trust, archive):
+                path.write_bytes(b"candidate input")
+            result = self.run_verify(
+                *self.package_arguments(root), "--background-only",
+                "--excerpt-version", "latest", "--excerpt-snapshot", snapshot,
+                "--excerpt-trust", trust, "--excerpt-tgz", archive,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("--excerpt-version must be an exact", result.stderr)
+
+    def test_single_excerpt_adoption_uses_selected_exact_release(self):
+        function = next(
+            node for node in ast.parse(VERIFY.read_text(encoding="utf-8")).body
+            if isinstance(node, ast.FunctionDef) and node.name == "adopt_excerpt"
+        )
+        compiled = compile(ast.Module(body=[function], type_ignores=[]), str(VERIFY), "exec")
+        calls = []
+        namespace = {
+            "args": SimpleNamespace(excerpt_version="0.1.2"),
+            "EXCERPT_PLUGIN_ID": "lenso.reference.knowledge-excerpt",
+            "Path": Path,
+            "str": str,
+            "run": lambda command, **kwargs: (
+                calls.append(command) or SimpleNamespace(stdout="")
+            ),
+        }
+        exec(compiled, namespace)
+        project = Path("/scratch/app")
+        inputs = {
+            "excerpt_snapshot_r1": Path("/inputs/excerpt-snapshot.json"),
+            "excerpt_trust": Path("/inputs/excerpt-trust.json"),
+            "excerpt_tgz_r1": Path("/inputs/excerpt.tgz"),
+        }
+        adopted = namespace["adopt_excerpt"]("/tool/lenso", project, inputs, 1)
+        self.assertEqual(
+            adopted,
+            project / "vendor/lenso/npm/lenso.reference.knowledge-excerpt/0.1.2",
+        )
+        self.assertEqual(calls[0][3], "lenso.reference.knowledge-excerpt@0.1.2")
+        self.assertIn("--package-snapshot", calls[0])
+        self.assertIn("--tgz", calls[0])
+        with self.assertRaisesRegex(RuntimeError, "cannot be upgraded"):
+            namespace["adopt_excerpt"]("/tool/lenso", project, inputs, 2, replace=True)
+
     def test_package_excerpt_upgrade_requires_explicit_crate_build_trust(self):
         with tempfile.TemporaryDirectory(prefix="lenso-kb-upgrade-test-") as temporary:
             root = Path(temporary)
@@ -474,6 +535,10 @@ class VerifyPackagePreflightTests(unittest.TestCase):
                 and any(
                     isinstance(value, ast.Constant) and value.value == argument
                     or isinstance(value, ast.Name) and value.id == argument
+                    or isinstance(value, ast.BoolOp) and any(
+                        isinstance(option, ast.Constant) and option.value == argument
+                        for option in value.values
+                    )
                     for value in node.args
                 )
             ]

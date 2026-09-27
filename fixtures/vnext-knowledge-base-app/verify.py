@@ -89,6 +89,9 @@ parser.add_argument("--excerpt-snapshot-r2", help="signed 0.1.1 npm package snap
 parser.add_argument("--excerpt-trust", help="public trust configuration for both npm snapshots")
 parser.add_argument("--excerpt-tgz-r1", help="exact signed 0.1.0 npm archive")
 parser.add_argument("--excerpt-tgz-r2", help="exact signed 0.1.1 npm archive")
+parser.add_argument("--excerpt-version", help="exact single npm Release for the background-only gate")
+parser.add_argument("--excerpt-snapshot", help="signed snapshot for the single npm Release")
+parser.add_argument("--excerpt-tgz", help="exact archive for the single npm Release")
 args = parser.parse_args()
 cli = str(Path(shutil.which(args.cli) or args.cli).absolute())
 fixture = Path(__file__).resolve().parent
@@ -307,6 +310,29 @@ EXCERPT_PLUGIN_ID = "lenso.reference.knowledge-excerpt"
 
 
 def excerpt_inputs():
+    single_names = ("excerpt_version", "excerpt_snapshot", "excerpt_tgz")
+    single_supplied = [name for name in single_names if getattr(args, name)]
+    if single_supplied:
+        if any(getattr(args, name) for name in (
+            "excerpt_snapshot_r1", "excerpt_snapshot_r2", "excerpt_tgz_r1", "excerpt_tgz_r2"
+        )):
+            parser.error("single excerpt Release cannot be combined with upgrade inputs")
+        if not args.package_only or not args.background_only:
+            parser.error("single excerpt Release requires --package-only --background-only")
+        missing = [f"--{name.replace('_', '-')}" for name in (*single_names, "excerpt_trust")
+                   if not getattr(args, name)]
+        if missing:
+            parser.error(f"single excerpt Release requires {', '.join(missing)}")
+        if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?", args.excerpt_version):
+            parser.error("--excerpt-version must be an exact npm Release version")
+        archive = regular_file(args.excerpt_tgz, "--excerpt-tgz")
+        if archive.suffix != ".tgz":
+            parser.error("--excerpt-tgz must name a .tgz archive")
+        return {
+            "excerpt_snapshot_r1": regular_file(args.excerpt_snapshot, "--excerpt-snapshot"),
+            "excerpt_trust": regular_file(args.excerpt_trust, "--excerpt-trust"),
+            "excerpt_tgz_r1": archive,
+        }
     names = (
         "excerpt_snapshot_r1", "excerpt_snapshot_r2", "excerpt_trust",
         "excerpt_tgz_r1", "excerpt_tgz_r2",
@@ -324,8 +350,8 @@ def excerpt_inputs():
     return inputs
 
 
-upgrade_inputs = excerpt_inputs()
-if args.background_only and upgrade_inputs:
+signed_excerpt_inputs = excerpt_inputs()
+if args.background_only and signed_excerpt_inputs and not args.excerpt_version:
     parser.error("--background-only cannot run with a signed excerpt upgrade")
 
 
@@ -441,9 +467,9 @@ if args.package_only:
     repositories = None
     linked_snapshot, trust, releases, upgrade_release = package_inputs()
     candidate_patches = None
-    if upgrade_inputs and not args.trust_linked_build_from_crates:
-        parser.error("package-only signed excerpt upgrade requires --trust-linked-build-from-crates")
-    if upgrade_inputs and upgrade_release:
+    if signed_excerpt_inputs and not args.trust_linked_build_from_crates:
+        parser.error("package-only signed excerpt adoption requires --trust-linked-build-from-crates")
+    if signed_excerpt_inputs and upgrade_release:
         parser.error("signed excerpt and Secrets upgrades are separate acceptance runs")
 else:
     package_flags = [
@@ -467,10 +493,10 @@ else:
     upgrade_release = None
 
 offline_bun_cache = None
-if upgrade_inputs:
+if signed_excerpt_inputs:
     cache_value = os.environ.get("LENSO_REFERENCE_BUN_CACHE")
     if not cache_value:
-        parser.error("signed excerpt upgrade requires LENSO_REFERENCE_BUN_CACHE")
+        parser.error("signed excerpt adoption requires LENSO_REFERENCE_BUN_CACHE")
     offline_bun_cache = Path(cache_value).resolve()
     if not offline_bun_cache.is_dir():
         parser.error(
@@ -483,7 +509,12 @@ def run(command, **kwargs):
 
 
 def adopt_excerpt(cli, project, inputs, revision, replace=False):
-    version = "0.1.0" if revision == 1 else "0.1.1"
+    if args.excerpt_version:
+        if revision != 1 or replace:
+            raise RuntimeError("single excerpt Release cannot be upgraded in this gate")
+        version = args.excerpt_version
+    else:
+        version = "0.1.0" if revision == 1 else "0.1.1"
     command = [
         cli, "app", "add", f"{EXCERPT_PLUGIN_ID}@{version}", "--root", str(project),
         "--package-snapshot", str(inputs[f"excerpt_snapshot_r{revision}"]),
@@ -815,7 +846,7 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         ignored = set(shutil.ignore_patterns(
             "target", ".lenso", "dist", "node_modules", "vendor", "generated", "__pycache__"
         )(directory, names))
-        if upgrade_inputs and Path(directory) == fixture / "project" / "app":
+        if signed_excerpt_inputs and Path(directory) == fixture / "project" / "app":
             ignored.add("excerpt")
         return ignored
 
@@ -894,10 +925,10 @@ with tempfile.TemporaryDirectory(prefix="lenso-knowledge-base-") as temporary:
         jobs_operator_cwd = candidates / "jobs"
 
     adopted_excerpt = None
-    if upgrade_inputs:
+    if signed_excerpt_inputs:
         assert not (project / "app" / "excerpt").exists()
-        with measured("consumer_preparation", "signed_excerpt_0_1_0_adoption"):
-            adopted_excerpt = adopt_excerpt(cli, project, upgrade_inputs, 1)
+        with measured("consumer_preparation", "signed_excerpt_adoption"):
+            adopted_excerpt = adopt_excerpt(cli, project, signed_excerpt_inputs, 1)
             install_excerpt_dependencies(adopted_excerpt)
 
     suffix = f"{os.getpid()}_{secrets.randbelow(1_000_000)}"
@@ -1032,16 +1063,16 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
 '''
     )
 
-    excerpt = adopted_excerpt if upgrade_inputs else project / "app" / "excerpt"
+    excerpt = adopted_excerpt if signed_excerpt_inputs else project / "app" / "excerpt"
     with measured("app_authoring", "typescript_install_and_check"):
-        if not upgrade_inputs:
+        if not signed_excerpt_inputs:
             run(["bun", "install", "--frozen-lockfile"], cwd=excerpt)
         run(["bun", "run", "check"], cwd=excerpt)
     distribution = root / "dist"
     with measured("consumer_build", "app_build"):
-        if upgrade_inputs:
+        if signed_excerpt_inputs:
             trusted_build(
-                cli, project, distribution, "0.1.0",
+                cli, project, distribution, args.excerpt_version or "0.1.0",
                 **excerpt_build_kwargs(project, root),
             )
         else:
@@ -1111,7 +1142,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     upgrade_receipt = None
     attachment_policy_receipt = None
     upgrade_probe = None
-    if args.package_only and not upgrade_inputs:
+    if args.package_only and not signed_excerpt_inputs:
         with measured("consumer_build", "app_check_show"):
             check_package_distribution(cli, distribution, root)
         with measured("consumer_build", "linked_unadopt_check_show"):
@@ -1217,16 +1248,16 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             with measured("consumer_preparation", "upgrade_source_snapshot"):
                 upgrade_probe = root / "upgrade-app"
                 copy_unadopt_probe(project, upgrade_probe)
-    if args.package_only and upgrade_inputs:
+    if args.package_only and signed_excerpt_inputs:
         with measured("consumer_build", "app_check_show"):
             check_package_distribution(cli, distribution, root)
     with measured("plugin_candidate_setup", "runtime_credentials"):
         tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
-    if upgrade_inputs:
+    if signed_excerpt_inputs:
         with measured("consumer_upgrade", "signed_excerpt_runtime_upgrade"):
             upgraded_distribution = verify_excerpt_upgrade(
-                cli, root, source, project, distribution, upgrade_inputs, tokens,
+                cli, root, source, project, distribution, signed_excerpt_inputs, tokens,
                 runtime_environment,
             )
         print_measurement(
