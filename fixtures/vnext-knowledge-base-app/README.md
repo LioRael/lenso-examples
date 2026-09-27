@@ -106,9 +106,9 @@ operation and schema, plus the three known home and asset routes that the
 React client does not call. The source-mode `--openapi-only` option stops after
 this live comparison. It deletes the disposable source copy before starting
 the built Host; a requested browser token is issued from the adopted Auth
-operator before that deletion. The 2026-09-27 browser receipt predates this
-change: it proves the observed browser interaction, but not source-deleted
-browser execution. A new browser run is needed for that stronger claim.
+operator before that deletion. An OpenAPI-only run checks the served contract;
+to verify browser behavior, use the handoff to interact with the running Host
+and let the verifier finish.
 The schemas remain authored JSON. A focused Rust test
 uses the same `OpenApiContract` schema generator to compare the eight public
 request and success DTO wire shapes, plus the path parameter shapes, with this
