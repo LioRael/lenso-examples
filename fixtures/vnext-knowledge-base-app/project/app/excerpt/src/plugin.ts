@@ -5,15 +5,7 @@ import * as schema from "@lenso/agent-tool-sdk/schema";
 
 import { Jobs, type JobsClient } from "./jobs.generated.js";
 import { excerptEnqueueRequest } from "./enqueue-request.js";
-
-const DEFAULT_EXCERPT_LIMIT = 96;
-
-function excerpt(text: string, limit = DEFAULT_EXCERPT_LIMIT): string {
-  const normalized = text.trim().replace(/\s+/gu, " ");
-  const characters = Array.from(normalized);
-  if (characters.length <= limit) return normalized;
-  return `${characters.slice(0, limit - 1).join("")}…`;
-}
+import { excerpt } from "./excerpt.js";
 
 interface ExcerptInstance {
   readonly jobs: JobsClient | undefined;
