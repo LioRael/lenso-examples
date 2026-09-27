@@ -1,18 +1,11 @@
 import { StrictMode, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LensoApiError, createLensoWebClient, unwrap } from '@lenso/web-client';
-import type { paths } from './generated/api';
+import type { components, paths } from './generated/api';
 import { processQueuedJob, type JobState } from './process-job';
 import './styles.css';
 
-type Note = {
-  id: string;
-  title: string;
-  body: string;
-  excerpt: string;
-  job_id: string;
-  processing_status: string;
-};
+type Note = components['schemas']['Note'];
 
 type BusinessSettings = { excerpt_limit: number; revision: number };
 type Attachment = { id: string; filename: string; media_type: string; note_id: string; size: number };
@@ -22,9 +15,12 @@ function App() {
   const sessionEpoch = useRef(0);
   const noteEpoch = useRef<number | null>(null);
   const noteForm = useRef<HTMLFormElement>(null);
+  const recoveryForm = useRef<HTMLFormElement>(null);
   const [note, setNote] = useState<Note>();
   const [status, setStatus] = useState('Enter an issued API token to begin.');
+  const [recoveryStatus, setRecoveryStatus] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
+  const [retrieving, setRetrieving] = useState(false);
   const [settingsLimit, setSettingsLimit] = useState(96);
   const [settingsRevision, setSettingsRevision] = useState(1);
 
@@ -94,6 +90,7 @@ function App() {
     setSubmitting(true);
     noteEpoch.current = null;
     setNote(undefined);
+    setRecoveryStatus(undefined);
     setStatus('Creating…');
     const data = new FormData(event.currentTarget);
     let savedNote: Note | undefined;
@@ -141,6 +138,33 @@ function App() {
     }
   }
 
+  async function retrieve(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const noteId = String(new FormData(event.currentTarget).get('note_id') ?? '').trim();
+    if (!noteId) {
+      setRecoveryStatus('Enter a note ID.');
+      return;
+    }
+    const { api, epoch } = currentSession();
+    setRetrieving(true);
+    noteEpoch.current = null;
+    setNote(undefined);
+    setRecoveryStatus('Opening note…');
+    try {
+      const read = unwrap<Note>(await api.GET('/notes/{note_id}', {
+        params: { path: { note_id: noteId } },
+      }));
+      if (!isCurrentSession(epoch)) return;
+      noteEpoch.current = epoch;
+      setNote(read);
+      setRecoveryStatus(`Opened note ${read.id}.`);
+    } catch (error) {
+      if (isCurrentSession(epoch)) setRecoveryStatus(`Could not open note ${noteId}: ${problem(error)}`);
+    } finally {
+      if (isCurrentSession(epoch)) setRetrieving(false);
+    }
+  }
+
   async function upload(event: ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const file = input.files?.[0];
@@ -178,7 +202,10 @@ function App() {
         setSettingsLimit(96);
         setSettingsRevision(1);
         setSubmitting(false);
+        setRetrieving(false);
         noteForm.current?.reset();
+        recoveryForm.current?.reset();
+        setRecoveryStatus(undefined);
         setStatus(token.current ? 'Credential ready; requests are user-isolated.' : 'Enter an issued API token to begin.');
       }} /></label>
       <button type="submit">Load workspace</button>
@@ -191,7 +218,15 @@ function App() {
     <form ref={noteForm} onSubmit={submit}>
       <label>Title <input name="title" autoComplete="off" required /></label>
       <label>Body <textarea name="body" required /></label>
-      <button disabled={submitting} type="submit">{submitting ? 'Creating…' : 'Create note'}</button>
+      <button disabled={submitting || retrieving} type="submit">{submitting ? 'Creating…' : 'Create note'}</button>
+    </form>
+    <form ref={recoveryForm} aria-labelledby="recovery-heading" onSubmit={retrieve}>
+      <h2 id="recovery-heading">Open an existing note</h2>
+      <label>Note ID <input name="note_id" autoComplete="off" spellCheck={false} aria-describedby="recovery-status" required /></label>
+      <button disabled={retrieving || submitting} type="submit">{retrieving ? 'Opening…' : 'Open note'}</button>
+      <p id="recovery-status" className="status" role="status" aria-live="polite">
+        {recoveryStatus ?? (note ? 'A note is open.' : 'No note open. Enter its ID to reopen it.')}
+      </p>
     </form>
     <p className="status" role="status" aria-live="polite">{status}</p>
     {note && <article>
