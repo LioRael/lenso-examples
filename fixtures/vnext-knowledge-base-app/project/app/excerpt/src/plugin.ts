@@ -3,7 +3,8 @@ import type { InvocationContext } from "@lenso/contract-runtime";
 import { tool, tools } from "@lenso/agent-tool-sdk";
 import * as schema from "@lenso/agent-tool-sdk/schema";
 
-import { Jobs, type JobsClient, type Timestamp } from "./jobs.generated.js";
+import { Jobs, type JobsClient } from "./jobs.generated.js";
+import { excerptEnqueueRequest } from "./enqueue-request.js";
 
 const DEFAULT_EXCERPT_LIMIT = 96;
 
@@ -34,10 +35,6 @@ function failure(operation: string, error: unknown) {
   };
 }
 
-function now(): Timestamp {
-  return new Date().toISOString() as Timestamp;
-}
-
 function context(call: InvocationContext): InvocationContext {
   return call;
 }
@@ -64,6 +61,7 @@ export default definePlugin({
           name: "knowledge.enqueue-excerpt",
           description: "Queue deterministic excerpt processing for one knowledge note.",
           input: schema.object({
+            availableAt: schema.string(),
             excerptLimit: schema.number(),
             noteId: schema.string(),
             ownerId: schema.string(),
@@ -76,7 +74,7 @@ export default definePlugin({
           }),
           execution: "parallel_safe",
         },
-        async ({ excerptLimit, noteId, ownerId, text }, call, instance) => {
+        async ({ availableAt, excerptLimit, noteId, ownerId, text }, call, instance) => {
           if (!Number.isInteger(excerptLimit) || excerptLimit < 16 || excerptLimit > 512) {
             return failure("configuration", "excerptLimit must be an integer from 16 through 512");
           }
@@ -91,14 +89,7 @@ export default definePlugin({
             };
           }
           const result = await instance.jobs.enqueue(
-            {
-              available_at: now(),
-              idempotency_key: `knowledge-excerpt:${noteId}`,
-              kind: "knowledge.excerpt",
-              max_attempts: 3,
-              payload: { excerpt_limit: excerptLimit, note_id: noteId, owner_id: ownerId, text },
-              queue: "knowledge",
-            },
+            excerptEnqueueRequest({ availableAt, excerptLimit, noteId, ownerId, text }),
             context(call),
           );
           if (!result.ok) return failure("enqueue", result.error);
@@ -126,6 +117,19 @@ export default definePlugin({
           if (instance.jobs === undefined) return failure("unavailable", "Jobs is not bound");
           const claimed = await instance.jobs.claim({ queue: "knowledge" }, context(call));
           if (!claimed.ok) return failure("claim", claimed.error);
+          if (claimed.value.kind !== "knowledge.excerpt") {
+            const rejected = await instance.jobs.fail(
+              {
+                failure_code: "unexpected_job_kind",
+                job_id: claimed.value.job_id,
+                lease_token: claimed.value.lease_token,
+                retryable: false,
+              },
+              context(call),
+            );
+            if (!rejected.ok) return failure("reject-kind", rejected.error);
+            return failure("claim-kind", "claimed job is not a knowledge excerpt");
+          }
           const noteId = claimed.value.payload.note_id;
           const ownerId = claimed.value.payload.owner_id;
           const text = claimed.value.payload.text;
