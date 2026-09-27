@@ -47,7 +47,7 @@ class OpenApiSnapshotTests(unittest.TestCase):
     def test_live_comparison_includes_schemas_and_only_known_static_routes(self):
         document = expected_runtime_document(self.snapshot)
         with patch("openapi_snapshot.urllib.request.urlopen", return_value=Response(json.dumps(document).encode())):
-            self.assertEqual(verify_runtime_document("http://127.0.0.1:1234", self.snapshot), (7, 10))
+            self.assertEqual(verify_runtime_document("http://127.0.0.1:1234", self.snapshot), (6, 9))
 
         document = json.loads(json.dumps(document))
         document["components"]["schemas"]["Note"]["required"].append("unexpected")
@@ -112,7 +112,7 @@ class OpenApiSnapshotTests(unittest.TestCase):
                 self.assertEqual(url, "http://127.0.0.1:1234")
                 self.assertEqual(snapshot, self.snapshot)
                 events.append("compared")
-                return 7, 10
+                return 6, 9
 
             namespace = {
                 "args": SimpleNamespace(browser_handoff=root / "handoff.json"),

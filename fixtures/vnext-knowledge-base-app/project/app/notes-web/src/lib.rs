@@ -19,7 +19,7 @@ use lenso_capability_http_endpoint::{
 };
 use lenso_capability_secrets as secrets;
 use lenso_capability_secrets::{ResolveRequest, SecretsInvocationError};
-use lenso_kernel::{InvocationContext, RuntimeFailure};
+use lenso_kernel::{CancellationToken, InvocationContext, PluginDependencies, RuntimeFailure};
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 use sqlx::{PgPool, Row, postgres::PgPoolOptions};
 use uuid::Uuid;
@@ -36,6 +36,9 @@ use settings_store::{SettingsStoreOutcome, compare_and_set_settings, get_or_crea
 
 const DATABASE_URL_SECRET: &str = "knowledge/database-url";
 const MAX_ATTACHMENT_BYTES: usize = 1024 * 1024;
+const BACKGROUND_IDLE_POLL: Duration = Duration::from_millis(500);
+const BACKGROUND_RETRY: Duration = Duration::from_secs(2);
+const BACKGROUND_TOOL_TIMEOUT: Duration = Duration::from_secs(5);
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -108,13 +111,45 @@ struct Note {
     title: String,
     body: String,
     excerpt: String,
-    job_id: String,
-    processing_status: String,
+    #[schemars(required)]
+    job_id: Option<String>,
+    processing_status: NoteProcessingStatus,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, JsonSchema, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum NoteProcessingStatus {
+    DispatchPending,
+    Queued,
+    Succeeded,
+    Failed,
+}
+
+impl NoteProcessingStatus {
+    fn from_wire(value: &str) -> Option<Self> {
+        match value {
+            "dispatch_pending" => Some(Self::DispatchPending),
+            "queued" => Some(Self::Queued),
+            "succeeded" => Some(Self::Succeeded),
+            "failed" => Some(Self::Failed),
+            _ => None,
+        }
+    }
+
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::DispatchPending => "dispatch_pending",
+            Self::Queued => "queued",
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct EnqueueExcerptRequest<'a> {
+    available_at: &'a str,
     excerpt_limit: i64,
     note_id: &'a str,
     owner_id: &'a str,
@@ -151,11 +186,6 @@ struct CompleteExcerptResponse {
     completed: bool,
 }
 
-#[derive(Debug, JsonSchema, Serialize)]
-struct ProcessExcerptResult {
-    processed: bool,
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct InspectExcerptRequest<'a> {
@@ -168,6 +198,20 @@ struct InspectExcerptResponse {
     attempts: u64,
     job_id: String,
     status: String,
+}
+
+struct PendingNote {
+    owner_id: String,
+    note_id: String,
+    job_id: String,
+}
+
+struct DispatchNote {
+    available_at: String,
+    body: String,
+    excerpt_limit: i64,
+    note_id: String,
+    owner_id: String,
 }
 
 #[derive(Debug, Deserialize, JsonSchema, Serialize)]
@@ -204,6 +248,7 @@ pub struct KnowledgeBase {
     next_id: Rc<Cell<u64>>,
     notes: Rc<RefCell<BTreeMap<String, (String, Note)>>>,
     database: Rc<RefCell<Option<PgPool>>>,
+    dispatch_context: Rc<RefCell<Option<(PluginDependencies, CancellationToken)>>>,
     attachment_policy: Option<Rc<dyn AttachmentPolicySource>>,
 }
 
@@ -252,10 +297,46 @@ impl Lifecycle for KnowledgeBase {
                 detail: "Knowledge database schema is not prepared".to_owned(),
             })?;
         self.database.replace(Some(pool));
+        let worker = self.clone();
+        let dependencies = context.dependencies().clone();
+        let ready = context.ready_gate();
+        let cancellation = context.cancellation();
+        self.dispatch_context
+            .replace(Some((dependencies.clone(), cancellation.clone())));
+        context
+            .tasks()
+            .spawn_local(Box::pin(async move {
+                tokio::select! {
+                    _ = ready.wait() => {}
+                    _ = cancellation.cancelled() => return,
+                }
+                loop {
+                    let result = tokio::select! {
+                        _ = cancellation.cancelled() => return,
+                        result = worker.process_pending_note(&dependencies, cancellation.clone()) => result,
+                    };
+                    let delay = match result {
+                        Ok(true) => Duration::ZERO,
+                        Ok(false) => BACKGROUND_IDLE_POLL,
+                        Err(_) => {
+                            eprintln!("Knowledge background processing failed; retrying");
+                            BACKGROUND_RETRY
+                        }
+                    };
+                    tokio::select! {
+                        _ = cancellation.cancelled() => return,
+                        _ = tokio::time::sleep(delay) => {}
+                    }
+                }
+            }))
+            .map_err(|error| RuntimeFailure::PluginFailure {
+                detail: format!("Knowledge background worker could not start: {error:?}"),
+            })?;
         Ok(())
     }
 
     async fn deactivate(&self, _context: DeactivateContext) -> Result<(), RuntimeFailure> {
+        self.dispatch_context.replace(None);
         let database = self.database.borrow_mut().take();
         if let Some(database) = database {
             database.close().await;
@@ -377,6 +458,7 @@ impl KnowledgeBase {
         },
         "responses": {
             "201": {"description": "Created note", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Note"}}}},
+            "202": {"description": "Saved note awaiting background dispatch", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Note"}}}},
             "400": {"description": "Invalid note", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
         }
     }"##)]
@@ -394,28 +476,64 @@ impl KnowledgeBase {
             self.next_id.set(sequence);
             format!("note-{sequence}")
         };
-        let queued = self
-            .execute_tool::<_, EnqueueExcerptResponse>(
-                "knowledge.enqueue-excerpt",
-                &EnqueueExcerptRequest {
-                    excerpt_limit: settings.excerpt_limit,
-                    note_id: &note_id,
-                    owner_id: &user.0,
-                    text: body,
-                },
-            )
-            .await?;
-        if !matches!(queued.status.as_str(), "queued" | "succeeded") {
-            return Err(bad_gateway("excerpt processor returned an invalid status"));
-        }
-        let note = Note {
-            id: note_id,
+        let mut note = Note {
+            id: note_id.clone(),
             title: title.to_owned(),
             body: body.to_owned(),
-            excerpt: queued.excerpt,
-            job_id: queued.job_id,
-            processing_status: queued.status,
+            excerpt: String::new(),
+            job_id: None,
+            processing_status: NoteProcessingStatus::DispatchPending,
         };
+        let available_at = if self.database().is_some() {
+            self.store_pending_note(&user.0, &note, &settings).await?
+        } else {
+            "1970-01-01T00:00:00Z".to_owned()
+        };
+        let request = EnqueueExcerptRequest {
+            available_at: &available_at,
+            excerpt_limit: settings.excerpt_limit,
+            note_id: &note_id,
+            owner_id: &user.0,
+            text: body,
+        };
+        let dispatched = if self.database().is_some() {
+            let context = self.dispatch_context.borrow().clone();
+            if let Some((dependencies, cancellation)) = context {
+                self.execute_background_tool::<_, EnqueueExcerptResponse>(
+                    &dependencies,
+                    cancellation,
+                    "knowledge.enqueue-excerpt",
+                    &request,
+                )
+                .await
+            } else {
+                Err(bad_gateway("durable dispatch is unavailable"))
+            }
+        } else {
+            self.execute_tool::<_, EnqueueExcerptResponse>("knowledge.enqueue-excerpt", &request)
+                .await
+        };
+        if self.database().is_some() {
+            if let Ok(dispatched) = dispatched {
+                if self
+                    .record_dispatch(&user.0, &note_id, &dispatched)
+                    .await
+                    .is_ok()
+                {
+                    if let Ok(current) = self.load_note(&user.0, &note_id).await {
+                        return Ok((StatusCode::CREATED, Json(current)));
+                    }
+                }
+            }
+            return Ok((StatusCode::ACCEPTED, Json(note)));
+        }
+        let dispatched = dispatched?;
+        if dispatched.status != "succeeded" {
+            return Err(bad_gateway("inline excerpt did not complete"));
+        }
+        note.excerpt = dispatched.excerpt;
+        note.job_id = Some(dispatched.job_id);
+        note.processing_status = NoteProcessingStatus::Succeeded;
         self.store_note(&user.0, &note, settings.revision).await?;
         Ok((StatusCode::CREATED, Json(note)))
     }
@@ -436,46 +554,6 @@ impl KnowledgeBase {
         Path(path): Path<NotePath>,
     ) -> Result<Json<Note>, Problem> {
         self.load_note(&user.0, &path.note_id).await.map(Json)
-    }
-
-    #[post("knowledge-base.jobs.process-next", "/jobs/process-next")]
-    #[openapi(r##"{
-        "security": [{"bearerAuth": []}],
-        "responses": {
-            "200": {"description": "Processed durable work", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessResult"}}}},
-            "502": {"description": "Processing failed", "content": {"application/problem+json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}
-        }
-    }"##)]
-    async fn process_next(
-        &self,
-        _user: AuthenticatedUser,
-    ) -> Result<Json<ProcessExcerptResult>, Problem> {
-        let claimed = self
-            .execute_tool::<_, ClaimExcerptResponse>(
-                "knowledge.claim-excerpt",
-                &serde_json::json!({}),
-            )
-            .await?;
-        self.persist_excerpt(
-            &claimed.owner_id,
-            &claimed.note_id,
-            &claimed.job_id,
-            &claimed.excerpt,
-        )
-        .await?;
-        let completed = self
-            .execute_tool::<_, CompleteExcerptResponse>(
-                "knowledge.complete-excerpt",
-                &CompleteExcerptRequest {
-                    job_id: &claimed.job_id,
-                    lease_token: &claimed.lease_token,
-                },
-            )
-            .await?;
-        if !completed.completed {
-            return Err(bad_gateway("excerpt job lease was not completed"));
-        }
-        Ok(Json(ProcessExcerptResult { processed: true }))
     }
 
     #[get("knowledge-base.jobs.inspect", "/job-status/{job_id}")]
@@ -597,6 +675,210 @@ impl KnowledgeBase {
         self.database.borrow().clone()
     }
 
+    async fn process_pending_note(
+        &self,
+        dependencies: &PluginDependencies,
+        cancellation: CancellationToken,
+    ) -> Result<bool, Problem> {
+        let Some(database) = self.database() else {
+            return Ok(false);
+        };
+        let undispatched = sqlx::query(
+            "SELECT owner_id, note_id, body, excerpt_limit, available_at \
+             FROM knowledge_reference.notes \
+             WHERE processing_status = 'dispatch_pending' \
+               AND next_dispatch_at <= transaction_timestamp() \
+             ORDER BY next_dispatch_at, created_at, note_id LIMIT 1",
+        )
+        .fetch_optional(&database)
+        .await
+        .map_err(database_error)?;
+        if let Some(row) = undispatched {
+            let dispatch = DispatchNote {
+                owner_id: row.try_get("owner_id").map_err(database_error)?,
+                note_id: row.try_get("note_id").map_err(database_error)?,
+                body: row.try_get("body").map_err(database_error)?,
+                excerpt_limit: row.try_get("excerpt_limit").map_err(database_error)?,
+                available_at: row.try_get("available_at").map_err(database_error)?,
+            };
+            let queued = self
+                .execute_background_tool::<_, EnqueueExcerptResponse>(
+                    dependencies,
+                    cancellation.clone(),
+                    "knowledge.enqueue-excerpt",
+                    &EnqueueExcerptRequest {
+                        available_at: &dispatch.available_at,
+                        excerpt_limit: dispatch.excerpt_limit,
+                        note_id: &dispatch.note_id,
+                        owner_id: &dispatch.owner_id,
+                        text: &dispatch.body,
+                    },
+                )
+                .await;
+            if let Ok(queued) = queued {
+                if self
+                    .record_dispatch(&dispatch.owner_id, &dispatch.note_id, &queued)
+                    .await
+                    .is_ok()
+                {
+                    return Ok(true);
+                }
+            }
+            self.defer_dispatch(&dispatch.owner_id, &dispatch.note_id)
+                .await?;
+        }
+        let row = sqlx::query(
+            "SELECT owner_id, note_id, job_id FROM knowledge_reference.notes \
+             WHERE processing_status = 'queued' ORDER BY created_at, note_id LIMIT 1",
+        )
+        .fetch_optional(&database)
+        .await
+        .map_err(database_error)?;
+        let Some(row) = row else {
+            return Ok(false);
+        };
+        let pending = PendingNote {
+            owner_id: row.try_get("owner_id").map_err(database_error)?,
+            note_id: row.try_get("note_id").map_err(database_error)?,
+            job_id: row.try_get("job_id").map_err(database_error)?,
+        };
+        let state = self
+            .execute_background_tool::<_, InspectExcerptResponse>(
+                dependencies,
+                cancellation.clone(),
+                "knowledge.inspect-excerpt",
+                &InspectExcerptRequest {
+                    job_id: &pending.job_id,
+                },
+            )
+            .await?;
+        if state.job_id != pending.job_id {
+            return Err(bad_gateway(
+                "excerpt job identity changed during inspection",
+            ));
+        }
+        match state.status.as_str() {
+            "succeeded" => {
+                self.finish_note(
+                    &pending.owner_id,
+                    &pending.note_id,
+                    &pending.job_id,
+                    "succeeded",
+                )
+                .await?;
+                return Ok(true);
+            }
+            "failed" => {
+                self.finish_note(
+                    &pending.owner_id,
+                    &pending.note_id,
+                    &pending.job_id,
+                    "failed",
+                )
+                .await?;
+                return Ok(true);
+            }
+            "queued" | "running" => {}
+            _ => return Err(bad_gateway("excerpt job returned an invalid status")),
+        }
+        let claimed = self
+            .execute_background_tool::<_, ClaimExcerptResponse>(
+                dependencies,
+                cancellation.clone(),
+                "knowledge.claim-excerpt",
+                &serde_json::json!({}),
+            )
+            .await?;
+        self.persist_excerpt(
+            &claimed.owner_id,
+            &claimed.note_id,
+            &claimed.job_id,
+            &claimed.excerpt,
+        )
+        .await?;
+        let completed = self
+            .execute_background_tool::<_, CompleteExcerptResponse>(
+                dependencies,
+                cancellation,
+                "knowledge.complete-excerpt",
+                &CompleteExcerptRequest {
+                    job_id: &claimed.job_id,
+                    lease_token: &claimed.lease_token,
+                },
+            )
+            .await?;
+        if !completed.completed {
+            return Err(bad_gateway("excerpt job lease was not completed"));
+        }
+        self.finish_note(
+            &claimed.owner_id,
+            &claimed.note_id,
+            &claimed.job_id,
+            "succeeded",
+        )
+        .await?;
+        Ok(true)
+    }
+
+    async fn defer_dispatch(&self, owner_id: &str, note_id: &str) -> Result<(), Problem> {
+        let database = self
+            .database()
+            .ok_or_else(|| bad_gateway("durable dispatch is unavailable"))?;
+        sqlx::query(
+            "UPDATE knowledge_reference.notes \
+             SET dispatch_attempts = dispatch_attempts + 1, \
+                 next_dispatch_at = transaction_timestamp() + \
+                   (LEAST(30, 2 * (LEAST(dispatch_attempts, 14) + 1)) * interval '1 second') \
+             WHERE owner_id = $1 AND note_id = $2 \
+               AND processing_status = 'dispatch_pending'",
+        )
+        .bind(owner_id)
+        .bind(note_id)
+        .execute(&database)
+        .await
+        .map_err(database_error)?;
+        eprintln!("Knowledge dispatch deferred; retrying another pending note");
+        Ok(())
+    }
+
+    async fn finish_note(
+        &self,
+        owner_id: &str,
+        note_id: &str,
+        job_id: &str,
+        status: &str,
+    ) -> Result<(), Problem> {
+        if let Some(database) = self.database() {
+            let result = sqlx::query(
+                "UPDATE knowledge_reference.notes SET processing_status = $1 \
+                 WHERE owner_id = $2 AND note_id = $3 AND job_id = $4 \
+                 AND processing_status = 'queued'",
+            )
+            .bind(status)
+            .bind(owner_id)
+            .bind(note_id)
+            .bind(job_id)
+            .execute(&database)
+            .await
+            .map_err(database_error)?;
+            if result.rows_affected() != 1 {
+                return Err(bad_gateway("excerpt note changed before job completion"));
+            }
+            return Ok(());
+        }
+        let mut notes = self.notes.borrow_mut();
+        let (owner, note) = notes.get_mut(note_id).ok_or_else(note_not_found)?;
+        if owner != owner_id
+            || note.job_id.as_deref() != Some(job_id)
+            || note.processing_status != NoteProcessingStatus::Queued
+        {
+            return Err(bad_gateway("excerpt note changed before job completion"));
+        }
+        note.processing_status = NoteProcessingStatus::from_wire(status)
+            .ok_or_else(|| bad_gateway("invalid completed note status"))?;
+        Ok(())
+    }
+
     async fn settings_for(&self, owner_id: &str) -> Result<BusinessSettings, Problem> {
         let Some(database) = self.database() else {
             return Ok(BusinessSettings {
@@ -613,31 +895,89 @@ impl KnowledgeBase {
         &self,
         owner_id: &str,
         note: &Note,
-        config_revision: i64,
+        _config_revision: i64,
     ) -> Result<(), Problem> {
-        if let Some(database) = self.database() {
-            sqlx::query(
-                "INSERT INTO knowledge_reference.notes \
-                 (owner_id, note_id, title, body, excerpt, job_id, processing_status, config_revision) \
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-            )
-            .bind(owner_id)
-            .bind(&note.id)
-            .bind(&note.title)
-            .bind(&note.body)
-            .bind(&note.excerpt)
-            .bind(&note.job_id)
-            .bind(&note.processing_status)
-            .bind(config_revision)
-            .execute(&database)
-            .await
-            .map_err(database_error)?;
-        } else {
-            self.notes
-                .borrow_mut()
-                .insert(note.id.clone(), (owner_id.to_owned(), note.clone()));
-        }
+        self.notes
+            .borrow_mut()
+            .insert(note.id.clone(), (owner_id.to_owned(), note.clone()));
         Ok(())
+    }
+
+    async fn store_pending_note(
+        &self,
+        owner_id: &str,
+        note: &Note,
+        settings: &BusinessSettings,
+    ) -> Result<String, Problem> {
+        let database = self
+            .database()
+            .ok_or_else(|| bad_gateway("durable note registration requires a database"))?;
+        sqlx::query_scalar(
+            "INSERT INTO knowledge_reference.notes \
+             (owner_id, note_id, title, body, excerpt, job_id, processing_status, \
+              config_revision, excerpt_limit, available_at) \
+             VALUES ($1, $2, $3, $4, '', NULL, 'dispatch_pending', $5, $6, \
+              to_char(transaction_timestamp() AT TIME ZONE 'UTC', \
+                'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')) \
+             RETURNING available_at",
+        )
+        .bind(owner_id)
+        .bind(&note.id)
+        .bind(&note.title)
+        .bind(&note.body)
+        .bind(settings.revision)
+        .bind(settings.excerpt_limit)
+        .fetch_one(&database)
+        .await
+        .map_err(database_error)
+    }
+
+    async fn record_dispatch(
+        &self,
+        owner_id: &str,
+        note_id: &str,
+        dispatched: &EnqueueExcerptResponse,
+    ) -> Result<(), Problem> {
+        let status = NoteProcessingStatus::from_wire(&dispatched.status)
+            .filter(|status| {
+                matches!(
+                    status,
+                    NoteProcessingStatus::Queued | NoteProcessingStatus::Succeeded
+                )
+            })
+            .ok_or_else(|| bad_gateway("excerpt processor returned an invalid status"))?;
+        let database = self
+            .database()
+            .ok_or_else(|| bad_gateway("durable note registration requires a database"))?;
+        let result = sqlx::query(
+            "UPDATE knowledge_reference.notes \
+             SET job_id = $1, excerpt = $2, processing_status = $3 \
+             WHERE owner_id = $4 AND note_id = $5 \
+               AND job_id IS NULL AND processing_status = 'dispatch_pending'",
+        )
+        .bind(&dispatched.job_id)
+        .bind(&dispatched.excerpt)
+        .bind(status.as_str())
+        .bind(owner_id)
+        .bind(note_id)
+        .execute(&database)
+        .await
+        .map_err(database_error)?;
+        if result.rows_affected() == 1 {
+            return Ok(());
+        }
+        let current = self.load_note(owner_id, note_id).await?;
+        if current.job_id.as_deref() == Some(dispatched.job_id.as_str())
+            && matches!(
+                current.processing_status,
+                NoteProcessingStatus::Queued
+                    | NoteProcessingStatus::Succeeded
+                    | NoteProcessingStatus::Failed
+            )
+        {
+            return Ok(());
+        }
+        Err(bad_gateway("excerpt job identity changed during dispatch"))
     }
 
     async fn load_note(&self, owner_id: &str, note_id: &str) -> Result<Note, Problem> {
@@ -671,8 +1011,11 @@ impl KnowledgeBase {
     ) -> Result<(), Problem> {
         if let Some(database) = self.database() {
             let result = sqlx::query(
-                "UPDATE knowledge_reference.notes SET excerpt = $1, processing_status = 'succeeded' \
-                 WHERE owner_id = $2 AND note_id = $3 AND job_id = $4",
+                "UPDATE knowledge_reference.notes \
+                 SET excerpt = $1, job_id = $4, processing_status = 'queued' \
+                 WHERE owner_id = $2 AND note_id = $3 \
+                   AND (job_id = $4 OR (job_id IS NULL AND processing_status = 'dispatch_pending')) \
+                   AND processing_status IN ('dispatch_pending', 'queued')",
             )
             .bind(excerpt)
             .bind(owner_id)
@@ -692,7 +1035,7 @@ impl KnowledgeBase {
         }
         let mut notes = self.notes.borrow_mut();
         let (owner, note) = notes.get_mut(note_id).ok_or_else(note_not_found)?;
-        if owner != owner_id || note.job_id != job_id {
+        if owner != owner_id || note.job_id.as_deref() != Some(job_id) {
             return Err(Problem::new(
                 StatusCode::CONFLICT,
                 "excerpt_job_mismatch",
@@ -700,7 +1043,6 @@ impl KnowledgeBase {
             ));
         }
         note.excerpt = excerpt.to_owned();
-        note.processing_status = "succeeded".to_owned();
         Ok(())
     }
 
@@ -723,7 +1065,7 @@ impl KnowledgeBase {
             .notes
             .borrow()
             .values()
-            .any(|(owner, note)| owner == owner_id && note.job_id == job_id)
+            .any(|(owner, note)| owner == owner_id && note.job_id.as_deref() == Some(job_id))
         {
             Ok(())
         } else {
@@ -740,23 +1082,55 @@ impl KnowledgeBase {
         Input: Serialize,
         Output: for<'de> Deserialize<'de>,
     {
+        self.execute_tool_with_context(None, name, input).await
+    }
+
+    async fn execute_background_tool<Input, Output>(
+        &self,
+        dependencies: &PluginDependencies,
+        cancellation: CancellationToken,
+        name: &str,
+        input: &Input,
+    ) -> Result<Output, Problem>
+    where
+        Input: Serialize,
+        Output: for<'de> Deserialize<'de>,
+    {
+        let context = dependencies
+            .invocation_context_after(BACKGROUND_TOOL_TIMEOUT, cancellation)
+            .map_err(|_| bad_gateway("background Tool is unavailable"))?;
+        self.execute_tool_with_context(Some(context), name, input)
+            .await
+    }
+
+    async fn execute_tool_with_context<Input, Output>(
+        &self,
+        context: Option<InvocationContext>,
+        name: &str,
+        input: &Input,
+    ) -> Result<Output, Problem>
+    where
+        Input: Serialize,
+        Output: for<'de> Deserialize<'de>,
+    {
         let arguments = serde_json::to_string(input).map_err(|error| {
             Problem::new(StatusCode::BAD_REQUEST, "invalid_note", error.to_string())
         })?;
-        let response = self
-            .excerpt
-            .execute(ExecuteRequest {
-                name: name.to_owned(),
-                arguments_json: arguments.try_into().map_err(|error| {
-                    Problem::new(
-                        StatusCode::BAD_REQUEST,
-                        "invalid_note",
-                        format!("{error:?}"),
-                    )
-                })?,
-            })
-            .await
-            .map_err(|error| bad_gateway(&format!("{error:?}")))?;
+        let request = ExecuteRequest {
+            name: name.to_owned(),
+            arguments_json: arguments.try_into().map_err(|error| {
+                Problem::new(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_note",
+                    format!("{error:?}"),
+                )
+            })?,
+        };
+        let response = match context {
+            Some(context) => self.excerpt.execute_with_context(context, request).await,
+            None => self.excerpt.execute(request).await,
+        }
+        .map_err(|error| bad_gateway(&format!("{error:?}")))?;
         serde_json::from_str(&response.content)
             .map_err(|error| bad_gateway(&format!("invalid Tool response: {error}")))
     }
@@ -769,7 +1143,10 @@ fn note_from_row(row: &sqlx::postgres::PgRow) -> Note {
         body: row.get("body"),
         excerpt: row.get("excerpt"),
         job_id: row.get("job_id"),
-        processing_status: row.get("processing_status"),
+        processing_status: NoteProcessingStatus::from_wire(
+            &row.get::<String, _>("processing_status"),
+        )
+        .expect("knowledge_reference.notes constrains processing_status"),
     }
 }
 

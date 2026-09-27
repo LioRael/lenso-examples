@@ -98,7 +98,6 @@ fn public_component_wire_shapes_match_typed_dtos() {
 
     assert_component::<CreateNote>(&document, "CreateNote");
     assert_component::<Note>(&document, "Note");
-    assert_component::<ProcessExcerptResult>(&document, "ProcessResult");
     assert_component::<InspectExcerptResponse>(&document, "JobState");
     assert_component::<BusinessSettings>(&document, "BusinessSettings");
     assert_component::<UpdateBusinessSettings>(&document, "UpdateBusinessSettings");

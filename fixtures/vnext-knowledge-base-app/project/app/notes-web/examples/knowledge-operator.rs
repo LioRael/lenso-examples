@@ -60,11 +60,52 @@ async fn setup(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
              title TEXT NOT NULL, \
              body TEXT NOT NULL, \
              excerpt TEXT NOT NULL, \
-             job_id TEXT NOT NULL UNIQUE, \
-             processing_status TEXT NOT NULL CHECK (processing_status IN ('queued', 'succeeded')), \
+             job_id TEXT UNIQUE, \
+             processing_status TEXT NOT NULL CONSTRAINT notes_processing_status_check \
+               CHECK (processing_status IN ('dispatch_pending', 'queued', 'succeeded', 'failed')), \
              config_revision BIGINT NOT NULL, \
+             excerpt_limit BIGINT NOT NULL DEFAULT 96 CHECK (excerpt_limit BETWEEN 16 AND 512), \
+             available_at TEXT NOT NULL DEFAULT '1970-01-01T00:00:00Z', \
+             dispatch_attempts BIGINT NOT NULL DEFAULT 0 CHECK (dispatch_attempts >= 0), \
+             next_dispatch_at TIMESTAMPTZ NOT NULL DEFAULT transaction_timestamp(), \
              created_at TIMESTAMPTZ NOT NULL DEFAULT transaction_timestamp(), \
              PRIMARY KEY (owner_id, note_id))",
+        )
+        .await?;
+    transaction
+        .execute("ALTER TABLE knowledge_reference.notes ALTER COLUMN job_id DROP NOT NULL")
+        .await?;
+    transaction
+        .execute(
+            "ALTER TABLE knowledge_reference.notes \
+             ADD COLUMN IF NOT EXISTS excerpt_limit BIGINT NOT NULL DEFAULT 96",
+        )
+        .await?;
+    transaction
+        .execute(
+            "ALTER TABLE knowledge_reference.notes \
+             ADD COLUMN IF NOT EXISTS available_at TEXT NOT NULL DEFAULT '1970-01-01T00:00:00Z'",
+        )
+        .await?;
+    transaction
+        .execute(
+            "ALTER TABLE knowledge_reference.notes \
+             ADD COLUMN IF NOT EXISTS dispatch_attempts BIGINT NOT NULL DEFAULT 0",
+        )
+        .await?;
+    transaction
+        .execute(
+            "ALTER TABLE knowledge_reference.notes \
+             ADD COLUMN IF NOT EXISTS next_dispatch_at TIMESTAMPTZ NOT NULL DEFAULT transaction_timestamp()",
+        )
+        .await?;
+    transaction
+        .execute("ALTER TABLE knowledge_reference.notes DROP CONSTRAINT IF EXISTS notes_processing_status_check")
+        .await?;
+    transaction
+        .execute(
+            "ALTER TABLE knowledge_reference.notes ADD CONSTRAINT notes_processing_status_check \
+             CHECK (processing_status IN ('dispatch_pending', 'queued', 'succeeded', 'failed'))",
         )
         .await?;
     transaction
@@ -113,6 +154,48 @@ async fn check(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
     if !policy_revision_exists {
         return Err(sqlx::Error::Protocol(
             "knowledge_reference.attachments.policy_revision is missing".to_owned(),
+        ));
+    }
+    let pending_columns_exist: bool = sqlx::query_scalar(
+        "SELECT (SELECT COUNT(*) = 4 FROM information_schema.columns \
+         WHERE table_schema = 'knowledge_reference' AND table_name = 'notes' \
+           AND column_name IN ('excerpt_limit', 'available_at', \
+                               'dispatch_attempts', 'next_dispatch_at'))",
+    )
+    .fetch_one(pool)
+    .await?;
+    if !pending_columns_exist {
+        return Err(sqlx::Error::Protocol(
+            "knowledge_reference.notes outbox columns are missing".to_owned(),
+        ));
+    }
+    let job_id_nullable: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM information_schema.columns \
+         WHERE table_schema = 'knowledge_reference' AND table_name = 'notes' \
+           AND column_name = 'job_id' AND is_nullable = 'YES')",
+    )
+    .fetch_one(pool)
+    .await?;
+    if !job_id_nullable {
+        return Err(sqlx::Error::Protocol(
+            "knowledge_reference.notes.job_id must be nullable before dispatch".to_owned(),
+        ));
+    }
+    let failed_status_supported: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM pg_constraint constraint_record \
+         JOIN pg_class table_record ON table_record.oid = constraint_record.conrelid \
+         JOIN pg_namespace schema_record ON schema_record.oid = table_record.relnamespace \
+         WHERE schema_record.nspname = 'knowledge_reference' \
+           AND table_record.relname = 'notes' \
+           AND constraint_record.conname = 'notes_processing_status_check' \
+           AND pg_get_constraintdef(constraint_record.oid) LIKE '%failed%' \
+           AND pg_get_constraintdef(constraint_record.oid) LIKE '%dispatch_pending%')",
+    )
+    .fetch_one(pool)
+    .await?;
+    if !failed_status_supported {
+        return Err(sqlx::Error::Protocol(
+            "knowledge_reference.notes must accept failed processing status".to_owned(),
         ));
     }
     Ok(())

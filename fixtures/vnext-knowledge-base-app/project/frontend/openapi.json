@@ -12,6 +12,7 @@
         },
         "responses": {
           "201": { "description": "Created note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
+          "202": { "description": "Saved note awaiting background dispatch", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
           "400": { "description": "Invalid note", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
         }
       }
@@ -25,16 +26,6 @@
           "200": { "description": "Note", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Note" } } } },
           "400": { "description": "Invalid path", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } },
           "404": { "description": "Missing note", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
-        }
-      }
-    },
-    "/jobs/process-next": {
-      "post": {
-        "operationId": "knowledge-base.jobs.process-next",
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": { "description": "Processed durable work", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProcessResult" } } } },
-          "502": { "description": "Processing failed", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
         }
       }
     },
@@ -105,8 +96,8 @@
           "title": { "type": "string" },
           "body": { "type": "string" },
           "excerpt": { "type": "string" },
-          "job_id": { "type": "string" },
-          "processing_status": { "type": "string" }
+          "job_id": { "type": ["string", "null"] },
+          "processing_status": { "type": "string", "enum": ["dispatch_pending", "queued", "succeeded", "failed"] }
         },
         "additionalProperties": false
       },
@@ -118,12 +109,6 @@
           "jobId": { "type": "string" },
           "status": { "type": "string" }
         },
-        "additionalProperties": false
-      },
-      "ProcessResult": {
-        "type": "object",
-        "required": ["processed"],
-        "properties": { "processed": { "type": "boolean" } },
         "additionalProperties": false
       },
       "BusinessSettings": {

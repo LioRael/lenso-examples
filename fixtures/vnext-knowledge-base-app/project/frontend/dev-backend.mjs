@@ -4,7 +4,6 @@ import { request as httpRequest } from 'node:http';
 const allowedPublicOperations = new Map([
   ['POST /notes', 'knowledge-base.notes.create'],
   ['GET /notes/{note_id}', 'knowledge-base.notes.read'],
-  ['POST /jobs/process-next', 'knowledge-base.jobs.process-next'],
   ['GET /job-status/{job_id}', 'knowledge-base.jobs.inspect'],
   ['GET /settings', 'knowledge-base.settings.read'],
   ['PUT /settings', 'knowledge-base.settings.update'],

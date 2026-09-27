@@ -2,7 +2,7 @@ import { StrictMode, useRef, useState, type ChangeEvent, type FormEvent } from '
 import { createRoot } from 'react-dom/client';
 import { LensoApiError, createLensoWebClient, unwrap } from '@lenso/web-client';
 import type { components, paths } from './generated/api';
-import { processQueuedJob, type JobState } from './process-job';
+import { waitForProcessedNote, type JobState } from './process-job';
 import './styles.css';
 
 type Note = components['schemas']['Note'];
@@ -102,9 +102,12 @@ function App() {
       savedNote = created;
       noteEpoch.current = epoch;
       setNote(created);
-      if (created.processing_status === 'queued') {
-        setStatus('Queued; processing durable excerpt job…');
-        await processQueuedJob(created.job_id, {
+      let read: Note;
+      if (created.processing_status === 'dispatch_pending' || created.processing_status === 'queued') {
+        setStatus(created.processing_status === 'dispatch_pending'
+          ? 'Saved; waiting for background dispatch…'
+          : 'Queued; waiting for background excerpt processing…');
+        read = await waitForProcessedNote(created.id, created.job_id, {
           inspect: async (jobId) => {
             requireCurrentSession(epoch);
             const result = unwrap<JobState>(await api.GET('/job-status/{job_id}', {
@@ -113,22 +116,29 @@ function App() {
             requireCurrentSession(epoch);
             return result;
           },
-          claim: async () => {
+          readNote: async (noteId) => {
             requireCurrentSession(epoch);
-            const result = unwrap<{ processed: boolean }>(await api.POST('/jobs/process-next'));
+            const result = unwrap<Note>(await api.GET('/notes/{note_id}', {
+              params: { path: { note_id: noteId } },
+            }));
             requireCurrentSession(epoch);
+            setNote(result);
             return result;
           },
-          isRetryableClaimError: (error) => error instanceof LensoApiError && error.response.status === 502,
         });
+      } else if (created.processing_status === 'succeeded') {
+        read = unwrap<Note>(await api.GET('/notes/{note_id}', {
+          params: { path: { note_id: created.id } },
+        }));
+      } else {
+        throw new Error(`Note ${created.id} was saved with processing status ${created.processing_status}`);
       }
       if (!isCurrentSession(epoch)) return;
-      const read = unwrap<Note>(await api.GET('/notes/{note_id}', {
-        params: { path: { note_id: created.id } },
-      }));
-      if (!isCurrentSession(epoch)) return;
+      if (read.processing_status !== 'succeeded') {
+        throw new Error(`Note ${created.id} was read back with processing status ${read.processing_status}`);
+      }
       setNote(read);
-      setStatus('Created, processed, and read back through the typed public API.');
+      setStatus('Created and read back with completed excerpt processing.');
     } catch (error) {
       if (isCurrentSession(epoch)) {
         setStatus(savedNote ? `Note ${savedNote.id} was saved; follow-up did not complete: ${problem(error)}` : problem(error));
@@ -233,7 +243,7 @@ function App() {
       <p className="eyebrow">{note.id}</p>
       <h2>{note.title}</h2>
       <p>{note.body}</p>
-      <p><strong>Processing:</strong> {note.processing_status} · {note.job_id}</p>
+      <p><strong>Processing:</strong> {note.processing_status} · {note.job_id ?? 'awaiting dispatch'}</p>
       <p><strong>TypeScript excerpt:</strong> {note.excerpt}</p>
       <label>Attach a file <input type="file" onChange={upload} /></label>
     </article>}

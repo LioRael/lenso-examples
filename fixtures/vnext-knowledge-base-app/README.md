@@ -223,11 +223,22 @@ this removal check. A local 0.1.1 npm candidate and signed replacement recipe
 live under `package-candidates/`; they do not by themselves prove a runtime
 upgrade.
 
-The Jobs check uses a five-second readiness deadline for the exact newly
-created job to reach `succeeded` with one attempt. A queue claim can initially
-find no due job when the Host and disposable PostgreSQL clocks differ, or
-process older work first; neither outcome is treated as success for the new
-note.
+The Jobs check waits up to ten seconds for the exact new job and its persisted
+note to reach `succeeded` through user-scoped read-only requests. The Host-owned
+background worker claims and completes queued work; the browser and verifier
+never trigger a claim. Clock skew or older queued work may delay this note,
+but completion of another job is not counted as its success.
+
+A note first commits as `dispatch_pending` with its Tool enqueue inputs,
+including the excerpt limit and availability time, in the App-owned database.
+The normal response is `201` with the real Jobs ID. If dispatch is temporarily
+unavailable, the durable note is returned as `202` with `job_id: null`; the
+managed Host worker replays the same Jobs request and fills in the real ID.
+Failed dispatch attempts receive a per-note retry time so one bad record does
+not hold up the rest of the queue.
+The browser waits for that ID through the owner's Note GET before inspecting
+the Job. This avoids claiming work through a public HTTP mutation or losing a
+note between two independent database writes.
 
 ### Local workerd `/settings` persistence slice
 

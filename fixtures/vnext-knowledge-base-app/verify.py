@@ -26,7 +26,7 @@ from browser_handoff import browser_handoff
 from business_snapshot_probe import verify_live_attachment_policy
 from excerpt_expectations import expected_excerpt
 from http_problem_diagnostics import report_http_server_error
-from job_processing import process_queued_job
+from job_processing import wait_for_processed_note
 from openapi_snapshot import select_runtime_document, verify_runtime_document
 from package_cargo_environment import package_build_environment
 from runtime_environment import build_runtime_environment
@@ -42,6 +42,10 @@ parser.add_argument("--tool-provider-source", help="local Agent Tool Provider Ca
 parser.add_argument(
     "--openapi-only", action="store_true",
     help="build and check the live OpenAPI document against the React snapshot, then stop",
+)
+parser.add_argument(
+    "--background-only", action="store_true",
+    help="build the App and prove a queued note completes without a browser claim",
 )
 parser.add_argument(
     "--package-only", action="store_true",
@@ -321,6 +325,8 @@ def excerpt_inputs():
 
 
 upgrade_inputs = excerpt_inputs()
+if args.background_only and upgrade_inputs:
+    parser.error("--background-only cannot run with a signed excerpt upgrade")
 
 
 def package_inputs():
@@ -668,19 +674,21 @@ def verify_excerpt_upgrade(
             url.rstrip("/") + "/notes", method="POST", expected=201,
             token=tokens["user-a"], body={"title": "Before upgrade", "body": original_body},
         )
-        assert created["processing_status"] == "queued" and created["job_id"].startswith("job_")
-        process_queued_job(url, created["job_id"], tokens["user-a"], http_json)
-        note = http_json(url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"])
+        assert created["processing_status"] in {"queued", "succeeded"}
+        assert created["job_id"].startswith("job_")
+        job, note = wait_for_processed_note(
+            url, created["id"], created["job_id"], tokens["user-a"], http_json
+        )
         assert note["excerpt"] == expected_excerpt(original_body, settings["excerpt_limit"])
         assert note["processing_status"] == "succeeded"
-        job = http_json(url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"])
         assert job == {"attempts": 1, "jobId": created["job_id"], "status": "succeeded"}
         pending = http_json(
             url.rstrip("/") + "/notes", method="POST", expected=201,
             token=tokens["user-a"],
             body={"title": "Queued before upgrade", "body": "This queued job crosses the upgrade."},
         )
-        assert pending["processing_status"] == "queued" and pending["job_id"].startswith("job_")
+        assert pending["processing_status"] in {"queued", "succeeded"}
+        assert pending["job_id"].startswith("job_")
     finally:
         stop(process, reader, transcript)
 
@@ -714,9 +722,8 @@ def verify_excerpt_upgrade(
         assert http_json(
             url.rstrip("/") + "/job-status/" + created["job_id"], token=tokens["user-a"]
         ) == job
-        process_queued_job(url, pending["job_id"], tokens["user-a"], http_json)
-        processed_pending = http_json(
-            url.rstrip("/") + "/notes/" + pending["id"], token=tokens["user-a"]
+        _, processed_pending = wait_for_processed_note(
+            url, pending["id"], pending["job_id"], tokens["user-a"], http_json
         )
         assert processed_pending["id"] == pending["id"]
         assert processed_pending["job_id"] == pending["job_id"]
@@ -729,10 +736,10 @@ def verify_excerpt_upgrade(
             url.rstrip("/") + "/notes", method="POST", expected=201,
             token=tokens["user-a"], body={"title": "After upgrade", "body": unicode_body},
         )
-        assert upgraded_note["processing_status"] == "queued"
-        process_queued_job(url, upgraded_note["job_id"], tokens["user-a"], http_json)
-        upgraded_note = http_json(
-            url.rstrip("/") + "/notes/" + upgraded_note["id"], token=tokens["user-a"]
+        assert upgraded_note["processing_status"] in {"queued", "succeeded"}
+        assert upgraded_note["job_id"].startswith("job_")
+        _, upgraded_note = wait_for_processed_note(
+            url, upgraded_note["id"], upgraded_note["job_id"], tokens["user-a"], http_json
         )
         assert upgraded_note["excerpt"] == "x" * 46 + "e\u0301…"
         assert upgraded_note["processing_status"] == "succeeded"
@@ -1066,6 +1073,40 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
             f"{runtime_operations - public_operations} known static routes"
         )
         raise SystemExit(0)
+    if args.background_only:
+        tokens = issue_tokens()
+        if args.package_only:
+            check_package_distribution(cli, distribution, root)
+        shutil.rmtree(source)
+        process, reader, transcript, url = launch(cli, distribution, root, runtime_environment)
+        try:
+            if openapi_snapshot is not None:
+                verify_runtime_document(url, openapi_snapshot)
+            note = http_json(
+                url.rstrip("/") + "/notes", method="POST", expected=201,
+                token=tokens["user-a"],
+                body={"title": "Background proof", "body": "Processing continues without a browser."},
+            )
+            if (note["processing_status"] not in {"queued", "succeeded"}
+                    or not note["job_id"].startswith("job_")):
+                raise RuntimeError("note was not dispatched to a durable job")
+            status, completed_note = wait_for_processed_note(
+                url, note["id"], note["job_id"], tokens["user-a"], http_json
+            )
+            if status["status"] != "succeeded" or completed_note["processing_status"] != "succeeded":
+                raise RuntimeError("background worker did not complete the note")
+            expect_http_error(
+                url.rstrip("/") + "/notes/" + note["id"], 404, token=tokens["user-b"]
+            )
+            expect_http_error(
+                url.rstrip("/") + "/job-status/" + note["job_id"], 404,
+                token=tokens["user-b"],
+            )
+            expect_http_error(url.rstrip("/") + "/jobs/process-next", 404, method="POST")
+        finally:
+            stop(process, reader, transcript)
+        print("PASS: Host-owned background processing and user-scoped read-only polling")
+        raise SystemExit(0)
     unadopt_receipt = None
     upgrade_receipt = None
     attachment_policy_receipt = None
@@ -1273,16 +1314,13 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
         assert created["id"].startswith("note-")
         assert created["excerpt"] == ""
         assert created["job_id"].startswith("job_")
-        assert created["processing_status"] == "queued"
-        processed_status = process_queued_job(
-            url, created["job_id"], tokens["user-a"], http_json
+        assert created["processing_status"] in {"queued", "succeeded"}
+        processed_status, created = wait_for_processed_note(
+            url, created["id"], created["job_id"], tokens["user-a"], http_json
         )
         assert processed_status == {
             "attempts": 1, "jobId": created["job_id"], "status": "succeeded"
         }
-        created = http_json(
-            url.rstrip("/") + "/notes/" + created["id"], token=tokens["user-a"]
-        )
         assert created["excerpt"] == note_body[:47] + "…"
         assert created["processing_status"] == "succeeded"
         durable = http_json(
@@ -1454,16 +1492,15 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
                 token=upgraded_tokens["user-a"],
                 body={"title": "After Secrets upgrade", "body": "The signed upgrade keeps durable work usable."},
             )
-            if upgraded_note["processing_status"] != "queued":
-                raise RuntimeError("upgraded App did not enqueue new work")
-            if process_queued_job(
-                upgraded_url, upgraded_note["job_id"], upgraded_tokens["user-a"], http_json
-            ) != {"attempts": 1, "jobId": upgraded_note["job_id"], "status": "succeeded"}:
-                raise RuntimeError("upgraded App did not process queued work")
-            upgraded_note = http_json(
-                upgraded_url.rstrip("/") + "/notes/" + upgraded_note["id"],
-                token=upgraded_tokens["user-a"],
+            if (upgraded_note["processing_status"] not in {"queued", "succeeded"}
+                    or not upgraded_note["job_id"].startswith("job_")):
+                raise RuntimeError("upgraded App did not dispatch new durable work")
+            processed_status, upgraded_note = wait_for_processed_note(
+                upgraded_url, upgraded_note["id"], upgraded_note["job_id"],
+                upgraded_tokens["user-a"], http_json
             )
+            if processed_status != {"attempts": 1, "jobId": upgraded_note["job_id"], "status": "succeeded"}:
+                raise RuntimeError("upgraded App did not process queued work")
             if upgraded_note["processing_status"] != "succeeded":
                 raise RuntimeError("upgraded App did not complete new work")
         finally:

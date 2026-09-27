@@ -11,7 +11,10 @@ import { createDevBackendMiddleware, publicRoutesFromOpenApi } from './dev-backe
 const publicApi = JSON.parse(await readFile(new URL('./openapi.json', import.meta.url), 'utf8'));
 
 test('the editable OpenAPI document cannot expand the dev proxy boundary', () => {
-  assert.equal(publicRoutesFromOpenApi(publicApi).length, 6);
+  assert.equal(publicRoutesFromOpenApi(publicApi).length, 5);
+  assert.ok(publicApi.paths['/notes'].post.responses['202']);
+  assert.deepEqual(publicApi.components.schemas.Note.properties.job_id.type, ['string', 'null']);
+  assert.ok(publicApi.components.schemas.Note.properties.processing_status.enum.includes('dispatch_pending'));
 
   const extraPath = structuredClone(publicApi);
   extraPath.paths['/admin'] = { get: { operationId: 'knowledge-base.admin.read' } };
@@ -57,10 +60,11 @@ async function listen(handler) {
   };
 }
 
-async function backend(name) {
+async function backend(name, noteStatus = 200) {
   return listen(async (request, response) => {
     const body = [];
     for await (const chunk of request) body.push(chunk);
+    if (request.method === 'POST' && request.url === '/notes') response.statusCode = noteStatus;
     response.setHeader('content-type', 'application/json');
     response.end(JSON.stringify({
       backend: name,
@@ -77,8 +81,10 @@ test('the dev page reads the current backend file for handshake and public API r
   t.after(() => rm(directory, { recursive: true, force: true }));
   const first = await backend('first');
   const second = await backend('second');
+  const acceptedBackend = await backend('accepted', 202);
   t.after(() => first.close());
   t.after(() => second.close());
+  t.after(() => acceptedBackend.close());
   const urlFile = join(directory, 'backend-url');
   const middleware = createDevBackendMiddleware(urlFile);
   const frontend = await listen((request, response) => middleware(request, response, () => {
@@ -103,6 +109,11 @@ test('the dev page reads the current backend file for handshake and public API r
     authorization: 'Bearer example', body: '{"title":"A note"}',
   });
 
+  await writeFile(urlFile, acceptedBackend.url);
+  const accepted = await fetch(`${frontend.url}/notes`, { method: 'POST' });
+  assert.equal(accepted.status, 202);
+  assert.equal((await accepted.json()).backend, 'accepted');
+
   await writeFile(urlFile, second.url);
   const currentHandshake = await fetch(`${frontend.url}/__lenso/backend`);
   assert.equal(await currentHandshake.text(), second.url);
@@ -125,7 +136,7 @@ test('the dev proxy exposes only the reference App public API paths', async (t) 
   t.after(() => frontend.close());
 
   for (const [path, method] of [
-    ['/notes/one', 'GET'], ['/jobs/process-next', 'POST'], ['/job-status/one', 'GET'],
+    ['/notes/one', 'GET'], ['/job-status/one', 'GET'],
     ['/settings', 'GET'], ['/settings', 'PUT'], ['/note-attachments/one', 'POST'],
   ]) {
     const response = await fetch(new URL(path, frontend.url), { method });
@@ -137,7 +148,7 @@ test('the dev proxy exposes only the reference App public API paths', async (t) 
     assert.equal(response.status, 404, path);
     assert.equal(await response.text(), 'not proxied');
   }
-  for (const [path, method] of [['/notes', 'GET'], ['/jobs/process-next', 'GET'], ['/notes/one', 'POST']]) {
+  for (const [path, method] of [['/notes', 'GET'], ['/jobs/process-next', 'POST'], ['/jobs/process-next', 'GET'], ['/notes/one', 'POST']]) {
     const response = await fetch(new URL(path, frontend.url), { method });
     assert.equal(response.status, 404, `${method} ${path}`);
   }
