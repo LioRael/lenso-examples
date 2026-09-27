@@ -89,8 +89,12 @@ Success requires the verifier's `PASS: Host-owned background processing and
 user-scoped read-only polling` line. `app check` uses the distribution root;
 `app show --json` uses its `intent` directory. The prior one-off local gate
 passed with these exact archive hashes and a scratch-only version adapter;
-this checked-in single-version option has only focused input/command tests
-until rerun against a fresh signed catalog. Neither that gate nor this guide
-proves official publication, a new independent Agent's code contribution,
-React browser behavior, upgrade/unadoption, or production deployment. Those
-are separate acceptance steps, not implied by the command above.
+the checked-in single-version option subsequently passed one offline local
+gate with a fresh **test-only** signed catalog. An independent Agent selected
+the four exact packages, made a scratch-only App-owned title-validation change,
+invoked the fixed gate, and observed source-deleted Host/PostgreSQL background
+completion and user-B 404. That scratch edit is not part of this repository;
+its overlong-title rejection was not separately exercised at runtime. Neither
+gate proves official publication, React browser behavior on the Agent edit,
+upgrade/unadoption, or production deployment. Those are separate acceptance
+steps, not implied by the command above.
