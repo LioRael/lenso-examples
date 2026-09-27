@@ -1,4 +1,4 @@
-import { StrictMode, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { StrictMode, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LensoApiError, createLensoWebClient, unwrap } from '@lenso/web-client';
 import type { paths } from './generated/api';
@@ -19,15 +19,33 @@ type Attachment = { id: string; filename: string; media_type: string; note_id: s
 
 function App() {
   const token = useRef('');
-  const api = useMemo(() => createLensoWebClient<paths>({
-    baseUrl: window.location.origin,
-    authentication: { kind: 'bearer', accessToken: () => token.current || undefined },
-  }), []);
+  const sessionEpoch = useRef(0);
+  const noteForm = useRef<HTMLFormElement>(null);
   const [note, setNote] = useState<Note>();
   const [status, setStatus] = useState('Enter an issued API token to begin.');
   const [submitting, setSubmitting] = useState(false);
   const [settingsLimit, setSettingsLimit] = useState(96);
   const [settingsRevision, setSettingsRevision] = useState(1);
+
+  function currentSession() {
+    const epoch = sessionEpoch.current;
+    const credential = token.current;
+    return {
+      epoch,
+      api: createLensoWebClient<paths>({
+        baseUrl: window.location.origin,
+        authentication: { kind: 'bearer', accessToken: () => credential || undefined },
+      }),
+    };
+  }
+
+  function isCurrentSession(epoch: number) {
+    return epoch === sessionEpoch.current;
+  }
+
+  function requireCurrentSession(epoch: number) {
+    if (!isCurrentSession(epoch)) throw new Error('Credential changed during request');
+  }
 
   function problem(error: unknown) {
     return error instanceof LensoApiError
@@ -37,18 +55,21 @@ function App() {
 
   async function loadSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const { api, epoch } = currentSession();
     try {
       const settings = unwrap<BusinessSettings>(await api.GET('/settings'));
+      if (!isCurrentSession(epoch)) return;
       setSettingsLimit(settings.excerpt_limit);
       setSettingsRevision(settings.revision);
       setStatus(`Credential verified; loaded excerpt policy revision ${settings.revision}.`);
     } catch (error) {
-      setStatus(problem(error));
+      if (isCurrentSession(epoch)) setStatus(problem(error));
     }
   }
 
   async function updateSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const { api, epoch } = currentSession();
     const data = new FormData(event.currentTarget);
     try {
       const settings = unwrap<BusinessSettings>(await api.PUT('/settings', {
@@ -57,16 +78,18 @@ function App() {
           predecessor_revision: settingsRevision,
         },
       }));
+      if (!isCurrentSession(epoch)) return;
       setSettingsLimit(settings.excerpt_limit);
       setSettingsRevision(settings.revision);
       setStatus(`Excerpt policy updated to ${settings.excerpt_limit} characters at revision ${settings.revision}.`);
     } catch (error) {
-      setStatus(problem(error));
+      if (isCurrentSession(epoch)) setStatus(problem(error));
     }
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const { api, epoch } = currentSession();
     setSubmitting(true);
     setNote(undefined);
     setStatus('Creating…');
@@ -76,27 +99,42 @@ function App() {
       const created = unwrap<Note>(await api.POST('/notes', {
         body: { title: String(data.get('title') ?? ''), body: String(data.get('body') ?? '') },
       }));
+      if (!isCurrentSession(epoch)) return;
       savedNote = created;
       setNote(created);
       if (created.processing_status === 'queued') {
         setStatus('Queued; processing durable excerpt job…');
         await processQueuedJob(created.job_id, {
-          inspect: async (jobId) => unwrap<JobState>(await api.GET('/job-status/{job_id}', {
-            params: { path: { job_id: jobId } },
-          })),
-          claim: async () => unwrap<{ processed: boolean }>(await api.POST('/jobs/process-next')),
+          inspect: async (jobId) => {
+            requireCurrentSession(epoch);
+            const result = unwrap<JobState>(await api.GET('/job-status/{job_id}', {
+              params: { path: { job_id: jobId } },
+            }));
+            requireCurrentSession(epoch);
+            return result;
+          },
+          claim: async () => {
+            requireCurrentSession(epoch);
+            const result = unwrap<{ processed: boolean }>(await api.POST('/jobs/process-next'));
+            requireCurrentSession(epoch);
+            return result;
+          },
           isRetryableClaimError: (error) => error instanceof LensoApiError && error.response.status === 502,
         });
       }
+      if (!isCurrentSession(epoch)) return;
       const read = unwrap<Note>(await api.GET('/notes/{note_id}', {
         params: { path: { note_id: created.id } },
       }));
+      if (!isCurrentSession(epoch)) return;
       setNote(read);
       setStatus('Created, processed, and read back through the typed public API.');
     } catch (error) {
-      setStatus(savedNote ? `Note ${savedNote.id} was saved; follow-up did not complete: ${problem(error)}` : problem(error));
+      if (isCurrentSession(epoch)) {
+        setStatus(savedNote ? `Note ${savedNote.id} was saved; follow-up did not complete: ${problem(error)}` : problem(error));
+      }
     } finally {
-      setSubmitting(false);
+      if (isCurrentSession(epoch)) setSubmitting(false);
     }
   }
 
@@ -104,16 +142,20 @@ function App() {
     const input = event.currentTarget;
     const file = input.files?.[0];
     if (!file || !note) return;
+    const { api, epoch } = currentSession();
+    const noteId = note.id;
     setStatus('Uploading attachment…');
     try {
       const content_base64 = await fileBase64(file);
+      if (!isCurrentSession(epoch)) return;
       const attachment = unwrap<Attachment>(await api.POST('/note-attachments/{note_id}', {
-        params: { path: { note_id: note.id } },
+        params: { path: { note_id: noteId } },
         body: { content_base64, filename: file.name, media_type: file.type || 'application/octet-stream' },
       }));
+      if (!isCurrentSession(epoch)) return;
       setStatus(`Stored ${attachment.filename} (${attachment.size} bytes) for this user.`);
     } catch (error) {
-      setStatus(problem(error));
+      if (isCurrentSession(epoch)) setStatus(problem(error));
     } finally {
       input.value = '';
     }
@@ -127,6 +169,12 @@ function App() {
       <h2 id="session-heading">Session</h2>
       <label>API token <input type="password" autoComplete="off" onChange={(event) => {
         token.current = event.currentTarget.value.trim();
+        sessionEpoch.current += 1;
+        setNote(undefined);
+        setSettingsLimit(96);
+        setSettingsRevision(1);
+        setSubmitting(false);
+        noteForm.current?.reset();
         setStatus(token.current ? 'Credential ready; requests are user-isolated.' : 'Enter an issued API token to begin.');
       }} /></label>
       <button type="submit">Load workspace</button>
@@ -136,7 +184,7 @@ function App() {
       <label>Character limit <input name="excerpt_limit" type="number" min="16" max="512" value={settingsLimit} onChange={(event) => setSettingsLimit(Number(event.currentTarget.value))} required /></label>
       <button type="submit">Update revision {settingsRevision}</button>
     </form>
-    <form onSubmit={submit}>
+    <form ref={noteForm} onSubmit={submit}>
       <label>Title <input name="title" autoComplete="off" required /></label>
       <label>Body <textarea name="body" required /></label>
       <button disabled={submitting} type="submit">{submitting ? 'Creating…' : 'Create note'}</button>
