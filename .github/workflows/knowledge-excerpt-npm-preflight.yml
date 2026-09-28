@@ -1,0 +1,77 @@
+name: Knowledge Excerpt npm preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full SHA of the landed source commit to inspect
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  package:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      PACKAGE_DIR: fixtures/vnext-knowledge-base-app/project/app/excerpt
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      - name: Verify landed source and exact Plugin release
+        shell: bash
+        run: |
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = process.env.PACKAGE_DIR;
+          const pkg = JSON.parse(fs.readFileSync(`${path}/package.json`, 'utf8'));
+          if (pkg.name !== '@lenso/knowledge-excerpt' ||
+              pkg.version !== '0.1.2' ||
+              pkg.lenso?.pluginId !== 'lenso.reference.knowledge-excerpt' ||
+              pkg.lenso?.releaseVersion !== '0.1.2' ||
+              pkg.repository?.url !== 'git+https://github.com/LioRael/lenso-examples.git' ||
+              pkg.repository?.directory !== 'fixtures/vnext-knowledge-base-app/project/app/excerpt' ||
+              pkg.publishConfig?.access !== 'public') {
+            throw new Error('unexpected Excerpt package identity or version');
+          }
+          if (Object.keys(pkg.scripts ?? {}).some((name) => /^(pre|post|prepare|install)/.test(name))) {
+            throw new Error('unreviewed npm lifecycle script');
+          }
+          NODE
+      - name: Verify the public version is still vacant
+        shell: bash
+        run: |
+          status="$(curl --silent --show-error --location \
+            --output "$RUNNER_TEMP/knowledge-excerpt-version.json" \
+            --write-out '%{http_code}' \
+            'https://registry.npmjs.org/@lenso%2fknowledge-excerpt/0.1.2')"
+          test "$status" = 404
+      - name: Check and dry-run the exact package
+        working-directory: fixtures/vnext-knowledge-base-app/project/app/excerpt
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+          bun run check
+          bun test
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP"
+          archive="$RUNNER_TEMP/lenso-knowledge-excerpt-0.1.2.tgz"
+          test -f "$archive"
+          digest="$(sha256sum "$archive" | cut -d ' ' -f 1)"
+          printf 'Preflight archive SHA-256: `%s`. Do not reuse the earlier test-only signature.\n' "$digest" >> "$GITHUB_STEP_SUMMARY"
+          npm publish "$archive" --dry-run --ignore-scripts --access public --provenance=false

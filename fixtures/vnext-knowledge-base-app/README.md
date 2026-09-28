@@ -25,6 +25,20 @@ provider checkouts, read [the exact KB input contract](AGENT_INPUT.md) first.
 It specifies the local test-signed path and its stop conditions; these
 candidate inputs are not an official registry release.
 
+For the first public `@lenso/knowledge-excerpt@0.1.2` release, the repository's
+`Knowledge Excerpt npm preflight` workflow checks a reviewed full SHA already
+on `main`, the exact package and Plugin identities, public version vacancy,
+typecheck, tests, and a non-publishing npm preview. It has no npm credential,
+OIDC grant, or publish step. The `@lenso` package owner must separately approve
+and authenticate the first publication, then verify the registry tarball and
+configure the package's Trusted Publisher for later releases. A public 404
+does not prove namespace ownership or reveal a private reservation. The
+preflight pack digest is only an observation; it does not certify equality
+with the earlier test-signed `0.1.2` archive SHA-256
+`0e07ecfff39dee892e11119765ff09dd9af4ee8774e1dde89e275436efbf901e`.
+Sign a new catalog for the verified published archive before claiming public
+signed adoption.
+
 The linked Rust Plugin also has a separate, optional Host binding for a
 versioned attachment-size ceiling. It preserves the existing 1 MiB default
 and never replaces the per-user PostgreSQL excerpt settings. A bound Host
