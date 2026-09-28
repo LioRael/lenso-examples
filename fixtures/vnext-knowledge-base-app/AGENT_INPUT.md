@@ -110,6 +110,11 @@ snapshot to adopt the exact Excerpt 0.1.2 archive, install its locked offline
 Bun dependencies, typecheck, build with exact grants, run `app check/show`,
 and verify source-deleted PostgreSQL Host background processing and user-scoped
 polling. It did not rerun the browser, signed upgrade, or unadoption paths.
+The source Excerpt package's two version fields were subsequently aligned to
+0.1.2 without changing its Plugin code. A fresh local npm pack had the same
+uncompressed tar payload as the tested `.tgz`, but different compressed bytes;
+the test signature binds only the exact archive digest above. No Host gate was
+repeated for that metadata-only commit.
 The earlier Agent's scratch-only App-owned title-validation change is not part
 of this repository; its overlong-title rejection was not separately exercised
 at runtime. No local gate proves official publication or production deployment.
