@@ -1,0 +1,28 @@
+fixtures/vnext-knowledge-base-app/README.md
+  s_7d146975368699::t_2fa3c6494603d7 28-33,39-41
+  s_7d146975368699::t_453365cd24afcf 34
+  s_7d146975368699::t_82aafc2c4765aa 35
+  s_7d146975368699::t_7ad6964959ad6e 38
+  s_7d146975368699::t_3f6afcef760770 36-37
+.github/workflows/knowledge-excerpt-npm-preflight.yml
+  s_7d146975368699::t_e7c8dff084f341 1-29,31-48,51-71
+  s_7d146975368699::t_2fa3c6494603d7 72-75,77
+  s_7d146975368699::t_7ad6964959ad6e 49,76
+  s_7d146975368699::t_453365cd24afcf 30,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cebbdc5d2ae3e7828b6e23c5a374b958067052d3",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
