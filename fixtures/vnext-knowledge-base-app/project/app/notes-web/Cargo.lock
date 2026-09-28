@@ -765,7 +765,7 @@ checksum = "3dab4fe87085a5577ab44a6f208232a6366e468b9005f5940c94082a75c31b8f"
 dependencies = [
  "futures",
  "lenso-contract-authoring",
- "lenso-contract-codegen",
+ "lenso-contract-codegen 0.9.0",
  "lenso-contract-runtime",
  "lenso-guest-sdk",
  "lenso-kernel",
@@ -784,7 +784,7 @@ checksum = "f9324c6abadbd68088c7cdd269b2335ccf7fe561788f25ec675f133fad3724de"
 dependencies = [
  "futures",
  "lenso-contract-authoring",
- "lenso-contract-codegen",
+ "lenso-contract-codegen 0.9.0",
  "lenso-contract-runtime",
  "lenso-kernel",
  "lenso-plugin-authoring",
@@ -803,7 +803,7 @@ dependencies = [
  "http",
  "lenso-capability-http-endpoint-macros",
  "lenso-contract-authoring",
- "lenso-contract-codegen",
+ "lenso-contract-codegen 0.10.0",
  "lenso-contract-runtime",
  "lenso-guest-sdk",
  "lenso-kernel",
@@ -868,6 +868,19 @@ name = "lenso-contract-codegen"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7722d17cb261dfd8f75b6e417973c9a8580e2310e7a7bf0c3126b09d7b7e5035"
+dependencies = [
+ "lenso-contract-authoring",
+ "regex",
+ "semver",
+ "serde_json",
+ "sha2 0.10.9",
+]
+
+[[package]]
+name = "lenso-contract-codegen"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc88556667bb6bb3d9b96402085448891699d0760ded6adc65a8e320d63230d8"
 dependencies = [
  "lenso-contract-authoring",
  "regex",
