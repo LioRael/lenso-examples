@@ -95,8 +95,13 @@ remain historical. A focused network-off gate with the current Auth, Jobs,
 Secrets, and Provider candidate hashes above passed signed `.crate` adoption,
 locked operator and Host builds, PostgreSQL-backed Jobs completion, and user-B
 404. Its signing catalog was **test-only**. That focused gate used the
-source-bundled Excerpt rather than the signed Excerpt 0.1.2 archive, and did
-not rerun the React browser, `app check/show`, unadoption, or upgrade paths.
+source-bundled Excerpt rather than the signed Excerpt 0.1.2 archive. A second
+focused gate on the same App revision used a scratch-only browser handoff:
+the source-deleted Host served the React page, authenticated a test user,
+changed the excerpt limit from 96 to 64, created a processed note, stored a
+43-byte attachment, and rejected an invalid token with HTTP 401. It ended in
+the same background-processing PASS. Neither current gate reran signed
+Excerpt adoption, `app check/show`, unadoption, or upgrade paths.
 The earlier Agent's scratch-only App-owned title-validation change is not part
 of this repository; its overlong-title rejection was not separately exercised
 at runtime. No local gate proves official publication or production deployment.
