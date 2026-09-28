@@ -1,0 +1,32 @@
+fixtures/vnext-knowledge-base-app/AGENT_INPUT.md
+  s_7d146975368699::t_f0462de8edae44 43-45
+  s_7d146975368699::t_71bcf681484987 18-19,26-29
+  s_7d146975368699::t_989a167592786f 92-102
+  s_7d146975368699::t_edd1641503aa61 30-31
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.lock
+  s_70d48bfadad8d1::t_6c24c68191db72 764
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cc53b65fb42b000250f125774c4f68a17b25edaf",
+  "prompts": {},
+  "sessions": {
+    "s_70d48bfadad8d1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e963-1ac6-73c2-8922-279ce1e5c511",
+        "model": "unknown"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    },
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
