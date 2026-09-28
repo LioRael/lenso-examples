@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: LioRael/lenso
-          ref: 8e6eb5eb9f468959eea713eab5f20592dfe65a71
+          ref: 8a3de3a33acd1f87f992be0cacb3246f57bdcb4b
           path: .lenso-ci-cli
           persist-credentials: false
       - uses: actions/checkout@v6
