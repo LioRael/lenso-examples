@@ -439,6 +439,16 @@ PostgreSQL note/job/settings state; it ends there instead of also running the
 separate Jobs-unadoption or Secrets-upgrade probes. These inputs remain local
 candidate packages until their public registry availability is verified.
 
+For one exact signed Excerpt Release instead of the two-version upgrade, pass
+`--excerpt-version VERSION`, `--excerpt-snapshot SNAPSHOT`,
+`--excerpt-trust TRUST`, and `--excerpt-tgz ARCHIVE` with `--package-only` and
+`LENSO_REFERENCE_BUN_CACHE`. The same inputs support the focused
+`--background-only` gate or the full lifecycle, including an optional
+`--browser-handoff`. Do not combine single-version and upgrade flags.
+`--background-only` exits after the Jobs and user-isolation checks; it does not
+open a browser handoff. The full path keeps the selected Excerpt version and
+does not claim a package upgrade.
+
 The verifier does not accept detached Auth or Jobs operator executables. After
 `app add` verifies each exact archive and vendors its source, the verifier checks
 that the adopted lock names the selected Plugin, version, and input `.crate`

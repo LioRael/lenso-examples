@@ -89,7 +89,7 @@ parser.add_argument("--excerpt-snapshot-r2", help="signed 0.1.1 npm package snap
 parser.add_argument("--excerpt-trust", help="public trust configuration for both npm snapshots")
 parser.add_argument("--excerpt-tgz-r1", help="exact signed 0.1.0 npm archive")
 parser.add_argument("--excerpt-tgz-r2", help="exact signed 0.1.1 npm archive")
-parser.add_argument("--excerpt-version", help="exact single npm Release for the background-only gate")
+parser.add_argument("--excerpt-version", help="exact single npm Release for package-only acceptance")
 parser.add_argument("--excerpt-snapshot", help="signed snapshot for the single npm Release")
 parser.add_argument("--excerpt-tgz", help="exact archive for the single npm Release")
 args = parser.parse_args()
@@ -317,8 +317,8 @@ def excerpt_inputs():
             "excerpt_snapshot_r1", "excerpt_snapshot_r2", "excerpt_tgz_r1", "excerpt_tgz_r2"
         )):
             parser.error("single excerpt Release cannot be combined with upgrade inputs")
-        if not args.package_only or not args.background_only:
-            parser.error("single excerpt Release requires --package-only --background-only")
+        if not args.package_only:
+            parser.error("single excerpt Release requires --package-only")
         missing = [f"--{name.replace('_', '-')}" for name in (*single_names, "excerpt_trust")
                    if not getattr(args, name)]
         if missing:
@@ -1254,7 +1254,7 @@ observer_instances = ["lenso.reference.knowledge-excerpt/default"]
     with measured("plugin_candidate_setup", "runtime_credentials"):
         tokens = issue_tokens()
     distribution_bytes = tree_logical_bytes(distribution)
-    if signed_excerpt_inputs:
+    if signed_excerpt_inputs and not args.excerpt_version:
         with measured("consumer_upgrade", "signed_excerpt_runtime_upgrade"):
             upgraded_distribution = verify_excerpt_upgrade(
                 cli, root, source, project, distribution, signed_excerpt_inputs, tokens,

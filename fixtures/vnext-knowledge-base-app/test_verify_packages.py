@@ -21,6 +21,59 @@ VERIFY = Path(__file__).with_name("verify.py")
 
 
 class VerifyPackagePreflightTests(unittest.TestCase):
+    def test_single_signed_excerpt_allows_full_or_background_package_mode(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            snapshot = root / "excerpt-snapshot.json"
+            trust = root / "excerpt-trust.json"
+            archive = root / "excerpt.tgz"
+            for path in (snapshot, trust, archive):
+                path.write_bytes(b"preflight fixture")
+            excerpt_flags = [
+                "--excerpt-version", "0.1.2",
+                "--excerpt-snapshot", str(snapshot),
+                "--excerpt-trust", str(trust),
+                "--excerpt-tgz", str(archive),
+            ]
+            environment = os.environ | {
+                "CARGO_HOME": str(root / "cargo-home"),
+                "LENSO_REFERENCE_DATABASE_URL": "postgresql://invalid",
+                "LENSO_REFERENCE_BUN_CACHE": str(root),
+            }
+            for background in (False, True):
+                with self.subTest(background=background):
+                    result = subprocess.run(
+                        [sys.executable, str(VERIFY), "--package-only",
+                         *(["--background-only"] if background else []), *excerpt_flags],
+                        env=environment, capture_output=True, text=True, check=False,
+                    )
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("--package-only requires --linked-snapshot", result.stderr)
+                    self.assertNotIn("single excerpt Release requires", result.stderr)
+
+            source_mode = subprocess.run(
+                [sys.executable, str(VERIFY), *excerpt_flags],
+                env=environment, capture_output=True, text=True, check=False,
+            )
+            self.assertIn("single excerpt Release requires --package-only", source_mode.stderr)
+
+    def test_signed_excerpt_upgrade_exit_excludes_single_release(self):
+        module = ast.parse(VERIFY.read_text(encoding="utf-8"))
+        guarded_upgrade = [
+            node for node in ast.walk(module)
+            if isinstance(node, ast.If)
+            and any(isinstance(child, ast.Call)
+                    and isinstance(child.func, ast.Name)
+                    and child.func.id == "verify_excerpt_upgrade"
+                    for child in ast.walk(node))
+        ]
+        self.assertTrue(any(
+            ast.dump(node.test) == ast.dump(
+                ast.parse("signed_excerpt_inputs and not args.excerpt_version", mode="eval").body
+            )
+            for node in guarded_upgrade
+        ))
+
     def test_linked_build_trust_uses_only_selected_exact_crate_bytes(self):
         module = ast.parse(VERIFY.read_text(encoding="utf-8"))
         function = next(
@@ -330,10 +383,10 @@ class VerifyPackagePreflightTests(unittest.TestCase):
         self.assertIn("--excerpt-tgz-r1", result.stderr)
         self.assertIn("--excerpt-tgz-r2", result.stderr)
 
-    def test_single_excerpt_requires_exact_release_and_background_package_mode(self):
+    def test_single_excerpt_requires_exact_release_and_package_mode(self):
         result = self.run_verify("--excerpt-version", "0.1.2")
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("requires --package-only --background-only", result.stderr)
+        self.assertIn("requires --package-only", result.stderr)
         with tempfile.TemporaryDirectory(prefix="lenso-kb-single-test-") as temporary:
             root = Path(temporary)
             result = self.run_verify(
