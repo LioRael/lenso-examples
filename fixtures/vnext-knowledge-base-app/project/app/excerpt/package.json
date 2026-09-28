@@ -1,6 +1,6 @@
 {
   "name": "@lenso/knowledge-excerpt",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Knowledge excerpt Plugin for the Lenso reference App",
   "type": "module",
   "license": "MIT",
@@ -36,7 +36,7 @@
   },
   "lenso": {
     "pluginId": "lenso.reference.knowledge-excerpt",
-    "releaseVersion": "0.1.0",
+    "releaseVersion": "0.1.2",
     "rootSlot": "tool-providers",
     "runtime": "bun",
     "source": "src/plugin.ts"
