@@ -15,18 +15,20 @@ newer version from a package README.
 
 | Choice | Exact Release / input SHA-256 | Why it is needed and what it may access |
 | --- | --- | --- |
-| Auth | `lenso.auth.api-token@0.1.2` `.crate` `d3b0c6b8ab5065abbe468eb3bc44b1b6e5dcda0c91d9e72250c1644c37b9becf` | Authenticates bearer tokens and owns its PostgreSQL schema; needs only its database URL, signing-key, and pepper secret references. |
-| Jobs | `lenso.jobs@0.1.8` `.crate` `8d9a10433ab2d5ff623e2e7ced9491ed6b4b37787e385710b39e725d7ddccab5` | Owns durable queue/lease/retry state in PostgreSQL; allow only the `knowledge` queue and the exact Excerpt producer, worker, and observer Instance. |
+| Auth | `lenso.auth.api-token@0.1.2` `.crate` `6cd6f0e81a5e6029e87f1000753967dee7831907eeb884ccb29699f59060e001` | Authenticates bearer tokens and owns its PostgreSQL schema; needs only its database URL, signing-key, and pepper secret references. |
+| Jobs | `lenso.jobs@0.1.8` `.crate` `caf19386ce18679399a7507ab91ad80121e9f914a68832dcdf23d1b4b4e05fb7` | Owns durable queue/lease/retry state in PostgreSQL; allow only the `knowledge` queue and the exact Excerpt producer, worker, and observer Instance. |
 | Secrets Env | `lenso.secrets.env@0.1.7` `.crate` `6dd6a27548c53acaa56d5b65faa6aab3c755e1fb5b00365c406b47aed79c4787` | Resolves the five explicit Auth/Jobs/knowledge environment references shown in `verify.py`; it is not permission to read all environment variables. |
 | Excerpt | `lenso.reference.knowledge-excerpt@0.1.2` / `@lenso/knowledge-excerpt@0.1.2` `.tgz` `0e07ecfff39dee892e11119765ff09dd9af4ee8774e1dde89e275436efbf901e` | Deterministic text Tools with an optional Jobs binding; it does not call a model. Binding it to the App-owned business Plugin does not expose every Tool to an Agent. |
 
 The App-owned `lenso.reference.knowledge-base` linked Rust Plugin implements
 HTTP routes, per-user note storage, and the PostgreSQL schema. Its dependency
 closure pins `lenso@0.5.27` and
-`lenso-capability-agent-tool-provider@0.3.0`; a matching offline Cargo source
-must include those packages. The checked-in React production assets are part
-of this App source. `lenso.web-ingress@0.4.9` is Host-provided: do not run
-generic `app add` on it or reclassify it as a portable Plugin.
+`lenso-capability-agent-tool-provider@0.3.0` (local candidate `.crate` SHA-256
+`3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4`);
+a matching offline Cargo source must include those packages. This Provider
+candidate is not a public registry receipt. The checked-in React production
+assets are part of this App source. `lenso.web-ingress@0.4.9` is Host-provided:
+do not run generic `app add` on it or reclassify it as a portable Plugin.
 
 ## Before allowing a build
 
@@ -38,9 +40,9 @@ snapshot has since expired. Do not extend an expiry, reuse a signature for
 changed bytes, or give the Agent a signing key. If the operator has not
 provided a fresh matching linked snapshot/trust, stop before `app add`.
 
-The operator also supplies a compatible Linux ARM64 CLI (the previously
-verified candidate SHA-256 is
-`70c988d145b9d4a81b4f2bb1da64af3b1c57aee38fd189c2bdacd7efa663b309`),
+The operator also supplies a compatible Linux ARM64 CLI (the focused offline
+gate used candidate SHA-256
+`74ad3e99f6a7fc77fad07e8ef843632c32b996d17ad24de15525c01a6946495b`),
 Rust toolchain, Bun, immutable offline Cargo vendor sources, an offline Bun
 cache, and a disposable PostgreSQL database. Build and run in a network-off,
 resource-limited OS sandbox with read-only original inputs and a writable
@@ -87,14 +89,14 @@ python3 verify.py --background-only --package-only \
 
 Success requires the verifier's `PASS: Host-owned background processing and
 user-scoped read-only polling` line. `app check` uses the distribution root;
-`app show --json` uses its `intent` directory. The prior one-off local gate
-passed with these exact archive hashes and a scratch-only version adapter;
-the checked-in single-version option subsequently passed one offline local
-gate with a fresh **test-only** signed catalog. An independent Agent selected
-the four exact packages, made a scratch-only App-owned title-validation change,
-invoked the fixed gate, and observed source-deleted Host/PostgreSQL background
-completion and user-B 404. That scratch edit is not part of this repository;
-its overlong-title rejection was not separately exercised at runtime. Neither
-gate proves official publication, React browser behavior on the Agent edit,
-upgrade/unadoption, or production deployment. Those are separate acceptance
-steps, not implied by the command above.
+`app show --json` uses its `intent` directory. Earlier local gates and an
+independent Agent used previous Auth and Jobs archive hashes; those results
+remain historical. A focused network-off gate with the current Auth, Jobs,
+Secrets, and Provider candidate hashes above passed signed `.crate` adoption,
+locked operator and Host builds, PostgreSQL-backed Jobs completion, and user-B
+404. Its signing catalog was **test-only**. That focused gate used the
+source-bundled Excerpt rather than the signed Excerpt 0.1.2 archive, and did
+not rerun the React browser, `app check/show`, unadoption, or upgrade paths.
+The earlier Agent's scratch-only App-owned title-validation change is not part
+of this repository; its overlong-title rejection was not separately exercised
+at runtime. No local gate proves official publication or production deployment.

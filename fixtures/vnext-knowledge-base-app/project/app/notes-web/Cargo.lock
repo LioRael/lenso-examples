@@ -761,7 +761,7 @@ dependencies = [
 name = "lenso-capability-agent-tool-provider"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dab4fe87085a5577ab44a6f208232a6366e468b9005f5940c94082a75c31b8f"
+checksum = "3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4"
 dependencies = [
  "futures",
  "lenso-contract-authoring",
