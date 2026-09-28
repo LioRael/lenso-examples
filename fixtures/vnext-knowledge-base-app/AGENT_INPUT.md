@@ -40,12 +40,16 @@ snapshot has since expired. Do not extend an expiry, reuse a signature for
 changed bytes, or give the Agent a signing key. If the operator has not
 provided a fresh matching linked snapshot/trust, stop before `app add`.
 
-The operator also supplies a compatible Linux ARM64 CLI (the focused offline
-gate used candidate SHA-256
-`74ad3e99f6a7fc77fad07e8ef843632c32b996d17ad24de15525c01a6946495b`),
-Rust toolchain, Bun, immutable offline Cargo vendor sources, an offline Bun
-cache, and a disposable PostgreSQL database. Build and run in a network-off,
-resource-limited OS sandbox with read-only original inputs and a writable
+The operator also supplies a compatible Linux ARM64 CLI. The focused signed
+Excerpt gate used SHA-256
+`70c988d145b9d4a81b4f2bb1da64af3b1c57aee38fd189c2bdacd7efa663b309`
+(built from Rust `c3e1c52ef0cef395216e5cc3bfe6c87a77f500b2`). The older
+`74ad3e99f6a7fc77fad07e8ef843632c32b996d17ad24de15525c01a6946495b`
+CLI used for the linked-provider and browser gates does not accept signed npm
+`--package-snapshot` adoption and cannot run the command below. The operator
+also supplies the Rust toolchain, Bun, immutable offline Cargo vendor sources,
+an offline Bun cache, and a disposable PostgreSQL database. Build and run in a
+network-off, resource-limited OS sandbox with read-only original inputs and a writable
 scratch App. The launcher injects `CARGO_HOME` with a credential-free offline
 vendor config, `LENSO_REFERENCE_BUN_CACHE`, and
 `LENSO_REFERENCE_DATABASE_URL` without printing their values. No framework,
@@ -100,8 +104,12 @@ focused gate on the same App revision used a scratch-only browser handoff:
 the source-deleted Host served the React page, authenticated a test user,
 changed the excerpt limit from 96 to 64, created a processed note, stored a
 43-byte attachment, and rejected an invalid token with HTTP 401. It ended in
-the same background-processing PASS. Neither current gate reran signed
-Excerpt adoption, `app check/show`, unadoption, or upgrade paths.
+the same background-processing PASS. A third focused gate on the unchanged
+App source used the compatible CLI and a fresh **test-only** signed npm
+snapshot to adopt the exact Excerpt 0.1.2 archive, install its locked offline
+Bun dependencies, typecheck, build with exact grants, run `app check/show`,
+and verify source-deleted PostgreSQL Host background processing and user-scoped
+polling. It did not rerun the browser, signed upgrade, or unadoption paths.
 The earlier Agent's scratch-only App-owned title-validation change is not part
 of this repository; its overlong-title rejection was not separately exercised
 at runtime. No local gate proves official publication or production deployment.
