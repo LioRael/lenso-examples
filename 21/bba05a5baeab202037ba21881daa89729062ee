@@ -1,0 +1,19 @@
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.lock
+  s_70d48bfadad8d1::t_6d3f3f094abc5d 768,787,806,879-891
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "21bba05a5baeab202037ba21881daa89729062ee",
+  "prompts": {},
+  "sessions": {
+    "s_70d48bfadad8d1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0e963-1ac6-73c2-8922-279ce1e5c511",
+        "model": "unknown"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
