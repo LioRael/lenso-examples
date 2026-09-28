@@ -720,7 +720,7 @@ dependencies = [
 name = "lenso"
 version = "0.5.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df65f1e5a00ad89e0608c9e6c1d695eb67ca00e9e39ae787f77c5b418e9c9b41"
+checksum = "46620d37d1c40f62f33f26b28a209fbcbffb2dd9cbefb5e5ab269ce964c52876"
 dependencies = [
  "futures",
  "lenso-kernel",
@@ -797,7 +797,7 @@ dependencies = [
 name = "lenso-capability-http-endpoint"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92541a190723aee1332bd5109df22aa87077d98ce55a0a4f844e38b6dc20bbb9"
+checksum = "ce9404bfa280787037923f68307c09e2b5133361c166059da625c4a5545d5ff8"
 dependencies = [
  "futures",
  "http",
@@ -934,7 +934,7 @@ dependencies = [
 name = "lenso-native-adapter"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08b0bb08862057aff52502fd3af6508fbcb65b1066896d576f696add534c825b"
+checksum = "a74e740da05247c1e099883ff5b174f5761d8e21883641967b03793756238b1e"
 dependencies = [
  "futures",
  "inventory",
@@ -950,7 +950,7 @@ dependencies = [
 name = "lenso-native-adapter-macros"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00048fb5e9732dbfc01547f50cfdfc8129ce647fa7d523c7b7d6ad1d1980cda"
+checksum = "00048fb5e9732dbfc01547f50cfdfc8129ce647fa7d523c7b7d6ad1d1980cdac"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
