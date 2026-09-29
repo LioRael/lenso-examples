@@ -1387,7 +1387,7 @@ mod tests {
                 )
             })
             .collect::<BTreeSet<_>>();
-        assert_eq!(public_routes.len(), 7);
+        assert_eq!(public_routes.len(), 6);
         assert_eq!(documented, public_routes);
     }
 

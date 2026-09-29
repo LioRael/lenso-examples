@@ -116,7 +116,7 @@ independently recorded SHA-256 to the verifier. A frozen Bun install alone
 does not establish the identity of a local `file:` tarball:
 
 `project/frontend/openapi.json` is the checked-in input to React client
-generation. Its seven business operations also appear as `#[openapi]` metadata
+generation. Its six business operations also appear as `#[openapi]` metadata
 on the corresponding Rust Endpoint handlers. With the framework source
 candidate selected, the verifier adopts `@lenso/openapi` and copies the
 snapshot's info and components into that Plugin's App-owned configuration.
