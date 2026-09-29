@@ -61,3 +61,67 @@ jobs:
              typescript_bun_syncs_through_the_same_named_host_dependencies -- --ignored --exact --test-threads=1
       - name: Run target-owned Web UI conformance
         run: cargo test --locked -p lenso-vnext-web-ui --test web_ui generated_browser_client_invokes_the_allowlisted_app_capability -- --ignored --test-threads=1
+
+  portable-settings:
+    name: Portable Native and Workers settings proof
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso
+          ref: 3e591ffaed80f62cf4eb4c2f8e522dafeea0caf9
+          path: .lenso-framework
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: LioRael/lenso-js
+          ref: b2b3122f0061a649de29d1fa6d7c2fb30076f3a7
+          path: .lenso-js-runtime
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.0
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.5.0
+      - name: Install isolated PostgreSQL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends postgresql-16
+          echo /usr/lib/postgresql/16/bin >> "$GITHUB_PATH"
+      - name: Check fixture formatting
+        run: cargo fmt --manifest-path fixtures/vnext-portable-settings/Cargo.toml --all -- --check
+      - name: Install fixture-pinned JavaScript tools
+        working-directory: fixtures/vnext-portable-settings
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install wasm-bindgen CLI
+        run: cargo install wasm-bindgen-cli --version '=0.2.127' --locked
+      - name: Extract pinned Workers clock source
+        run: |
+          mkdir -p "$RUNNER_TEMP/lenso-js-runtime"
+          git -C .lenso-js-runtime archive b2b3122f0061a649de29d1fa6d7c2fb30076f3a7 \
+            packages/lenso-workers-runtime | tar -x -C "$RUNNER_TEMP/lenso-js-runtime"
+      - name: Verify Plugin-owned Component bridge and receipts
+        working-directory: fixtures/vnext-knowledge-base-app
+        run: |
+          python3 -m unittest test_verify_workers_settings.py test_verify_workers_settings_tunnel.py test_verify_workers_settings_mux.py test_verify_browser_handoff.py
+          python3 project/app/notes-web/workers-host/test_prepare_integration.py
+          python3 project/app/notes-web/workers-host/test_bridge.py --lenso-js "$RUNNER_TEMP/lenso-js-runtime"
+      - name: Test verifier framework-source preflight
+        working-directory: fixtures/vnext-portable-settings
+        run: python3 -m unittest test_verify.py
+      - name: Check Worker module syntax
+        working-directory: fixtures/vnext-portable-settings
+        run: node --check body.mjs && node --check worker.mjs && node --check workerd-test.mjs
+      - name: Build and exercise both targets against the exact framework source
+        working-directory: fixtures/vnext-portable-settings
+        env:
+          LENSO_FRAMEWORK_ROOT: ${{ github.workspace }}/.lenso-framework
+          LENSO_FRAMEWORK_REVISION: 3e591ffaed80f62cf4eb4c2f8e522dafeea0caf9
+          LENSO_WORKERS_RUNTIME_ROOT: ${{ runner.temp }}/lenso-js-runtime/packages/lenso-workers-runtime
+          WRANGLER_SEND_METRICS: 'false'
+        run: python3 test_durable.py --workers

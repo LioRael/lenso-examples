@@ -1,0 +1,41 @@
+[package]
+name = "portable-settings-fixture"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+members = ["crates/settings-contract", "plugins/settings-store", "plugins/settings-http"]
+resolver = "3"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+example-settings-contract = { path = "crates/settings-contract" }
+example-settings-store = { path = "plugins/settings-store" }
+example-settings-http = { path = "plugins/settings-http" }
+lenso = "=0.5.27"
+bytes = "1"
+futures = "0.3"
+http = "1"
+lenso-app-plan = "=0.4.6"
+lenso-kernel = "=0.3.11"
+lenso-native-adapter = "=0.3.18"
+lenso-web-ingress-plugin = { version = "=0.4.9", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+lenso-web-ingress-plugin = { version = "=0.4.9", features = ["native"] }
+http-body-util = "0.1"
+hyper = { version = "1", features = ["http1", "server"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+lenso-runner = "=0.2.19"
+tokio = { version = "1", features = ["rt", "macros", "net", "io-util", "time", "signal"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys = "0.3"
+lenso-workers-driver = "=0.1.1"
+wasm-bindgen = "=0.2.127"
+wasm-bindgen-futures = "=0.4.77"

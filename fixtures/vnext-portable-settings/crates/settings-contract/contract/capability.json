@@ -1,0 +1,22 @@
+{
+  "id": "example.settings-store@1",
+  "version": "1.0.0",
+  "portable": true,
+  "cross_lane_transfer": false,
+  "operations": [
+    {
+      "name": "read",
+      "interaction": "request",
+      "request_schema": "read.schema.json",
+      "response_schema": "snapshot.schema.json",
+      "domain_error_schema": "error.schema.json"
+    },
+    {
+      "name": "change",
+      "interaction": "request",
+      "request_schema": "change.schema.json",
+      "response_schema": "snapshot.schema.json",
+      "domain_error_schema": "error.schema.json"
+    }
+  ]
+}

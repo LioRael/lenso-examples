@@ -10,6 +10,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import re
 import stat
 import time
 import uuid
@@ -107,30 +108,120 @@ def create_bridge_policy(path, tokens, ttl_seconds):
     })
 
 
+def read_build_file(path, max_bytes=MAX_JSON_BYTES):
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        metadata = os.fstat(fd)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > max_bytes:
+            raise ValueError(f"expected a bounded regular build file: {path}")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(max_bytes + 1)
+        if len(raw) > max_bytes:
+            raise ValueError(f"build file exceeds its bound: {path}")
+        return raw
+    finally:
+        os.close(fd)
+
+
+def unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate build JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def json_module(path):
+    raw = read_build_file(path, 1_048_576)
+    prefix, suffix = b"export default ", b";\n"
+    if not raw.startswith(prefix) or not raw.endswith(suffix):
+        raise ValueError(f"expected a generated JSON-only module: {path}")
+    body = raw[len(prefix):-len(suffix)]
+    def reject_nonfinite(value):
+        raise ValueError(f"non-finite build JSON number: {value}")
+    value = json.loads(body, object_pairs_hook=unique_json_object,
+                       parse_constant=reject_nonfinite)
+    if not isinstance(value, dict):
+        raise ValueError(f"expected a generated object module: {path}")
+    return body, value
+
+
 def checked_workers_build(path):
-    raw = path.read_bytes()
-    if len(raw) > MAX_JSON_BYTES:
-        raise ValueError("Workers build receipt exceeds its bound")
+    raw = read_build_file(path)
     receipt = json.loads(raw)
+    integration = receipt.get("integration", {})
+    runtime = receipt.get("workers_runtime", {})
+    if not isinstance(integration, dict) or not isinstance(runtime, dict):
+        raise ValueError("Workers receipt requires integration and runtime objects")
     if (receipt.get("schema") != "lenso.workers-app-build.v1"
             or receipt.get("environment") != "local-workerd"
             or receipt.get("plugin_id") != "lenso.reference.knowledge-settings"
-            or receipt.get("private_world") != "lenso:knowledge-settings-local@1.0.0/plugin"
-            or receipt.get("host_bridge") != "local-loopback-knowledge-settings.v1"
+            or integration.get("world") != "lenso:knowledge-settings-local@1.0.0/plugin"
+            or integration.get("plugin_id") != "lenso.reference.knowledge-settings"
+            or integration.get("instance_key") != "default"
+            or integration.get("authoring_version") != 2
+            or integration.get("runtime_version") != "0.1.5"
+            or integration.get("artifact_digest") != receipt.get("component_digest")
+            or integration.get("manifest_digest") != receipt.get("manifest_digest")
+            or integration.get("profile_file") != "workers-integration.json"
             or receipt.get("expected_descriptor_digests", {}).get("lenso.http.endpoint@1") != DESCRIPTOR_DIGEST
-            or receipt.get("workers_runtime", {}).get("version") != "0.1.5"):
+            or runtime.get("version") != "0.1.5"
+            or set(runtime.get("module_digests", {})) != {
+                "component-admission.mjs", "component-requests.mjs"}
+            or set(integration.get("module_digests", {})) != {
+                "worker.mjs", "README.md", "knowledge-settings-local.mjs"}):
         raise ValueError("Workers build receipt is not the exact local knowledge-settings slice")
+    for key in ("profile_digest", "manifest_digest", "artifact_digest"):
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(integration.get(key, ""))):
+            raise ValueError(f"Workers integration lacks a valid {key}")
+    profile_bytes = read_build_file(path.parent / "workers-integration.json")
+    if (len(profile_bytes) > MAX_JSON_BYTES
+            or "sha256:" + hashlib.sha256(profile_bytes).hexdigest() != integration["profile_digest"]):
+        raise ValueError("Workers integration profile does not match its receipt")
+    profile = json.loads(profile_bytes)
+    expected_profile = {
+        "schema": "lenso.workers-integration.v1",
+        **{key: integration[key] for key in (
+            "world", "plugin_id", "instance_key", "authoring_version",
+            "manifest_digest", "artifact_digest", "runtime_version")},
+        "files": integration["module_digests"],
+    }
+    if profile != expected_profile:
+        raise ValueError("Workers integration profile metadata differs from its receipt")
+    _, artifact_metadata = json_module(path.parent / "artifact.mjs")
+    if artifact_metadata != {
+        "world": integration["world"], "digest": integration["artifact_digest"],
+    }:
+        raise ValueError("Workers artifact metadata differs from the approved integration")
+    plan_bytes, plan = json_module(path.parent / "plan.mjs")
+    if "sha256:" + hashlib.sha256(plan_bytes).hexdigest() != receipt.get("plan_digest"):
+        raise ValueError("Workers Plan does not match its receipt")
+    instances = plan.get("plugin_instances")
+    if not isinstance(instances, list) or len(instances) != 1 or not isinstance(instances[0], dict):
+        raise ValueError("Workers Plan requires one selected Instance")
+    selected = instances[0]
+    for key, expected in {
+        "instance_key": integration["plugin_id"] + "/" + integration["instance_key"],
+        "package_id": integration["plugin_id"],
+        "package_revision": integration["artifact_digest"],
+        "authoring_version": integration["authoring_version"],
+    }.items():
+        if selected.get(key) != expected:
+            raise ValueError(f"Workers Plan Instance differs from the integration: {key}")
     for name, digest in {
         "bundles/lenso.reference.knowledge-settings.lenso-plugin": receipt.get("bundle_digest"),
         "guest.component.wasm": receipt.get("component_digest"),
         "guest.core.wasm": receipt.get("jco_core_digest"),
-        **receipt["workers_runtime"].get("module_digests", {}),
+        "guest.js": receipt.get("jco_bindings_digest"),
+        **runtime["module_digests"],
+        **integration["module_digests"],
     }.items():
-        if (not isinstance(digest, str) or not digest.startswith("sha256:")
-                or len(digest) != 71):
+        if not isinstance(digest, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
             raise ValueError(f"Workers build receipt lacks a valid digest for {name}")
         artifact = path.parent / name
-        if not artifact.is_file() or "sha256:" + hashlib.sha256(artifact.read_bytes()).hexdigest() != digest:
+        artifact_bytes = read_build_file(artifact, 64 * 1024 * 1024)
+        if "sha256:" + hashlib.sha256(artifact_bytes).hexdigest() != digest:
             raise ValueError(f"Workers build artifact does not match its receipt: {name}")
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 

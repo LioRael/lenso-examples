@@ -1,0 +1,20 @@
+[package]
+name = "example-settings-store"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata.lenso]
+plugin-id = "example.settings-store"
+root-slot = "settings-store"
+
+[dependencies]
+example-settings-contract = { path = "../../crates/settings-contract" }
+futures = "0.3"
+lenso = "=0.5.27"
+lenso-kernel = "=0.3.11"
+serde_json = "1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1", features = ["macros", "time"] }
+tokio-postgres = { version = "0.7", features = ["with-serde_json-1"] }

@@ -1,0 +1,8 @@
+{
+  "name": "portable-settings-source-proof",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "miniflare": "4.20260701.0"
+  }
+}

@@ -87,6 +87,7 @@ class BrowserHandoffTests(unittest.TestCase):
             )
             process = subprocess.Popen(
                 [sys.executable, "-c", child, str(path)],
+                cwd=Path(__file__).resolve().parent,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -103,7 +104,7 @@ class BrowserHandoffTests(unittest.TestCase):
             finally:
                 if process.poll() is None:
                     process.kill()
-                    process.communicate(timeout=5)
+                process.communicate(timeout=5)
 
     def test_replaced_path_is_not_removed(self):
         with tempfile.TemporaryDirectory(prefix="lenso-browser-handoff-") as temporary:

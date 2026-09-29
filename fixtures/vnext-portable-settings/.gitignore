@@ -1,0 +1,6 @@
+.target/
+.wasm/
+.runtime/
+node_modules/
+portable-settings-*/
+__pycache__/

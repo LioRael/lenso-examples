@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["principal", "expected_revision", "idempotency_key", "value"],
+  "properties": {
+    "principal": {"type": "string"},
+    "expected_revision": {"type": "integer", "minimum": 0, "maximum": 2147483646},
+    "idempotency_key": {"type": "string"},
+    "value": {"type": "string"}
+  },
+  "additionalProperties": false
+}

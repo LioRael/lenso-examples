@@ -273,10 +273,32 @@ Workers distribution, or commit it. The verifier removes its own handoff
 automatically on timeout or shutdown, and resumes only after the acceptance
 operator removes that exact file.
 
-The selected Workers App must be built by the specialized Rust builder from
+The selected Workers App uses the generic Rust builder with an explicitly
+trusted [Plugin-owned Workers integration](project/app/notes-web/workers-host/README.md),
 the exact locally verified `lenso.reference.knowledge-settings` Bundle and
-the `@lenso/workers-runtime` 0.1.5 candidate. It is a separate Plugin/Instance
-from the full Native knowledge-base Plugin; only `/settings` is portable.
+the separately pinned `@lenso/workers-runtime` 0.1.5 candidate. Prepare the
+integration using that directory's helper, review its source/profile digest,
+then pass `--workers-integration /explicit/integration.json` and
+`--trust-workers-integration sha256:DIGEST` alongside `--target workers`,
+`--workers-runtime`, and `--jco`. The helper never installs or deploys code.
+The integration is trusted Host code, not Bundle-signed code or a sandbox.
+It is a separate Plugin/Instance from the full Native knowledge-base Plugin;
+only `/settings` is portable.
+
+The generic `workers-build.json` receipt's `integration` object records the
+approved profile digest, world, Plugin/Instance, authoring version, manifest
+and Component digests, runtime version, and integration file digests. The
+product bridge belongs there, not in `workers_runtime.module_digests`, which
+contains only `component-admission.mjs` and `component-requests.mjs`.
+The generated artifact metadata module is `artifact.mjs`. The acceptance
+verifier parses its JSON-only export without executing JavaScript and checks
+the exact world and Component digest. It also rehashes `guest.js`, verifies
+the raw JSON body of `plan.mjs` against `plan_digest`, and checks the selected
+Instance's identity and artifact binding. These Plan/bindings checks close
+pre-existing acceptance-verifier omissions, not a new builder admission bypass.
+It checks the receipt shape and rehashes recorded output files; that is
+build-input evidence, not deployed qualification.
+
 Build and run the local workerd App, its dedicated settings bridge, and a
 disposable PostgreSQL instance in one task-owned Linux network namespace.
 Publish the PostgreSQL and workerd listeners to **host 127.0.0.1 only** so
@@ -359,6 +381,7 @@ listener, namespace, selected SHA/Plan, and process start evidence. Remove
 the handoff to release the Native verifier only after both phases; then
 remove the local policy and stop only the task-owned processes. A passed
 corpus is local-workerd target evidence, not full-App or production support.
+
 ### Exact package inputs for external providers
 
 The default command above retains source-checkout adoption. To test the separate
