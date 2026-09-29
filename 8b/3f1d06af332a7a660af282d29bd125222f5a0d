@@ -1,0 +1,35 @@
+fixtures/vnext-local-app/shared-plugins/audit/Cargo.toml
+  s_7d146975368699::t_9d2d3c638f60c7 10
+fixtures/vnext-typed-local-app/project/app/web/Cargo.toml
+  s_7d146975368699::t_9d2d3c638f60c7 10
+  s_7d146975368699::t_2d1f2591cce3be 11
+fixtures/vnext-local-app/project/app/web/Cargo.toml
+  s_7d146975368699::t_2d1f2591cce3be 11
+  s_7d146975368699::t_9d2d3c638f60c7 10,12
+fixtures/vnext-typed-local-app/shared-plugins/audit/Cargo.toml
+  s_7d146975368699::t_9d2d3c638f60c7 10
+fixtures/vnext-local-app/project/app/web/Cargo.lock
+  s_7d146975368699::t_1e50ffaf9979fb 271,273,285,287,296,298,302,307,315,317,322-323,325,328-329,337,339,371,373,384,386,409,411,419,421,429,431,439,445,447,465,467
+fixtures/vnext-local-app/shared-plugins/audit/Cargo.lock
+  s_7d146975368699::t_c246b1a2073226 225,227,239,241,250,252,260,262,276,278,296,298,435
+fixtures/vnext-typed-local-app/project/app/web/Cargo.lock
+  s_7d146975368699::t_ed5b99aa2801c4 271,273,285,287,296,298,303-304,306,309-310,318,320,363-375,400,402,410,412,426,428,446,448,489
+fixtures/vnext-typed-local-app/shared-plugins/audit/Cargo.lock
+  s_7d146975368699::t_df50d72609ce5f 225,227,239,241,250,252,260,262,276,278,296,298,435
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8b3f1d06af332a7a660af282d29bd125222f5a0d",
+  "prompts": {},
+  "sessions": {
+    "s_7d146975368699": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0c54a-381f-7362-9b4d-95aea89e2437",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
