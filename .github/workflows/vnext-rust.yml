@@ -86,6 +86,7 @@ jobs:
         with:
           toolchain: 1.94.0
           targets: wasm32-unknown-unknown
+          components: rustfmt
       - uses: actions/setup-node@v4
         with:
           node-version: 26.5.0
