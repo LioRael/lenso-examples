@@ -16,18 +16,19 @@ newer version from a package README.
 | Choice | Exact Release / input SHA-256 | Why it is needed and what it may access |
 | --- | --- | --- |
 | Auth | `lenso.auth.api-token@0.1.2` `.crate` `6cd6f0e81a5e6029e87f1000753967dee7831907eeb884ccb29699f59060e001` | Authenticates bearer tokens and owns its PostgreSQL schema; needs only its database URL, signing-key, and pepper secret references. |
-| Jobs | `lenso.jobs@0.1.8` `.crate` `caf19386ce18679399a7507ab91ad80121e9f914a68832dcdf23d1b4b4e05fb7` | Owns durable queue/lease/retry state in PostgreSQL; allow only the `knowledge` queue and the exact Excerpt producer, worker, and observer Instance. |
+| Jobs | `lenso.jobs@0.1.8` test-only `.crate` `caf19386ce18679399a7507ab91ad80121e9f914a68832dcdf23d1b4b4e05fb7` | Owns durable queue/lease/retry state in PostgreSQL; allow only the `knowledge` queue and the exact Excerpt producer, worker, and observer Instance. The public crate has a different digest and cannot be substituted into this historical signature. |
 | Secrets Env | `lenso.secrets.env@0.1.7` `.crate` `6dd6a27548c53acaa56d5b65faa6aab3c755e1fb5b00365c406b47aed79c4787` | Resolves the five explicit Auth/Jobs/knowledge environment references shown in `verify.py`; it is not permission to read all environment variables. |
-| Excerpt | `lenso.reference.knowledge-excerpt@0.1.2` / `@lenso/knowledge-excerpt@0.1.2` `.tgz` `0e07ecfff39dee892e11119765ff09dd9af4ee8774e1dde89e275436efbf901e` | Deterministic text Tools with an optional Jobs binding; it does not call a model. Binding it to the App-owned business Plugin does not expose every Tool to an Agent. |
+| Excerpt | `lenso.reference.knowledge-excerpt@0.1.2` / `@lenso/knowledge-excerpt@0.1.2` test-only `.tgz` `0e07ecfff39dee892e11119765ff09dd9af4ee8774e1dde89e275436efbf901e` | Deterministic text Tools with an optional Jobs binding; it does not call a model. Binding it to the App-owned business Plugin does not expose every Tool to an Agent. |
 
 The App-owned `lenso.reference.knowledge-base` linked Rust Plugin implements
 HTTP routes, per-user note storage, and the PostgreSQL schema. Its dependency
 closure pins `lenso@0.5.27` and
-`lenso-capability-agent-tool-provider@0.3.0` (local candidate `.crate` SHA-256
+`lenso-capability-agent-tool-provider@0.3.0` (`.crate` SHA-256
 `3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4`);
-a matching offline Cargo source must include those packages. This Provider
-candidate is not a public registry receipt. The checked-in React production
-assets are part of this App source. `lenso.web-ingress@0.4.9` is Host-provided:
+a matching offline Cargo source must include those packages. The Provider's
+public crate was separately verified with this digest; this historical local
+catalog is still not an official signed Directory receipt. The checked-in
+React production assets are part of this App source. `lenso.web-ingress@0.4.9` is Host-provided:
 do not run generic `app add` on it or reclassify it as a portable Plugin.
 
 ## Before allowing a build

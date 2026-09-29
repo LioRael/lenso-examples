@@ -139,9 +139,8 @@ remain strings in the Rust DTOs, so the snapshot does not claim closed enums.
 The test does not derive numeric or pattern constraints, Problem responses, or
 security semantics from the custom Auth and idempotency extractors. The live
 comparison checks the document, not actual response bodies.
-`lenso-openapi-plugin` 0.2.5 is not yet published, so source-mode
-`--no-install` adoption and a Cargo path patch do not establish a package-only
-install.
+`lenso-openapi-plugin` 0.2.5 is published, but source-mode `--no-install`
+adoption and a Cargo path patch do not establish a package-only install.
 
 ```sh
 LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
@@ -205,11 +204,11 @@ LENSO_REFERENCE_DATABASE_URL=postgresql://... python3 verify.py \
   --secrets-source /absolute/path/to/lenso-secrets-plugin/crates/lenso-secrets-env-plugin
 ```
 
-The Rust business Plugin pins the current candidate `lenso` 0.5.27, HTTP
-Endpoint 0.3.4, and Agent Tool Provider 0.3.0 cohort. These versions are not
-all published. The two explicit source arguments are development inputs for
-that cohort: the verifier checks their package identities and exact direct
-versions, then puts Cargo path overrides in its disposable consumer's private
+The Rust business Plugin pins the published `lenso` 0.5.27, HTTP Endpoint
+0.3.4, and Agent Tool Provider 0.3.0 cohort. The two explicit source arguments
+remain development inputs for that cohort: the verifier checks their package
+identities and exact direct versions, then puts Cargo path overrides in its
+disposable consumer's private
 `CARGO_HOME`. It never adds an absolute checkout path to this fixture's
 manifest. The checked-in `Cargo.lock` was resolved against these local
 candidate versions but may need a different dependency graph at a newer
@@ -440,8 +439,8 @@ verifier regenerates only the disposable business App copy's `Cargo.lock`
 offline from the sandbox's configured packaged Cargo source, then builds its
 operator with `--locked --offline`; it reports that generated lock's SHA-256.
 The checked-in source-candidate lock is unchanged. This local step does not
-prove that the exact framework and Agent Tool Provider versions are published
-or visible on crates.io; public registry availability needs separate readback.
+prove registry availability; the exact framework and Agent Tool Provider
+versions have separate crates.io readback.
 
 To combine these exact signed `.crate` inputs with the signed npm knowledge-
 excerpt 0.1.0 → 0.1.1 runtime upgrade, add
@@ -554,5 +553,5 @@ temporary test credential.
 No App-authored Host, Plan, Runtime Profile, binding document, database URL, or
 credential value is checked in. The default acceptance uses local candidate
 sources; this README does not present Auth, Jobs, or Secrets as
-registry-installed defaults. Public publication and deployment are separate,
-unauthorized steps.
+registry-installed defaults. Public publication and deployment require
+separate operator gates and receipts.
