@@ -32,6 +32,9 @@ class VerifySourcePreflightTests(unittest.TestCase):
                     for target in statement.targets
                 )
             )
+            self.assertIn("lenso-engine-authoring", patch_packages)
+            self.assertIn("lenso-test", patch_packages)
+            self.assertIn("lenso-capability-http-client", patch_packages)
             framework = root / "framework"
             for name in patch_packages:
                 crate = framework / "crates" / name
@@ -66,7 +69,22 @@ class VerifySourcePreflightTests(unittest.TestCase):
             bin_directory = root / "bin"
             bin_directory.mkdir()
             cli = bin_directory / "lenso-test-cli"
-            cli.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            cli.write_text(
+                '#!/bin/sh\n'
+                'if [ "$1" = app ] && [ "$2" = add ]; then\n'
+                '  project=""\n'
+                '  while [ "$#" -gt 0 ]; do\n'
+                '    if [ "$1" = --root ]; then project="$2"; shift 2; continue; fi\n'
+                '    if [ "$1" = @lenso/openapi ]; then\n'
+                '      mkdir -p "$project/plugins/lenso.openapi"\n'
+                '      : > "$project/plugins/lenso.openapi/default.toml"\n'
+                '    fi\n'
+                '    shift\n'
+                '  done\n'
+                'fi\n'
+                'exit 0\n',
+                encoding="utf-8",
+            )
             cli.chmod(0o700)
             auth_operator = bin_directory / "api-token-operator"
             auth_operator.write_text(

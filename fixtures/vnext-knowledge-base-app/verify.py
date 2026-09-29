@@ -128,12 +128,14 @@ OPERATOR_EXAMPLES = {
 FRAMEWORK_PATCH_PACKAGES = (
     "lenso",
     "lenso-app-plan",
+    "lenso-capability-http-client",
     "lenso-capability-http-endpoint",
     "lenso-capability-http-endpoint-macros",
     "lenso-contract-authoring",
     "lenso-contract-authoring-macros",
     "lenso-contract-codegen",
     "lenso-contract-runtime",
+    "lenso-engine-authoring",
     "lenso-guest-sdk",
     "lenso-kernel",
     "lenso-native-adapter",
@@ -142,6 +144,7 @@ FRAMEWORK_PATCH_PACKAGES = (
     "lenso-plugin-authoring",
     "lenso-runner",
     "lenso-runtime-codec",
+    "lenso-test",
 )
 MAX_LINKED_SOURCE_FILES = 4096
 MAX_LINKED_SOURCE_BYTES = 128 * 1024 * 1024

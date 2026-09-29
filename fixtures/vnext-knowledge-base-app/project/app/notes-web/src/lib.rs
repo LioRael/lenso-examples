@@ -25,6 +25,7 @@ use sqlx::{PgPool, Row, postgres::PgPoolOptions};
 use uuid::Uuid;
 use zeroize::Zeroizing;
 
+pub mod business_snapshot;
 pub mod settings_core;
 pub mod settings_store;
 

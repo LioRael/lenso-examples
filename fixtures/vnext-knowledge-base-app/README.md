@@ -50,7 +50,10 @@ without replacing old attachment records.
 
 The generated native Host recognizes this private binding only because the
 selected KnowledgeBase package declares `host-bindings =
-["attachment-policy@1"]`. It does not infer the interface from the Plugin ID.
+["business-snapshot@1"]`. It admits one explicitly selected binding and does
+not infer the interface from the Plugin ID. The implementation lives in
+`project/app/notes-web/src/business_snapshot.rs`; the Host calls its `bind`,
+`recheck`, and `spawn` entry points without generating product policy code.
 The optional `lenso app start --business-snapshot-policy` file is Host-owned,
 not an App-owned `plugins/` option or Plugin environment variable. For a
 prepared App distribution, a file source can be selected with an absolute
@@ -94,8 +97,8 @@ Run `lenso app start --from dist --business-snapshot-policy
 /absolute/path/host-policy.json --check` to require a valid initial source
 before readiness, then omit `--check` for continuous polling. Source loss,
 wrong object or conflicting revision, and expiry make new uploads unavailable
-until a fresh authorized snapshot is accepted. The Host authorization uses the
-Plugin-owned `attachment_policy_schema()` and exact selected linked `default`
+until a fresh authorized snapshot is accepted. The Plugin authorizes the policy
+against its `attachment_policy_schema()` and exact selected linked `default`
 Instance.
 The standard verifier still exercises the unchanged default. To opt in to a
 disposable database-backed HTTP check of this Host binding, add
