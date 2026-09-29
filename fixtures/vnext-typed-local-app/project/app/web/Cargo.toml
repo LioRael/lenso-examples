@@ -7,8 +7,8 @@ publish = false
 plugin-id = "example.web"
 root-slot = "web"
 [dependencies]
-lenso = "=0.5.23"
-lenso-capability-http-endpoint = "=0.3.2"
+lenso = "=0.5.27"
+lenso-capability-http-endpoint = "=0.3.4"
 local-text-contract = { path = "../../contracts/text" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

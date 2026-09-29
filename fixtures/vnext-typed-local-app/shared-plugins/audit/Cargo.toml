@@ -7,5 +7,5 @@ publish = false
 plugin-id = "example.audit"
 root-slot = "audit"
 [dependencies]
-lenso = "=0.5.23"
+lenso = "=0.5.27"
 [workspace]
