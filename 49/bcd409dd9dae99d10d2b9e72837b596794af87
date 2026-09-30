@@ -1,0 +1,195 @@
+fixtures/ops-reference/workers-management/operator/prepare_remote.py
+  s_f4202e28c6b5b1::t_3f28f96deaeeae 8,12-13,17,22-91,95-127,132-138,164,179-186,220-221,309-310,314-317
+  s_f4202e28c6b5b1::t_809ca556c0428a 92-94,128-131
+fixtures/ops-reference/workers-management/operator/README.md
+  s_f4202e28c6b5b1::t_1ce20caf684795 25-27
+  s_f4202e28c6b5b1::t_809ca556c0428a 23-24,28-58
+fixtures/ops-reference/audit-reader/src/main.rs
+  s_f4202e28c6b5b1::t_104109dfaf5993 391
+fixtures/ops-reference/verify_management.py
+  s_f4202e28c6b5b1::t_7754cb4a315d6d 522
+  s_f4202e28c6b5b1::t_be6a5b1c413139 90,92-98,101-102,236,389
+  s_f4202e28c6b5b1::t_8a0bc0e3ea79bb 91,99-100,413,425
+fixtures/vnext-plugin-authoring-v2/ACCEPTANCE.md
+  s_f4202e28c6b5b1::t_dccec4edcd1b21 7,9-21,38-39,68-69,72-73,76,78-81,116-117
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.toml
+  s_f4202e28c6b5b1::t_1b314e90bcf6e3 22
+fixtures/ops-reference/workers-management/operator/build.py
+  s_f4202e28c6b5b1::t_104109dfaf5993 6,8-9,22-29
+  s_f4202e28c6b5b1::t_a30ea4db001a21 12-21,47-50,53-55
+fixtures/vnext-plugin-authoring-v2/README.md
+  s_f4202e28c6b5b1::t_dccec4edcd1b21 21-22,25-27,29-30,35-40
+  s_f4202e28c6b5b1::t_858270c06d5e4d 41-42
+fixtures/ops-reference/workers-management/operator/src/audit_proof.rs
+  s_f4202e28c6b5b1::t_104109dfaf5993 116
+fixtures/ops-reference/qualification/current-source.md
+  s_f4202e28c6b5b1::t_6748e0674e9a1d 81-116
+  s_f4202e28c6b5b1::t_746f348b5b5374 41-42,44,48-51,55-57
+  s_f4202e28c6b5b1::t_a20790af02b74c 68-70
+  s_f4202e28c6b5b1::t_4a2c293d21ddb7 1-40,43,45-47,52-54,58-67,71-80,117-125
+fixtures/ops-reference/prepare.py
+  s_f4202e28c6b5b1::t_29b1f765f514be 11,33-74,77-96,98,100-126,134,137-138,162-165,169,185,188
+  s_f4202e28c6b5b1::t_101560b600a3a0 75-76,97,99,135-136,161
+.github/workflows/vnext-rust.yml
+  s_f4202e28c6b5b1::t_286fc21d14a97f 34-37,43-52,55-61,66-68
+fixtures/ops-reference/README.md
+  s_f4202e28c6b5b1::t_16fdb154de8653 12,16-18,32-35
+fixtures/ops-reference/audit-reader/Cargo.lock
+  s_f4202e28c6b5b1::t_10bb28387ed9d9 717,730,804,815,835,850,890,906,918,2172,2177,2182,2187,2192,2197,2202,2207,2211-2212,2217,2222,2227,2232,2236-2237,2241-2242,2247,2252,2257,2262,2267,2272,2277,2282,2287,2292,2297,2302,2307,2312,2317,2322
+fixtures/ops-reference/audit-reader/Cargo.toml
+  s_f4202e28c6b5b1::t_7eaa8817e80b1d 27-66
+fixtures/ops-reference/candidate-inputs.json
+  s_f4202e28c6b5b1::t_4e4b19fc05d428 4-5,19
+fixtures/ops-reference/operator/Cargo.lock
+  s_f4202e28c6b5b1::t_2f36ffe69c85f9 1004,1058,1546,1556,1579,1591,1602,1611,1676,1691,1724,1740,3395,3400,3405,3410,3415,3420,3425,3430,3434-3435,3440,3444-3445,3449-3450,3455,3460,3465,3470,3475,3480,3485,3490,3495,3500,3505,3510,3515,3520,3525,3530
+fixtures/ops-reference/operator/Cargo.toml
+  s_f4202e28c6b5b1::t_aaea1c77ec1eb6 29-68
+fixtures/ops-reference/project/Cargo.lock
+  s_f4202e28c6b5b1::t_a345cb5bb982b4 289,302,312,333,344,354,364,376,387,396,405,420,444,449,880,885,890,895,900,905,910,914-915,920,924-925,929-930,935,940,945,950,955,960,965,970,975,980,985,990,995,1000,1005,1010
+fixtures/ops-reference/project/Cargo.toml
+  s_f4202e28c6b5b1::t_e7d56edcb0b82d 22-61
+fixtures/ops-reference/project/app/management/Cargo.lock
+  s_f4202e28c6b5b1::t_7af13fec82c3e3 1178,1247,1713,1734,1843,1853,1876,1888,1899,1908,1993,2008,2162,2178,3983,3988,3993,3998,4003,4008,4013,4017-4018,4023,4027-4028,4032-4033,4038,4043,4048,4053,4058,4063,4068,4073,4078,4083,4088,4093,4098,4103,4108,4113
+fixtures/ops-reference/project/app/management/Cargo.toml
+  s_f4202e28c6b5b1::t_9fee99ce98f891 6-45
+fixtures/ops-reference/project/app/state/Cargo.lock
+  s_f4202e28c6b5b1::t_f18f4a24a104fc 665,678,688,698,708,720,731,740,749,764,807,812,827,1982,1987,1992,1997,2002,2007,2012,2017,2021-2022,2027,2031-2032,2036-2037,2042,2047,2052,2057,2062,2067,2072,2077,2082,2087,2092,2097,2102,2107,2112
+fixtures/ops-reference/project/app/state/Cargo.toml
+  s_f4202e28c6b5b1::t_7e917e2e511f7a 33,42-81
+fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.lock
+  s_f4202e28c6b5b1::t_c767d6c0f25b98 261,271,281,291,303,314,323,332,337,645,650,655,660,665,670,675,680,685,689-690,695,699-700,704-705,710,715,720,725,730,735,740,745,750,755,760,765,770,775,780,785,790,795
+fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.toml
+  s_f4202e28c6b5b1::t_262da21a747625 26-65
+fixtures/ops-reference/project/contracts/example.ops-state/Cargo.lock
+  s_f4202e28c6b5b1::t_5d69489869aa49 261,271,281,291,303,314,323,332,337,645,650,655,660,665,670,675,680,685,689-690,695,699-700,704-705,710,715,720,725,730,735,740,745,750,755,760,765,770,775,780,785,790,795
+fixtures/ops-reference/project/contracts/example.ops-state/Cargo.toml
+  s_f4202e28c6b5b1::t_c1b73260bfb581 26-65
+fixtures/ops-reference/qualification/README.md
+  s_f4202e28c6b5b1::t_3f96b0d9e72101 3-8
+fixtures/ops-reference/qualification/contracts-and-tests.md
+  s_f4202e28c6b5b1::t_4a659274b2ca52 3-6
+fixtures/ops-reference/qualification/profile-inputs.json
+  s_f4202e28c6b5b1::t_eec2ebf4c47101 11-12,35-36,38-41,43-47,49-53,502-541
+fixtures/ops-reference/qualification/proposal-completion.md
+  s_f4202e28c6b5b1::t_a5f5e77d0b4a53 3-8
+fixtures/ops-reference/qualification/receipts/SHA256SUMS
+  s_f4202e28c6b5b1::t_6344584cc6fc3e 134-175
+fixtures/ops-reference/qualification/receipts/access-publisher-readiness-final-source-delivery.json
+  s_f4202e28c6b5b1::t_f6e09fa877c4d9 1-35
+fixtures/ops-reference/qualification/receipts/access-sdk35-final-source-delivery.json
+  s_f4202e28c6b5b1::t_bd15e824574451 1-17
+fixtures/ops-reference/qualification/receipts/agent-892ed4b-workflow-source-delivery.json
+  s_f4202e28c6b5b1::t_a9d68d651f88ec 1-33
+fixtures/ops-reference/qualification/receipts/approval-sdk35-final-source-delivery.json
+  s_f4202e28c6b5b1::t_0cff8f157751c4 1-38
+fixtures/ops-reference/qualification/receipts/audit-publisher-readiness-final-source-delivery.json
+  s_f4202e28c6b5b1::t_8b215d5452ac44 1-29
+fixtures/ops-reference/qualification/receipts/audit-sdk35-final-source-delivery.json
+  s_f4202e28c6b5b1::t_81a512c4408ea1 1-24
+fixtures/ops-reference/qualification/receipts/auth-sdk35-final-source-delivery.json
+  s_f4202e28c6b5b1::t_18efe52d6cfc5f 1-17
+fixtures/ops-reference/qualification/receipts/console-sdk35-final-source-delivery.json
+  s_f4202e28c6b5b1::t_56117d5eea177d 1-26
+fixtures/ops-reference/qualification/receipts/core-119b-final-source-delivery.json
+  s_f4202e28c6b5b1::t_130b7299678b95 1-19
+fixtures/ops-reference/qualification/receipts/core-119b-three-public-artifact-review.json
+  s_f4202e28c6b5b1::t_c6cc7772e43baf 1-47
+fixtures/ops-reference/qualification/receipts/core-sdk-b8d1-primary-final-all35.json
+  s_f4202e28c6b5b1::t_06050c793364de 1-1278
+fixtures/ops-reference/qualification/receipts/examples-authoring-119b-host-catalog-proof.json
+  s_f4202e28c6b5b1::t_c56849eb95938c 1-48
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/audit-direct.read.json
+  s_f4202e28c6b5b1::t_eaf0d64de9f008 1-37
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/audit-mcp.read.json
+  s_f4202e28c6b5b1::t_feed2b28c37a1d 1-37
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cached-credential-live-before.json
+  s_f4202e28c6b5b1::t_e1a3ae07e42de7 1-18
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cached-credential-revoked-after.json
+  s_f4202e28c6b5b1::t_042d30408b6dc1 1-11
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-access_control_db.json
+  s_f4202e28c6b5b1::t_639a51ed5658c6 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-all-nine-resources.json
+  s_f4202e28c6b5b1::t_7bef70b5ad750c 1-49
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-approval_db.json
+  s_f4202e28c6b5b1::t_d7a4f9cafa2662 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-audit_db.json
+  s_f4202e28c6b5b1::t_5e2a07c20438af 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-auth_db.json
+  s_f4202e28c6b5b1::t_019a5ddec581c1 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-auth_fault_db.json
+  s_f4202e28c6b5b1::t_116062add9d87b 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-management_db.json
+  s_f4202e28c6b5b1::t_609308175370c9 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/cleanup-ops_db.json
+  s_f4202e28c6b5b1::t_9b1a841edc1b86 1-3
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/direct-journey.json
+  s_f4202e28c6b5b1::t_59be8b30cb5ad7 1-42
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/evidence-index-final.json
+  s_f4202e28c6b5b1::t_92c6148a99cc97 1-134
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/evidence-index.json
+  s_f4202e28c6b5b1::t_a960b279d6be09 1-94
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/isolated-auth-fault.json
+  s_f4202e28c6b5b1::t_c4b330cf3232ee 1-17
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/latest-remote-qualification.json
+  s_f4202e28c6b5b1::t_49668aaeff8091 1-68
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/main-artifact-provenance.json
+  s_f4202e28c6b5b1::t_96a0b60a8cee40 1-100
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/official-mcp-lost-reply.json
+  s_f4202e28c6b5b1::t_563f78fffedb94 1-41
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/raw-approved-injection.json
+  s_f4202e28c6b5b1::t_92ae33a6dcf371 1-18
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/read-only-no-approval.json
+  s_f4202e28c6b5b1::t_fe0cc25767cd1c 1-24
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/readonly-invalid-config-diagnostic.json
+  s_f4202e28c6b5b1::t_c429ff92c4a0c2 1-26
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/same-artifact-redeploy-observed.json
+  s_f4202e28c6b5b1::t_2d4e5d1d80b4f6 1-19
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/source-cohort.json
+  s_f4202e28c6b5b1::t_4d387b2c053171 1-24
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/typed-owner-revoke.completed.json
+  s_f4202e28c6b5b1::t_4fcf474cde2b9d 1-13
+fixtures/ops-reference/qualification/receipts/ops-119b-audit-reader-attribution-check.json
+  s_f4202e28c6b5b1::t_ca32256d5d8873 1-24
+fixtures/ops-reference/qualification/receipts/ops-119b-source-resolution-nine-complete.json
+  s_f4202e28c6b5b1::t_46c13a77c078ba 1-88
+fixtures/ops-reference/qualification/receipts/ops-sdk35-b8d1-management-status-proof.json
+  s_f4202e28c6b5b1::t_b1644db6ab5804 1-4387
+fixtures/ops-reference/qualification/receipts/service-publisher-readiness-final-source-delivery.json
+  s_f4202e28c6b5b1::t_4f5faab3a0246d 1-29
+fixtures/ops-reference/qualification/security.md
+  s_f4202e28c6b5b1::t_8aa72c0273161c 3-6
+fixtures/ops-reference/workers-management/operator/Cargo.lock
+  s_f4202e28c6b5b1::t_c221d8be8febf0 487,542,778,788,811,823,834,867,882,925,930,945,1606,1611,1616,1621,1626,1631,1636,1641,1645-1646,1651,1655-1656,1660-1661,1666,1671,1676,1681,1686,1691,1696,1701,1706,1711,1716,1721,1726,1731,1736,1741
+fixtures/ops-reference/workers-management/operator/Cargo.toml
+  s_f4202e28c6b5b1::t_cb81b772698aae 41-80
+fixtures/ops-reference/workers-management/project/app/management/Cargo.toml
+  s_f4202e28c6b5b1::t_cc0a99f472c736 6-45
+fixtures/vnext-knowledge-base-app/project/app/notes-web/Cargo.lock
+  s_f4202e28c6b5b1::t_62cee639393596 1567,1569,1738,1740,1743,1754
+fixtures/vnext-plugin-authoring-v2/typescript/bun.lock
+  s_f4202e28c6b5b1::t_c86a910fe90584 8-9,18,20,22
+fixtures/vnext-plugin-authoring-v2/typescript/generated/document-store.ts
+  s_f4202e28c6b5b1::t_b5d7a680b624fe 22-23,28-32,34,85-86,92-114,124,132-141,205-218,231-237,239-246,253-262
+fixtures/vnext-plugin-authoring-v2/typescript/generated/document-sync.ts
+  s_f4202e28c6b5b1::t_57691c8f4dc53c 22-23,28-32,34,65-66,72-94,104,112-121,165-178,191-197,199-206,213-222
+fixtures/vnext-plugin-authoring-v2/typescript/package.json
+  s_f4202e28c6b5b1::t_d0da3fd7911c21 10-11
+fixtures/vnext-plugin-authoring-v2/typescript/src/plugin.ts
+  s_f4202e28c6b5b1::t_38b4dec508f069 8,51,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "49bcd409dd9dae99d10d2b9e72837b596794af87",
+  "prompts": {},
+  "sessions": {
+    "s_f4202e28c6b5b1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ee9e-623b-7d12-a648-d8b462390eec",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
