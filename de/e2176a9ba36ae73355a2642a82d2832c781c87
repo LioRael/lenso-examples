@@ -1,0 +1,31 @@
+fixtures/ops-reference/verify_human.py
+  s_f4202e28c6b5b1::t_a37ba1dcf30e3f 248-265,303,381,507
+fixtures/ops-reference/qualification/current-source.md
+  s_f4202e28c6b5b1::t_729632966ee3fd 71-83
+fixtures/ops-reference/qualification/profile-inputs.json
+  s_f4202e28c6b5b1::t_edc7cb43fcb40a 541-576
+fixtures/ops-reference/qualification/receipts/SHA256SUMS
+  s_f4202e28c6b5b1::t_ca6c5aa56eeb5b 176-180
+fixtures/ops-reference/qualification/receipts/latest-119b-agent-build-bec995.json
+  s_f4202e28c6b5b1::t_5ae11f86f1c62f 1-11
+fixtures/ops-reference/qualification/receipts/latest-119b-agent-owner-proof-summary.json
+  s_f4202e28c6b5b1::t_77391a720400d6 1-80
+fixtures/ops-reference/qualification/receipts/latest-119b-human-native-proof-summary.json
+  s_f4202e28c6b5b1::t_32065c8f05b060 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dee2176a9ba36ae73355a2642a82d2832c781c87",
+  "prompts": {},
+  "sessions": {
+    "s_f4202e28c6b5b1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ee9e-623b-7d12-a648-d8b462390eec",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
