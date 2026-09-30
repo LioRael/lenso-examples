@@ -1,0 +1,913 @@
+fixtures/ops-reference/project/app/management/web/src/delegation.rs
+  s_f4202e28c6b5b1::t_19697b2c86581d 1-95,98-112,116-390
+  s_f4202e28c6b5b1::t_ba6cc4fc664313 96-97,113-115
+fixtures/ops-reference/audit-reader/src/main.rs
+  s_f4202e28c6b5b1::t_b2debef64464db 21-23,51,74-75,115-118,174,236-240,269-273,280-286,295-298,321-324,334-337,343-346,357-362,373,385,387-388,396-400,409-420,425-447,450-461,463-464,466-470,472-490,508-511,578,598,635-638,643-646
+  s_f4202e28c6b5b1::t_3cde6454e65bb6 546-549,573-577,579-597,599-634,639-642,647-649
+  s_f4202e28c6b5b1::t_b24a42610d774a 16,20,36,38,41-45,180-181,187-189,192-196,201,209-213,222-233
+  s_f4202e28c6b5b1::t_54f278db6898a4 151,168
+  s_f4202e28c6b5b1::t_9eec6b3b36fa2d 287-294,299,302,319-320,326-331,384,519-522,553-554,556-571
+  s_f4202e28c6b5b1::t_54eb7da44b023c 17,175-179,182-186,190-191,197-200,202-208,214-221,253-259,368-372,401-405,491-507,518,525-543,550-552,555,572
+  s_f4202e28c6b5b1::t_cc932a978d7a04 1-15,18-19,24-35,37,39-40,46-50,52-73,76-114,119-150,152-167,169-173,234-235,241-252,260-268,274-279,300-301,303-318,325,332-333,338-342,347-356,363-367,374-383,386,389-395,406-408,421-424,448-449,462,465,471,512-517,523-524,544-545
+  s_f4202e28c6b5b1::t_453e3bc01d26dd 650
+fixtures/ops-reference/workers-management/verify_official_mcp.mjs
+  s_f4202e28c6b5b1::t_3ef5d7780bfb1d 1-50,52-81,86-100,104-124,157-207,209-212,214-216
+  s_f4202e28c6b5b1::t_2573f3a6da5e52 51,144-156,208
+  s_f4202e28c6b5b1::t_fca56f232c7541 125-133,138-143,213
+  s_f4202e28c6b5b1::t_58ee60f126d427 134-137
+  s_f4202e28c6b5b1::t_009b3473e9b31a 101-103
+  s_f4202e28c6b5b1::t_22d219246051ca 82-85
+fixtures/ops-reference/project/app/management/bootstrap/src/lib.rs
+  s_f4202e28c6b5b1::t_b0cbe57950ed9b 48-51
+  s_f4202e28c6b5b1::t_96c3797efb5452 31,34-36,46
+  s_f4202e28c6b5b1::t_1cf52795667618 1-3,5-7,9-14,16-17,69,80,114,129-134
+  s_f4202e28c6b5b1::t_d2549a69eb6bdd 4,8,15,18-30,32-33,37-45,47,52-68,70-79,81-113,115-128
+fixtures/ops-reference/workers-management/operator/stage_assets.py
+  s_f4202e28c6b5b1::t_15992bca24dcad 1-55
+fixtures/ops-reference/project/app/management/bootstrap/Cargo.toml
+  s_f4202e28c6b5b1::t_1cf52795667618 1-15,17-24
+  s_f4202e28c6b5b1::t_b0cbe57950ed9b 16
+fixtures/ops-reference/verify_workers.py
+  s_f4202e28c6b5b1::t_b7d1c6b85e4d91 1-18,20-49,56-62,64,66-85,91-105,108-110,112,114-121
+  s_f4202e28c6b5b1::t_d0a8f64ea39f90 19,50-51,106-107,111,113
+  s_f4202e28c6b5b1::t_e4415f53e7dab4 53-55,65,86-89
+  s_f4202e28c6b5b1::t_2b19a42a5f9435 63,90
+  s_f4202e28c6b5b1::t_7876dc65158abc 52
+fixtures/ops-reference/profiles/simulated-workers.json
+  s_f4202e28c6b5b1::t_473600a6a2c311 1-7
+fixtures/ops-reference/verify_pg.py
+  s_f4202e28c6b5b1::t_4eb5149fd7f61e 49
+  s_f4202e28c6b5b1::t_58ad30ff761a23 12,79,81,84
+  s_f4202e28c6b5b1::t_abef489511d789 14,72,91
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 13,78,89
+  s_f4202e28c6b5b1::t_42020e0a6a971d 1-9,11,15-17,27,29-33,35-37,39-48,53-59,61,63-71,73-77,85-88,90,92-102
+  s_f4202e28c6b5b1::t_d0b85201b47e2b 10,18-26,28
+  s_f4202e28c6b5b1::t_5916a07b764831 50-52
+  s_f4202e28c6b5b1::t_1fb3dd92643c07 80,82
+  s_f4202e28c6b5b1::t_689a23268fa1ae 34,38,60,62
+  s_f4202e28c6b5b1::t_45edca134a575b 83
+fixtures/ops-reference/d1-reconciliation.test.mjs
+  s_f4202e28c6b5b1::t_4ba573e6abb3a2 1-51
+fixtures/ops-reference/project/app/state/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 1-3,71,89-95,182-185,190-199,201-214,218-225,248
+  s_f4202e28c6b5b1::t_75f9d0c6593d53 20-23,28-30,41-44,48-57,65-68,83,103-105,113-120,122-129,138-146,150-151,155-158,163-176,180-181,186-189,200,215-217,231-235,237-247,249,254,263
+  s_f4202e28c6b5b1::t_3f105b54594c98 4-19,24-27,31-40,45-47,58-64,69-70,72-82,84-88,96-102,106-112,121,130-137,147-149,152-154,159-162,177-179,226-230,236,253,258-262,264-266
+  s_f4202e28c6b5b1::t_99c2f2a5a6c69e 250-252,255-257
+  s_f4202e28c6b5b1::t_a13f2aecb45865 267-272
+fixtures/ops-reference/prepare.py
+  s_f4202e28c6b5b1::t_abef489511d789 9,27-28,41-57
+  s_f4202e28c6b5b1::t_ef7d7746792c02 1-6,8,10-26,29-40,65-76,79-87
+  s_f4202e28c6b5b1::t_0f619774f72242 7,58-61,77
+  s_f4202e28c6b5b1::t_a1833d84f92bc9 62-64,78
+fixtures/ops-reference/project/plugins/example.ops-state/primary.toml
+  s_f4202e28c6b5b1::t_6da8e8eb828ed5 1-3
+fixtures/ops-reference/project/app/management/README.md
+  s_f4202e28c6b5b1::t_20a681cc4c4698 15-27,41
+  s_f4202e28c6b5b1::t_62f2b365a4d0be 1-14,28-40,42-77
+fixtures/ops-reference/qualification/README.md
+  s_f4202e28c6b5b1::t_426b61e9c1e604 1-2,4-6,8-13,15-16,27-30,36-38,40-44,48,55,58,60
+  s_f4202e28c6b5b1::t_bf77eb445db53b 20,23,31-35,39,47,49-54,56-57,61,63-139,152,199-246
+  s_f4202e28c6b5b1::t_4e58d699701ea3 140-151
+  s_f4202e28c6b5b1::t_2b63bfc95d8a2c 14
+  s_f4202e28c6b5b1::t_1858f6dfa5d089 3,7,21-22,25-26,46,59
+  s_f4202e28c6b5b1::t_548179e6fea04c 168-176,179-180
+  s_f4202e28c6b5b1::t_08a97c8df1b27a 17-19
+  s_f4202e28c6b5b1::t_7f1734fd45e7dd 24,45,62
+  s_f4202e28c6b5b1::t_b98db5bc039d9d 153-159
+  s_f4202e28c6b5b1::t_4d700d958953c3 160-167
+  s_f4202e28c6b5b1::t_79bede81daef66 177-178,189-197
+  s_f4202e28c6b5b1::t_853747ef7c59d1 181-188,198
+  s_f4202e28c6b5b1::t_61d725c2936b99 247-291
+fixtures/ops-reference/project/app/state/src/host_facilities/state.mjs
+  s_f4202e28c6b5b1::t_75f9d0c6593d53 35-36,49,57
+  s_f4202e28c6b5b1::t_1d6dd9a03ffbae 1-13,16-34,37-40,43-48,50-56,63-69
+  s_f4202e28c6b5b1::t_4ba573e6abb3a2 14-15
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 41-42
+  s_f4202e28c6b5b1::t_689a23268fa1ae 58-62
+fixtures/ops-reference/project/app/management/human-tokens/src/lib.rs
+  s_f4202e28c6b5b1::t_96c3797efb5452 62,73-75
+  s_f4202e28c6b5b1::t_a5c93b584a8cf9 1-61,63-72,76-179
+fixtures/ops-reference/workers-management/operator/src/auth.rs
+  s_f4202e28c6b5b1::t_146653f38ef49a 47-52,57-64,114-115,135-138
+  s_f4202e28c6b5b1::t_7f75dcb006539d 13-29,35-36,65-67,98,116,122
+  s_f4202e28c6b5b1::t_5192dbaf207d61 1,3-12,30-34,37-46,53-56,68-97,99-113,117-121,123-134,139-178
+  s_f4202e28c6b5b1::t_1f5a90ffe2e9d3 2
+fixtures/ops-reference/workers-management/operator/src/access.rs
+  s_f4202e28c6b5b1::t_1f5a90ffe2e9d3 1-15,19-52,98-101,109-115,118-120,126-128,132-136,146-149,155-157,163-165,171-184,189-191,208-209,246,250,278-279,289,378,393,411,447,467-470,515,520
+  s_f4202e28c6b5b1::t_b99c08336b3818 490,492,507-513
+  s_f4202e28c6b5b1::t_513872a0df085a 225,247
+  s_f4202e28c6b5b1::t_4a17b6a5f0ff1a 16-18,53-97,102-108,116-117,121-125,129-131,137-145,150-154,158-162,166-170,185-188,192-207,210-224,226-245,248-249,251-277,280-288,290-339,357-377,379-392,394-410,412-446,448-466,471-489,491,493-506,514,516-519
+  s_f4202e28c6b5b1::t_b083ac7fb93e89 340-356
+fixtures/ops-reference/workers-management/operator/build.py
+  s_f4202e28c6b5b1::t_15992bca24dcad 1-31
+fixtures/ops-reference/.gitignore
+  s_f4202e28c6b5b1::t_4daa0099aa6834 1-4
+  s_f4202e28c6b5b1::t_6e277ddbb9ff1e 5-6
+fixtures/ops-reference/operator/src/main.rs
+  s_f4202e28c6b5b1::t_05257d83971e8b 11-16,19,26-30,34-42,47-51,61-76,86-95,99-122,124-137,143-155,160,179-183,201-203,208-211
+  s_f4202e28c6b5b1::t_5aff6673582f68 52-55,162
+  s_f4202e28c6b5b1::t_d7386f5fd670af 1-3,6-9,17-18,21-25,31-33,43-46,56-60,77-85,96,98,123,138-142,156-159,177-178,184,198-200,204-207,212
+  s_f4202e28c6b5b1::t_c2be722a795322 213-238
+  s_f4202e28c6b5b1::t_ca79689095576d 4-5,10,20,97,161,163-176,190-192,194-196
+  s_f4202e28c6b5b1::t_5420dc5a3e3246 185-189,193,197
+  s_f4202e28c6b5b1::t_ec8e82647286d5 239-243
+fixtures/ops-reference/project/app/management/secrets/Cargo.toml
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-21
+fixtures/ops-reference/workers-management/project/app/management/http/src/lib.rs
+  s_f4202e28c6b5b1::t_e74aaab4578738 1-17,19-58,60-85
+  s_f4202e28c6b5b1::t_d9bfb7e934bf87 18,59
+fixtures/ops-reference/project/plugins/example.ops-state/secondary.toml
+  s_f4202e28c6b5b1::t_6da8e8eb828ed5 1-3
+fixtures/ops-reference/storage/native-pg/Cargo.toml
+  s_f4202e28c6b5b1::t_88157568265341 1-16
+fixtures/ops-reference/workers-management/operator/http.mjs
+  s_f4202e28c6b5b1::t_15992bca24dcad 1-20
+fixtures/ops-reference/project/app/management/Cargo.toml
+  s_f4202e28c6b5b1::t_150ea555685a73 1-43
+  s_f4202e28c6b5b1::t_dda9f3cc917aa3 44-47
+fixtures/ops-reference/storage/d1/schema.sql
+  s_f4202e28c6b5b1::t_15a05754ef097a 3-4
+  s_f4202e28c6b5b1::t_1d6dd9a03ffbae 1-2
+fixtures/ops-reference/project/app/state/Cargo.toml
+  s_f4202e28c6b5b1::t_6da8e8eb828ed5 1-10,16-17,19,21,31,39
+  s_f4202e28c6b5b1::t_e3499a9ef41d6a 18,32-38,42-51
+  s_f4202e28c6b5b1::t_473600a6a2c311 11-15,22-30
+  s_f4202e28c6b5b1::t_9d10235a18794c 20,40-41
+  s_f4202e28c6b5b1::t_c1ef416a019234 52-81
+fixtures/ops-reference/project/app/management/core/Cargo.toml
+  s_f4202e28c6b5b1::t_d01f91078ae47d 21-24
+  s_f4202e28c6b5b1::t_08050f4bb46606 1-20,25-42
+fixtures/ops-reference/workers-management/source.py
+  s_f4202e28c6b5b1::t_f41b760df347fc 61-62
+  s_f4202e28c6b5b1::t_00991dcc7fa8fb 11,33-34,36-41,86-90
+  s_f4202e28c6b5b1::t_5cb7327469d2c1 21-22,30-32
+  s_f4202e28c6b5b1::t_e74aaab4578738 56-57
+  s_f4202e28c6b5b1::t_706010a29e8f39 59-60
+  s_f4202e28c6b5b1::t_a92e94c09690e6 1-3,5-6,8-10,12-20,23-29,35,42-55,58,63-85,91-105
+  s_f4202e28c6b5b1::t_f27005b4d16586 4,7,106-144
+fixtures/ops-reference/project/app/management/tools/src/lib.rs
+  s_f4202e28c6b5b1::t_1cf52795667618 1-3,8-17,71,77,101-107,117-118,172-173
+  s_f4202e28c6b5b1::t_7c7b268213094f 4-7,18-70,72-76,78-100,108-116,119-171,174-175,177-178
+  s_f4202e28c6b5b1::t_3c67ad37bdc2ec 176,179-246
+fixtures/ops-reference/operator/Cargo.toml
+  s_f4202e28c6b5b1::t_05257d83971e8b 10-12,18-19
+  s_f4202e28c6b5b1::t_d7386f5fd670af 1-9,13-17,20-26
+  s_f4202e28c6b5b1::t_481e64adc7f73f 27-68
+fixtures/ops-reference/workers-management/project/app/management/core/Cargo.toml
+  s_f4202e28c6b5b1::t_01c7b96422c18c 28
+  s_f4202e28c6b5b1::t_c0d0194a839bb6 1-27,29-46
+fixtures/ops-reference/verify_optional_cache.py
+  s_f4202e28c6b5b1::t_bd7e2b99f1b582 1-10,12-43,46-58,66-76,79-89
+  s_f4202e28c6b5b1::t_45edca134a575b 65
+  s_f4202e28c6b5b1::t_46dd53c6e9a478 44-45
+  s_f4202e28c6b5b1::t_58ad30ff761a23 11,59-64,77-78
+fixtures/ops-reference/project/app/management/human-bootstrap/src/lib.rs
+  s_f4202e28c6b5b1::t_96c3797efb5452 52,61-63,73
+  s_f4202e28c6b5b1::t_d2549a69eb6bdd 1-51,53-60,64-72,74-215
+fixtures/ops-reference/operator/src/human.rs
+  s_f4202e28c6b5b1::t_cdd849f1a8ad5b 68-80,85-87,90-96,100-133,135,137-138,141-150,153-180
+  s_f4202e28c6b5b1::t_05257d83971e8b 1-8,10-16,20,53-64,67,84,181-182
+  s_f4202e28c6b5b1::t_b7e5dcec191a11 45-48,88-89,136,139-140
+  s_f4202e28c6b5b1::t_f72416575df205 9,17,65-66,97
+  s_f4202e28c6b5b1::t_ca79689095576d 18-19,21-44,49-52,81-83,98-99
+  s_f4202e28c6b5b1::t_c3852f2f6d691f 134,151-152
+  s_f4202e28c6b5b1::t_024f6d1de89fc5 183
+fixtures/ops-reference/verify_cloudflare.py
+  s_f4202e28c6b5b1::t_2ffd59184e29e7 82,85-87,90-92,94,137-139,149
+  s_f4202e28c6b5b1::t_2d580622a72706 1-33,35-81,83-84,88-89,93,95-98,101-118,120-126,128-136,150-174
+  s_f4202e28c6b5b1::t_f5901ed7af9be5 99-100,119
+  s_f4202e28c6b5b1::t_5ad4c3681a5e87 34,140-148
+  s_f4202e28c6b5b1::t_e7f78fc373f6d7 127
+fixtures/ops-reference/workers-management/remote_infrastructure.py
+  s_f4202e28c6b5b1::t_534b6f02643b18 14,152-159,163,165-179,182,185-187,214-215,218,233
+  s_f4202e28c6b5b1::t_6b29c25cf43b55 37-39,41-42
+  s_f4202e28c6b5b1::t_76b3db7aa38762 1-13,15-36,40,43-82,84-91,95,97-150,180-181,183-184,188-192,198-202,204-213,216-217,219-221,223-230,236-244
+  s_f4202e28c6b5b1::t_cc91c42e5a7f06 83,92-94,96,222,231-232
+  s_f4202e28c6b5b1::t_29e0a241283992 151,160-162,164,234-235
+  s_f4202e28c6b5b1::t_f86d9457367b00 193-197,203
+fixtures/ops-reference/workers-management/verify_credential_revocation.py
+  s_f4202e28c6b5b1::t_9fc7c8684cecc8 1-64
+fixtures/ops-reference/verify_starter.py
+  s_f4202e28c6b5b1::t_f1bb674ec66dd9 28-33,44-51,64
+  s_f4202e28c6b5b1::t_d795cae157a27b 1-8,10-19,22-27,52-61,65-74
+  s_f4202e28c6b5b1::t_236df9e786373b 9,20-21,34-43,62-63
+fixtures/ops-reference/storage/native-pg/src/tests.rs
+  s_f4202e28c6b5b1::t_88157568265341 1-52
+  s_f4202e28c6b5b1::t_93ff0b7382a060 53-97
+fixtures/ops-reference/audit-reader/Cargo.toml
+  s_f4202e28c6b5b1::t_b24a42610d774a 17,20
+  s_f4202e28c6b5b1::t_cc932a978d7a04 1-16,18-19,21-24
+  s_f4202e28c6b5b1::t_27eab3df85e647 25-66
+fixtures/ops-reference/profiles/workers-host-limits.json
+  s_f4202e28c6b5b1::t_2cd54c16b15e24 1-5
+fixtures/ops-reference/project/src/lib.rs
+  s_f4202e28c6b5b1::t_1499d9541804d8 49-50
+  s_f4202e28c6b5b1::t_e72a0b514a72d5 48,51-52
+  s_f4202e28c6b5b1::t_e3499a9ef41d6a 28-29
+  s_f4202e28c6b5b1::t_fe7bc0b34fcb11 1-15,20,22-27,30-47,73-114
+  s_f4202e28c6b5b1::t_d55951da7b51f5 16-19,21,53-72
+fixtures/ops-reference/workers-management/operator/src/audit.rs
+  s_f4202e28c6b5b1::t_e88d7e61d0f69a 1-64
+  s_f4202e28c6b5b1::t_6ef802ac1e8cda 65-145
+fixtures/ops-reference/workers-management/verify_read_only.py
+  s_f4202e28c6b5b1::t_923f3e5e7e69e2 6,17,19
+  s_f4202e28c6b5b1::t_9dd86f703d2482 50-51
+  s_f4202e28c6b5b1::t_c0c42c2a48a296 1-5,7-16,18,20-49,52-62
+fixtures/ops-reference/project/contracts/example.ops-state/Cargo.toml
+  s_f4202e28c6b5b1::t_ef5f450a710821 1-2,4-23
+  s_f4202e28c6b5b1::t_2cd54c16b15e24 3,24-28
+  s_f4202e28c6b5b1::t_99a98e3dd106af 29-65
+fixtures/ops-reference/README.md
+  s_f4202e28c6b5b1::t_2b19a42a5f9435 3-7,9,13-15,22,25,28-33,61-73,76-84,99-100,103-108,110,112,115-184,187-188,190-196,198-202
+  s_f4202e28c6b5b1::t_07a982cc6efc7d 16-17,37,41-44,49-52,55,57-59
+  s_f4202e28c6b5b1::t_3fc7f3dc2ee2d8 11-12
+  s_f4202e28c6b5b1::t_39314b8845d617 18-20
+  s_f4202e28c6b5b1::t_971b732fe4f046 1-2,8,10,21,23-24,26-27,34,74-75,101-102,109,111,113-114,189,197
+  s_f4202e28c6b5b1::t_222ba23f6b213a 35-36,38-40,45-48,53-54,56,60,185-186,291-325
+  s_f4202e28c6b5b1::t_b9c35cfa0484da 85-98,229-244
+  s_f4202e28c6b5b1::t_b2b6c5bc646c73 203-228,245-290
+fixtures/ops-reference/storage/native-pg/schema.sql
+  s_f4202e28c6b5b1::t_88157568265341 1-8,11-15,18-19
+  s_f4202e28c6b5b1::t_15a05754ef097a 9-10,16-17
+fixtures/ops-reference/profiles/simulated-native.json
+  s_f4202e28c6b5b1::t_473600a6a2c311 1-7
+README.md
+  s_f4202e28c6b5b1::t_971b732fe4f046 27-29
+  s_f4202e28c6b5b1::t_fd258d2c07cbc3 30
+fixtures/ops-reference/project/app/management/mcp/src/lib.rs
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-10,14-19,21-32,59,62-65,71,107-109
+  s_f4202e28c6b5b1::t_a5c93b584a8cf9 11-13,20,33-45,47-53,58,60,66-68,72-106
+  s_f4202e28c6b5b1::t_96c3797efb5452 46,54-57,61,69-70
+fixtures/ops-reference/verify_installations.py
+  s_f4202e28c6b5b1::t_979dfa9557669a 163-164
+  s_f4202e28c6b5b1::t_b32cb066cf662b 1-5,7-17,19-23,25-30,35-156,173-182,186-194,197-198,201,203-208,221-226,228,231,253-272,286-309,329-330,332,337-338,355-357,359-362,366,369-370,373-379
+  s_f4202e28c6b5b1::t_e4514e173c0220 199-200,202,232-242,244-245,247-252,279-280,283-284
+  s_f4202e28c6b5b1::t_f74d5ec4c7a309 229-230,243,246,334-335,346,367-368
+  s_f4202e28c6b5b1::t_29ea46b1b150f0 18,24,172,183-185,212-214,227,273-278,281-282,285,310-311,313-318,320,327,331,339-343,345,347-354,358
+  s_f4202e28c6b5b1::t_1b9f8713055c7a 6,157-162,166-171,344
+  s_f4202e28c6b5b1::t_854dde8b4f53b4 31,312
+  s_f4202e28c6b5b1::t_2b3c847fe77cde 195-196,209-211,215-220,333,336,371-372
+  s_f4202e28c6b5b1::t_a8e15d53fb4942 32-34,319,321-326,328,363-365
+  s_f4202e28c6b5b1::t_452aeb08e9f67c 165
+fixtures/ops-reference/project/app/management/human-tokens/Cargo.toml
+  s_f4202e28c6b5b1::t_08050f4bb46606 1-16,19-30
+  s_f4202e28c6b5b1::t_d01f91078ae47d 17-18
+fixtures/ops-reference/audit-reader/README.md
+  s_f4202e28c6b5b1::t_c24f986132921e 1-11,23-33
+  s_f4202e28c6b5b1::t_b24ebd5db8fb0b 16-22
+  s_f4202e28c6b5b1::t_2797d0ef04f446 13-15
+  s_f4202e28c6b5b1::t_6ef9f135874d43 12
+fixtures/ops-reference/qualification/security.md
+  s_f4202e28c6b5b1::t_2b63bfc95d8a2c 22-23
+  s_f4202e28c6b5b1::t_452f7d3280257a 1-2,4-12,14,18,20,26,58-64,70,79,83-85,87-103,105-109,122-131
+  s_f4202e28c6b5b1::t_ea42db172c8d4f 3,17,25,56,68,78,80-82,86,104,110-121,133-275
+  s_f4202e28c6b5b1::t_cdd69464775f63 13,15,19,21,24
+  s_f4202e28c6b5b1::t_1858f6dfa5d089 16,27-55,57,65-66,69,71-75,77
+  s_f4202e28c6b5b1::t_7f1734fd45e7dd 67,76,132
+  s_f4202e28c6b5b1::t_7c96a5dc5eda1c 276-290
+fixtures/ops-reference/project/app/management/core/src/lib.rs
+  s_f4202e28c6b5b1::t_4f0c6803b4aaa6 1-49,51-58,60-69,102-118,148-381
+  s_f4202e28c6b5b1::t_a5c93b584a8cf9 50,59,70-80,82-91,97-101,119-147
+  s_f4202e28c6b5b1::t_96c3797efb5452 81,92-96
+fixtures/ops-reference/workers-management/operator/.gitignore
+  s_f4202e28c6b5b1::t_15992bca24dcad 1-6
+  s_f4202e28c6b5b1::t_02681f017a5e43 7
+fixtures/ops-reference/workers-management/verify_graph.py
+  s_f4202e28c6b5b1::t_5c2cf767bac1ee 45-46
+  s_f4202e28c6b5b1::t_5330b3acd558cc 1-7,9-11,27-44,47-79,81-91,99-107,111-137,139-140,142-143,145,147-150,154-183,185-186,188,190-192,195,198-206
+  s_f4202e28c6b5b1::t_923f3e5e7e69e2 12-26,187,189
+  s_f4202e28c6b5b1::t_c1d959aa8357f4 8
+  s_f4202e28c6b5b1::t_2cd77573191063 138,141,146
+  s_f4202e28c6b5b1::t_9dd86f703d2482 80,144,196-197
+  s_f4202e28c6b5b1::t_f40229b926d30f 92-98,108-110,151-153,184,193-194
+fixtures/ops-reference/workers-management/operator/src/audit_proof.rs
+  s_f4202e28c6b5b1::t_e88d7e61d0f69a 1-32,34-35,37-39,41-63,67-131,135-139
+  s_f4202e28c6b5b1::t_2c1b148eb2b9d1 33,64-66,132-134
+  s_f4202e28c6b5b1::t_c9ae891bd1c9be 36,40
+  s_f4202e28c6b5b1::t_b772157dd4e7a7 140-179
+fixtures/ops-reference/qualification/contracts-and-tests.md
+  s_f4202e28c6b5b1::t_ea42db172c8d4f 5,9,28,30,46-48,51-52,54,56-57,61,65,71,95-213
+  s_f4202e28c6b5b1::t_08a91d3d5c15d1 1-4,6-8,10-12,19-21,26-27,29,31,34-37,42-45,58-59,62-64,66-69
+  s_f4202e28c6b5b1::t_7f1734fd45e7dd 22,49-50,70
+  s_f4202e28c6b5b1::t_1858f6dfa5d089 23-25,60
+  s_f4202e28c6b5b1::t_8cf305f81d7ce0 53,72-94
+  s_f4202e28c6b5b1::t_d688c00b7428f2 14-16,33,39,55
+  s_f4202e28c6b5b1::t_0ed8285cc23918 13,18,32,38,40-41
+  s_f4202e28c6b5b1::t_5719a95cd3a623 17
+  s_f4202e28c6b5b1::t_b74710e6412f1d 214-228
+fixtures/ops-reference/project/app/management/mcp/Cargo.toml
+  s_f4202e28c6b5b1::t_d01f91078ae47d 18-20
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-17,21-29
+fixtures/ops-reference/operator/src/tokens.rs
+  s_f4202e28c6b5b1::t_65b12ce2c69f71 8,26-36,82-125
+  s_f4202e28c6b5b1::t_b7e5dcec191a11 1-7,9-25,37-81,126-159
+  s_f4202e28c6b5b1::t_65bc86c84e4670 160-162
+fixtures/ops-reference/project/plugins/.dependencies.json
+  s_f4202e28c6b5b1::t_6da8e8eb828ed5 1-5,11-20
+  s_f4202e28c6b5b1::t_e3499a9ef41d6a 6-10
+fixtures/ops-reference/workers-management/verify_mcp.py
+  s_f4202e28c6b5b1::t_923f3e5e7e69e2 12,101,103
+  s_f4202e28c6b5b1::t_cbcf43efe11fa4 1-11,13-19,21-100,102,104-141,143-163,167-182
+  s_f4202e28c6b5b1::t_478ca18f6a5ab2 20
+  s_f4202e28c6b5b1::t_e931b8b1b936af 142
+  s_f4202e28c6b5b1::t_31b6378b895f6f 164-166
+fixtures/ops-reference/workers-management/operator/test_client.py
+  s_f4202e28c6b5b1::t_333f8772859ac7 1-46
+fixtures/ops-reference/project/app/state/src/simulated_tests.rs
+  s_f4202e28c6b5b1::t_76b1d4dd6fc5c1 20-22,43-47,53-64,68-75,80-81,85-88,90,94-102,110-113,122-126,128-139,141,145-150,152-174,181-220
+  s_f4202e28c6b5b1::t_17e27288896f16 1-19,23-42,48-52,65-67,76-79,82-84,89,91-93,103-109,114-121,127,140,142-144,151,175-180,221
+fixtures/ops-reference/vectors.py
+  s_f4202e28c6b5b1::t_e4774b804d29ac 1-4,8-12,25,29-49,52-57,60-75
+  s_f4202e28c6b5b1::t_5ad4c3681a5e87 5-7,17-24
+  s_f4202e28c6b5b1::t_21bd955624ce67 27-28
+  s_f4202e28c6b5b1::t_fe7bc0b34fcb11 13-16,26,50-51
+  s_f4202e28c6b5b1::t_c2be0b201bdb44 76-83
+  s_f4202e28c6b5b1::t_4daa0099aa6834 84-97
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 58-59
+fixtures/ops-reference/project/app/management/web/Cargo.toml
+  s_f4202e28c6b5b1::t_d01f91078ae47d 1-29
+fixtures/ops-reference/workers-management/operator/README.md
+  s_f4202e28c6b5b1::t_333f8772859ac7 1-37,39,42-57,61-90
+  s_f4202e28c6b5b1::t_c9ae891bd1c9be 40-41
+  s_f4202e28c6b5b1::t_7f75dcb006539d 38,58-60
+fixtures/ops-reference/workers-management/README.md
+  s_f4202e28c6b5b1::t_e16a20e66b644d 1-34,37-50
+  s_f4202e28c6b5b1::t_329bf919273437 35-36
+fixtures/ops-reference/project/app/management/human-bootstrap/Cargo.toml
+  s_f4202e28c6b5b1::t_d01f91078ae47d 1-23
+fixtures/ops-reference/workers-management/prepare_graph_runtime.py
+  s_f4202e28c6b5b1::t_d0fef866ab643d 1-54
+fixtures/ops-reference/workers-management/initialize_business.py
+  s_f4202e28c6b5b1::t_15088a176e5986 39
+  s_f4202e28c6b5b1::t_181f1503a114bb 5,33-34
+  s_f4202e28c6b5b1::t_8b1438f2702acc 1-4,6-32,35-38,40-51
+fixtures/ops-reference/workers-management/operator/Cargo.toml
+  s_f4202e28c6b5b1::t_e88d7e61d0f69a 25-35
+  s_f4202e28c6b5b1::t_5192dbaf207d61 1-24,36-62
+  s_f4202e28c6b5b1::t_e13c9b50059d17 63-91
+fixtures/ops-reference/workers-management/operator/prepare_remote.py
+  s_f4202e28c6b5b1::t_4a19848064d5ca 1-4,6-18,20-50,55-59,62-88,90-113,115-116,122-130,139-157,161-177,179-187,189-194
+  s_f4202e28c6b5b1::t_474d6f6944e4ca 51-53,158-160
+  s_f4202e28c6b5b1::t_70c483e500492f 5,54,60-61,114
+  s_f4202e28c6b5b1::t_62bc5ff15bced0 19,89,117-121,131-138,178,188
+.github/workflows/local-app.yml
+  s_f4202e28c6b5b1::t_e9c56059c97d70 46,217-218,225-226
+  s_f4202e28c6b5b1::t_6a648706e90c99 132-139,242
+  s_f4202e28c6b5b1::t_6fd3b828440cb6 183
+  s_f4202e28c6b5b1::t_f355a28dcd671f 162-180
+  s_f4202e28c6b5b1::t_b2b6c5bc646c73 181-182,184-192,194-195,199,201-202
+  s_f4202e28c6b5b1::t_61762c553f3bbf 92
+  s_f4202e28c6b5b1::t_6c35dce7c3309c 7,88-91,93-131,144-150,156-161,235-240,243-244
+  s_f4202e28c6b5b1::t_3fc7f3dc2ee2d8 40,222
+  s_f4202e28c6b5b1::t_b32689662792f4 140-141,143,193,200,203-216,219-221,223-224,227-234,241,248-249
+  s_f4202e28c6b5b1::t_236df9e786373b 142
+  s_f4202e28c6b5b1::t_52b5436c788c4e 151-155,196-198,245-247,250
+fixtures/ops-reference/verify_management.py
+  s_f4202e28c6b5b1::t_0368900c8a78ac 79,87
+  s_f4202e28c6b5b1::t_9afadd1701c41e 9,127,136-137,143-144,156-157,162-163,169-222,224-233
+  s_f4202e28c6b5b1::t_3025f91c33a627 270-271
+  s_f4202e28c6b5b1::t_d11928dbb7542b 223,377,389-428
+  s_f4202e28c6b5b1::t_4fb7d113fb799c 439,450-453,461-467,474-475,478,485
+  s_f4202e28c6b5b1::t_88717d6df332a7 90-96,109,117-118,122-123,125-126,128-131,133-135,138-142,145-148,151-155,158-161,164-168,236,248,440,476,499-504,509-511
+  s_f4202e28c6b5b1::t_eba5d99e221750 468
+  s_f4202e28c6b5b1::t_1b789a5ff2bead 1-8,10-26,28-55,237-238,243-245,249-260,262-265,269,272,275-288,290-301,303,305-312,314-318,321-323,325-329,331-332,336-337,339-340,431-438,441-449,454-460,469-473,477,479-484,486-495,497-498,507-508,512-514,522-528
+  s_f4202e28c6b5b1::t_910dabedeb4e8f 274
+  s_f4202e28c6b5b1::t_58952e57e22fb3 27,56-78,88-89,110-116,119-121,234-235,289,496,515,520
+  s_f4202e28c6b5b1::t_836f7d1959012f 80-86,97-108,239-242,261,266-267,273,516,518-519,521
+  s_f4202e28c6b5b1::t_bc6be6a05be8d9 247
+  s_f4202e28c6b5b1::t_3474aacf758c05 505-506
+  s_f4202e28c6b5b1::t_db757b42609c63 341-376,378-388,429-430
+  s_f4202e28c6b5b1::t_d504d2bf5d070f 149-150,302,313,319-320
+  s_f4202e28c6b5b1::t_0c321b43f0c98c 246,268
+  s_f4202e28c6b5b1::t_5420dc5a3e3246 124,304,324,330,333-335,338,517
+  s_f4202e28c6b5b1::t_52b5436c788c4e 132
+fixtures/ops-reference/qualification/proposal-completion.md
+  s_f4202e28c6b5b1::t_bf77eb445db53b 22-31,33,41-44,56-61,65-208
+  s_f4202e28c6b5b1::t_ca8c93bf4f6a47 1-21,32,34-40,45-55,62-64
+  s_f4202e28c6b5b1::t_a2be07d1b407bb 209-223
+fixtures/ops-reference/project/Cargo.toml
+  s_f4202e28c6b5b1::t_2c063c1d859c80 1-19
+  s_f4202e28c6b5b1::t_4b9d990e61b210 20-61
+fixtures/ops-reference/evidence.py
+  s_f4202e28c6b5b1::t_abef489511d789 1-9,12-19
+  s_f4202e28c6b5b1::t_39314b8845d617 10-11
+fixtures/ops-reference/project/app/management/bootstrap/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_1cf52795667618 1-23
+  s_f4202e28c6b5b1::t_66d53fe887c12e 24-57
+fixtures/ops-reference/verify.py
+  s_f4202e28c6b5b1::t_e53ef61034e67d 38
+  s_f4202e28c6b5b1::t_abef489511d789 13,21-22,31-32,41-42,72
+  s_f4202e28c6b5b1::t_4eb5149fd7f61e 55
+  s_f4202e28c6b5b1::t_e4774b804d29ac 1-10,14-19,25-28,30,33-34,47,50-54,59,64-71,73,76-85
+  s_f4202e28c6b5b1::t_4daa0099aa6834 11-12,20,23-24,29,35-37,39-40,43-46,48-49,60-62,74-75
+  s_f4202e28c6b5b1::t_5916a07b764831 56-58,63
+fixtures/ops-reference/project/app/management/web/src/lib.rs
+  s_f4202e28c6b5b1::t_bd149448ecd449 1-66,68-79,81,83-86,122-182,216,264-271,278-289,294,298-640,667-824
+  s_f4202e28c6b5b1::t_a5c93b584a8cf9 67,80,82,87-89,94-102,104-113,117-121,183-215,217-245,254-263,272-277,290-293,295-297,656-659
+  s_f4202e28c6b5b1::t_aaea2a065a2142 90-93
+  s_f4202e28c6b5b1::t_96c3797efb5452 103,114-116
+  s_f4202e28c6b5b1::t_ba6cc4fc664313 246-253
+  s_f4202e28c6b5b1::t_ff0896cfc50a21 641-655,660-666
+fixtures/ops-reference/build_agent.py
+  s_f4202e28c6b5b1::t_9bb5b8b2d2020f 1-47
+fixtures/ops-reference/verify_audit.py
+  s_f4202e28c6b5b1::t_c24f986132921e 1-27,30-31,35-38,50-52,64-78,92-93,95-100,102-106,115-117,122-127,129-130,132-144
+  s_f4202e28c6b5b1::t_0e9bb6202864c3 39-49,79-83,88-91
+  s_f4202e28c6b5b1::t_e1bbe56d6bf9ad 109
+  s_f4202e28c6b5b1::t_ed14dda83d3a2f 28-29,101,107-108,110-114,118-121,128,131
+  s_f4202e28c6b5b1::t_7171a4acd32bcf 53-63,84-87
+  s_f4202e28c6b5b1::t_f9fbe419848e0a 94
+  s_f4202e28c6b5b1::t_06db442f9c5662 32-34
+fixtures/ops-reference/project/contracts/example.ops-state/src/contract.rs
+  s_f4202e28c6b5b1::t_d55951da7b51f5 62-64
+  s_f4202e28c6b5b1::t_ef5f450a710821 1-59,61,65-82
+  s_f4202e28c6b5b1::t_2cd54c16b15e24 60
+fixtures/ops-reference/verify_human.py
+  s_f4202e28c6b5b1::t_03a49b9e2becb4 24-25,35-38
+  s_f4202e28c6b5b1::t_40f50baf0125c7 11,182-189,191,195-196,199-203,221,229,232-233,241-306
+  s_f4202e28c6b5b1::t_5420dc5a3e3246 163-166,193-194,210,212-214,216,238
+  s_f4202e28c6b5b1::t_eba5d99e221750 463
+  s_f4202e28c6b5b1::t_0c49786f17357b 204,217-219,234-236
+  s_f4202e28c6b5b1::t_b2ae5b026abf14 441-442,492-495,502-504
+  s_f4202e28c6b5b1::t_f635d67469133d 222-228,338-344,355-359
+  s_f4202e28c6b5b1::t_6e8236742d82d0 505-509
+  s_f4202e28c6b5b1::t_c512ffb05b5933 386-432
+  s_f4202e28c6b5b1::t_836f7d1959012f 99,104-105,109-110,112,483
+  s_f4202e28c6b5b1::t_27b1470a7602ef 309-337,345-354,360-385
+  s_f4202e28c6b5b1::t_f72416575df205 1-10,12-23,26-34,39-81,83-90,92-98,100-103,106,111,113-115,118,120-162,167-181,190,192,197-198,205-209,211,215,220,230-231,237,239-240,307-308,433-440,443-462,464-482,484-491,496-501,510-514
+  s_f4202e28c6b5b1::t_0c321b43f0c98c 82,91,116-117
+  s_f4202e28c6b5b1::t_910dabedeb4e8f 119
+  s_f4202e28c6b5b1::t_3025f91c33a627 107-108
+fixtures/ops-reference/workers-management/verify_auth_fault.py
+  s_f4202e28c6b5b1::t_62f049753d963d 1-6,8-9,51-53,55-57,60,68-77,80,82-87,91-97
+  s_f4202e28c6b5b1::t_481157bd118488 7,10-50,54,58-59,61-67
+  s_f4202e28c6b5b1::t_d56cb6a8fa9a49 78-79,81,88-90
+fixtures/ops-reference/host.py
+  s_f4202e28c6b5b1::t_42020e0a6a971d 1-11,28,34-47,50-55,61-70
+  s_f4202e28c6b5b1::t_58ad30ff761a23 13-24,26-27
+  s_f4202e28c6b5b1::t_3c708c42798a72 29,48,56,60
+  s_f4202e28c6b5b1::t_b8fcd86a17ad0d 49,57-59
+  s_f4202e28c6b5b1::t_45edca134a575b 12,25
+  s_f4202e28c6b5b1::t_02fc3a37a96910 30-33
+fixtures/ops-reference/project/app/management/secrets/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-31
+  s_f4202e28c6b5b1::t_075bf3e6e3a298 32-62
+fixtures/ops-reference/workers-management/operator/src/lib.rs
+  s_f4202e28c6b5b1::t_e88d7e61d0f69a 5-7
+  s_f4202e28c6b5b1::t_1f5a90ffe2e9d3 15
+  s_f4202e28c6b5b1::t_5192dbaf207d61 1-4,8-14,16-33,35
+  s_f4202e28c6b5b1::t_49c5d77d75cb46 34
+fixtures/ops-reference/workers-management/verify_remote_account.py
+  s_f4202e28c6b5b1::t_c3d600903fa789 1-34
+fixtures/ops-reference/node_http.mjs
+  s_f4202e28c6b5b1::t_5ad4c3681a5e87 1-20
+fixtures/ops-reference/workers-management/operator/worker.mjs
+  s_f4202e28c6b5b1::t_aa009b3b25b0d6 70-77,81,83-84,163,165-166
+  s_f4202e28c6b5b1::t_5783644ff87b5c 1-11,21-51,58-69,85-89,92-97,141-162,164,167-174
+  s_f4202e28c6b5b1::t_d9e8e24cebd6e8 78-80,82
+  s_f4202e28c6b5b1::t_fb2cdd2b32070e 12,52-53,57,90-91
+  s_f4202e28c6b5b1::t_de57ea144a5525 14-20,100,109-110,114-128,132-140
+  s_f4202e28c6b5b1::t_44dc875c2f0a0f 98-99,101-108,111-113
+  s_f4202e28c6b5b1::t_b97ea104160a22 54-56
+  s_f4202e28c6b5b1::t_c9ae891bd1c9be 13,129-131
+fixtures/ops-reference/workers-management/project/app/management/secrets/src/lib.rs
+  s_f4202e28c6b5b1::t_1850309bbf73e2 1-28
+fixtures/ops-reference/storage/native-pg/src/lib.rs
+  s_f4202e28c6b5b1::t_88157568265341 1-3,5-20,25-51,54,60-62,71-72,77-83,94-96,113-117,132-135,153-154,161-162,193-194,198-200,242-245
+  s_f4202e28c6b5b1::t_c2be0b201bdb44 4,21-24,52-53,55-59,65-70,73-76,84-93,97-112,118-131,136-152,155-160,163-192,195-197,201-241
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 63-64
+fixtures/ops-reference/storage/native-pg/.gitignore
+  s_f4202e28c6b5b1::t_c2be0b201bdb44 1
+fixtures/ops-reference/project/app/state/src/lib.rs
+  s_f4202e28c6b5b1::t_0062bf504f69d3 91
+  s_f4202e28c6b5b1::t_1ce7bdb65d966d 2-3,23,80,85-87,92-96,100-106,109-126,153-154
+  s_f4202e28c6b5b1::t_75f9d0c6593d53 21-22,26,63-73,97-99,107-108,127-128
+  s_f4202e28c6b5b1::t_473600a6a2c311 1,4,9-11,28-29,42,47-48,50-51,55-62,74-79,129-136,138-142,145-152,155-161,164-167,171-175,180-183,185-187,192-194
+  s_f4202e28c6b5b1::t_6da8e8eb828ed5 5-6,8,12-20,27,30-41,43-46,88-90,137,143-144,162-163,168-170,176-179,184,188-191,195-197
+  s_f4202e28c6b5b1::t_e3499a9ef41d6a 7,24-25,49,52-54,81-84
+fixtures/ops-reference/project/app/management/secrets/src/lib.rs
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-16
+  s_f4202e28c6b5b1::t_c8162905f544df 17-23
+fixtures/ops-reference/project/app/management/tools/Cargo.toml
+  s_f4202e28c6b5b1::t_1062227dc16caf 13-16
+  s_f4202e28c6b5b1::t_1cf52795667618 1-12,17-21
+fixtures/ops-reference/workers-management/operator/client.py
+  s_f4202e28c6b5b1::t_c9ae891bd1c9be 13
+  s_f4202e28c6b5b1::t_c0b96e16f3f6ca 60-61
+  s_f4202e28c6b5b1::t_146653f38ef49a 1-12,14-59,62-107
+fixtures/ops-reference/project/app/management/mcp/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_1e89bdbe23df62 1-24
+  s_f4202e28c6b5b1::t_029d094162aae9 25-48
+fixtures/ops-reference/verify_agent.py
+  s_f4202e28c6b5b1::t_2c23c84a984616 11,42-50,342
+  s_f4202e28c6b5b1::t_627d45d01f5551 157,165,323-330,336-338
+  s_f4202e28c6b5b1::t_cba2b89a6aae92 69,80-89
+  s_f4202e28c6b5b1::t_ff1c5ac4a1648b 34-35,40,135,222-223,225-228,253,261-269
+  s_f4202e28c6b5b1::t_3b951569c06a4b 9,158-163
+  s_f4202e28c6b5b1::t_b2ae5b026abf14 177-181,184-185,237-239,251-252,256,316-317
+  s_f4202e28c6b5b1::t_e8968cd62e6e65 259-260,271,273-276
+  s_f4202e28c6b5b1::t_bb2247436c2655 136,149-156,164,167,169,287,347
+  s_f4202e28c6b5b1::t_15a8c770b01971 242-247
+  s_f4202e28c6b5b1::t_16e254e4aedc86 1-5,7-8,10,12-28,30,38,57-59,74-76,78-79,133-134,277,331-335,339-340,343,349-356
+  s_f4202e28c6b5b1::t_a11ed05776cdaa 137,146,166,168,170-171,173-175,186,229-234,280-286,288,345-346,348
+  s_f4202e28c6b5b1::t_9bb5b8b2d2020f 29,51-56,61-62,344
+  s_f4202e28c6b5b1::t_1b5847a81e1809 6,31-33,39,60,63-68,70-73,77,90-132,138-145,147-148,172,176,182-183,187-221,224,235-236,240-241,248-250,257-258,270,272,278-279,289-315,318-322
+  s_f4202e28c6b5b1::t_6bbfad4b872636 36-37,41
+  s_f4202e28c6b5b1::t_4bc5b84a6bed86 254-255,341
+.github/workflows/vnext-rust.yml
+  s_f4202e28c6b5b1::t_43005cd3087fde 7,43-49,54-56
+fixtures/ops-reference/audit-reader/Cargo.lock
+  s_f4202e28c6b5b1::t_2317fd3437769c 1-2322
+fixtures/ops-reference/candidate-inputs.json
+  s_f4202e28c6b5b1::t_18a2c6939eee10 1-22
+fixtures/ops-reference/operator/Cargo.lock
+  s_f4202e28c6b5b1::t_331f03f6bc8c20 1-3530
+fixtures/ops-reference/project/.gitignore
+  s_f4202e28c6b5b1::t_bacf6f3b151635 1-4
+fixtures/ops-reference/project/Cargo.lock
+  s_f4202e28c6b5b1::t_36b290fe4e67b8 1-1010
+fixtures/ops-reference/project/README.md
+  s_f4202e28c6b5b1::t_8d93cf5989aaed 1-4
+fixtures/ops-reference/project/app/management/Cargo.lock
+  s_f4202e28c6b5b1::t_5928445f44b4a6 1-4113
+fixtures/ops-reference/project/app/management/core/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_7d72caeb33c01d 1-66
+fixtures/ops-reference/project/app/management/human-bootstrap/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_02b234d2bce3e8 1-72
+fixtures/ops-reference/project/app/state/Cargo.lock
+  s_f4202e28c6b5b1::t_b1413171c5e5e5 1-2112
+fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.lock
+  s_f4202e28c6b5b1::t_9852c3efce869c 1-795
+fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.toml
+  s_f4202e28c6b5b1::t_629dafcfc6a1d2 1-65
+fixtures/ops-reference/project/contracts/example.ops-state-v2/README.md
+  s_f4202e28c6b5b1::t_9d54a3d898b209 1-3
+fixtures/ops-reference/project/contracts/example.ops-state-v2/build.rs
+  s_f4202e28c6b5b1::t_8c0d78a42d19c6 1-24
+fixtures/ops-reference/project/contracts/example.ops-state-v2/capability.json
+  s_f4202e28c6b5b1::t_bf1a31ce7338e5 1-33
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/read-error.schema.json
+  s_f4202e28c6b5b1::t_bfbf17b6694d8c 1-10
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/read-request.schema.json
+  s_f4202e28c6b5b1::t_882134d594e417 1-7
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/read-response.schema.json
+  s_f4202e28c6b5b1::t_f1f109db639955 1-18
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/receipt-error.schema.json
+  s_f4202e28c6b5b1::t_79dcbe10a5745e 1-10
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/receipt-request.schema.json
+  s_f4202e28c6b5b1::t_942d29628e7f1d 1-15
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/receipt-response.schema.json
+  s_f4202e28c6b5b1::t_fbcf473ef6ee79 1-26
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/update-error.schema.json
+  s_f4202e28c6b5b1::t_d353962f36a018 1-10
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/update-request.schema.json
+  s_f4202e28c6b5b1::t_f65ea65216843b 1-25
+fixtures/ops-reference/project/contracts/example.ops-state-v2/schemas/update-response.schema.json
+  s_f4202e28c6b5b1::t_b4aadfa8f98d36 1-21
+fixtures/ops-reference/project/contracts/example.ops-state-v2/src/contract.rs
+  s_f4202e28c6b5b1::t_9639e3adc2bb48 1-86
+fixtures/ops-reference/project/contracts/example.ops-state-v2/src/generated.rs
+  s_f4202e28c6b5b1::t_4ad2c2458a1d9b 1-1003
+fixtures/ops-reference/project/contracts/example.ops-state-v2/src/lib.rs
+  s_f4202e28c6b5b1::t_41f10e31ca3e38 1
+fixtures/ops-reference/project/contracts/example.ops-state/Cargo.lock
+  s_f4202e28c6b5b1::t_a74392ae2e624c 1-795
+fixtures/ops-reference/project/contracts/example.ops-state/README.md
+  s_f4202e28c6b5b1::t_35f36040f7303f 1-6
+fixtures/ops-reference/project/contracts/example.ops-state/build.rs
+  s_f4202e28c6b5b1::t_094a0da2cfc83c 1-24
+fixtures/ops-reference/project/contracts/example.ops-state/capability.json
+  s_f4202e28c6b5b1::t_b92516045ff6fa 1-33
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/read-error.schema.json
+  s_f4202e28c6b5b1::t_6ceba2180b1fd5 1-10
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/read-request.schema.json
+  s_f4202e28c6b5b1::t_477da8de97734c 1-7
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/read-response.schema.json
+  s_f4202e28c6b5b1::t_10b740247eccb6 1-18
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/receipt-error.schema.json
+  s_f4202e28c6b5b1::t_4f1614ee43de0c 1-10
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/receipt-request.schema.json
+  s_f4202e28c6b5b1::t_e453821287b585 1-12
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/receipt-response.schema.json
+  s_f4202e28c6b5b1::t_a1e8a40d5cee47 1-26
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/update-error.schema.json
+  s_f4202e28c6b5b1::t_84a3687dc07d7d 1-10
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/update-request.schema.json
+  s_f4202e28c6b5b1::t_dc0df6913cb8cc 1-18
+fixtures/ops-reference/project/contracts/example.ops-state/schemas/update-response.schema.json
+  s_f4202e28c6b5b1::t_88352fb90c0f14 1-21
+fixtures/ops-reference/project/contracts/example.ops-state/src/generated.rs
+  s_f4202e28c6b5b1::t_4e1893b8965cbb 1-1003
+fixtures/ops-reference/project/contracts/example.ops-state/src/lib.rs
+  s_f4202e28c6b5b1::t_7f746eddf1799c 1
+fixtures/ops-reference/qualification/profile-inputs.json
+  s_f4202e28c6b5b1::t_0c90d224862c32 1-492
+fixtures/ops-reference/qualification/receipts/SHA256SUMS
+  s_f4202e28c6b5b1::t_6ca746b09f0437 1-133
+fixtures/ops-reference/qualification/receipts/access-sdk35-required-ci-failure.log
+  s_f4202e28c6b5b1::t_cf5e8d3b55349f 1-50
+fixtures/ops-reference/qualification/receipts/agent-cc27-delivery.json
+  s_f4202e28c6b5b1::t_3bb033a6c0f898 1-26
+fixtures/ops-reference/qualification/receipts/agent-cdcb-delivery.json
+  s_f4202e28c6b5b1::t_13bfe1605eb872 1-30
+fixtures/ops-reference/qualification/receipts/agent-management-transport-final.json
+  s_f4202e28c6b5b1::t_3f4a5ddb6c5f5a 1-137
+fixtures/ops-reference/qualification/receipts/agent-owner-joint.json
+  s_f4202e28c6b5b1::t_3424b1f2d235f4 1-11821
+fixtures/ops-reference/qualification/receipts/agent-primary-role-cohort-analysis.json
+  s_f4202e28c6b5b1::t_b07ef9c563495d 1-101
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-authoring.rs
+  s_f4202e28c6b5b1::t_711cc122821b01 1-196
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-consumer.lock
+  s_f4202e28c6b5b1::t_cd2d77f077fa8b 1-1133
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-consumer.toml
+  s_f4202e28c6b5b1::t_65d531efa9b5d4 1-25
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-continuation-plan.json
+  s_f4202e28c6b5b1::t_c2c7b516b61024 1-31
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-core-patches.toml
+  s_f4202e28c6b5b1::t_128aa310bd0627 1-41
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-initial-failure.json
+  s_f4202e28c6b5b1::t_032ff176d06a83 1-75
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-initial-failure.log
+  s_f4202e28c6b5b1::t_e3ada11732f304 1-394
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-metadata-continuation.json
+  s_f4202e28c6b5b1::t_3a8f95743ec4ab 1-95
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-metadata-continuation.log
+  s_f4202e28c6b5b1::t_41c467bfb8c243 1-55
+fixtures/ops-reference/qualification/receipts/agent-sdk-primary-normalized-original-consumer.toml
+  s_f4202e28c6b5b1::t_a2312c6c98273f 1-21
+fixtures/ops-reference/qualification/receipts/agent-sdk35-8059-strict-example.json
+  s_f4202e28c6b5b1::t_2a3e61f1abe565 1-19
+fixtures/ops-reference/qualification/receipts/agent-sdk35-8059-strict-example.log
+  s_f4202e28c6b5b1::t_a65172d7fa1dbc 1-115
+fixtures/ops-reference/qualification/receipts/agent-sdk35-81d2-host-validation.json
+  s_f4202e28c6b5b1::t_c071a6f5e2b9b0 1-36
+fixtures/ops-reference/qualification/receipts/agent-sdk35-81d2-host-validation.log
+  s_f4202e28c6b5b1::t_b386c816c75395 1-54
+fixtures/ops-reference/qualification/receipts/agent-sdk35-bec9-quality-contracts-failed.log
+  s_f4202e28c6b5b1::t_d3bdcf7b969aea 1-761
+fixtures/ops-reference/qualification/receipts/agent-sdk35-web-acp-workspace-strict-continuation.json
+  s_f4202e28c6b5b1::t_68ed40fee6d5ed 1-15
+fixtures/ops-reference/qualification/receipts/agent-sdk35-web-acp-workspace-strict-continuation.log
+  s_f4202e28c6b5b1::t_f0701fc53f8418 1-119
+fixtures/ops-reference/qualification/receipts/agent-sdk35-web-fixture-workspace-strict.json
+  s_f4202e28c6b5b1::t_166891f4ecdcda 1-14
+fixtures/ops-reference/qualification/receipts/agent-sdk35-web-fixture-workspace-strict.log
+  s_f4202e28c6b5b1::t_0128d5b10e9401 1-383
+fixtures/ops-reference/qualification/receipts/approval-configuration-schema.json
+  s_f4202e28c6b5b1::t_5ec251c8085e30 1-62
+fixtures/ops-reference/qualification/receipts/approval-d1-delivery.json
+  s_f4202e28c6b5b1::t_3ec26e4f51a11c 1-71
+fixtures/ops-reference/qualification/receipts/audit-d1-read-receipt.json
+  s_f4202e28c6b5b1::t_3ccde67ff1c758 1-26
+fixtures/ops-reference/qualification/receipts/audit-sdk35-required-ci-failure.log
+  s_f4202e28c6b5b1::t_5c78c2fdf59582 1-25
+fixtures/ops-reference/qualification/receipts/audit-source-attribution.json
+  s_f4202e28c6b5b1::t_bd4d1e23a4bf76 1-61
+fixtures/ops-reference/qualification/receipts/auth-human-named-dependencies.json
+  s_f4202e28c6b5b1::t_92a561165d972b 1-102
+fixtures/ops-reference/qualification/receipts/auth-pat-activity-remote-d1.json
+  s_f4202e28c6b5b1::t_ebd2622b3263fd 1-144
+fixtures/ops-reference/qualification/receipts/auth-sdk35-required-ci-failure.log
+  s_f4202e28c6b5b1::t_52442e3d13c347 1-31
+fixtures/ops-reference/qualification/receipts/console-dbea-delivery.json
+  s_f4202e28c6b5b1::t_0603d3c5852a4f 1-28
+fixtures/ops-reference/qualification/receipts/console-final-delivery.json
+  s_f4202e28c6b5b1::t_038b89e4b431c4 1-74
+fixtures/ops-reference/qualification/receipts/console-sdk35-required-ci-failure.log
+  s_f4202e28c6b5b1::t_bef7e307380607 1-1297
+fixtures/ops-reference/qualification/receipts/console-sdk35-source-candidate.json
+  s_f4202e28c6b5b1::t_9af5bd39b58e7c 1-42
+fixtures/ops-reference/qualification/receipts/core-35c0-delivery.json
+  s_f4202e28c6b5b1::t_14127d2d8ecd35 1-24
+fixtures/ops-reference/qualification/receipts/core-bb30-delivery.json
+  s_f4202e28c6b5b1::t_cd093f44706a17 1-27
+fixtures/ops-reference/qualification/receipts/core-c046-delivery.json
+  s_f4202e28c6b5b1::t_9fff17e15c5bf4 1-38
+fixtures/ops-reference/qualification/receipts/core-sdk-1b34-artifact-review.json
+  s_f4202e28c6b5b1::t_a8731140f00bed 1-238
+fixtures/ops-reference/qualification/receipts/core-sdk-5bb4-archive-preflight.json
+  s_f4202e28c6b5b1::t_0b320674915745 1-196
+fixtures/ops-reference/qualification/receipts/core-sdk-5bb4-archive-preflight.log
+  s_f4202e28c6b5b1::t_78a36e82ffe6c1 1-2936
+fixtures/ops-reference/qualification/receipts/core-sdk-5bb4-focused.json
+  s_f4202e28c6b5b1::t_2a058243962452 1-34
+fixtures/ops-reference/qualification/receipts/core-sdk-5bb4-focused.log
+  s_f4202e28c6b5b1::t_7569718800148d 1-111
+fixtures/ops-reference/qualification/receipts/core-sdk-83bf-focused.log
+  s_f4202e28c6b5b1::t_6e8f8a837f4f60 1-87
+fixtures/ops-reference/qualification/receipts/core-sdk-b8d1-archive-preflight.json
+  s_f4202e28c6b5b1::t_46639e57fb3442 1-193
+fixtures/ops-reference/qualification/receipts/core-sdk-b8d1-archive-preflight.log
+  s_f4202e28c6b5b1::t_3c2016ad630f10 1-2955
+fixtures/ops-reference/qualification/receipts/core-sdk-b8d1-artifact-review.json
+  s_f4202e28c6b5b1::t_dc6d2f0ccdb5ca 1-227
+fixtures/ops-reference/qualification/receipts/core-sdk-b8d1-delivery.json
+  s_f4202e28c6b5b1::t_bb234d69184fad 1-42
+fixtures/ops-reference/qualification/receipts/core-sdk-lifecycle-fixture-focused.json
+  s_f4202e28c6b5b1::t_80dcfe9d477781 1-14
+fixtures/ops-reference/qualification/receipts/core-sdk-lifecycle-fixture-focused.log
+  s_f4202e28c6b5b1::t_ae57043747c193 1-160
+fixtures/ops-reference/qualification/receipts/evidence/agent-completed-run-report-failure.log
+  s_f4202e28c6b5b1::t_8bc216d54a0e7c 1-8
+fixtures/ops-reference/qualification/receipts/evidence/agent-exact-cached-tool-after-owner-revoke.json
+  s_f4202e28c6b5b1::t_5ef87358654015 1
+fixtures/ops-reference/qualification/receipts/evidence/agent-helper-before-reconciliation.py
+  s_f4202e28c6b5b1::t_4f4b882ffc4306 1-347
+fixtures/ops-reference/qualification/receipts/evidence/agent-third-party-returned-log.json
+  s_f4202e28c6b5b1::t_49a7f01dc61f54 1-162
+fixtures/ops-reference/qualification/receipts/human-browser-owner-audit.json
+  s_f4202e28c6b5b1::t_9c279690141bda 1-47
+fixtures/ops-reference/qualification/receipts/human-console-browser.json
+  s_f4202e28c6b5b1::t_58e601337346c5 1-11819
+fixtures/ops-reference/qualification/receipts/human-prior-owner-audit.json
+  s_f4202e28c6b5b1::t_68f091039cbad1 1-47
+fixtures/ops-reference/qualification/receipts/installations-resume-provenance.json
+  s_f4202e28c6b5b1::t_5e7f6e00a7f308 1-21
+fixtures/ops-reference/qualification/receipts/installations.json
+  s_f4202e28c6b5b1::t_0c234269c9044a 1-24498
+fixtures/ops-reference/qualification/receipts/lenso-js-managed-release-delivery.json
+  s_f4202e28c6b5b1::t_0454a057154d5d 1-23
+fixtures/ops-reference/qualification/receipts/management-api-owner-audit.json
+  s_f4202e28c6b5b1::t_c17dde62bf5ddd 1-47
+fixtures/ops-reference/qualification/receipts/management-api.json
+  s_f4202e28c6b5b1::t_b210a1a9fedeb6 1-8687
+fixtures/ops-reference/qualification/receipts/management-mcp-prior-owner-audit.json
+  s_f4202e28c6b5b1::t_538d49a9f7012a 1-47
+fixtures/ops-reference/qualification/receipts/management-mcp-write-owner-audit.json
+  s_f4202e28c6b5b1::t_5fc93dc1e9d45c 1-47
+fixtures/ops-reference/qualification/receipts/management-mcp-write.json
+  s_f4202e28c6b5b1::t_ab2b3b566b3161 1-8692
+fixtures/ops-reference/qualification/receipts/management-owner-audit-diagnostic-history.json
+  s_f4202e28c6b5b1::t_86a1da7e7f4657 1-19
+fixtures/ops-reference/qualification/receipts/native-four-owner.json
+  s_f4202e28c6b5b1::t_69775c055639f8 1-140
+fixtures/ops-reference/qualification/receipts/npm-sdk11-local-registry-shutdown.json
+  s_f4202e28c6b5b1::t_7ff5d9d45d8e28 1-10
+fixtures/ops-reference/qualification/receipts/ops-35c0-native-pg-diagnostics.json
+  s_f4202e28c6b5b1::t_37cfd251852137 1-875
+fixtures/ops-reference/qualification/receipts/ops-35c0-native-sim.json
+  s_f4202e28c6b5b1::t_e2173a2e13782c 1-866
+fixtures/ops-reference/qualification/receipts/ops-35c0-optional-diagnostics.json
+  s_f4202e28c6b5b1::t_b4840ec4e001df 1-873
+fixtures/ops-reference/qualification/receipts/ops-35c0-web-starter.json
+  s_f4202e28c6b5b1::t_d5f46d252e4b4f 1-556
+fixtures/ops-reference/qualification/receipts/ops-35c0-workers-local.json
+  s_f4202e28c6b5b1::t_068dfdbe5e9f09 1-107
+fixtures/ops-reference/qualification/receipts/ops-35c0-workers-remote-query.json
+  s_f4202e28c6b5b1::t_150173bda76fc5 1-163
+fixtures/ops-reference/qualification/receipts/ops-35c0-workers-remote.json
+  s_f4202e28c6b5b1::t_1b3b6aa4b9bd57 1-45
+fixtures/ops-reference/qualification/receipts/ops-generated-managed-rust-5bb4.json
+  s_f4202e28c6b5b1::t_9ad59cea58313d 1-159
+fixtures/ops-reference/qualification/receipts/ops-latest-87fe-workers-local.json
+  s_f4202e28c6b5b1::t_94112955e0932c 1-108
+fixtures/ops-reference/qualification/receipts/ops-latest-f670-native-sim.json
+  s_f4202e28c6b5b1::t_4e3307a23de5bb 1-866
+fixtures/ops-reference/qualification/receipts/ops-latest-f670-test-simulator.log
+  s_f4202e28c6b5b1::t_5ff3335d17b625 1-64
+fixtures/ops-reference/qualification/receipts/ops-latest-f670-web-starter.json
+  s_f4202e28c6b5b1::t_3f44e4cf19abc5 1-565
+fixtures/ops-reference/qualification/receipts/ops-sdk35-b8d1-bec9-metadata.json
+  s_f4202e28c6b5b1::t_7d8da1ee752047 1-62
+fixtures/ops-reference/qualification/receipts/ops-sdk35-b8d1-bec9-metadata.log
+  s_f4202e28c6b5b1::t_582fdff9b82f1d 1-409
+fixtures/ops-reference/qualification/receipts/ops-sdk35-final-metadata.json
+  s_f4202e28c6b5b1::t_80373cc552a20d 1-82
+fixtures/ops-reference/qualification/receipts/ops-sdk35-final-native-management-check.log
+  s_f4202e28c6b5b1::t_afb179d8d6d01d 1-108
+fixtures/ops-reference/qualification/receipts/ops-sdk35-final-native-management-source-check.json
+  s_f4202e28c6b5b1::t_ba929402a693be 1-16
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-1b34-cli-build.json
+  s_f4202e28c6b5b1::t_8898a3966a7e6a 1-20
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-5bb4-cli-build.json
+  s_f4202e28c6b5b1::t_fb1084f80c1703 1-13
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-5bb4-cli-build.log
+  s_f4202e28c6b5b1::t_83e40283af3049 1-17
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-83bf-cli-build.json
+  s_f4202e28c6b5b1::t_dae9b49ec6452e 1-20
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-b8d1-cli-build.json
+  s_f4202e28c6b5b1::t_f250ef1675c9a3 1-18
+fixtures/ops-reference/qualification/receipts/ops-source-cohort-b8d1-cli-build.log
+  s_f4202e28c6b5b1::t_cdc6d3d12cef6a 1-13
+fixtures/ops-reference/qualification/receipts/ops-test-simulator-final.json
+  s_f4202e28c6b5b1::t_afe264bc1bb93e 1-24
+fixtures/ops-reference/qualification/receipts/security-agent-primary-role-review.json
+  s_f4202e28c6b5b1::t_5b6a715e4901f2 1-260
+fixtures/ops-reference/qualification/receipts/security-agent-sdk-primary-compatibility.json
+  s_f4202e28c6b5b1::t_45294167a44327 1-50
+fixtures/ops-reference/qualification/receipts/security-final-source-status.json
+  s_f4202e28c6b5b1::t_b2f38da39f1919 1-105
+fixtures/ops-reference/qualification/receipts/security-landed.json
+  s_f4202e28c6b5b1::t_091b0d68b136e8 1-270
+fixtures/ops-reference/qualification/receipts/security-primary-role-cohort-analysis.json
+  s_f4202e28c6b5b1::t_e67e11d83919c2 1-263
+fixtures/ops-reference/qualification/receipts/security-sdk35-source-checkpoints.json
+  s_f4202e28c6b5b1::t_6ac1ce35a51034 1-93
+fixtures/ops-reference/qualification/receipts/security-workers-owner-checkpoint.json
+  s_f4202e28c6b5b1::t_9450cc2bf533b7 1-176
+fixtures/ops-reference/qualification/receipts/service-sdk35-cleanup.json
+  s_f4202e28c6b5b1::t_8cd8e9209f158b 1-22
+fixtures/ops-reference/qualification/receipts/service-sdk35-delivery.json
+  s_f4202e28c6b5b1::t_c8b8e14b5299fe 1-35
+fixtures/ops-reference/qualification/receipts/workers-local-operator-shutdown.json
+  s_f4202e28c6b5b1::t_c951db4976a0d7 1-11
+fixtures/ops-reference/qualification/receipts/workers-management-local-auth-storage-fault.json
+  s_f4202e28c6b5b1::t_6abac6e3504137 1-17
+fixtures/ops-reference/qualification/receipts/workers-management-local-journey.json
+  s_f4202e28c6b5b1::t_4e4bbcb78e3b7a 1-42
+fixtures/ops-reference/qualification/receipts/workers-management-local-mcp-owner-audit.json
+  s_f4202e28c6b5b1::t_8044013cdb2b7b 1-37
+fixtures/ops-reference/qualification/receipts/workers-management-local-mcp-restart.json
+  s_f4202e28c6b5b1::t_6669f71b3c4e37 1-18
+fixtures/ops-reference/qualification/receipts/workers-management-local-mcp-write.json
+  s_f4202e28c6b5b1::t_0a3d435170d08d 1-41
+fixtures/ops-reference/qualification/receipts/workers-management-local-read-only.json
+  s_f4202e28c6b5b1::t_43cb9eb99756aa 1-24
+fixtures/ops-reference/qualification/receipts/workers-management-local-restart.json
+  s_f4202e28c6b5b1::t_564b66da0f85ae 1-6
+fixtures/ops-reference/qualification/receipts/workers-management-local-revocation-after.json
+  s_f4202e28c6b5b1::t_b5d408074c381f 1-11
+fixtures/ops-reference/qualification/receipts/workers-management-local-revocation-before.json
+  s_f4202e28c6b5b1::t_9cfc88d55c2901 1-18
+fixtures/ops-reference/qualification/receipts/workers-management-owner-audit-local.json
+  s_f4202e28c6b5b1::t_7c8e4032c51454 1-68
+fixtures/ops-reference/qualification/receipts/workers-management-remote-approved-flag.json
+  s_f4202e28c6b5b1::t_133dc1a078da7c 1-16
+fixtures/ops-reference/qualification/receipts/workers-management-remote-artifact-qualification.json
+  s_f4202e28c6b5b1::t_1d9d5debf7b48f 1-176
+fixtures/ops-reference/qualification/receipts/workers-management-remote-auth-storage-fault.json
+  s_f4202e28c6b5b1::t_cae4c937ee98e9 1-17
+fixtures/ops-reference/qualification/receipts/workers-management-remote-cleanup.json
+  s_f4202e28c6b5b1::t_023d5b024a4265 1-31
+fixtures/ops-reference/qualification/receipts/workers-management-remote-credential-aliases.json
+  s_f4202e28c6b5b1::t_a66172f12ae4d1 1-9
+fixtures/ops-reference/qualification/receipts/workers-management-remote-direct-owner-audit.json
+  s_f4202e28c6b5b1::t_7e70adac271b6d 1-37
+fixtures/ops-reference/qualification/receipts/workers-management-remote-journey.json
+  s_f4202e28c6b5b1::t_3f5291c3510bc0 1-42
+fixtures/ops-reference/qualification/receipts/workers-management-remote-mcp-owner-audit.json
+  s_f4202e28c6b5b1::t_480b4b325c79df 1-37
+fixtures/ops-reference/qualification/receipts/workers-management-remote-mcp-write.json
+  s_f4202e28c6b5b1::t_94b45adc91f91b 1-41
+fixtures/ops-reference/qualification/receipts/workers-management-remote-owner-audit-supplement.json
+  s_f4202e28c6b5b1::t_cd79376fd1e483 1-23
+fixtures/ops-reference/qualification/receipts/workers-management-remote-read-only.json
+  s_f4202e28c6b5b1::t_1bd53c54d25aad 1-24
+fixtures/ops-reference/qualification/receipts/workers-management-remote-receipt-index.json
+  s_f4202e28c6b5b1::t_67efca0f712dda 1-84
+fixtures/ops-reference/qualification/receipts/workers-management-remote-redeploy-observed.json
+  s_f4202e28c6b5b1::t_21a9a53d654786 1-19
+fixtures/ops-reference/qualification/receipts/workers-management-remote-revocation-after.json
+  s_f4202e28c6b5b1::t_0575b194a8506d 1-11
+fixtures/ops-reference/qualification/receipts/workers-management-remote-revocation-before.json
+  s_f4202e28c6b5b1::t_95ba5fbb71e25a 1-18
+fixtures/ops-reference/qualification/receipts/workers-management-remote-source-snapshot.json
+  s_f4202e28c6b5b1::t_1dbcd1a4602ecf 1-36
+fixtures/ops-reference/qualification/receipts/workers-management-remote-workers-build.json
+  s_f4202e28c6b5b1::t_b28ff46009076c 1-108
+fixtures/ops-reference/qualification/receipts/workers-owner-provision-progress.json
+  s_f4202e28c6b5b1::t_34154d20a743ff 1-164
+fixtures/ops-reference/qualification/receipts/workers-scope-components-18e.json
+  s_f4202e28c6b5b1::t_74e2a3e51b6a3a 1-35
+fixtures/ops-reference/storage/native-pg/Cargo.lock
+  s_f4202e28c6b5b1::t_2e458f6126e400 1-1471
+fixtures/ops-reference/workers-management/operator/Cargo.lock
+  s_f4202e28c6b5b1::t_a20538e5b09604 1-1741
+fixtures/ops-reference/workers-management/profiles/host-facilities.example.json
+  s_f4202e28c6b5b1::t_08b19e67bb4fb5 1-73
+fixtures/ops-reference/workers-management/project/app/management/Cargo.toml
+  s_f4202e28c6b5b1::t_ca604b1acbb0c1 1-47
+fixtures/ops-reference/workers-management/project/app/management/core/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_7c0207caeda320 1-45
+fixtures/ops-reference/workers-management/project/app/management/core/src/lib.rs
+  s_f4202e28c6b5b1::t_80a1b121109141 1-322
+fixtures/ops-reference/workers-management/project/app/management/http/Cargo.toml
+  s_f4202e28c6b5b1::t_db0b7f1b50e3ec 1-32
+fixtures/ops-reference/workers-management/project/app/management/http/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_fcb768e523c9db 1-39
+fixtures/ops-reference/workers-management/project/app/management/secrets/Cargo.toml
+  s_f4202e28c6b5b1::t_3aa632ae022d3c 1-26
+fixtures/ops-reference/workers-management/project/app/management/secrets/src/host_facilities.rs
+  s_f4202e28c6b5b1::t_4b92424aa2da2c 1-46
+fixtures/ops-reference/workers-management/project/app/management/secrets/src/secrets.mjs
+  s_f4202e28c6b5b1::t_049cbb9f3a74a2 1-22
+fixtures/ops-reference/workers-management/secrets.test.mjs
+  s_f4202e28c6b5b1::t_25d517322811ce 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b947e888bcc826e90d18f6fb13f47df58060b993",
+  "prompts": {},
+  "sessions": {
+    "s_f4202e28c6b5b1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ee9e-623b-7d12-a648-d8b462390eec",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
