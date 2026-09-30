@@ -1,0 +1,21 @@
+fixtures/ops-reference/.gitignore
+  s_f4202e28c6b5b1::t_6ebfd6e3f48b3e 7
+fixtures/ops-reference/qualification/receipts/latest-remote-119b/corrected-operator-build-receipt.json
+  s_f4202e28c6b5b1::t_3692ff6912b699 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2c9c766c2fde2fce346eef55a40a6a9d7544fe9a",
+  "prompts": {},
+  "sessions": {
+    "s_f4202e28c6b5b1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ee9e-623b-7d12-a648-d8b462390eec",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
