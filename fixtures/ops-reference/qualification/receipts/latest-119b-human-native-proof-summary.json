@@ -1,0 +1,32 @@
+{
+  "schema": "lenso.ops-human-restart-proof.v1",
+  "recorded_at": "2026-09-30T13:51:54.005178+00:00",
+  "target": "native_http",
+  "scope": "fresh isolated PostgreSQL complete Human verifier, matching CI invocation; no UI browser or external MCP proof",
+  "status": "passed",
+  "cli_sha256": "c772c839cf9905f3043bb347470f47f1c0096ac7df6fbf7d105c6a961fd8b15b",
+  "verifier_sha256": "38feb054583ba6670c15a95ee4b1bc35dd636c05054c53fba25975bd7f29de84",
+  "receipt_sha256": "d8644c57d88f69ed7b6713b363c2cdb64ee014e393f41d117c838d48a660b9bf",
+  "actual_case_count": 23,
+  "assertion_based_restart_details": {
+    "retained_bob_session_http_status": 200,
+    "retained_bob_subject_matches_original_account": true,
+    "bob_operation_http_status": 403,
+    "bob_problem_status": 403,
+    "bob_problem_code": "operators_required",
+    "fresh_alice_session_matches_original_account": true,
+    "alice_operation_http_status": 200,
+    "alice_operation_exact_original_committed_response": true,
+    "business_value": 47,
+    "business_revision": 1,
+    "status_recovery_business_state_unchanged": true
+  },
+  "required_cases": [
+    "persistent_decider_account_session",
+    "status_is_bound_to_original_requester",
+    "status_recovery_does_not_repeat_business_write"
+  ],
+  "persistent_account_session_and_operation": "passed",
+  "shutdown": "passed",
+  "pg_cleanup_owner": "Root; PostgreSQL left running"
+}

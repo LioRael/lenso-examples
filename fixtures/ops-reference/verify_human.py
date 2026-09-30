@@ -245,6 +245,24 @@ def prove_personal_token(url,root,deployment,sessions,*,idempotency_key='human-t
         'account_logout_revokes_session']
 
 
+def prove_restarted_operation(url,origin,root,operation,committed,bob):
+    accounts=json.loads((root/'human-enrollment.json').read_text())['accounts']
+    status,session,_=call(url,'/api/console/v1/session',bob)
+    assert status==200 and session['subject']==accounts['bob']['subject'], 'The retained decider session did not survive restart'
+    status,problem,_=call(url,'/management/operations/'+operation,bob)
+    assert (status,problem.get('status'),problem.get('code'))==(403,403,'operators_required'), 'Another subject read the requester operation'
+    alice=login(url,origin,'alice@ops.test',(root/'alice-password.secret').read_text())
+    status,session,_=call(url,'/api/console/v1/session',alice)
+    assert status==200 and session['subject']==accounts['alice']['subject'], 'The requester account did not survive restart'
+    assert call(url,'/management/operations/'+operation,alice)[:2]==(200,committed), 'The requester did not recover the exact committed operation'
+    status,current,_=call(url,'/management/invoke',bob,{'entry_id':'state.read','version':'2.0.0',
+        'input_json':'{}','idempotency_key':None,'expected_revision':None})
+    assert status==200 and current['state']=='succeeded', 'The decider lost independent business read access'
+    expected=json.loads(committed['result_json']);observed=json.loads(current['result_json'])
+    assert (observed['value'],observed['revision'])==(expected['value'],expected['revision']), 'Status recovery changed the business state'
+    return ['persistent_decider_account_session','status_is_bound_to_original_requester','status_recovery_does_not_repeat_business_write']
+
+
 def resume_committed(cli, root, receipt, browser_ready_file):
     assert not receipt.exists() and not (root/'project').exists()
     assert (root/'tool-audience-build-completed.json').exists()
@@ -282,7 +300,7 @@ def resume_committed(cli, root, receipt, browser_ready_file):
         evidence['cases']=['actual_password_login','distinct_live_account_subjects','cookie_http_only_secure_no_store',
             'wrong_origin_and_password_denied','reconciled_terminal_human_intent','missing_and_wrong_csrf_denied','single_existing_business_receipt']+cases
     with native_server(cli,artifact,facilities,root) as url:
-        assert call(url,'/management/operations/'+operation,bob)[:2]==(200,committed)
+        evidence['cases']+=prove_restarted_operation(url,origin,root,operation,committed,bob)
         evidence['persistent_account_session_and_operation']='passed'
         pairing={'run_nonce':secrets.token_urlsafe(18),'deployment':deployment,'cli_sha256':evidence['cli_sha256'],
             'host_build_sha256':evidence['build']['receipts']['.lenso/host-build.json']['sha256']}
@@ -360,7 +378,7 @@ def finish_pat_reconciliation(cli,root,receipt,browser_ready_file):
         evidence['cases']+=['cross_subject_pat_revoke_denied','fresh_pat_revocation',
             'owner_created_accepted_auth_and_revoked_metadata','account_logout_revokes_session']
     with native_server(cli,artifact,facilities,root) as url:
-        assert call(url,'/management/operations/'+operation,bob)[:2]==(200,committed)
+        evidence['cases']+=prove_restarted_operation(url,origin,root,operation,committed,bob)
         evidence['persistent_account_session_and_operation']='passed'
         pairing={'run_nonce':secrets.token_urlsafe(18),'deployment':deployment,'cli_sha256':evidence['cli_sha256'],
             'host_build_sha256':evidence['build']['receipts']['.lenso/host-build.json']['sha256']}
@@ -486,7 +504,7 @@ def run():
     with native_server(args.cli,artifact,facilities,root) as url:
         bob,operation,committed,evidence['cases']=prove(url,origin,root,input['deployment'])
     with native_server(args.cli,artifact,facilities,root) as url:
-        assert call(url,'/management/operations/'+operation,bob)[:2]==(200,committed)
+        evidence['cases']+=prove_restarted_operation(url,origin,root,operation,committed,bob)
         evidence['persistent_account_session_and_operation']='passed'
         if args.browser_ready_file:
             pairing={'run_nonce':secrets.token_urlsafe(18),'deployment':input['deployment'],

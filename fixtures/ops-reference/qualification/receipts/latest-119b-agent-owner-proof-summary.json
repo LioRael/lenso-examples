@@ -1,0 +1,80 @@
+{
+  "schema": "lenso.ops-agent-current-source-proof.v1",
+  "recorded_at": "2026-09-30T14:06:06.632888+00:00",
+  "status": "passed",
+  "target": "native_http",
+  "target_cli_core_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "agent_source_revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+  "independent_agent_library_core_revision": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "agent_executable_sha256": "0fd4cb340f9d95f066e0adf77a50600562c84e6e867fb92dbf77a7b723c3fc6a",
+  "agent_build_receipt_sha256": "1d5b3b6e1bde601ec62a8620d5af60a771ca01cf03a9eda56098af9c3ffb3dcf",
+  "agent_owner_receipt_sha256": "e263e9b0bc817d7f15f758903fa2f9aa23d1b5b47f09754753ce481ae0ddceb8",
+  "human_receipt_original_sha256": "d8644c57d88f69ed7b6713b363c2cdb64ee014e393f41d117c838d48a660b9bf",
+  "human_receipt_unchanged": true,
+  "human_enrollment_repeated": false,
+  "actual_case_count": 14,
+  "cases": [
+    "actual_account_owner_scoped_issuance",
+    "browser_subject_and_csrf_guard",
+    "durable_one_time_child_receipt",
+    "actual_third_party_tool_returned_log_cannot_expand_loop_tool_scope",
+    "signed_task_binding",
+    "child_has_no_human_or_token_routes",
+    "actual_independent_fixture_model_loop",
+    "server_pending_approval",
+    "operation_query_after_agent_process_restart",
+    "hidden_tool_and_target_change_denied",
+    "untrusted_log_has_no_credential_tool_or_authority",
+    "console_and_agent_share_one_live_management_process",
+    "exact_cached_tool_denied_after_owner_revocation",
+    "parent_revocation_denies_current_child"
+  ],
+  "accepted_operation_state": "pending_approval",
+  "accepted_operation_id": "b43f647a-9f17-4dfb-bc9c-b0b102b6906b",
+  "business_write_approved_or_committed": false,
+  "final_business_state": {
+    "value": 47,
+    "revision": 1
+  },
+  "concurrent_console_probes": [
+    {
+      "turn": "read",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    },
+    {
+      "turn": "pending",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    },
+    {
+      "turn": "status-after-process-restart",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    },
+    {
+      "turn": "hidden-after-terminal-classifier",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    },
+    {
+      "turn": "third-party-returned-log",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    },
+    {
+      "turn": "target-change",
+      "console_http_status": 200,
+      "agent_process_live_before_and_after_probe": true
+    }
+  ],
+  "shutdown": "passed",
+  "boundaries": {
+    "model": "deterministic fixture; no external real model call",
+    "browser": "not invoked",
+    "mcp": "not claimed by this Agent proof",
+    "cloudflare": "not involved",
+    "publication_or_rights_changes": false,
+    "pg_cleanup_owner": "Root"
+  }
+}

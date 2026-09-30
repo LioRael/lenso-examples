@@ -1,0 +1,11 @@
+{
+  "schema": "lenso.agent-task-native-build.v1",
+  "repository": "https://github.com/LioRael/lenso-agent",
+  "source_revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+  "target": "management_task",
+  "package": "lenso-agent-management-connection-plugin",
+  "cargo_locked": true,
+  "tracked_source_clean": true,
+  "cargo_lock_sha256": "79e8e0523788920ca0bf21e98a557c1c90bc96faf86514b8180ce0919f73101d",
+  "executable_sha256": "0fd4cb340f9d95f066e0adf77a50600562c84e6e867fb92dbf77a7b723c3fc6a"
+}

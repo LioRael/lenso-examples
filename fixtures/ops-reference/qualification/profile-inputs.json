@@ -538,5 +538,41 @@
       },
       "scope": "Nine source resolutions; historical Native Management compilation is separately attributed. These records do not rerun the historical qualified graphs or establish registry publication."
     }
+  },
+  "latest_actual_native_profiles": {
+    "core_app_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+    "native_cli_version": "0.6.6",
+    "native_cli_sha256": "c772c839cf9905f3043bb347470f47f1c0096ac7df6fbf7d105c6a961fd8b15b",
+    "human": {
+      "proof_receipt": {
+        "path": "./receipts/latest-119b-human-native-receipt.json",
+        "sha256": "d8644c57d88f69ed7b6713b363c2cdb64ee014e393f41d117c838d48a660b9bf"
+      },
+      "summary": {
+        "path": "./receipts/latest-119b-human-native-proof-summary.json",
+        "sha256": "64b08f0a87d139a794f659b48444aabe52c9ed622965bdfc69c64006fc92266e"
+      },
+      "case_count": 23,
+      "browser_qualified_by_this_run": false
+    },
+    "agent": {
+      "proof_receipt": {
+        "path": "./receipts/latest-119b-agent-owner-receipt.json",
+        "sha256": "e263e9b0bc817d7f15f758903fa2f9aa23d1b5b47f09754753ce481ae0ddceb8"
+      },
+      "summary": {
+        "path": "./receipts/latest-119b-agent-owner-proof-summary.json",
+        "sha256": "9046c02bb5ca16f41b28a47d236353949c1d50b0a728d953ac2b72c48836f83f"
+      },
+      "build": {
+        "path": "./receipts/latest-119b-agent-build-bec995.json",
+        "sha256": "1d5b3b6e1bde601ec62a8620d5af60a771ca01cf03a9eda56098af9c3ffb3dcf"
+      },
+      "case_count": 14,
+      "source_revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+      "independent_library_core_revision": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+      "real_model_interaction": false
+    },
+    "scope": "Actual ordinary Native Source App and deterministic fixture-model Agent; exact final Examples CI and registry publication are separate facts."
   }
 }
