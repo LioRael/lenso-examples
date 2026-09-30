@@ -1,0 +1,27 @@
+fixtures/ops-reference/qualification/current-source.md
+  s_f4202e28c6b5b1::t_2a41656f8df81e 71,77
+fixtures/ops-reference/qualification/profile-inputs.json
+  s_f4202e28c6b5b1::t_d372368b20aa6b 548,560
+fixtures/ops-reference/qualification/receipts/SHA256SUMS
+  s_f4202e28c6b5b1::t_ff34f7a6e56937 176,179
+fixtures/ops-reference/qualification/receipts/latest-119b-agent-owner-proof.json
+  s_f4202e28c6b5b1::t_1344c9973bb94a 1-11858
+fixtures/ops-reference/qualification/receipts/latest-119b-human-native-proof.json
+  s_f4202e28c6b5b1::t_74385ccdaee712 1-5890
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "97d6a26be73faaad01f448207457de46b587e209",
+  "prompts": {},
+  "sessions": {
+    "s_f4202e28c6b5b1": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ee9e-623b-7d12-a648-d8b462390eec",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "LioRael <leo@lenso.dev>"
+    }
+  }
+}
