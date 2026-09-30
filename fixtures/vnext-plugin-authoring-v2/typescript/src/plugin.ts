@@ -5,7 +5,7 @@ import {
   provider,
 } from "@lenso/bun-plugin";
 import {
-  DOCUMENT_STORE_CONTRACT,
+  DocumentStore,
   type DocumentStoreClient,
 } from "../generated/document-store.ts";
 import {
@@ -48,11 +48,11 @@ const config = configuration<SyncConfig>(
 
 const source = dependency({
   id: "source",
-  contract: DOCUMENT_STORE_CONTRACT,
+  contract: DocumentStore,
 });
 const destination = dependency({
   id: "destination",
-  contract: DOCUMENT_STORE_CONTRACT,
+  contract: DocumentStore,
 });
 
 class DocumentSync implements DocumentSyncProvider {

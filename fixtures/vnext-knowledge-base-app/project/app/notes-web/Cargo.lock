@@ -1564,9 +1564,9 @@ dependencies = [
 
 [[package]]
 name = "lenso-bun-adapter"
-version = "0.1.15"
+version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acae3fdcffc540503e683e72ade0bc39147cdc37c07d1fbc9480e5fa136941fc"
+checksum = "612fdbc0993adbf3650945144a46c5ee31bdd102a71aefb282a6a259ebadf2c5"
 dependencies = [
  "axum",
  "base64 0.22.1",
@@ -1735,11 +1735,12 @@ dependencies = [
 
 [[package]]
 name = "lenso-engine-authoring"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35087f123ab68d786e4165aa9af671d3babd4564afb335021c4e9629389061e0"
+checksum = "7c67bdb619120ff386fe8a83f5cc8454f921fb3944038400a47dd7b3f4565dee"
 dependencies = [
  "anyhow",
+ "flate2",
  "glob",
  "jsonschema",
  "lenso-app-plan",
@@ -1750,6 +1751,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.11.0",
+ "tar",
  "tempfile",
  "toml",
  "ureq",

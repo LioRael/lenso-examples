@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-30T12:32:15.843105+00:00",
+  "owner": "access",
+  "previous_main": "5485066ae3e99191862701f753b3ae186755ee80",
+  "candidate_sha": "83aecd01e20cc114311e63d25af849cac9b14f47",
+  "required_gate": {
+    "conclusion": "success",
+    "headSha": "83aecd01e20cc114311e63d25af849cac9b14f47",
+    "status": "completed",
+    "url": "https://github.com/LioRael/lenso-access-control-plugin/actions/runs/36712348167",
+    "jobs": [
+      {
+        "name": "quality",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/LioRael/lenso-access-control-plugin/actions/runs/36712348167/job/109876901380"
+      },
+      {
+        "name": "workers",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/LioRael/lenso-access-control-plugin/actions/runs/36712348167/job/109876901701"
+      }
+    ]
+  },
+  "production_source_changed": false,
+  "service_change_limit": null,
+  "push_returncode": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/LioRael/lenso-access-control-plugin.git\n   5485066..83aecd0  HEAD -> main\n",
+  "publication": "not_authorized",
+  "remote_main_readback": "83aecd01e20cc114311e63d25af849cac9b14f47",
+  "source_landing": "pass"
+}

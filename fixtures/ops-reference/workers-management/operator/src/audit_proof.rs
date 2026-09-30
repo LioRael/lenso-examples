@@ -113,7 +113,7 @@ pub fn verify(events: &[Value], expected: &Expected) -> Result<Value, ()> {
         "intent_digest_consistent":true, "exact_response_receipt_verified":true,
         "domain_value_revision_verified":false, "append_invoked":false,
         "metadata_and_actor_identifiers_redacted":true,
-        "audit_owner_source":"64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+        "audit_owner_source":"8fb929d066a5ce4bc145db47a6aae0527b62f230",
         "inspection_boundary":"Separate fixed, deployment-scoped Kernel reader; actual Owner typed list port; no setup, append or SQL. Opaque receipt compared with supplied actual ordinary-App response.",
     }))
 }

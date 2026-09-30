@@ -1,0 +1,49 @@
+{
+  "schema": "lenso.scoped-remote-cleanup.v1",
+  "workers": [
+    {
+      "role": "graph",
+      "delete_dispatch_count": 1,
+      "ordinary_confirmation": true,
+      "force": false,
+      "command_returncode": 1,
+      "post_delete_kv_list_permission_error": 10000,
+      "configured_kv_namespaces": 0,
+      "worker_api_absence_code": 10007,
+      "confirmed_absent": true,
+      "raw_absence_receipt_sha256": "53a04807e9c17f76e98297d238aa97d47b82739ba90ffacd7d8fa1458d739e07"
+    },
+    {
+      "role": "operator",
+      "delete_dispatch_count": 1,
+      "ordinary_confirmation": true,
+      "force": false,
+      "command_returncode": 1,
+      "post_delete_kv_list_permission_error": 10000,
+      "configured_kv_namespaces": 0,
+      "worker_api_absence_code": 10007,
+      "confirmed_absent": true,
+      "raw_absence_receipt_sha256": "ab5c01ed5d81c04aa7359fec3c198ba96aa2512715aab9e398fc49b2119f80d9"
+    }
+  ],
+  "created_database_count": 7,
+  "database_bindings": [
+    "AUTH_DB",
+    "ACCESS_CONTROL_DB",
+    "AUDIT_DB",
+    "APPROVAL_DB",
+    "MANAGEMENT_DB",
+    "OPS_DB",
+    "AUTH_FAULT_DB"
+  ],
+  "all_seven_exact_created_database_ids_absent_in_fresh_list": true,
+  "fresh_list_command_sha256": "def6d1aa54fc6fee253b2bf31a3f6713538096c26a26958bea3edf7e7f3efb0a",
+  "all_nine_resources_absent": true,
+  "original_account_other_resources_mutated": false,
+  "subscription_modified": false,
+  "hyperdrive_created": false,
+  "force_used": false,
+  "worker_delete_replayed": false,
+  "d1_delete_replayed": false,
+  "private_raw_commands_retained": true
+}

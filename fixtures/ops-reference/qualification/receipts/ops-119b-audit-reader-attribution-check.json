@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "change": "Correct reader attribution to actual compiled Audit Owner; preserve historical receipts",
+  "normal_native_all_targets_locked_check": "pass",
+  "log": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-native-audit-reader-check.log",
+  "log_sha256": "4c1bb23ca7522d9278f579c141b77b27791b59a8921afdacafd236c97fa1aa4e",
+  "source_checks": [
+    {
+      "root": "fixtures/ops-reference/audit-reader",
+      "normal_lock_sha256": "52b8d3116fe9a04a0401702130888257b38168d09336e0d19a69923dc36d1c3c",
+      "reader_source_sha256": "f1ce594a5d5525223e764b8e18b88d4d173e1746f0867a3d938294b7d76190d9",
+      "audit_owner_source": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+      "format_check": "pass"
+    },
+    {
+      "root": "fixtures/ops-reference/workers-management/operator",
+      "normal_lock_sha256": "e6c50b359564ffb26c5913c86544117c70711e12a96fad5d52d78d3cff13818a",
+      "reader_source_sha256": "e706f9385c07092e8303a3c2d9c270789c10e2ca9ece556c331ec9649c1151b3",
+      "audit_owner_source": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+      "format_check": "pass"
+    }
+  ],
+  "runtime_qualification": "separate actual receipts; no Native journey replay"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-worker-graph",
+  "infrastructure": "cloudflare-workers",
+  "wire_flag": "approved:true",
+  "status": 200,
+  "result": "pending_approval",
+  "operation_id": "ad5e1fc5be45e912034daf1c5c7d528cce01eb74c6cd4867d6958926642e8d4b",
+  "business_state_unchanged": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "bob_approval_dispatched": false,
+  "target_write_dispatched": false,
+  "request_replayed": false,
+  "known_pending_retained_until_resource_cleanup": true
+}

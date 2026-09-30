@@ -1,0 +1,88 @@
+{
+  "core_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "updated_live_manifests": [
+    "fixtures/ops-reference/audit-reader/Cargo.toml",
+    "fixtures/ops-reference/project/Cargo.toml",
+    "fixtures/ops-reference/operator/Cargo.toml",
+    "fixtures/ops-reference/project/contracts/example.ops-state/Cargo.toml",
+    "fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.toml",
+    "fixtures/ops-reference/project/app/management/Cargo.toml",
+    "fixtures/ops-reference/project/app/state/Cargo.toml",
+    "fixtures/ops-reference/workers-management/operator/Cargo.toml",
+    "fixtures/ops-reference/workers-management/project/app/management/Cargo.toml"
+  ],
+  "roots": [
+    {
+      "root": "fixtures/ops-reference/project",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-0.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/project/app/state",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-1.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/project/app/management",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-2.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/project/contracts/example.ops-state",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-3.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/project/contracts/example.ops-state-v2",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-4.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/storage/native-pg",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-5.json",
+      "kernel_sources": [],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/operator",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-6.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/audit-reader",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-7.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    },
+    {
+      "root": "fixtures/ops-reference/workers-management/operator",
+      "metadata": "/Users/leosouthey/Projects/framework/.artifacts/ops-119b-source-resolution-8.json",
+      "kernel_sources": [
+        "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+      ],
+      "result": "PASS"
+    }
+  ],
+  "result": "PASS",
+  "qualification": "dependency_resolution_only"
+}

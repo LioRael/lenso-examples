@@ -30,30 +30,42 @@ jobs:
           cargo install lenso-contract-codegen --version 0.8.2 --locked --force
           lenso-contract-codegen workspace check --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml
           lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-store/capability.json --rust-plugin fixtures/vnext-plugin-authoring-v2/src/generated/document_store.rs
-          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-store/capability.json --typescript fixtures/vnext-plugin-authoring-v2/typescript/generated/document-store.ts
           lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-sync/capability.json --rust-plugin fixtures/vnext-plugin-authoring-v2/src/generated/document_sync.rs
+      - name: Check current TypeScript Capability contracts
+        run: |
+          cargo install lenso-contract-codegen --version 0.10.1 --locked --force
+          lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-store/capability.json --typescript fixtures/vnext-plugin-authoring-v2/typescript/generated/document-store.ts
           lenso-contract-codegen check fixtures/vnext-plugin-authoring-v2/capabilities/document-sync/capability.json --typescript fixtures/vnext-plugin-authoring-v2/typescript/generated/document-sync.ts
       - run: cargo fmt --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --all -- --check
       - run: cargo check --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --workspace --all-targets
       - run: cargo test --locked --manifest-path fixtures/vnext-plugin-authoring-v2/Cargo.toml --workspace
       - run: bun run --cwd fixtures/vnext-plugin-authoring-v2/typescript check
-      - name: Run released Plugin authoring acceptance
+      - name: Prepare the exact source Plugin authoring CLI
+        run: |
+          python3 fixtures/ops-reference/prepare.py --cache "$RUNNER_TEMP/plugin-authoring-tools"
+          python3 - "$RUNNER_TEMP/plugin-authoring-tools/tools.json" "$GITHUB_ENV" <<'PYTHON'
+          import json, sys
+          selection=json.load(open(sys.argv[1]))
+          with open(sys.argv[2], 'a') as environment:
+              environment.write('AUTHORING_CLI='+selection['npm_cli']+'\n')
+          PYTHON
+      - name: Run exact source Plugin authoring acceptance
         working-directory: fixtures/vnext-plugin-authoring-v2
         run: |
-          npx --yes @lenso/cli@0.17.4 plugin check --repo-root . --json
-          npx --yes @lenso/cli@0.17.4 plugin pack --repo-root . --output document-sync.lenso-plugin --json
-          npx --yes @lenso/cli@0.17.4 app build --source acceptance/host.ts --target x86_64-unknown-linux-gnu --out /tmp/document-sync-host
-          npx --yes @lenso/cli@0.17.4 plugins add document-sync.lenso-plugin --root /tmp/document-sync-host
-          npx --yes @lenso/cli@0.17.4 app show --root /tmp/document-sync-host --json
-          npx --yes @lenso/cli@0.17.4 plugins remove example.document-sync --root /tmp/document-sync-host
-          npx --yes @lenso/cli@0.17.4 app check --root /tmp/document-sync-host
+          "$AUTHORING_CLI" plugin check --repo-root . --json
+          "$AUTHORING_CLI" plugin pack --repo-root . --output document-sync.lenso-plugin --json
+          "$AUTHORING_CLI" app build --source acceptance/host.ts --target x86_64-unknown-linux-gnu --out /tmp/document-sync-host
+          "$AUTHORING_CLI" plugins add document-sync.lenso-plugin --root /tmp/document-sync-host
+          "$AUTHORING_CLI" app show --root /tmp/document-sync-host --json
+          "$AUTHORING_CLI" plugins remove example.document-sync --root /tmp/document-sync-host
+          "$AUTHORING_CLI" app check --root /tmp/document-sync-host
           app_root="$(mktemp -d)"
           mkdir -p "$app_root/.lenso" "$app_root/plugins"
           cp host-catalog.json "$app_root/.lenso/host-catalog.json"
           printf 'document = "guide"\nruleset = "identity-v1"\n' > "$app_root/config.toml"
-          npx --yes @lenso/cli@0.17.4 plugins add document-sync.lenso-plugin --root "$app_root"
-          npx --yes @lenso/cli@0.17.4 plugins configure example.document-sync default --file "$app_root/config.toml" --root "$app_root"
-          npx --yes @lenso/cli@0.17.4 plugins list --root "$app_root" | grep 'example.document-sync/default.*PluginRoot'
+          "$AUTHORING_CLI" plugins add document-sync.lenso-plugin --root "$app_root"
+          "$AUTHORING_CLI" plugins configure example.document-sync default --file "$app_root/config.toml" --root "$app_root"
+          "$AUTHORING_CLI" plugins list --root "$app_root" | grep 'example.document-sync/default.*PluginRoot'
           mkdir /tmp/document-sync-bundle
           unzip -q document-sync.lenso-plugin -d /tmp/document-sync-bundle
           LENSO_DOCUMENT_SYNC_BUN_ARTIFACT=/tmp/document-sync-bundle/implementations/typescript-bun/plugin.js \

@@ -1,0 +1,24 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-worker-graph",
+  "infrastructure": "cloudflare-workers",
+  "deployment": "ops-management-cf-d7755e9f102c",
+  "profile": "read-only-without-approval",
+  "approval_instance": "absent",
+  "approval_facility": "absent",
+  "source_digest": "sha256:24a18ac6015f6659a2c0374a243aa51d797908b8bd59085dd52c2de018626d17",
+  "plan_digest": "sha256:3caef67921a35bdaa6ec16f9af444a61d6e1a6126ee9bc4472b0ebe65e9cefb7",
+  "host_wasm_digest": "sha256:04e03c4ee9a32b25b3d5479388f005f073818fa6f32e65dc057a3e470c39a36c",
+  "final_business_state": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "cases": [
+    "current_auth_and_read_live",
+    "no_approval_runtime_instance_or_private_facility",
+    "write_entry_not_found",
+    "human_decision_denied_before_owner_call",
+    "business_state_unchanged"
+  ]
+}

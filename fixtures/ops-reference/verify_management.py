@@ -87,6 +87,19 @@ def rpc(uri, token, method, parameters=None, session=None, identifier=1):
         return response.status,json.loads(raw),session
 
 
+def prove_revoked_http(url, token):
+    denials = {}
+    for path, expected_status, expected_code in [
+        ('/management/catalog', 401, 'session_required'),
+        ('/management-tools/catalog', 403, 'management_tool_denied'),
+    ]:
+        status, problem = request(url, path, token)
+        assert (status, problem.get('status'), problem.get('code')) == (
+            expected_status, expected_status, expected_code), (path, status, problem)
+        denials[path] = status
+    return denials
+
+
 def mcp_owner(packet):
     result = packet['result']
     assert not result.get('isError', False), result
@@ -220,8 +233,7 @@ def resume_committed(cli, root, receipt, *, allow_write=False):
         private(phase/'revoke-started.json',json.dumps({'token_id':token_id}))
         subprocess.run([str(root/'operator'),'revoke',str(root/'operator-input.json'),token_id],check=True)
         private(phase/'revoke-completed.json','{"state":"completed"}\n')
-        assert request(url,'/management/catalog',tokens['alice'])[0] in [401,403]
-        assert request(url,'/management-tools/catalog',tokens['alice'])[0]==403
+        prove_revoked_http(url, tokens['alice'])
         assert mcp_denied(*rpc(mcp_uri,tokens['alice'],'tools/list',{},session)[:2])
         assert mcp_denied(*rpc(mcp_uri,tokens['alice'],'tools/call',{'name':read_tool,'arguments':{'input':{}}},session)[:2])
         prove_mcp(mcp_uri,tokens['bob'],allow_write=allow_write,revision=2 if allow_write else 1)
@@ -374,8 +386,7 @@ def qualify_existing(cli, root, receipt, *, allow_write=False):
         private(phase/'revoke-started.json',json.dumps({'token_id':setup['tokens']['alice']['token_id']}))
         subprocess.run([str(root/'operator'),'revoke',str(root/'operator-input.json'),setup['tokens']['alice']['token_id']],check=True)
         private(phase/'revoke-completed.json','{"state":"completed"}\n')
-        assert request(url,'/management/catalog',tokens['alice'])[0] in [401,403]
-        assert request(url,'/management-tools/catalog',tokens['alice'])[0]==403
+        prove_revoked_http(url, tokens['alice'])
         status,result,_=rpc(mcp_uri,tokens['alice'],'tools/list',{},session)
         assert mcp_denied(status,result), 'Revoked MCP session did not return a known authorization denial'
         status,result,_=rpc(mcp_uri,tokens['alice'],'tools/call',{'name':read_tool,'arguments':{'input':{}}},session)
@@ -399,9 +410,7 @@ def finish_known_revocation(cli,root,receipt,*,allow_write=False):
     final=json.loads((phase/'mcp-committed.json').read_text())['receipt'] if allow_write else committed
     domain=json.loads(final['result_json'])
     with native_server(cli,root/'distribution',root/'facilities.json',root) as url:
-        status,denied=request(url,'/management/catalog',tokens['alice'])
-        assert status in [401,403] and denied.get('error')!='unavailable'
-        assert request(url,'/management-tools/catalog',tokens['alice'])[0]==403
+        denials = prove_revoked_http(url, tokens['alice'])
         status,denied,_=rpc(mcp_uri,tokens['alice'],'initialize',{'protocolVersion':'2025-11-25',
             'capabilities':{},'clientInfo':{'name':'revocation-reconciliation','version':'1.0.0'}})
         assert mcp_denied(status,denied)
@@ -413,7 +422,7 @@ def finish_known_revocation(cli,root,receipt,*,allow_write=False):
         'cli_sha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'source_deleted':True,
         'prior_completed_phase':{'build':native_build(root/'distribution-before-tool-audience'),
             'operation_id':prior['operation_id'],'value':47,'revision':1,'reconciled_through_current_owner':True},
-        'assertion_reconciliation':{'invalid_credential_http_status':status,'revoke_repeated':False},
+        'assertion_reconciliation':{'invalid_credential_http_status':denials['/management/catalog'],'revoke_repeated':False},
         'cases':['reconciled_terminal_intent','same_intent_has_single_business_receipt','duplicate_intent_conflict',
             'agent_no_human_or_credential_tools','actual_agent_typed_owner_read','actual_bound_mcp_catalog_and_read',
             'mcp_session_does_not_cache_revoked_authority','unrelated_current_mcp_session_remains_available'],
@@ -510,8 +519,7 @@ def run():
             assert request(url,'/management/operations/'+mcp_operation,tokens['alice'])==(200,mcp_committed)
         session,read_tool=prove_mcp(mcp_uri,tokens['alice'],allow_write=args.mcp_write,revision=2 if args.mcp_write else 1)
         subprocess.run([str(operator),'revoke',str(input_file),setup['tokens']['alice']['token_id']],check=True)
-        assert request(url,'/management/catalog',tokens['alice'])[0]==403
-        assert request(url,'/management-tools/catalog',tokens['alice'])[0]==403
+        evidence['revoked_http'] = prove_revoked_http(url, tokens['alice'])
         status,result,_=rpc(mcp_uri,tokens['alice'],'tools/list',{},session)
         assert mcp_denied(status, result), 'Revoked MCP session did not return a known authorization denial'
         status,result,_=rpc(mcp_uri,tokens['alice'],'tools/call',{'name':read_tool,'arguments':{'input':{}}},session)

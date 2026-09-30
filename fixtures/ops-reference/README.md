@@ -9,12 +9,13 @@ the business verifiers run without it.
 ## Prepare exact candidates
 
 The published DX is `@lenso/cli@0.17.4`, whose native executable reports
-`lenso 0.6.4`; the Rust facade is `lenso = 0.5.27`. These are distinct package
+`lenso 0.6.4`; the Rust facade is `lenso = 0.5.28`. These are distinct package
 versions. New scoped Host facilities and linked Rust Workers graphs require
 **source candidates**, selected in [candidate-inputs.json](candidate-inputs.json).
 Workers runtime `0.1.6` is a candidate, not a public registry install target.
-The selected source CLI reports `lenso 0.6.5` and selects the `lenso 0.5.28`
-SDK candidate; these versions are awaiting publication. Management qualification explicitly selects the
+The selected source CLI reports `lenso 0.6.6` and uses the `lenso 0.5.28`
+SDK. The native CLI and updated authoring path remain source candidates;
+`lenso 0.5.28` is published. Management qualification explicitly selects the
 already reachable owner Cargo Plugins through their Plugin Root files. The
 generated Host retains each exact Git package identity and records these
 selections in `.lenso/root-linked-sources.json`.
@@ -28,7 +29,10 @@ python3 prepare.py --cache candidate-tools
 This builds the exact Core commit and packs the exact JS runtime commit in a
 fresh directory. It uses standard Cargo configuration and does not upgrade the
 global CLI. `candidate-tools/tools.json` records the executable path and digest,
-plus the runtime path and archive digest. Use its `cli` path below. No sibling
+plus the runtime path and archive digest. It also stages the npm launcher and
+its exact TypeScript parser for the current platform. Use its native `cli` path
+below; TypeScript Host authoring uses the `npm_cli` path. The local launcher
+stage does not prove npm publication. No sibling
 checkout is required; starting a built Native distribution needs only the
 native executable.
 

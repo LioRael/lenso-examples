@@ -1,5 +1,11 @@
 # Proposal completion ledger
 
+The [September 30 update](./current-source.md) records the current source and
+publication boundary. The table and checkpoint sections below preserve the
+earlier proposal timeline, including failures and publication holds at the time
+they were recorded. Their runtime evidence remains specific to its actual
+source and artifact.
+
 This ledger maps the supplied proposals 01–11 and 90 to implemented owners,
 exact accepted gates, and remaining profile work. It is not an aggregate
 completion receipt. The user's implementation request supplied authority;

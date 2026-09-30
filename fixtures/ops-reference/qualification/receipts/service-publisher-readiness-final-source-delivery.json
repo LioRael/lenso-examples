@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-30T12:33:57.314032+00:00",
+  "owner": "service",
+  "previous_main": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+  "candidate_sha": "bff3c4ea669bdc55b0fdef5321fc9cf96b602a9b",
+  "required_gate": {
+    "conclusion": "success",
+    "headSha": "bff3c4ea669bdc55b0fdef5321fc9cf96b602a9b",
+    "status": "completed",
+    "url": "https://github.com/LioRael/lenso-service-account-plugin/actions/runs/36713433192",
+    "jobs": [
+      {
+        "name": "check",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/LioRael/lenso-service-account-plugin/actions/runs/36713433192/job/109880459659"
+      }
+    ]
+  },
+  "production_logic_changed": false,
+  "version_change": "three public versions0.1.0\u21920.1.1 plus normal lock",
+  "push_returncode": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/LioRael/lenso-service-account-plugin.git\n   6f4d4d1..bff3c4e  HEAD -> main\n",
+  "publication": "not_authorized",
+  "remote_main_readback": "bff3c4ea669bdc55b0fdef5321fc9cf96b602a9b",
+  "source_landing": "pass"
+}

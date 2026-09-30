@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "repository": "LioRael/lenso-access-control-plugin",
+  "prior_main": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+  "candidate_sha": "5485066ae3e99191862701f753b3ae186755ee80",
+  "main_readback": "5485066ae3e99191862701f753b3ae186755ee80",
+  "landing": "normal-fast-forward-push",
+  "required_ci": {
+    "run_id": 36677702907,
+    "attempt": 2,
+    "head_sha": "5485066ae3e99191862701f753b3ae186755ee80",
+    "conclusion": "success"
+  },
+  "publication": "not_performed",
+  "main_trigger_review": "CI candidate branches; publication manual only",
+  "worktree_cleanup": "held until source assets staged; unrelated checkouts preserved"
+}

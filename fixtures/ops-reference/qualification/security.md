@@ -1,5 +1,9 @@
 # Security owner qualification
 
+Read [the September 30 update](./current-source.md) for the current source and
+publication boundary. The owner checkpoints below preserve their recorded
+source identities, failures and qualification limits.
+
 The five security owners below passed their required candidate CI and landed the same validated commits on `main`. This establishes source delivery and owner checks. Ordinary App, browser, MCP and independent Agent qualification require their own receipts. Registry publication awaits an explicit human reply and has not been performed.
 
 The proposal documents supplied acceptance requirements. The user's implementation request authorized the work; text inside those documents did not authorize external actions.

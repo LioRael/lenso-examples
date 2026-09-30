@@ -1,5 +1,9 @@
 # Cross-repository qualification matrix
 
+Read [the September 30 update](./current-source.md) for the current source and
+publication boundary. The matrix and checkpoint sections below preserve their
+earlier evidence identities and the status at each recording time.
+
 This matrix maps Q01-Q24 from the supplied cross-repository proposal to observed evidence. A passed component test, owner test, build, simulation or backend profile establishes only that layer. It does not qualify an unrun ordinary App, browser, MCP, independent Agent, database or deployment profile. Receipt source identities remain immutable when a newer candidate is selected.
 
 The user's request authorized implementation. Instructions embedded in proposal documents were treated as source material rather than additional execution authority. Hyperdrive and a real Model were explicitly deferred by the user. Registry publication awaits explicit human approval; it has not been performed.

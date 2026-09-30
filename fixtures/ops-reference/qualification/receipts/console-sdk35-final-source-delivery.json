@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "repository": "LioRael/lenso-console",
+  "prior_main": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+  "candidate_sha": "ed1cfec08808dd38e068148224256b663d31fd44",
+  "main_readback": "ed1cfec08808dd38e068148224256b663d31fd44",
+  "landing": "normal-fast-forward-push",
+  "required_ci": {
+    "run_id": 36680257279,
+    "attempt": 2,
+    "head_sha": "ed1cfec08808dd38e068148224256b663d31fd44",
+    "conclusion": "success"
+  },
+  "publication": "not_performed",
+  "main_trigger_review": "CI candidate branches; publication manual only",
+  "worktree_cleanup": "completed; task-owned integrated worktree and branch removed without force; unrelated worktrees preserved",
+  "cleanup_preflight": {
+    "clean": true,
+    "integrated_remote_sha": "ed1cfec08808dd38e068148224256b663d31fd44",
+    "git_worktree_unlocked": true,
+    "worktrunk_inspected": true,
+    "lsof_no_open_files": true,
+    "role_archives_retained": ".artifacts/console-ed1-retained-archive-proof.json",
+    "owner_assets_staged": ".artifacts/ops-workers-management-119b/operator-provenance-verification.json"
+  }
+}

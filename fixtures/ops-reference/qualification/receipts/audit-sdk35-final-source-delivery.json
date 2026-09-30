@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "repository": "LioRael/lenso-audit-log-plugin",
+  "prior_main": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+  "candidate_sha": "31ee61e7b648e1a77edacc0303ab41838433f708",
+  "main_readback": "31ee61e7b648e1a77edacc0303ab41838433f708",
+  "landing": "normal-fast-forward-push",
+  "required_ci": {
+    "run_id": 36694121597,
+    "attempt": 2,
+    "head_sha": "31ee61e7b648e1a77edacc0303ab41838433f708",
+    "conclusion": "success"
+  },
+  "publication": "not_performed",
+  "main_trigger_review": "CI candidate branches; publication manual only",
+  "worktree_cleanup": "completed; task-owned worktree and integrated branch removed without force",
+  "cleanup_preflight": {
+    "clean": true,
+    "integrated_remote_sha": "31ee61e7b648e1a77edacc0303ab41838433f708",
+    "git_worktree_unlocked": true,
+    "worktrunk_inspected": true,
+    "lsof_no_open_files": true
+  }
+}

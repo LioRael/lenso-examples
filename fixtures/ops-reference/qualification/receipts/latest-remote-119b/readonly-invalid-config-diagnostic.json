@@ -1,0 +1,26 @@
+{
+  "observations": [
+    {
+      "principal": "anonymous",
+      "status": 503,
+      "body": {
+        "error": "host_unavailable"
+      }
+    },
+    {
+      "principal": "alice",
+      "status": 503,
+      "body": {
+        "error": "host_unavailable"
+      }
+    },
+    {
+      "principal": "bob",
+      "status": 503,
+      "body": {
+        "error": "host_unavailable"
+      }
+    }
+  ],
+  "mutations_dispatched": false
+}

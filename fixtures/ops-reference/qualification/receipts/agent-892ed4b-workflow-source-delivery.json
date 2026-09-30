@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-30T11:56:16.539963+00:00",
+  "previous_main": "7418b72815838230df96ddd106bd9a1a66ec14bf",
+  "candidate_sha": "892ed4b023e6db8332fa9774197191842777fd28",
+  "required_gates": [
+    {
+      "conclusion": "success",
+      "headSha": "892ed4b023e6db8332fa9774197191842777fd28",
+      "status": "completed",
+      "url": "https://github.com/LioRael/lenso-agent/actions/runs/36709828660"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "892ed4b023e6db8332fa9774197191842777fd28",
+      "status": "completed",
+      "url": "https://github.com/LioRael/lenso-agent/actions/runs/36709832078"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "892ed4b023e6db8332fa9774197191842777fd28",
+      "status": "completed",
+      "url": "https://github.com/LioRael/lenso-agent/actions/runs/36709828710"
+    }
+  ],
+  "scope": "single npm release workflow; production crate bytes unchanged",
+  "push_returncode": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/LioRael/lenso-agent.git\n   7418b72..892ed4b  HEAD -> main\n",
+  "publication": "not_authorized",
+  "remote_main_readback": "892ed4b023e6db8332fa9774197191842777fd28",
+  "source_landing": "pass"
+}

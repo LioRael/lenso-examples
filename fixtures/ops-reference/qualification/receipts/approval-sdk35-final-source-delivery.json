@@ -1,0 +1,38 @@
+{
+  "schema": "lenso.owner-source-delivery.v1",
+  "repository": "LioRael/lenso-business-approval-plugin",
+  "source_revision": "db8396b4742503455d3b80a8fadb9ae7cb6d11bc",
+  "production_manifest_lock_predecessor": "a6e73aa756c45db8260b5a7544328d97624ea896",
+  "production_manifest_lock_unchanged": true,
+  "workflow_successor_changed_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/release-plz.yml",
+    "README.md",
+    "scripts/check-package-policy.py"
+  ],
+  "required_ci": {
+    "run_id": 36693414399,
+    "conclusion": "success",
+    "headSha": "db8396b4742503455d3b80a8fadb9ae7cb6d11bc",
+    "status": "completed"
+  },
+  "main_fast_forward_from": "3346ce45beacdb74918666c045c802d31da585f6",
+  "remote_main_readback": "db8396b4742503455d3b80a8fadb9ae7cb6d11bc",
+  "publication_performed": false,
+  "source_only_package_policy": "all_four_workspace_packages_publish_false",
+  "automatic_publication_on_main": false,
+  "automatic_release_pr_on_main": false,
+  "cleanup": {
+    "git_worktrunk_inspected": true,
+    "clean_integrated": true,
+    "open_file_matches": 0,
+    "removed_worktree": "/Users/leosouthey/Projects/framework/.worktrees/lenso-business-approval-plugin/codex-approval-d1-management",
+    "removed_local_branch": "codex/approval-d1-management",
+    "command": "wt remove --foreground codex/approval-d1-management",
+    "forced": false,
+    "cargo_clean_performed": false,
+    "dirty_primary_preserved": true,
+    "other_worktrees_preserved": true
+  },
+  "recorded_at": "2026-09-30T09:10:14.522529+00:00"
+}

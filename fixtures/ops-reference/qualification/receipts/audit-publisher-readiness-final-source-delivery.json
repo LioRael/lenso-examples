@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-30T12:34:06.074324+00:00",
+  "owner": "audit",
+  "previous_main": "31ee61e7b648e1a77edacc0303ab41838433f708",
+  "candidate_sha": "b271095ce9577d4960b03305c949daaf4cb35512",
+  "required_gate": {
+    "conclusion": "success",
+    "headSha": "b271095ce9577d4960b03305c949daaf4cb35512",
+    "status": "completed",
+    "url": "https://github.com/LioRael/lenso-audit-log-plugin/actions/runs/36713949722",
+    "jobs": [
+      {
+        "name": "quality",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/LioRael/lenso-audit-log-plugin/actions/runs/36713949722/job/109882618824"
+      }
+    ]
+  },
+  "production_logic_changed": false,
+  "version_change": null,
+  "push_returncode": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/LioRael/lenso-audit-log-plugin.git\n   31ee61e..b271095  HEAD -> main\n",
+  "publication": "not_authorized",
+  "remote_main_readback": "b271095ce9577d4960b03305c949daaf4cb35512",
+  "source_landing": "pass"
+}

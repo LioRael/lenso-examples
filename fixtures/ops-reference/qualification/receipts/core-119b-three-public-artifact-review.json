@@ -1,0 +1,47 @@
+{
+  "schema": "lenso.additional-core-artifact-review.v1",
+  "source_sha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "normal_cargo_package": "pass",
+  "required_ci_run": 36703742436,
+  "publication": "not_authorized",
+  "package_count": 3,
+  "packages": [
+    {
+      "package_name": "lenso-engine-authoring",
+      "version": "0.2.5",
+      "vcs_sha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+      "sha256": "3726bd98ef05fc8ce6f24af6ec3deccd97dca9f0441acef6dfd1737c184c07a8",
+      "archive": "/Users/leosouthey/Projects/framework/.artifacts/core-119b-retained-archives/lenso-engine-authoring-0.2.5.crate",
+      "metadata_sha256": {
+        "Cargo.toml": "e8b72d06813c41235d392d851ffd3c8e228e84b9e59a31b6a17bc36732a4cfc1",
+        "Cargo.toml.orig": "fb08a4d07b38f4bac78d9831243f0c39a6a6a8095cb1e38d892946a307d4df08",
+        ".cargo_vcs_info.json": "45b4befcb04acfa1ba613c52213a01657bc31856ad5fb4c124209a49d41ac276"
+      }
+    },
+    {
+      "package_name": "lenso-engine-app",
+      "version": "0.3.3",
+      "vcs_sha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+      "sha256": "87e1f9069eafc978cc283a604fe1d82a9c0bf649806d11a355dc27c6f93d7cfc",
+      "archive": "/Users/leosouthey/Projects/framework/.artifacts/core-119b-retained-archives/lenso-engine-app-0.3.3.crate",
+      "metadata_sha256": {
+        "Cargo.toml": "df279cecef8740beb6fd748beec78516c9bc8ada5971cacb6948bcef02586d3c",
+        "Cargo.toml.orig": "5341d3117e7d066a9f3526d6b1f72366c0021631acda5f8320cffba008b5d76e",
+        ".cargo_vcs_info.json": "30ff6b8a6ebad26e3f3ff334cdd6ce3161081f90d99e976841f69b77a425addf"
+      }
+    },
+    {
+      "package_name": "lenso-cli",
+      "version": "0.6.6",
+      "vcs_sha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+      "sha256": "6010370dad1e33492f91435ad1a3e6672f8d3a37a3b0a5df365baf629c74c23b",
+      "archive": "/Users/leosouthey/Projects/framework/.artifacts/core-119b-retained-archives/lenso-cli-0.6.6.crate",
+      "metadata_sha256": {
+        "Cargo.toml": "ce0af862cc4f3b73e768dd0081516ef6e756fe9f40c6755b149248c0fb19aa87",
+        "Cargo.toml.orig": "327380caaea7f724851f2d58dd4eab881711caa8bb67e393f1725117f8b45b56",
+        ".cargo_vcs_info.json": "49c40d81d57faf5310b54977faad6dc1a230523f2f00ec7da9230de0b6ff0109"
+      }
+    }
+  ],
+  "normal_cargo_log": "/Users/leosouthey/Projects/framework/.artifacts/core-119b-three-public-archives.log"
+}

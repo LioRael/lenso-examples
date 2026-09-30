@@ -388,7 +388,7 @@ fn verify(
         "intent_digest_consistent":true, "domain_value_revision_verified":false,
         "exact_response_receipt_verified":expected.receipt_id.is_some(),
         "metadata_and_actor_identifiers_redacted":true, "append_invoked":false,
-        "audit_owner_source":"59ecc79e38de72891e6a164d7e74617c618038f8"
+        "audit_owner_source":"8fb929d066a5ce4bc145db47a6aae0527b62f230"
     }))
 }
 

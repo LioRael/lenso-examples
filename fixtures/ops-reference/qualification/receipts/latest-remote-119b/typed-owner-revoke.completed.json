@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "layer": "supplemental-owner-operator",
+  "ordinary_source_app": false,
+  "owner": "auth",
+  "operation": "revoke_token",
+  "request_sha256": "11e19f6fbd107555b3d82c0755941efb121a18bfc26fc044c4f09b9f717cba8f",
+  "state": "completed",
+  "result": {
+    "changed": true
+  },
+  "secret_saved": false
+}

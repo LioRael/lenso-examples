@@ -1,0 +1,24 @@
+{
+  "schema": "lenso.qualification.source-cohort.v1",
+  "layer": "ordinary-source-worker-graph",
+  "core_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "javascript_revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+  "builder_native_sha256": "c772c839cf9905f3043bb347470f47f1c0096ac7df6fbf7d105c6a961fd8b15b",
+  "builder_version": "0.3.3",
+  "resolved_management_workspace_git_sources": [
+    "git+https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066ae3e99191862701f753b3ae186755ee80",
+    "git+https://github.com/LioRael/lenso-audit-log-plugin?rev=8fb929d066a5ce4bc145db47a6aae0527b62f230#8fb929d066a5ce4bc145db47a6aae0527b62f230",
+    "git+https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc9ba1efc12aaa2cf459628e6383100264",
+    "git+https://github.com/LioRael/lenso-business-approval-plugin?rev=a6e73aa756c45db8260b5a7544328d97624ea896#a6e73aa756c45db8260b5a7544328d97624ea896",
+    "git+https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec08808dd38e068148224256b663d31fd44",
+    "git+https://github.com/LioRael/lenso?rev=119b9af70b82816588c00c8bf812f7c62d1a18b5#119b9af70b82816588c00c8bf812f7c62d1a18b5"
+  ],
+  "cargo_lock_sha256": "02417a5f333d79c548ff7daa51436f76f2ead01c41bc29016bcbe6f77242f227",
+  "source_digest": "sha256:50fd62d65e893ba39bb1b4d8fba46bc412d3fbc4b657c2069832a857de3a9cb5",
+  "plan_digest": "sha256:247f3242d481b7b5c554c5b487da0ff0cecd93f16a7a15ea983572293faf9fbe",
+  "host_wasm_digest": "sha256:4bf0b5aeb78d45b3f7b75db1ea61f9d6bdc4c4862b50db5d2a49fad573eb3272",
+  "operator_wasm_sha256": "2f0bf468b00b696fcb1c8ce770b76892227fbab4105164424464df33c5a473c8",
+  "historical_source_artifacts_promoted": false,
+  "registry_or_npm_publication_assessed": false,
+  "closed_asset_provenance": "main-artifact-provenance.json"
+}

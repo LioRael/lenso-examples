@@ -20,6 +20,42 @@ Owner adapters and the selected Workers runtime modules, recording byte hashes.
 The generated Wasm includes the constructors and reset function required by the
 Workers runtime. No toolchain override or source-path Cargo patch is introduced.
 
+`build.py` records the operator manifest, normal Cargo lock, Rust sources,
+Worker entry point and build/staging scripts, plus every generated package file.
+It rejects source changes during compilation and requires the typed Audit
+reader's source annotation to match the Audit Owner in the normal Cargo lock.
+Preserve this complete build
+directory for a newer source-selected remote preparation; a directory containing
+only `pkg`, `owner-assets` and `worker.mjs` is insufficient for that path.
+
+`prepare_remote.py prepare` without build-selection flags retains the historical
+`b840e9c7` Wasm check. Select a newer build explicitly with both flags:
+
+```sh
+python3 prepare_remote.py prepare \
+  --private-root /private/tmp/new-operator-private \
+  --template-private-root /private/tmp/reviewed-template-private \
+  --runtime /private/tmp/new-operator-runtime \
+  --facts /private/tmp/new-deployment-facts.json \
+  --source-runtime /private/tmp/checked-operator-build \
+  --operator-build-receipt /private/tmp/checked-operator-build/pkg/build-receipt.json \
+  --source-selections ../../candidate-inputs.json
+```
+
+The supplied receipt must be byte-identical to the build directory's receipt.
+Its source hashes must match both that directory and the current reviewed
+operator source. The selected Core revision must match the normal operator lock
+and manifest patches. Five Owner revisions come from the current Worker core
+manifest and normal locks: Auth, Access and Audit are compiled operator owners;
+Approval and Management are selected JavaScript adapters, checked against the
+normal Management lock. All five must match `owner-assets/sources.json` and the
+actual staged bytes; the runtime must match the selected JavaScript revision.
+Missing or partial flags, changed locks, sources, generated files or assets stop
+preparation before private keys or runtime directories are created. There is no
+bare expected-hash override. The private preparation receipt records the verified
+build and asset receipt hashes. This preparation performs no deployment,
+resource creation or Owner call, and does not promote historical qualification.
+
 The private Worker selects five D1 bindings: `AUTH_DB`, `ACCESS_CONTROL_DB`,
 `AUDIT_DB`, `APPROVAL_DB`, and `MANAGEMENT_DB`. It also requires three private
 string bindings: `OPS_TEST_OPERATOR_CAPABILITY`, `OPS_AUTH_CONFIGURATION_JSON`,

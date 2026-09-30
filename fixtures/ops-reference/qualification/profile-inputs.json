@@ -8,8 +8,8 @@
     "status": "source_candidates_not_registry_publication",
     "core": {
       "repository": "https://github.com/LioRael/lenso.git",
-      "revision": "b8d134d739698812a039a79633719e14947df1e3",
-      "native_cli_version": "0.6.5"
+      "revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+      "native_cli_version": "0.6.6"
     },
     "javascript": {
       "repository": "https://github.com/LioRael/lenso-js.git",
@@ -32,14 +32,25 @@
     },
     "selection_file": "../candidate-inputs.json",
     "resolution_receipt": {
-      "path": "./receipts/ops-sdk35-b8d1-bec9-metadata.json",
-      "sha256": "5dc3556172e7774b7738ec27987e8096c14a1846b6775ff3d2f78c6eb3944921"
+      "path": "./receipts/ops-119b-source-resolution-nine-complete.json",
+      "sha256": "9a53305fb01814ff95ac3a974ea7946dac1d4ae74b3f98cc6da19dc73a375c61"
     },
-    "archive_review": {
+    "scope": "Nine normal source resolutions at119b; separate actual runtime receipts preserve their own build and action identities.",
+    "selected_agent_source_reason": "bec995 production bytes retained by checker-only7418 and workflow-only892ed successors; selected fixture identity is preserved.",
+    "landed_agent_source": "892ed4b023e6db8332fa9774197191842777fd28",
+    "published_sdk_cohort": {
       "path": "./receipts/core-sdk-b8d1-artifact-review.json",
-      "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428"
+      "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428",
+      "primary_readback": {
+        "path": "./receipts/core-sdk-b8d1-primary-final-all35.json",
+        "sha256": "e55a2875cf966ce7a73dbc934651058f88bb7143238262c3ce2bba91edaf1d27"
+      }
     },
-    "scope": "Nine source resolutions; historical Native Management compilation is separately attributed. These records do not rerun the historical qualified graphs or establish registry publication."
+    "selected_authoring_archive_review": {
+      "path": "./receipts/core-119b-three-public-artifact-review.json",
+      "sha256": "0b0b12e5747ca62faeebff7583cef29ef1750d1e84a6d98b87f2291f7b86431d",
+      "publication": "not_authorized"
+    }
   },
   "historical_qualified_profiles": {
     "native_c1": {
@@ -488,5 +499,44 @@
     "status": "awaiting_explicit_human_reply",
     "performed": false
   },
-  "current_gate_snapshot": "./receipts/security-final-source-status.json"
+  "current_gate_snapshot": "./receipts/security-final-source-status.json",
+  "historical_source_checkpoints": {
+    "sdk35_b8": {
+      "status": "source_candidates_not_registry_publication",
+      "core": {
+        "repository": "https://github.com/LioRael/lenso.git",
+        "revision": "b8d134d739698812a039a79633719e14947df1e3",
+        "native_cli_version": "0.6.5"
+      },
+      "javascript": {
+        "repository": "https://github.com/LioRael/lenso-js.git",
+        "revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+        "runtime_version": "0.1.6"
+      },
+      "console": {
+        "repository": "https://github.com/LioRael/lenso-console",
+        "revision": "ed1cfec08808dd38e068148224256b663d31fd44"
+      },
+      "agent": {
+        "repository": "https://github.com/LioRael/lenso-agent",
+        "revision": "bec995997fffc4ae04e7b88c31a7156251812d24"
+      },
+      "security_owners": {
+        "auth": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+        "access": "5485066ae3e99191862701f753b3ae186755ee80",
+        "audit": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+        "approval": "a6e73aa756c45db8260b5a7544328d97624ea896"
+      },
+      "selection_file": "../candidate-inputs.json",
+      "resolution_receipt": {
+        "path": "./receipts/ops-sdk35-b8d1-bec9-metadata.json",
+        "sha256": "5dc3556172e7774b7738ec27987e8096c14a1846b6775ff3d2f78c6eb3944921"
+      },
+      "archive_review": {
+        "path": "./receipts/core-sdk-b8d1-artifact-review.json",
+        "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428"
+      },
+      "scope": "Nine source resolutions; historical Native Management compilation is separately attributed. These records do not rerun the historical qualified graphs or establish registry publication."
+    }
+  }
 }

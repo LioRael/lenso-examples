@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-30T11:54:01.919825+00:00",
+  "previous_main": "b8d134d739698812a039a79633719e14947df1e3",
+  "candidate_sha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "required_gate": {
+    "conclusion": "success",
+    "headSha": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+    "status": "completed",
+    "url": "https://github.com/LioRael/lenso/actions/runs/36703742436"
+  },
+  "original35_primary_verified": true,
+  "push_returncode": 0,
+  "push_stdout": "",
+  "push_stderr": "To https://github.com/LioRael/lenso.git\n   b8d134d7..119b9af7  HEAD -> main\n",
+  "additional3_publication": "not_authorized",
+  "remote_main_readback": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "source_landing": "pass"
+}

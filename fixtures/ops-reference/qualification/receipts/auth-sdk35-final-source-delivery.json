@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "repository": "LioRael/lenso-auth-plugin",
+  "prior_main": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+  "candidate_sha": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+  "main_readback": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+  "landing": "normal-fast-forward-push",
+  "required_ci": {
+    "run_id": 36678998509,
+    "attempt": 2,
+    "head_sha": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+    "conclusion": "success"
+  },
+  "publication": "not_performed",
+  "main_trigger_review": "CI candidate/verify branches; Main push creates no release",
+  "worktree_cleanup": "held while publication review/source qualification uses exact checkout"
+}

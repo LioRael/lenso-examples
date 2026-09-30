@@ -1,0 +1,100 @@
+{
+  "schema": "lenso.source-worker-artifact-provenance.v1",
+  "core_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "javascript_revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+  "builder_native_sha256": "c772c839cf9905f3043bb347470f47f1c0096ac7df6fbf7d105c6a961fd8b15b",
+  "builder_version": "0.3.3",
+  "source_digest": "sha256:50fd62d65e893ba39bb1b4d8fba46bc412d3fbc4b657c2069832a857de3a9cb5",
+  "plan_digest": "sha256:247f3242d481b7b5c554c5b487da0ff0cecd93f16a7a15ea983572293faf9fbe",
+  "host_wasm_digest": "sha256:4bf0b5aeb78d45b3f7b75db1ea61f9d6bdc4c4862b50db5d2a49fad573eb3272",
+  "closed_runtime_asset_hashes": {
+    "worker.mjs": "01a1a35591df59c437d70dadb05f88b43a6922343283948e498ee6805004d0c7",
+    "host_bg.wasm": "4bf0b5aeb78d45b3f7b75db1ea61f9d6bdc4c4862b50db5d2a49fad573eb3272",
+    "runtime/clock.mjs": "f8ddb0befe68c65e91a51421ea1fa40a616a4f1b5617c299966d2e758948ce33",
+    "runtime/runner.mjs": "a2abb3e199c377918f32f026d495b82d919be3eb73e40fdb936baa3854a1dcc6",
+    "runtime/facilities.mjs": "b096e80dbee638204c5f57f88530a765e2654c5424c9f045b0ae5df62e605f1b",
+    "runtime/host.mjs": "d6315c2105e4f0389789d755a42aa40209e8421d11403b10f79b5a61b754041c",
+    "runtime/scope.mjs": "450241c47c4468a37ef932dd24d610c49318d9afc9dc369bf051acac86f38a74",
+    "runtime/http.mjs": "a234f1bc5b0d3cbfec08809edfa400715c0834b6ce8a3c0c3cc1588bfd9cc72b",
+    "facilities/owner_5.mjs": "3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+    "facilities/owner_4.mjs": "d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d",
+    "facilities/owner_6.mjs": "9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d",
+    "facilities/owner_7.mjs": "ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995",
+    "facilities/owner_3.mjs": "cd58cc725d91547ec54ef4a214999f101fc124fff5f54694b19de7f57cccc3d1",
+    "facilities/owner_2.mjs": "066dde5b3dd6eb68117f4209db79935cbf61c51c6f1e05a5c67e53f114f44daf",
+    "facilities/owner_0.mjs": "d63ce485b22d2069e7553bbe82edb8efa470b5b398a99f12aab57c33cccac597",
+    "facilities/owner_1.mjs": "9571e6fbe0144f3aab7e4710033f9242f8dce3a489cb38913cdbf04ada36d8a7"
+  },
+  "owner_module_provenance": [
+    {
+      "package_id": "example.ops-management",
+      "slot": "authority",
+      "module": "facilities/owner_0.mjs",
+      "digest": "sha256:d63ce485b22d2069e7553bbe82edb8efa470b5b398a99f12aab57c33cccac597",
+      "owner": {
+        "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#lenso-management-core@0.1.0",
+        "name": "lenso-management-core",
+        "version": "0.1.0",
+        "source": "git+https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec08808dd38e068148224256b663d31fd44",
+        "relative_path": "src/workers/journal.mjs"
+      }
+    },
+    {
+      "package_id": "example.ops-management-web",
+      "slot": "mcp",
+      "module": "facilities/owner_1.mjs",
+      "digest": "sha256:9571e6fbe0144f3aab7e4710033f9242f8dce3a489cb38913cdbf04ada36d8a7",
+      "owner": {
+        "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#lenso-management-http@0.1.0",
+        "name": "lenso-management-http",
+        "version": "0.1.0",
+        "source": "git+https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec08808dd38e068148224256b663d31fd44",
+        "relative_path": "src/workers/mcp.mjs"
+      }
+    },
+    {
+      "package_id": "example.ops-secrets",
+      "slot": "secrets",
+      "module": "facilities/owner_2.mjs",
+      "digest": "sha256:066dde5b3dd6eb68117f4209db79935cbf61c51c6f1e05a5c67e53f114f44daf",
+      "owner": null
+    },
+    {
+      "package_id": "example.ops-state",
+      "slot": "state",
+      "module": "facilities/owner_3.mjs",
+      "digest": "sha256:cd58cc725d91547ec54ef4a214999f101fc124fff5f54694b19de7f57cccc3d1",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.access-control.d1",
+      "slot": "state",
+      "module": "facilities/owner_4.mjs",
+      "digest": "sha256:d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.audit-log.d1",
+      "slot": "store",
+      "module": "facilities/owner_5.mjs",
+      "digest": "sha256:3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.auth.api-token",
+      "slot": "state",
+      "module": "facilities/owner_6.mjs",
+      "digest": "sha256:9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.business-approval.d1",
+      "slot": "store",
+      "module": "facilities/owner_7.mjs",
+      "digest": "sha256:ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995",
+      "owner": null
+    }
+  ],
+  "qualification_state": "built_not_yet_runtime_qualified",
+  "historical_receipts_promoted": false
+}

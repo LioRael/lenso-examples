@@ -1,0 +1,134 @@
+{
+  "schema": "lenso.qualification.evidence-index.v1",
+  "state": "final",
+  "files": [
+    {
+      "file": "audit-direct.read.json",
+      "sha256": "fb02b1b29f0b77146a581d5178bce75fd057d8b9e70540acaf5350c3bf34a8dc",
+      "bytes": 1465
+    },
+    {
+      "file": "audit-mcp.read.json",
+      "sha256": "a553fa2c4c165675c09d59b2be29754ec9dfe67aca59621c54367b74f4054dfb",
+      "bytes": 1465
+    },
+    {
+      "file": "cached-credential-live-before.json",
+      "sha256": "a81c6cd9ffe4ef87a2e47886e2e515dd1eba7150664f1caebb8d486f9de729bc",
+      "bytes": 417
+    },
+    {
+      "file": "cached-credential-revoked-after.json",
+      "sha256": "8b210a3040c98173b3081a0feab98e40aad1ec4703474a8d6197046e22145068",
+      "bytes": 267
+    },
+    {
+      "file": "cleanup-access_control_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-all-nine-resources.json",
+      "sha256": "079d60da7435a9a970c5243eb8fb4fd9c833b0f5c9511a1bdef26ff76d127d4c",
+      "bytes": 1565
+    },
+    {
+      "file": "cleanup-approval_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-audit_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-auth_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-auth_fault_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-management_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "cleanup-ops_db.json",
+      "sha256": "eb6177374752cd56a6db198484f5da2ce63a15eca4501a78501a6fa7568781be",
+      "bytes": 40
+    },
+    {
+      "file": "corrected-operator-build-receipt.json",
+      "sha256": "43206fd42703a2dd009a364abb65aab0d1c8c8cf164b9548266adde851cfade9",
+      "bytes": 1678
+    },
+    {
+      "file": "direct-journey.json",
+      "sha256": "a68e7254f033e060592cbdd7e423979b4ea624f4d7d5fe03e8a10b511e4e8bf9",
+      "bytes": 1569
+    },
+    {
+      "file": "isolated-auth-fault.json",
+      "sha256": "5c5ea9a75c656bb33553b8f0e2f0b44cfa4135aaf54a287d7ce36e74007993cf",
+      "bytes": 562
+    },
+    {
+      "file": "latest-remote-qualification.json",
+      "sha256": "9cc720b4aaf7b4bc310aed9905a8fd7b2044692e84df1f80247a746d4b2efba6",
+      "bytes": 2305
+    },
+    {
+      "file": "main-artifact-provenance.json",
+      "sha256": "6a86cf799ba47308ead046b49d1ac7abc12acc6ca9c0bf1fb70e0da713a686fb",
+      "bytes": 5007
+    },
+    {
+      "file": "official-mcp-lost-reply.json",
+      "sha256": "fc81dfeb7da9c94d89035c7f83d2292b2e2608e93aaeb5a8ed952c2e70aff059",
+      "bytes": 1524
+    },
+    {
+      "file": "raw-approved-injection.json",
+      "sha256": "3ae9f76f57e6cdd954c239d94999dc8fa6e9f68e324f597ffebf1533d6d9dc5b",
+      "bytes": 561
+    },
+    {
+      "file": "read-only-no-approval.json",
+      "sha256": "5f0c0ebdacbaafd225348d173f482be8615c0136e57b841b6779c25d0740ae62",
+      "bytes": 889
+    },
+    {
+      "file": "readonly-invalid-config-diagnostic.json",
+      "sha256": "1b10b6e046017a185b104aa7b284893c2ed36ce422eea2d0322c4ce00175fedc",
+      "bytes": 428
+    },
+    {
+      "file": "same-artifact-redeploy-observed.json",
+      "sha256": "ed8d85be1e65452f3a9f34f7cc723b782b661986ef8ffa9f1ffebb3a64a988bb",
+      "bytes": 526
+    },
+    {
+      "file": "source-cohort.json",
+      "sha256": "cca5d01c1c0b21e21383fdca4e0b7fb67079ba6c26ebf801af49244cbd4d0589",
+      "bytes": 1900
+    },
+    {
+      "file": "typed-owner-revoke.completed.json",
+      "sha256": "6037f005c66849cbf66fa7d7e908b8430aa467824b382c0a2352363878c24308",
+      "bytes": 326
+    }
+  ],
+  "file_count": 24,
+  "private_value_count_checked": 8,
+  "private_value_matches": 0,
+  "all_nine_resources_absent": true,
+  "authoritative_summary": "latest-remote-qualification.json",
+  "prior_pending_index": "evidence-index.json",
+  "prior_pending_index_retained_unchanged": true,
+  "historical_receipts_promoted": false
+}

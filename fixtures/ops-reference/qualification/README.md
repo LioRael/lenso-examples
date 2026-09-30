@@ -1,5 +1,11 @@
 # Qualification evidence
 
+For the current source and publication boundary, start with
+[the September 30 update](./current-source.md). This file preserves the earlier
+qualification timeline. Statements about pending publication or failed archive
+prerequisites below describe their recorded checkpoints; later success does not
+change those receipts or qualify a different artifact.
+
 This directory packages completed evidence at its recorded proof layers. It does not declare the reference fully qualified. [Profile inputs](./profile-inputs.json) identify the latest selected source candidates separately from receipt-only historical Native/Worker builds; they are not runnable preparation overrides or private Owner setup. [security.md](./security.md) maps the security owners and Q09-Q20; [contracts-and-tests.md](./contracts-and-tests.md) maps all Q01-Q24 and their actual proof layers. [proposal-completion.md](./proposal-completion.md) distinguishes each proposal's implementation, exact gate and profile limits.
 
 Included JSON receipts are copied byte for byte from the task's shared `.artifacts` directory. [SHA256SUMS](./receipts/SHA256SUMS) records their hashes. The copy check compares task-owned private credential files without recording their values. No password, bearer, PAT, signing material or credential-bearing database URI belongs in this package.

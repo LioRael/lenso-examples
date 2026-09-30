@@ -1,0 +1,48 @@
+{
+  "result": "PASS",
+  "core_revision": "119b9af70b82816588c00c8bf812f7c62d1a18b5",
+  "javascript_revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+  "bundle_reused_from": "examples-authoring-eff5-plugin-pack.json",
+  "bundle_sha256": "f9dbb996fc32e75ab47c685360427a8165e3fc8d50a32dc504bacaf4a0972a95",
+  "commands": [
+    {
+      "arguments": [
+        "plugins",
+        "add",
+        "/Users/leosouthey/Projects/framework/.artifacts/document-sync-eff5.lenso-plugin",
+        "--root",
+        "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-proof"
+      ],
+      "exit_code": 0,
+      "log": "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-0.log",
+      "sha256": "b03c9d0e187b587c57f7fd3b354468b4ce7f43339b080644a429389dfcf08d8f"
+    },
+    {
+      "arguments": [
+        "plugins",
+        "configure",
+        "example.document-sync",
+        "default",
+        "--file",
+        "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-proof/config.toml",
+        "--root",
+        "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-proof"
+      ],
+      "exit_code": 0,
+      "log": "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-1.log",
+      "sha256": "82efe84c850ba09d491372f6dbb5dc2985478d3aaa51db18df9c3ca68cdb9e7b"
+    },
+    {
+      "arguments": [
+        "plugins",
+        "list",
+        "--root",
+        "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-proof"
+      ],
+      "exit_code": 0,
+      "log": "/Users/leosouthey/Projects/framework/.artifacts/examples-authoring-119b-host-catalog-2.log",
+      "sha256": "7091b0d90f03188e1d7db918c3fd876de36ba0a650694c5ad85affe0d4beb3e1"
+    }
+  ],
+  "qualification": "actual_legacy_catalog_ordinary_commands_not_runtime_execution"
+}

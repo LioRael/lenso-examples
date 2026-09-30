@@ -1,0 +1,94 @@
+{
+  "schema": "lenso.qualification.evidence-index.v1",
+  "files": [
+    {
+      "file": "main-artifact-provenance.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/main-artifact-provenance.json",
+      "sha256": "6a86cf799ba47308ead046b49d1ac7abc12acc6ca9c0bf1fb70e0da713a686fb",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "direct-journey.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/qualification-direct/journey.json",
+      "sha256": "a68e7254f033e060592cbdd7e423979b4ea624f4d7d5fe03e8a10b511e4e8bf9",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "official-mcp-lost-reply.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/qualification-official2/official-mcp-lost-reply.json",
+      "sha256": "fc81dfeb7da9c94d89035c7f83d2292b2e2608e93aaeb5a8ed952c2e70aff059",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "audit-direct.read.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/operator-private/audit-direct-verified-1.read.json",
+      "sha256": "fb02b1b29f0b77146a581d5178bce75fd057d8b9e70540acaf5350c3bf34a8dc",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "audit-mcp.read.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/operator-private/audit-mcp-verified-1.read.json",
+      "sha256": "a553fa2c4c165675c09d59b2be29754ec9dfe67aca59621c54367b74f4054dfb",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "raw-approved-injection.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/raw-approved/raw-approved-injection.json",
+      "sha256": "3ae9f76f57e6cdd954c239d94999dc8fa6e9f68e324f597ffebf1533d6d9dc5b",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "same-artifact-redeploy-observed.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/redeploy-observe/official-mcp-restart-observed.json",
+      "sha256": "ed8d85be1e65452f3a9f34f7cc723b782b661986ef8ffa9f1ffebb3a64a988bb",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "read-only-no-approval.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/read-only-http/qualification/read-only.json",
+      "sha256": "5f0c0ebdacbaafd225348d173f482be8615c0136e57b841b6779c25d0740ae62",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "readonly-invalid-config-diagnostic.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/read-only/catalog-failure-observed.json",
+      "sha256": "1b10b6e046017a185b104aa7b284893c2ed36ce422eea2d0322c4ce00175fedc",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "isolated-auth-fault.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/auth-fault/qualification/auth-storage-unavailable.json",
+      "sha256": "5c5ea9a75c656bb33553b8f0e2f0b44cfa4135aaf54a287d7ce36e74007993cf",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "cached-credential-live-before.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/revocation/before.json",
+      "sha256": "a81c6cd9ffe4ef87a2e47886e2e515dd1eba7150664f1caebb8d486f9de729bc",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "cached-credential-revoked-after.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/revocation/after.json",
+      "sha256": "8b210a3040c98173b3081a0feab98e40aad1ec4703474a8d6197046e22145068",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "typed-owner-revoke.completed.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/remote/operator-private/revoke-alice-live-1.completed.json",
+      "sha256": "6037f005c66849cbf66fa7d7e908b8430aa467824b382c0a2352363878c24308",
+      "byte_exact_copy": true
+    },
+    {
+      "file": "corrected-operator-build-receipt.json",
+      "original_path": "/Users/leosouthey/Projects/framework/.artifacts/ops-workers-management-119b/operator-build-audit-source-corrected/pkg/build-receipt.json",
+      "sha256": "43206fd42703a2dd009a364abb65aab0d1c8c8cf164b9548266adde851cfade9",
+      "byte_exact_copy": true
+    }
+  ],
+  "file_count": 14,
+  "private_value_count_checked": 8,
+  "private_value_matches": 0,
+  "historical_qualification_promoted": false,
+  "resource_cleanup": "pending_root_worker_absence_then_seven_d1"
+}

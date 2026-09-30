@@ -1,0 +1,68 @@
+{
+  "schema": "lenso.latest-source-remote-qualification.v1",
+  "result": "passed",
+  "source_cohort": "source-cohort.json",
+  "ordinary_source_worker_graph": true,
+  "infrastructure": "cloudflare-workers-and-d1",
+  "direct_cases": 13,
+  "official_mcp_cases": 9,
+  "official_client": {
+    "package": "@modelcontextprotocol/client",
+    "version": "2.2.0",
+    "protocol_version": "2025-11-25"
+  },
+  "mcp_authentication": "preissued-bearer",
+  "oauth_discovery": false,
+  "lost_reply": {
+    "upstream_commit_calls": 1,
+    "recovered_same_operation_and_receipt": true,
+    "target_replayed": false
+  },
+  "typed_persisted_audit_supplements": {
+    "operation_count": 2,
+    "persisted_events_each": 6,
+    "distinct_requester_decider": true,
+    "exact_response_receipt_verified": true,
+    "inspection_layer": "supplemental-owner-typed-read",
+    "audit_domain_value_revision_inferred": false,
+    "corrected_operator_source_annotation_verified": true
+  },
+  "raw_approved_true": "pending-only-without-target-write",
+  "read_only_no_approval_cases": 5,
+  "isolated_auth_fault": {
+    "result": "503-host-unavailable-before-kernel-ready",
+    "after_ready_authentication_fault": "not_exercised",
+    "original_resources_setup_repeated": false
+  },
+  "same_artifact_redeploy": {
+    "observe_only": true,
+    "physical_process_restart": "not_asserted"
+  },
+  "live_cached_credential_revocation": {
+    "before": 200,
+    "one_owner_revoke_changed": true,
+    "same_cached_after": 401,
+    "bob_control": 200
+  },
+  "final_business_state": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "known_pending_raw_approved_intent": "retained-unapproved-until-scoped-resource-cleanup",
+  "cleanup": {
+    "workers_absent": 2,
+    "created_d1_absent": 7,
+    "all_nine_resources_absent": true,
+    "force": false,
+    "delete_replay": false,
+    "subscription_changes": false
+  },
+  "preserved_diagnostics": {
+    "initial_readonly_mcp_resource_without_selected_adapter": "before-mutation-configuration-startup503",
+    "historical_operator_annotation_receipt": "original9981-retained;new2f0bf-source-corrected-before-audit-read"
+  },
+  "historical_remote_receipts_promoted": false,
+  "registry_or_npm_publication_claimed": false,
+  "tracked_source_edits_performed_in_remote_run": false
+}
