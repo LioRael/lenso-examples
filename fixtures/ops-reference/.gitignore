@@ -1,0 +1,6 @@
+__pycache__/
+*-receipt.json
+operator-*.json
+*.secret
+candidate-tools/
+!qualification/receipts/audit-d1-read-receipt.json

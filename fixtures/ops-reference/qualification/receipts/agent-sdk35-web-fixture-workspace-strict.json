@@ -1,0 +1,14 @@
+{
+  "schema": "lenso.agent-workspace-source-validation.v1",
+  "parent_revision": "805947813f15dea43462543c1864de8bbc0bc165",
+  "tracked_source_changes": [
+    "apps/lenso-agent-web/src/plugin_control.rs: integrity-only fixture adds required_target_capabilities empty list"
+  ],
+  "command": "cargo clippy --locked --workspace --all-targets -- -D warnings",
+  "exit_code": 101,
+  "status": "failed",
+  "reason": "ACP LocalSet startup future is16672bytes and violates clippy::large_futures at apps/lenso-agent-acp/src/main.rs:33",
+  "log_sha256": "bc776dbf1cd53298713df1f9ba8dc62597456bb02355ff077b132fc6f79359bb",
+  "registry_only": false,
+  "publication": false
+}

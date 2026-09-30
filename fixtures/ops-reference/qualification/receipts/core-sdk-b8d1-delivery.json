@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/LioRael/lenso",
+  "source_sha": "b8d134d739698812a039a79633719e14947df1e3",
+  "previous_main_sha": "1b34db24797c58bf756290e35f54f0b73f24af94",
+  "recorded_at": "2026-09-30T08:46:18.801564+00:00",
+  "candidate_ref": "candidate/codex-sdk35-final-source-lifecycle-20260930",
+  "ci": {
+    "run_id": 36689302394,
+    "url": "https://github.com/LioRael/lenso/actions/runs/36689302394",
+    "quality": "success",
+    "bun_conformance": "success",
+    "conclusion": "success"
+  },
+  "landing": {
+    "method": "fast-forward",
+    "remote_main_readback": "b8d134d739698812a039a79633719e14947df1e3",
+    "candidate_readback": "b8d134d739698812a039a79633719e14947df1e3",
+    "ancestry_checked": true,
+    "force_used": false,
+    "tests_repeated_after_landing": false
+  },
+  "artifact_review": {
+    "path": "core-sdk-b8d1-artifact-review.json",
+    "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428",
+    "unchanged": true
+  },
+  "release_dry_run": {
+    "run_id": 36691729181,
+    "url": "https://github.com/LioRael/lenso/actions/runs/36691729181",
+    "mode": "dry-run",
+    "source_sha": "b8d134d739698812a039a79633719e14947df1e3",
+    "input_path": "core-sdk-b8d1-release-dryrun-input.json",
+    "input_sha256": "bc99f1f436105d1b87c5ff4f0918ecae3dc6b571efd65d6b138e576e85d82cb1",
+    "status_at_recording": "queued"
+  },
+  "publication": {
+    "authorized": false,
+    "performed": false
+  },
+  "automatic_publication_on_main": false
+}

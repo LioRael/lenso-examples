@@ -1,0 +1,556 @@
+{
+  "schema": "lenso.generated-web-starter-qualification.v1",
+  "cli_sha256": "06d5877850d79189701c58aade5b5462c7c0e0fdc0d1c117c986b2e78ec3fa41",
+  "cli_version": "lenso 0.6.4",
+  "build": {
+    "selections": {
+      "core": {
+        "repository": "https://github.com/LioRael/lenso.git",
+        "revision": "35c0e04ad4d85b12cc79ea660260d27ba871a518",
+        "native_cli_version": "0.6.4"
+      },
+      "javascript": {
+        "repository": "https://github.com/LioRael/lenso-js.git",
+        "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+        "runtime_version": "0.1.6"
+      },
+      "published_cli": {
+        "package": "@lenso/cli",
+        "version": "0.17.3",
+        "native_cli_version": "0.6.3"
+      },
+      "published_facade": {
+        "package": "lenso",
+        "version": "0.5.27"
+      },
+      "status": "source_candidates_not_registry_publication"
+    },
+    "receipts": {
+      ".lenso/host-build.json": {
+        "sha256": "92f7e7ea1e7a8315e966bafd28afc442c086cdc2d5f6095ca6b9582b18521a46",
+        "receipt": {
+          "schema": "lenso.local-host-build.v1",
+          "host_id": "local.app",
+          "catalog": {
+            "slots": [
+              {
+                "id": "http-ingress",
+                "cardinality": "many",
+                "replaceable": false,
+                "execution_lane": "main"
+              },
+              {
+                "id": "web",
+                "cardinality": "many",
+                "replaceable": false,
+                "execution_lane": "main"
+              }
+            ],
+            "plugins": [
+              {
+                "descriptor": {
+                  "authoring_version": 1,
+                  "runtime_profile": "lenso.native-authoring@1",
+                  "plugin_id": "lenso.web-ingress",
+                  "release_version": "0.4.9",
+                  "root_slot": "http-ingress",
+                  "runtime_package_id": "lenso.web-ingress",
+                  "runtime_package_revision": "0.4.9",
+                  "entrypoint": "default",
+                  "configuration_schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "properties": {
+                      "bind_address": {
+                        "type": "string"
+                      },
+                      "max_request_body_bytes": {
+                        "type": "integer"
+                      },
+                      "max_request_head_bytes": {
+                        "type": "integer"
+                      },
+                      "max_concurrent_requests": {
+                        "type": "integer"
+                      },
+                      "max_connections": {
+                        "type": "integer"
+                      },
+                      "request_head_timeout_millis": {
+                        "type": "integer"
+                      },
+                      "request_body_timeout_millis": {
+                        "type": "integer"
+                      },
+                      "connection_idle_timeout_millis": {
+                        "type": "integer"
+                      },
+                      "shutdown_grace_timeout_millis": {
+                        "type": "integer"
+                      },
+                      "request_timeout_millis": {
+                        "type": "integer"
+                      },
+                      "session_cookie": {
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "csrf_cookie_name",
+                          "csrf_header_name"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "csrf_cookie_name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "csrf_header_name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "websocket": {
+                        "type": "object",
+                        "required": [
+                          "allowed_origins",
+                          "max_message_bytes",
+                          "max_session_bytes"
+                        ],
+                        "properties": {
+                          "allowed_origins": {
+                            "type": "array",
+                            "maxItems": 64,
+                            "items": {
+                              "type": "string",
+                              "maxLength": 2048
+                            }
+                          },
+                          "max_message_bytes": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1048576
+                          },
+                          "max_session_bytes": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 67108864
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "provided_capabilities": [],
+                  "required_capabilities": [
+                    {
+                      "requirement_id": "~lenso.http.endpoint@1",
+                      "capability_id": "lenso.http.endpoint@1",
+                      "descriptor_version": "1.1.0",
+                      "cardinality": "many"
+                    },
+                    {
+                      "requirement_id": "~lenso.http.stream-endpoint@1",
+                      "capability_id": "lenso.http.stream-endpoint@1",
+                      "descriptor_version": "1.0.0",
+                      "cardinality": "many"
+                    },
+                    {
+                      "requirement_id": "~lenso.websocket.endpoint@1",
+                      "capability_id": "lenso.websocket.endpoint@1",
+                      "descriptor_version": "1.0.0",
+                      "cardinality": "many"
+                    }
+                  ],
+                  "execution_class": "lenso.native-rust@1",
+                  "restart_policy": {
+                    "mode": "never",
+                    "max_attempts": 0,
+                    "window": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "backoff": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "jitter": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "stability": {
+                      "secs": 0,
+                      "nanos": 0
+                    }
+                  },
+                  "criticality": "non_critical"
+                },
+                "allow_root_override": false
+              },
+              {
+                "descriptor": {
+                  "authoring_version": 2,
+                  "runtime_profile": "lenso.native-authoring@2",
+                  "plugin_id": "local.starter",
+                  "release_version": "0.1.0",
+                  "root_slot": "web",
+                  "runtime_package_id": "local.starter",
+                  "runtime_package_revision": "0.1.0",
+                  "entrypoint": "default",
+                  "configuration_schema": {
+                    "$schema": "https://json-schema.org/draft/2020-12/schema",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [],
+                    "properties": {}
+                  },
+                  "provided_capabilities": [
+                    {
+                      "capability_id": "lenso.http.endpoint@1",
+                      "descriptor_version": "1.1.0",
+                      "operations": [
+                        "describe",
+                        "handle"
+                      ],
+                      "operation_kinds": {},
+                      "default_admission": {
+                        "queue_capacity": 0,
+                        "max_concurrency": 1
+                      },
+                      "operation_admissions": {},
+                      "event_admission": null,
+                      "cross_lane_transfer": true
+                    }
+                  ],
+                  "required_capabilities": [],
+                  "execution_class": "lenso.native-rust@1",
+                  "restart_policy": {
+                    "mode": "never",
+                    "max_attempts": 0,
+                    "window": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "backoff": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "jitter": {
+                      "secs": 0,
+                      "nanos": 0
+                    },
+                    "stability": {
+                      "secs": 0,
+                      "nanos": 0
+                    }
+                  },
+                  "criticality": "non_critical"
+                },
+                "allow_root_override": false
+              }
+            ],
+            "defaults": [
+              {
+                "id": {
+                  "plugin_id": "lenso.web-ingress",
+                  "instance_key": "default"
+                },
+                "configuration": {},
+                "disableable": true
+              },
+              {
+                "id": {
+                  "plugin_id": "local.starter",
+                  "instance_key": "default"
+                },
+                "configuration": {},
+                "disableable": true
+              }
+            ],
+            "configurations": [],
+            "bindings": [],
+            "execution_lanes": [
+              {
+                "id": "main"
+              }
+            ]
+          },
+          "admissions": [
+            {
+              "slot": "http-ingress",
+              "max_instances": 256,
+              "releases": [
+                {
+                  "descriptor": {
+                    "authoring_version": 1,
+                    "runtime_profile": "lenso.native-authoring@1",
+                    "plugin_id": "lenso.web-ingress",
+                    "release_version": "0.4.9",
+                    "root_slot": "http-ingress",
+                    "runtime_package_id": "lenso.web-ingress",
+                    "runtime_package_revision": "0.4.9",
+                    "entrypoint": "default",
+                    "configuration_schema": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "properties": {
+                        "bind_address": {
+                          "type": "string"
+                        },
+                        "max_request_body_bytes": {
+                          "type": "integer"
+                        },
+                        "max_request_head_bytes": {
+                          "type": "integer"
+                        },
+                        "max_concurrent_requests": {
+                          "type": "integer"
+                        },
+                        "max_connections": {
+                          "type": "integer"
+                        },
+                        "request_head_timeout_millis": {
+                          "type": "integer"
+                        },
+                        "request_body_timeout_millis": {
+                          "type": "integer"
+                        },
+                        "connection_idle_timeout_millis": {
+                          "type": "integer"
+                        },
+                        "shutdown_grace_timeout_millis": {
+                          "type": "integer"
+                        },
+                        "request_timeout_millis": {
+                          "type": "integer"
+                        },
+                        "session_cookie": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "csrf_cookie_name",
+                            "csrf_header_name"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128
+                            },
+                            "csrf_cookie_name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128
+                            },
+                            "csrf_header_name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "websocket": {
+                          "type": "object",
+                          "required": [
+                            "allowed_origins",
+                            "max_message_bytes",
+                            "max_session_bytes"
+                          ],
+                          "properties": {
+                            "allowed_origins": {
+                              "type": "array",
+                              "maxItems": 64,
+                              "items": {
+                                "type": "string",
+                                "maxLength": 2048
+                              }
+                            },
+                            "max_message_bytes": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1048576
+                            },
+                            "max_session_bytes": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 67108864
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "provided_capabilities": [],
+                    "required_capabilities": [
+                      {
+                        "requirement_id": "~lenso.http.endpoint@1",
+                        "capability_id": "lenso.http.endpoint@1",
+                        "descriptor_version": "1.1.0",
+                        "cardinality": "many"
+                      },
+                      {
+                        "requirement_id": "~lenso.http.stream-endpoint@1",
+                        "capability_id": "lenso.http.stream-endpoint@1",
+                        "descriptor_version": "1.0.0",
+                        "cardinality": "many"
+                      },
+                      {
+                        "requirement_id": "~lenso.websocket.endpoint@1",
+                        "capability_id": "lenso.websocket.endpoint@1",
+                        "descriptor_version": "1.0.0",
+                        "cardinality": "many"
+                      }
+                    ],
+                    "execution_class": "lenso.native-rust@1",
+                    "restart_policy": {
+                      "mode": "never",
+                      "max_attempts": 0,
+                      "window": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "backoff": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "jitter": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "stability": {
+                        "secs": 0,
+                        "nanos": 0
+                      }
+                    },
+                    "criticality": "non_critical"
+                  },
+                  "manifest_digest": "sha256:21a81b220a38752607ef8b059f7f34ba71da556c2d4889bb95033c24a3d6ef17"
+                }
+              ],
+              "configuration_schema": null
+            },
+            {
+              "slot": "web",
+              "max_instances": 256,
+              "releases": [
+                {
+                  "descriptor": {
+                    "authoring_version": 2,
+                    "runtime_profile": "lenso.native-authoring@2",
+                    "plugin_id": "local.starter",
+                    "release_version": "0.1.0",
+                    "root_slot": "web",
+                    "runtime_package_id": "local.starter",
+                    "runtime_package_revision": "0.1.0",
+                    "entrypoint": "default",
+                    "configuration_schema": {
+                      "$schema": "https://json-schema.org/draft/2020-12/schema",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [],
+                      "properties": {}
+                    },
+                    "provided_capabilities": [
+                      {
+                        "capability_id": "lenso.http.endpoint@1",
+                        "descriptor_version": "1.1.0",
+                        "operations": [
+                          "describe",
+                          "handle"
+                        ],
+                        "operation_kinds": {},
+                        "default_admission": {
+                          "queue_capacity": 0,
+                          "max_concurrency": 1
+                        },
+                        "operation_admissions": {},
+                        "event_admission": null,
+                        "cross_lane_transfer": true
+                      }
+                    ],
+                    "required_capabilities": [],
+                    "execution_class": "lenso.native-rust@1",
+                    "restart_policy": {
+                      "mode": "never",
+                      "max_attempts": 0,
+                      "window": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "backoff": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "jitter": {
+                        "secs": 0,
+                        "nanos": 0
+                      },
+                      "stability": {
+                        "secs": 0,
+                        "nanos": 0
+                      }
+                    },
+                    "criticality": "non_critical"
+                  },
+                  "manifest_digest": "sha256:21a81b220a38752607ef8b059f7f34ba71da556c2d4889bb95033c24a3d6ef17"
+                }
+              ],
+              "configuration_schema": null
+            }
+          ]
+        }
+      },
+      "local-sources.json": {
+        "sha256": "9814ffe05f1e59939b37ef6afd95ebdde999af775319c27b63ba19bada7925d7",
+        "receipt": {
+          "schema": "lenso.local-sources.v2",
+          "template": "lenso.local-host@1",
+          "engine_app_version": "0.3.1",
+          "target": "aarch64-apple-darwin",
+          "sources": [
+            {
+              "plugin_id": "local.starter",
+              "release_version": "0.1.0",
+              "project": "/private/var/folders/hp/q9psfx3j2l58mrp6g7d8x8000000gn/T/lenso-generated-web-starter-1_i5i2f9/project/app/local.starter",
+              "metadata": "/private/var/folders/hp/q9psfx3j2l58mrp6g7d8x8000000gn/T/lenso-generated-web-starter-1_i5i2f9/project/app/local.starter/Cargo.toml",
+              "format": "cargo",
+              "role": "app_owned",
+              "implementations": [
+                {
+                  "id": "native-linked",
+                  "runtime": "native-linked",
+                  "project": "/private/var/folders/hp/q9psfx3j2l58mrp6g7d8x8000000gn/T/lenso-generated-web-starter-1_i5i2f9/project/app/local.starter"
+                }
+              ],
+              "evidence": "source_metadata_only"
+            }
+          ],
+          "source_digests": {
+            "local.starter": "sha256:076bd6b53adf117b49efe4b7b7a972751f350a1399deb331a74adf39b5a00a3f"
+          }
+        }
+      },
+      ".lenso/root-linked-sources.json": {
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt": []
+      }
+    }
+  },
+  "source_deleted": true,
+  "cases": [
+    "ordinary_app_create_web",
+    "ordinary_app_build_check",
+    "offline_native_html_200"
+  ],
+  "shutdown": "passed"
+}

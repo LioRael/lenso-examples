@@ -1,0 +1,71 @@
+{
+  "repo": "lenso-business-approval-plugin",
+  "candidate": "3346ce45beacdb74918666c045c802d31da585f6",
+  "destination": "3346ce45beacdb74918666c045c802d31da585f6",
+  "previous": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+  "ci_run": 36661069304,
+  "ci_conclusion": "success",
+  "ci_head_sha": "3346ce45beacdb74918666c045c802d31da585f6",
+  "ci_attempt": 1,
+  "required_ci_jobs": {
+    "quality": "success"
+  },
+  "main_readback_at": "2026-09-30T02:55:07.205860+00:00",
+  "published": false,
+  "core_source": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "consumer_source": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+  "workers_candidate_source": "3346ce45beacdb74918666c045c802d31da585f6",
+  "followup_scope": "Shared Approval policy with finite source-selected D1 store; fresh primary per finite operation; explicit setup; atomic immutable decision and Unknown read reconciliation. Ordinary Workers profile pending real proof. Existing Native consumer source retained.",
+  "normal_checks": {
+    "native_strict": "52360",
+    "wasm_strict": "7189",
+    "exclusive_native_pg": "29292",
+    "node_components": {
+      "passed": 6,
+      "actual_workerd": false
+    }
+  },
+  "prior_source_acceptance": {
+    "repo": "lenso-business-approval-plugin",
+    "candidate": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "destination": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "previous": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+    "ci_run": 36653544540,
+    "ci_conclusion": "success",
+    "ci_head_sha": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "consumer_source": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "main_readback_at": "2026-09-30T01:10:34.737984+00:00",
+    "published": false,
+    "prior_source_acceptance": {
+      "repo": "lenso-business-approval-plugin",
+      "candidate": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+      "destination": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+      "previous": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+      "ci_run": 36642622983,
+      "ci_conclusion": "success",
+      "ci_head_sha": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+      "consumer_source": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+      "main_readback_at": "2026-09-29T23:05:28.213190+00:00",
+      "published": false,
+      "prior_source_acceptance": {
+        "repo": "lenso-business-approval-plugin",
+        "candidate": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+        "destination": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+        "previous": "a31ee3b14f6f9f5e3fd3a1ab839eaec97afef1ef",
+        "ci_run": 36625187511,
+        "ci_conclusion": "success",
+        "ci_head_sha": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+        "consumer_source": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+        "main_readback_at": "2026-09-29T21:55:50Z",
+        "published": false
+      },
+      "followup_scope": "Denial-only scoped-child and non-user guard with exact Auth SDK source be751; trusted local decider admission unchanged"
+    },
+    "followup_scope": "Selected Source App configuration schema compatibility; inline exact caller shapes with existing strict owner format validators, unchanged Capability ABI/DDL/decision logic",
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "quality": "success"
+    },
+    "configuration_schema_receipt": ".artifacts/approval-configuration-schema.json"
+  }
+}

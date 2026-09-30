@@ -1,0 +1,35 @@
+{
+  "schema": "lenso.security-source-delivery.v1",
+  "repo": "lenso-service-account-plugin",
+  "candidate": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+  "destination": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+  "previous": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+  "ci_run": 36673403339,
+  "ci_conclusion": "success",
+  "ci_head_sha": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+  "ci_url": "https://github.com/LioRael/lenso-service-account-plugin/actions/runs/36673403339",
+  "required_ci_jobs": {
+    "check": "success"
+  },
+  "main_readback_at": "2026-09-30T06:04:29.107999+00:00",
+  "core_source": "cac6db9d3293197754cce0ec707e909e0bed79a6",
+  "producer_final_source": "bc7039114b9848bab8c3cae0346945ac804a33c3",
+  "producer_delta": "Test-only EngineApp scaffold expectations; production SDK bytes unchanged.",
+  "scope": "SDK35 manifest/lock/coherent Source upgrade; immutable registered ACL archive reuse; no production Rust, Capability, schema or generated Role changes.",
+  "source_archive_check": {
+    "status": "passed",
+    "log": ".artifacts/service-latest-sdk-immutable-role-archive.log",
+    "registry_only_archive": "pending producer registry publication approval"
+  },
+  "normal_checks": {
+    "session": 44610,
+    "lib_passed": 10,
+    "lib_ignored": 1,
+    "all_targets_strict": "passed"
+  },
+  "public_capability_abi_changed": false,
+  "published": false,
+  "registry_publication_approval": "pending human reply",
+  "s1_optional_machine_console_profile": "not selected",
+  "workers_service_profile": "unsupported"
+}

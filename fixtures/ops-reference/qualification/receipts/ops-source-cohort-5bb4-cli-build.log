@@ -1,0 +1,17 @@
+  Installing lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)
+warning: default toolchain implicitly overridden with `1.98.1-aarch64-apple-darwin` by environment variable
+  |
+  = help: use `cargo +stable install` if you meant to use the stable toolchain
+  = note: rustup selects the toolchain based on the parent environment and not the environment of the package being installed
+    Updating crates.io index
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling lenso-engine-app v0.3.2 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-engine-app)
+   Compiling lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)
+    Finished `release` profile [optimized] target(s) in 20.27s
+  Installing /Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin/lenso
+   Installed package `lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)` (executable `lenso`)
+warning: be sure to add `/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin` to your PATH to be able to run the installed binaries
+mbx[cache]: 0 hits, 0 misses, 3 incremental; 0 B downloaded, 0 B uploaded, 7.3 KiB stored locally
+mbx[savings]: 1d 1h of compilation avoided across 1481 builds. imagine the fan noise. now stop.

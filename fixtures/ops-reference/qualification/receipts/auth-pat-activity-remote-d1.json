@@ -1,0 +1,144 @@
+{
+  "schema": "lenso.auth.pat-activity-remote-d1@1",
+  "target": "actual-cloudflare-worker-d1-owner-fixture",
+  "source": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+  "artifacts": {
+    "wasm": "fe54627c0bef003cf1c0d25a0652ed7f260ca4f8ad1ec5e5721100d30d8f9089",
+    "bundle": "963ea1992662f2966d82828cafe4cdd0b9be083a89f1c34873f037c6f7c91eb8"
+  },
+  "tools": {
+    "wrangler": "4.143.1"
+  },
+  "account": "sha256:930768acb219bb23af96b975",
+  "resources": {
+    "worker": "sha256:6e92fe964ec135e1e34ba59c",
+    "databases": [
+      {
+        "binding": "ACCOUNT_DB",
+        "id": "sha256:f4f85dae2e71b0181af6735a"
+      },
+      {
+        "binding": "OAUTH_DB",
+        "id": "sha256:36e780d3bc1c039a931a4edb"
+      },
+      {
+        "binding": "API_TOKEN_DB",
+        "id": "sha256:9f4a61b2ee2cdebf8814a581"
+      }
+    ]
+  },
+  "deploymentVersions": [
+    "sha256:7b8793829e0d44a29ace893c",
+    "sha256:578eadcc90b6e108e3588082"
+  ],
+  "passed": true,
+  "cases": [
+    "Owner-signed opaque token/session references",
+    "Exact caller/live-reference checks and secret-free metadata",
+    "Scoped, paged owner creation/authentication metadata",
+    "Current ceiling attenuation cannot be restored by an old assertion",
+    "Rejected authentication does not update recorded use after revocation",
+    "Revoked token cannot authenticate or change its ceiling",
+    "New Worker version retains actual D1 revocation/activity facts",
+    "Session-only revocation does not fabricate token revoke or authentication times",
+    "Issuance rejects forged references and empty authority scope"
+  ],
+  "taskOnlyTransportGuard": true,
+  "cleanup": {
+    "passed": true,
+    "workerAbsentReadback": true,
+    "databasesAbsentReadback": true,
+    "errors": []
+  },
+  "deferred": {
+    "hyperdrive": "not_run:user-deferred",
+    "humanPatWorkersProfile": "not_supported:Native-only facade"
+  },
+  "events": [
+    {
+      "label": "source-sha",
+      "code": 0
+    },
+    {
+      "label": "source-clean",
+      "code": 0
+    },
+    {
+      "label": "logged-in-account",
+      "code": 0
+    },
+    {
+      "label": "initial-d1-inventory",
+      "code": 0
+    },
+    {
+      "label": "create-account",
+      "code": 0
+    },
+    {
+      "label": "read-account",
+      "code": 0
+    },
+    {
+      "label": "create-oauth",
+      "code": 0
+    },
+    {
+      "label": "read-oauth",
+      "code": 0
+    },
+    {
+      "label": "create-token",
+      "code": 0
+    },
+    {
+      "label": "read-token",
+      "code": 0
+    },
+    {
+      "label": "dry-run",
+      "code": 0
+    },
+    {
+      "label": "deploy-guarded-worker",
+      "code": 0
+    },
+    {
+      "label": "install-private-proof-secrets",
+      "code": 0
+    },
+    {
+      "label": "replace-worker-same-artifact",
+      "code": 0
+    },
+    {
+      "label": "delete-task-worker",
+      "code": 0
+    },
+    {
+      "label": "cleanup-d1-inventory",
+      "code": 0
+    },
+    {
+      "label": "delete-ACCOUNT_DB",
+      "code": 0
+    },
+    {
+      "label": "delete-OAUTH_DB",
+      "code": 0
+    },
+    {
+      "label": "delete-API_TOKEN_DB",
+      "code": 0
+    },
+    {
+      "label": "cleanup-d1-readback",
+      "code": 0
+    },
+    {
+      "label": "cleanup-worker-readback",
+      "code": 1
+    }
+  ],
+  "finishedAt": "2026-09-29T23:02:14.678Z"
+}

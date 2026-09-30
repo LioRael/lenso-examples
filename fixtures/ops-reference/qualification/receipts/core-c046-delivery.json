@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/LioRael/lenso.git",
+  "candidate": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "candidate_branch": "candidate/codex/workers-management-host-20260930",
+  "base": "9ce75f577082f23362a47290725c84487709f015",
+  "required_ci": {
+    "run_id": 36660026907,
+    "url": "https://github.com/LioRael/lenso/actions/runs/36660026907",
+    "head_sha": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+    "quality": "success",
+    "bun_conformance": "success"
+  },
+  "local_checks": {
+    "format": "passed",
+    "mixed_authoring_stateless_tests": 6,
+    "lifecycle_startup_tests": 7,
+    "native_adapter_configuration_constructor_tests": 14,
+    "optional_facility_tests": 5,
+    "engine_facility_owner_asset_tests": 9,
+    "affected_strict_clippy_all_targets": "passed",
+    "cli_build": "passed"
+  },
+  "landing": {
+    "method": "normal_fast_forward",
+    "destination": "main",
+    "source_sha": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+    "remote_readback": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e"
+  },
+  "scope": [
+    "dependency-ordered native preparation and construction",
+    "private Workers factory Host clock from selected existing Driver",
+    "optional typed private facilities in both authoring profiles",
+    "single-module selected reachable Cargo owner assets with bounded paths and provenance"
+  ],
+  "qualification": "ordinary Native management and Workers management owner closures remain separately pending",
+  "publication": "not_run",
+  "production_deployment": "not_run"
+}

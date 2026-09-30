@@ -1,0 +1,492 @@
+{
+  "schema": "lenso.qualification.profile-input-index.v1",
+  "purpose": "Recorded source/build provenance for documentation; not a runnable preparation override.",
+  "runnable_profile_inputs": false,
+  "private_owner_setup_included": false,
+  "historical_project_reconstruction_claimed": false,
+  "latest_selected_source_candidates": {
+    "status": "source_candidates_not_registry_publication",
+    "core": {
+      "repository": "https://github.com/LioRael/lenso.git",
+      "revision": "b8d134d739698812a039a79633719e14947df1e3",
+      "native_cli_version": "0.6.5"
+    },
+    "javascript": {
+      "repository": "https://github.com/LioRael/lenso-js.git",
+      "revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+      "runtime_version": "0.1.6"
+    },
+    "console": {
+      "repository": "https://github.com/LioRael/lenso-console",
+      "revision": "ed1cfec08808dd38e068148224256b663d31fd44"
+    },
+    "agent": {
+      "repository": "https://github.com/LioRael/lenso-agent",
+      "revision": "bec995997fffc4ae04e7b88c31a7156251812d24"
+    },
+    "security_owners": {
+      "auth": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+      "access": "5485066ae3e99191862701f753b3ae186755ee80",
+      "audit": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+      "approval": "a6e73aa756c45db8260b5a7544328d97624ea896"
+    },
+    "selection_file": "../candidate-inputs.json",
+    "resolution_receipt": {
+      "path": "./receipts/ops-sdk35-b8d1-bec9-metadata.json",
+      "sha256": "5dc3556172e7774b7738ec27987e8096c14a1846b6775ff3d2f78c6eb3944921"
+    },
+    "archive_review": {
+      "path": "./receipts/core-sdk-b8d1-artifact-review.json",
+      "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428"
+    },
+    "scope": "Nine source resolutions; historical Native Management compilation is separately attributed. These records do not rerun the historical qualified graphs or establish registry publication."
+  },
+  "historical_qualified_profiles": {
+    "native_c1": {
+      "proof_receipt": {
+        "path": "./receipts/management-api.json",
+        "sha256": "d3c38c4d4a126f49aa062d5cda645fd053cd1b1d668573abe06131a37d15b387"
+      },
+      "source_selection_at_build": {
+        "core": {
+          "repository": "https://github.com/LioRael/lenso.git",
+          "revision": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+          "native_cli_version": "0.6.4"
+        },
+        "javascript": {
+          "repository": "https://github.com/LioRael/lenso-js.git",
+          "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+          "runtime_version": "0.1.6"
+        },
+        "published_cli": {
+          "package": "@lenso/cli",
+          "version": "0.17.3",
+          "native_cli_version": "0.6.3"
+        },
+        "published_facade": {
+          "package": "lenso",
+          "version": "0.5.27"
+        },
+        "status": "source_candidates_not_registry_publication"
+      },
+      "retained_build_receipts": {
+        ".lenso/host-build.json": {
+          "sha256": "805727325aa7c5ba4a3387e69d4d62443dd9f4cb034c0ed999167890cbd6bcf3",
+          "embedded_at": "/build/receipts/.lenso~1host-build.json"
+        },
+        "local-sources.json": {
+          "sha256": "60835e7d47b624e6658f1064b950a288ddb513b30114423abc7203e15677f252",
+          "embedded_at": "/build/receipts/local-sources.json"
+        },
+        ".lenso/root-linked-sources.json": {
+          "sha256": "8c04c31bea5a25188ec2d0cc44c7ad40f37c422f391a0b2f48d36f6a222a8720",
+          "embedded_at": "/build/receipts/.lenso~1root-linked-sources.json"
+        }
+      },
+      "direct_linked_owner_sources": [
+        {
+          "plugin_id": "lenso.access-control.postgres",
+          "package": "lenso-access-control-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-access-control-plugin",
+          "revision": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442"
+        },
+        {
+          "plugin_id": "lenso.agent.management-tools",
+          "package": "lenso-agent-management-tools-plugin",
+          "repository": "https://github.com/LioRael/lenso-agent",
+          "revision": "8d051f36a06ad01ea65698763c76cae16d3c8ad2"
+        },
+        {
+          "plugin_id": "lenso.audit-log.postgres",
+          "package": "lenso-audit-log-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-audit-log-plugin",
+          "revision": "59ecc79e38de72891e6a164d7e74617c618038f8"
+        },
+        {
+          "plugin_id": "lenso.auth.api-token",
+          "package": "lenso-auth-api-token-plugin",
+          "repository": "https://github.com/LioRael/lenso-auth-plugin",
+          "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+        },
+        {
+          "plugin_id": "lenso.business-approval.postgres",
+          "package": "lenso-business-approval-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-business-approval-plugin",
+          "revision": "b7acf5926d178c118445a92dbebeb4fcdef4e67a"
+        }
+      ],
+      "cli_sha256": "bccfc1a7323f2b2b6734318d13ad3f28be703aae1fc9ef660677f8375de272e3",
+      "limits": "Original committed phase and later rebuilt distribution are separately identified by the immutable receipt; no repeated initial write is inferred."
+    },
+    "native_c4": {
+      "proof_receipt": {
+        "path": "./receipts/human-console-browser.json",
+        "sha256": "a383fdf9f92229b987a90812f24d928dfe01cf937ff1c794bf9cc16a1e991efc"
+      },
+      "source_selection_at_build": {
+        "core": {
+          "repository": "https://github.com/LioRael/lenso.git",
+          "revision": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+          "native_cli_version": "0.6.4"
+        },
+        "javascript": {
+          "repository": "https://github.com/LioRael/lenso-js.git",
+          "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+          "runtime_version": "0.1.6"
+        },
+        "published_cli": {
+          "package": "@lenso/cli",
+          "version": "0.17.3",
+          "native_cli_version": "0.6.3"
+        },
+        "published_facade": {
+          "package": "lenso",
+          "version": "0.5.27"
+        },
+        "status": "source_candidates_not_registry_publication"
+      },
+      "retained_build_receipts": {
+        ".lenso/host-build.json": {
+          "sha256": "308c908a7ceed3d1b02211739a4a5b312305fc571305cc3c40df43820019e81c",
+          "embedded_at": "/build/receipts/.lenso~1host-build.json"
+        },
+        "local-sources.json": {
+          "sha256": "1b06415c7504176feb8f76dbdfa65bcb76ee401ec8dadd8f2e118c30f17a44b4",
+          "embedded_at": "/build/receipts/local-sources.json"
+        },
+        ".lenso/root-linked-sources.json": {
+          "sha256": "4f34755e2f758afd2852511f0464dc19e4d22a7940e7fbab5c298b996508daee",
+          "embedded_at": "/build/receipts/.lenso~1root-linked-sources.json"
+        }
+      },
+      "direct_linked_owner_sources": [
+        {
+          "plugin_id": "lenso.access-control.postgres",
+          "package": "lenso-access-control-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-access-control-plugin",
+          "revision": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442"
+        },
+        {
+          "plugin_id": "lenso.agent.management-tools",
+          "package": "lenso-agent-management-tools-plugin",
+          "repository": "https://github.com/LioRael/lenso-agent",
+          "revision": "8d051f36a06ad01ea65698763c76cae16d3c8ad2"
+        },
+        {
+          "plugin_id": "lenso.audit-log.postgres",
+          "package": "lenso-audit-log-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-audit-log-plugin",
+          "revision": "59ecc79e38de72891e6a164d7e74617c618038f8"
+        },
+        {
+          "plugin_id": "lenso.auth.account",
+          "package": "lenso-auth-account-plugin",
+          "repository": "https://github.com/LioRael/lenso-auth-plugin",
+          "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+        },
+        {
+          "plugin_id": "lenso.auth.api-token",
+          "package": "lenso-auth-api-token-plugin",
+          "repository": "https://github.com/LioRael/lenso-auth-plugin",
+          "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+        },
+        {
+          "plugin_id": "lenso.auth.human-api-token",
+          "package": "lenso-auth-human-api-token-plugin",
+          "repository": "https://github.com/LioRael/lenso-auth-plugin",
+          "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+        },
+        {
+          "plugin_id": "lenso.auth.password",
+          "package": "lenso-auth-password-plugin",
+          "repository": "https://github.com/LioRael/lenso-auth-plugin",
+          "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+        },
+        {
+          "plugin_id": "lenso.business-approval.postgres",
+          "package": "lenso-business-approval-postgres-plugin",
+          "repository": "https://github.com/LioRael/lenso-business-approval-plugin",
+          "revision": "b7acf5926d178c118445a92dbebeb4fcdef4e67a"
+        }
+      ],
+      "cli_sha256": "bccfc1a7323f2b2b6734318d13ad3f28be703aae1fc9ef660677f8375de272e3",
+      "browser_source": {
+        "ui_source_sha": "3e629c721dc69710be5b450deea3f9d45b8f7fe0",
+        "native_backend_source_sha": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+        "ui_gateway_provenance": {
+          "source_sha256": "77e9035c64a5df8d2ab7dd4acb9e7fb87f2c7c449a14bb6dde1d55cdf641878d",
+          "copied_sha256": "77e9035c64a5df8d2ab7dd4acb9e7fb87f2c7c449a14bb6dde1d55cdf641878d",
+          "backend_console_revision": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+          "candidate_parent": "ffde175a8efe8952b34b249f357b2f1bb39eae22"
+        }
+      },
+      "limits": "Native PostgreSQL human/PAT profile. Its literal post-revoke tool request is fresh guard denial; H2 separately proves the exact cached request."
+    },
+    "native_h2": {
+      "proof_receipt": {
+        "path": "./receipts/agent-owner-joint.json",
+        "sha256": "3439758871284becae98d5c872ab3447f593d1a947836342076101e16dc7537a"
+      },
+      "agent_source": {
+        "repository": "https://github.com/LioRael/lenso-agent",
+        "revision": "cc27af63f34f28fefebad0b64bffba850ea70c94"
+      },
+      "agent_executable_build": {
+        "schema": "lenso.agent-task-native-build.v1",
+        "repository": "https://github.com/LioRael/lenso-agent",
+        "source_revision": "cc27af63f34f28fefebad0b64bffba850ea70c94",
+        "target": "management_task",
+        "package": "lenso-agent-management-connection-plugin",
+        "cargo_locked": true,
+        "tracked_source_clean": true,
+        "cargo_lock_sha256": "c428fff3ab5a0b51bf49c448d4cbe35c1f898510f1c83126e4408229907a6bad",
+        "executable_sha256": "6b3ae7e91ab0cdf1611b5e6af3974ee5f84573c8b3e9ee3325d3270a40ba237a",
+        "target_production_revision": "8200683c9460a3413c4b5e917dd66d394604061a",
+        "production_role_loop_connection_bytes_equal_to_target": true
+      },
+      "issuer_host": {
+        "proof_receipt": {
+          "path": "./receipts/agent-owner-joint.json",
+          "sha256": "3439758871284becae98d5c872ab3447f593d1a947836342076101e16dc7537a"
+        },
+        "source_selection_at_build": {
+          "core": {
+            "repository": "https://github.com/LioRael/lenso.git",
+            "revision": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+            "native_cli_version": "0.6.4"
+          },
+          "javascript": {
+            "repository": "https://github.com/LioRael/lenso-js.git",
+            "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+            "runtime_version": "0.1.6"
+          },
+          "published_cli": {
+            "package": "@lenso/cli",
+            "version": "0.17.4",
+            "native_cli_version": "0.6.4"
+          },
+          "published_facade": {
+            "package": "lenso",
+            "version": "0.5.27"
+          },
+          "status": "source_candidates_not_registry_publication"
+        },
+        "retained_build_receipts": {
+          ".lenso/host-build.json": {
+            "sha256": "84f243d20c4a59b215b110101975f05cbdc3aec62931e14e50e1ae29cad69806",
+            "embedded_at": "/issuer_build/receipts/.lenso~1host-build.json"
+          },
+          "local-sources.json": {
+            "sha256": "293a036d6c796d404d098b781cfa13c69e567290cbe7ff9dd3aaadf1e86692fc",
+            "embedded_at": "/issuer_build/receipts/local-sources.json"
+          },
+          ".lenso/root-linked-sources.json": {
+            "sha256": "c2cfe2c9ff587f1d50ed96c147f4b33dd9f41636f670df2be59ced0dde17c2d2",
+            "embedded_at": "/issuer_build/receipts/.lenso~1root-linked-sources.json"
+          }
+        },
+        "direct_linked_owner_sources": [
+          {
+            "plugin_id": "lenso.access-control.postgres",
+            "package": "lenso-access-control-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-access-control-plugin",
+            "revision": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442"
+          },
+          {
+            "plugin_id": "lenso.agent.management-tools",
+            "package": "lenso-agent-management-tools-plugin",
+            "repository": "https://github.com/LioRael/lenso-agent",
+            "revision": "8200683c9460a3413c4b5e917dd66d394604061a"
+          },
+          {
+            "plugin_id": "lenso.audit-log.postgres",
+            "package": "lenso-audit-log-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-audit-log-plugin",
+            "revision": "59ecc79e38de72891e6a164d7e74617c618038f8"
+          },
+          {
+            "plugin_id": "lenso.auth.account",
+            "package": "lenso-auth-account-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.api-token",
+            "package": "lenso-auth-api-token-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.human-api-token",
+            "package": "lenso-auth-human-api-token-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.password",
+            "package": "lenso-auth-password-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.business-approval.postgres",
+            "package": "lenso-business-approval-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-business-approval-plugin",
+            "revision": "b7acf5926d178c118445a92dbebeb4fcdef4e67a"
+          }
+        ]
+      },
+      "target_host": {
+        "proof_receipt": {
+          "path": "./receipts/agent-owner-joint.json",
+          "sha256": "3439758871284becae98d5c872ab3447f593d1a947836342076101e16dc7537a"
+        },
+        "source_selection_at_build": {
+          "core": {
+            "repository": "https://github.com/LioRael/lenso.git",
+            "revision": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+            "native_cli_version": "0.6.4"
+          },
+          "javascript": {
+            "repository": "https://github.com/LioRael/lenso-js.git",
+            "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+            "runtime_version": "0.1.6"
+          },
+          "published_cli": {
+            "package": "@lenso/cli",
+            "version": "0.17.4",
+            "native_cli_version": "0.6.4"
+          },
+          "published_facade": {
+            "package": "lenso",
+            "version": "0.5.27"
+          },
+          "status": "source_candidates_not_registry_publication"
+        },
+        "retained_build_receipts": {
+          ".lenso/host-build.json": {
+            "sha256": "84f243d20c4a59b215b110101975f05cbdc3aec62931e14e50e1ae29cad69806",
+            "embedded_at": "/target_build/receipts/.lenso~1host-build.json"
+          },
+          "local-sources.json": {
+            "sha256": "293a036d6c796d404d098b781cfa13c69e567290cbe7ff9dd3aaadf1e86692fc",
+            "embedded_at": "/target_build/receipts/local-sources.json"
+          },
+          ".lenso/root-linked-sources.json": {
+            "sha256": "c2cfe2c9ff587f1d50ed96c147f4b33dd9f41636f670df2be59ced0dde17c2d2",
+            "embedded_at": "/target_build/receipts/.lenso~1root-linked-sources.json"
+          }
+        },
+        "direct_linked_owner_sources": [
+          {
+            "plugin_id": "lenso.access-control.postgres",
+            "package": "lenso-access-control-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-access-control-plugin",
+            "revision": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442"
+          },
+          {
+            "plugin_id": "lenso.agent.management-tools",
+            "package": "lenso-agent-management-tools-plugin",
+            "repository": "https://github.com/LioRael/lenso-agent",
+            "revision": "8200683c9460a3413c4b5e917dd66d394604061a"
+          },
+          {
+            "plugin_id": "lenso.audit-log.postgres",
+            "package": "lenso-audit-log-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-audit-log-plugin",
+            "revision": "59ecc79e38de72891e6a164d7e74617c618038f8"
+          },
+          {
+            "plugin_id": "lenso.auth.account",
+            "package": "lenso-auth-account-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.api-token",
+            "package": "lenso-auth-api-token-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.human-api-token",
+            "package": "lenso-auth-human-api-token-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.auth.password",
+            "package": "lenso-auth-password-plugin",
+            "repository": "https://github.com/LioRael/lenso-auth-plugin",
+            "revision": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+          },
+          {
+            "plugin_id": "lenso.business-approval.postgres",
+            "package": "lenso-business-approval-postgres-plugin",
+            "repository": "https://github.com/LioRael/lenso-business-approval-plugin",
+            "revision": "b7acf5926d178c118445a92dbebeb4fcdef4e67a"
+          }
+        ]
+      },
+      "limits": "Deterministic Model/Loop. Completed assertions were reconciled without replay after report-variable failure; individual concurrent probe names and final child-process exit code were not retained."
+    },
+    "workers_remote_g4w": {
+      "proof_receipt": {
+        "path": "./receipts/workers-management-remote-artifact-qualification.json",
+        "sha256": "7ddfed9693dcf4ae414b381e26b28a39355696e1c6a5114b47c6f53820a63fc4"
+      },
+      "receipt_index": {
+        "path": "./receipts/workers-management-remote-receipt-index.json",
+        "sha256": "e0b7d673f8e9e2f06d9ccac2fed23bc0d08f3085548bfb90914515312c583c1d"
+      },
+      "source_snapshot": {
+        "path": "./receipts/workers-management-remote-source-snapshot.json",
+        "sha256": "f92e8ca4af25d5747a003e85237a863474d241600ebcb7ac271947ac71e50743"
+      },
+      "workers_build_manifest": {
+        "path": "./receipts/workers-management-remote-workers-build.json",
+        "sha256": "368ec6dd7336b64d9036b143e9bea714f5de4e91ac01645915adea59c3ca4be4"
+      },
+      "runtime_core": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+      "builder_source": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+      "console_functional_source": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+      "security_sources": {
+        "auth": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+        "acl": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+        "audit": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+        "approval": "3346ce45beacdb74918666c045c802d31da585f6"
+      },
+      "javascript_source": {
+        "repository": "https://github.com/LioRael/lenso-js.git",
+        "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+        "runtime_version": "0.1.6"
+      },
+      "artifact_digests": {
+        "source_digest": "sha256:8b86c9ca4cd336a4f6d80f248fa8762081d569954ded8a7aaa480557d16d7887",
+        "plan_digest": "sha256:24a8fe58615c7e9db09e9bc66c2e2537a4ded30e6c31d6e53f447afe0a5f09b2",
+        "host_wasm_digest": "sha256:226f4f2ee3957179ba9f5a746409a1b7c78ade0c86696dd3cf5709b9942f68b3",
+        "host_bindings_digest": "sha256:dc5b5f4c82ba983d9d9d13f5c9b7371713693ce60d2114472602c97ef6215b25",
+        "worker_entry_digest": "sha256:01a1a35591df59c437d70dadb05f88b43a6922343283948e498ee6805004d0c7"
+      },
+      "preparation_snapshot_status_retained": {
+        "configuration": "awaiting actual remote Owner derived publickey",
+        "remote_build": "not_run"
+      },
+      "snapshot_boundary": "The immutable source snapshot is preparation metadata and retains awaiting-public-key/not-run fields. The later workers-build manifest and artifact qualification establish the actual completed build/run. It is not a self-contained runnable project or private Owner setup.",
+      "limits": "Ordinary API-user bearer profile, not Workers Human PAT. Same-artifact redeploy does not assert physical process restart. Storage-fault case blocks readiness; no after-ready fault is inferred. SDK35 latest candidate is not this historical runtime profile.",
+      "cleanup_receipt": {
+        "path": "./receipts/workers-management-remote-cleanup.json",
+        "sha256": "6b4239689099ba76480ff57eea400522817432709f19e32dad6df55e6dfc22d6"
+      }
+    }
+  },
+  "deferred_by_user": [
+    "Hyperdrive qualification",
+    "Paid real Model run"
+  ],
+  "publication": {
+    "status": "awaiting_explicit_human_reply",
+    "performed": false
+  },
+  "current_gate_snapshot": "./receipts/security-final-source-status.json"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "lenso.delivery.receipt.v1",
+  "repository": "LioRael/lenso-console",
+  "candidate": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+  "candidate_branch": "codex/verify/console/preissued-bearer-mcp-20260930",
+  "required_ci": {
+    "run_id": 36671903503,
+    "conclusion": "success",
+    "head_sha": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+    "url": "https://github.com/LioRael/lenso-console/actions/runs/36671903503"
+  },
+  "landing": {
+    "method": "normal-fast-forward",
+    "previous_main": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+    "remote_main_readback": "dbea6e41fa77de867a3daa55ad43efe0113de574"
+  },
+  "publication": "not_performed",
+  "remote_deployment": "not_run",
+  "worktree": "preserved_active",
+  "local_meaningful_checks": [
+    "Root42247fmt+profile2+NativeWASMHTTPalltargetsstrict",
+    "Root56387actualWASMJSONwire1+CoreNative16+strict",
+    "officialMCP2.2.0actualsourcegraphlostreply+statussameID",
+    "typedOwnerAudit6events"
+  ],
+  "ordinary_worker_build": ".artifacts/ops-workers-management-final/mcp-preissued/distribution/workers-build.json",
+  "qualification_receipt": ".artifacts/ops-workers-management-final/mcp-preissued/qualification-official2/official-mcp-lost-reply.json"
+}

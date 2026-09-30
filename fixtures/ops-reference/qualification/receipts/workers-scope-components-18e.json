@@ -1,0 +1,35 @@
+{
+  "schema": "lenso.qualification.component.v1",
+  "scope": "workers-runtime component",
+  "source": {
+    "repository": "https://github.com/LioRael/lenso-js",
+    "revision": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+    "clean": true
+  },
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "packages/lenso-workers-runtime/test/facilities.test.mjs",
+    "packages/lenso-workers-runtime/test/scope.test.mjs"
+  ],
+  "exit_code": 0,
+  "cases": {
+    "Q21": {
+      "test": "exact grants isolate same-package instances and event leases",
+      "boundary": "aborting event A closes its handles while event B remains usable"
+    },
+    "Q22": {
+      "tests": [
+        "generation invalidation fences late resolve without invoking foreign I/O",
+        "generation invalidation fences late reject without invoking foreign I/O",
+        "uncertain write cleanup never replays and cannot project into a later event"
+      ],
+      "boundary": "late completion never calls detached callbacks; uncertain writes dispatch once"
+    }
+  },
+  "actual_workerd": false,
+  "actual_database": false,
+  "whole_app_qualification": false,
+  "log": "workers-scope-components-18e.log"
+}

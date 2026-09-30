@@ -1,0 +1,55 @@
+COMMAND: ["cargo", "--config", "/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/core-source.toml", "--config", "patch.crates-io.lenso-agent-tool-sdk-macros.path=\"/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/extracted/lenso-agent-tool-sdk-macros-0.4.0\"", "test", "--locked", "--target-dir", "/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/consumer-target", "--test", "authoring"]
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+   Compiling lenso-agent-sdk-primary-normalized-consumer v0.0.0 (/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/metadata-continuation/consumer)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.11s
+     Running tests/authoring.rs (/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/consumer-target/debug/deps/authoring-00a0a0e26de0d4f1)
+
+running 2 tests
+test native_tools_preserve_domain_runtime_and_structured_outcomes ... ok
+test one_provider_derives_and_dispatches_multiple_typed_tools ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+mbx[cache]: 1 hits, 1 misses; 0 B downloaded, 0 B uploaded, 2.9 MiB stored locally
+mbx[gc]: removed 3 target directories (5.9 GiB logical, 1 abandoned and 2 live); 89.8 GiB logical remain
+mbx[gc]: evicted 9211 objects and 1836 action results (4.9 GiB logical); 45.0 GiB logical remain
+mbx[savings]: 98493 compilations on file. the box remembers.

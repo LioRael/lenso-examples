@@ -1,0 +1,23 @@
+{
+  "schema": "lenso.qualification.supplement-index.v1",
+  "proof_layer": "supplemental actual generated Audit owner reader; not original ordinary graph",
+  "new_owner_calls": 0,
+  "new_writes": 0,
+  "sources_relabelled": false,
+  "ordinary_artifact": {
+    "console_source": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+    "core_runtime": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+    "builder": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+    "host_wasm_sha256": "226f4f2ee3957179ba9f5a746409a1b7c78ade0c86696dd3cf5709b9942f68b3"
+  },
+  "receipts": [
+    {
+      "file": "workers-management-remote-direct-owner-audit.json",
+      "sha256": "f407d28073e47256598b1965099cb9477a84eaa1b551bf76c1dc58bccb49cb1b"
+    },
+    {
+      "file": "workers-management-remote-mcp-owner-audit.json",
+      "sha256": "402e6da7debb651ec16c37047b96f2f18f574806bdd81d8e617eef9d7650c015"
+    }
+  ]
+}

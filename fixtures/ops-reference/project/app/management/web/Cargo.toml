@@ -1,0 +1,29 @@
+[package]
+name = "lenso-ops-reference-management-web"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[package.metadata.lenso]
+plugin-id = "example.ops-management-web"
+root-slot = "management-http"
+[dependencies]
+lenso = "=0.5.28"
+lenso-capability-http-endpoint = "=0.3.6"
+lenso-auth-sdk = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-management = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-management-human = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+serde = { version = "1", features = ["derive"] }
+lenso-capability-password-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-credential-issuer = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-human-api-token = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }
+time = { version = "0.3", features = ["parsing"] }
+url = "2"
+[lints.rust]
+unsafe_code = "forbid"
+
+[dependencies.lenso-capability-auth-delegation]
+git = "https://github.com/LioRael/lenso-auth-plugin"
+rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264"

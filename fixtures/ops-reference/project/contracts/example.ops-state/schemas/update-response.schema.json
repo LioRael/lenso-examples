@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["label", "value", "revision", "receipt_id"],
+  "properties": {
+    "label": {
+      "type": "string"
+    },
+    "value": {
+      "type": "integer"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "receipt_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "title": "UpdateResponse"
+}

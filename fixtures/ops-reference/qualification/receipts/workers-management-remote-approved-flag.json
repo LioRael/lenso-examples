@@ -1,0 +1,16 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "infrastructure": "cloudflare-workers",
+  "transport_field": "approved:true",
+  "response_status": 200,
+  "outcome": "pending-real-owner-approval",
+  "operation_id": "ffe33280f63ee58ce64741aa6f0c832f84dafda9d4fe0897ab61d310a3a0c565",
+  "final_business_state": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "bob_decision_calls": 0,
+  "target_write_calls": 0,
+  "request_replayed": false
+}

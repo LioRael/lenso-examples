@@ -1,0 +1,24 @@
+{
+  "schema": "lenso.source-delivery.v1",
+  "repository": "https://github.com/LioRael/lenso",
+  "source_revision": "35c0e04ad4d85b12cc79ea660260d27ba871a518",
+  "candidate_ref": "candidate/codex-core-managed-retirement-base-20260930",
+  "required_ci": {
+    "run_id": 36651270636,
+    "url": "https://github.com/LioRael/lenso/actions/runs/36651270636",
+    "quality": "success",
+    "bun_conformance": "success",
+    "head_sha_verified": true
+  },
+  "landing": {
+    "destination": "main",
+    "base_revision": "ab09878c1d07235812a193c97b081686ff0d0943",
+    "ancestry_verified": true,
+    "linear_history_verified": true,
+    "push": "passed",
+    "remote_readback": "35c0e04ad4d85b12cc79ea660260d27ba871a518"
+  },
+  "publication": "not_run",
+  "production_deployment": "not_run",
+  "same_sha_post_landing_full_suite": "not_repeated"
+}

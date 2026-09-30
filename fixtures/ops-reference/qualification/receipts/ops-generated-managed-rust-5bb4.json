@@ -1,0 +1,159 @@
+{
+  "schema": "lenso.emitted-managed-rust-qualification@1",
+  "status": "passed",
+  "core_source": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "cli_sha256": "ca8f8885734a1c3c22afd5ddf284e2ac7e093f3283ec266a244f304dd4fd8f5b",
+  "fixture": "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930",
+  "generated_rust_manifest_modified": false,
+  "generated_manifest_sha256": "b4250550e324f620cfeaaf86e5d707ebc8523be425e4a20c2d47b5ba57c54da7",
+  "generated_source_sha256": "f4d019acf4a182ce953aeb4983095c110191347edfdfad09eeed2e5de9ebf941",
+  "normal_cargo_lock_sha256": "e5d53e01dc783e8f67d396bf95d9ba0f7e47d7b128f805a338e3986eb2ee221f",
+  "candidate_sdks": {
+    "rust_tool_sdk": "0.4.0",
+    "rust_tool_sdk_macros": "0.4.0"
+  },
+  "primary_tool_role": {
+    "name": "lenso-capability-agent-tool-provider",
+    "version": "0.3.0",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "checksum": "3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4"
+  },
+  "role_source_patches": false,
+  "source_cohort_core_patch_sha": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "registry_only": false,
+  "publication_performed": false,
+  "actual_process_execution_response": {
+    "schema_version": 1,
+    "kind": "lenso.plugin-dev",
+    "plugin_id": "fixture.sdk35-rust",
+    "capability_id": "lenso.agent.tool-provider@2",
+    "operation": "execute",
+    "response": {
+      "content": "HELLO",
+      "content_type": "text",
+      "metadata_json": "{}"
+    }
+  },
+  "actual_adopted_terminal_compiler_sha256": "e5077e8ebbb55ca01673be934608a1b206040442040f19407914d28fc4dad00e",
+  "actual_terminal_compiler_outputs": {
+    "rs": {
+      "manifest_sha256": "0b7920433df0760ea5ff414068e3738c297b07bc8ebd30179225d1b2bba677d5",
+      "dependencies": {
+        "lenso": "=0.5.28",
+        "anyhow": "1",
+        "lenso-cli-support": {
+          "path": "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/terminal/app/lenso-terminal-cli/rust-sdk"
+        }
+      }
+    },
+    "ts": {
+      "manifest_sha256": "dcb3b1733fd6b9f9fe636b45c9e3cd1872211975e9ca8f05bad63a9e546f37c4",
+      "dependencies": {
+        "@lenso/bun-plugin": "0.4.2",
+        "@lenso/contract-runtime": "0.3.1",
+        "@lenso/cli": "file:/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/terminal/app/lenso-terminal-cli"
+      }
+    }
+  },
+  "terminal_output_build_claimed": false,
+  "commands": [
+    {
+      "label": "create-rust",
+      "command": [
+        "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin/lenso",
+        "plugin",
+        "new",
+        "fixture.sdk35-rust",
+        "--repo-root",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930",
+        "--dir",
+        "rust-plugin",
+        "--runtime",
+        "process",
+        "--no-install"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "90981d50c6b02661c2a0ad18b8e9bffaef56ae40caeb9399d5e1c4132a566083",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "check-rust",
+      "command": [
+        "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin/lenso",
+        "plugin",
+        "check",
+        "--repo-root",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/rust-plugin"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "c4e30cd472c8e9bce912501a0870acd6266b2be640adfd202c5cff96d94abc29",
+      "stderr_sha256": "4f2c2e22275daf7ec2feb866404c698a880dde85d410f69e7c9a69c40e12de87"
+    },
+    {
+      "label": "metadata-rust",
+      "command": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "3e0b5f0fef5d758623f8d4a87a2ec37e96ca8bb8a9700f03f308891ce2bed4d7",
+      "stderr_sha256": "48a739520b758ee57c480a5a06a6a4864f6b83e3cfa6f237fb3c6574a6a2451e"
+    },
+    {
+      "label": "dev-rust",
+      "command": [
+        "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin/lenso",
+        "plugin",
+        "dev",
+        "--repo-root",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/rust-plugin",
+        "--operation",
+        "execute",
+        "--request-json",
+        "{\"name\": \"fixture.sdk35-rust\", \"arguments_json\": \"{\\\"text\\\": \\\"HELLO\\\"}\"}",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b506016fe03f539bb4bf27f1bc568083ca4ac9dd2ff770b832e1d964e010be34",
+      "stderr_sha256": "3ccaea27eea38f73bece5c3f48d2f121e81074e13cf8781d1cbdbca75ea19053"
+    },
+    {
+      "label": "adopt-terminal",
+      "command": [
+        "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-5bb4-tools/bin/lenso",
+        "app",
+        "add",
+        "@lenso/cli",
+        "--root",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/terminal",
+        "--no-install"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b9b6d970134557492607ed511070c518de7b68d5cdae2b9bdcb92be6717d3f1a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-terminal-rs",
+      "command": [
+        "bun",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/terminal/app/lenso-terminal-cli/compiler.mjs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6c8ed4f6db3caee1d08ce2e4fb62cec5aed10c694b809de6e51de7dc8237c849",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-terminal-ts",
+      "command": [
+        "bun",
+        "/private/tmp/lenso-emitted-managed-rust-5bb4-20260930/terminal/app/lenso-terminal-cli/compiler.mjs"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "6c8ed4f6db3caee1d08ce2e4fb62cec5aed10c694b809de6e51de7dc8237c849",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

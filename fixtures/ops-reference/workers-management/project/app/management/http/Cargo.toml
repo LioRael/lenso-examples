@@ -1,0 +1,32 @@
+[package]
+name = "lenso-ops-reference-management-web"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata.lenso]
+plugin-id = "example.ops-management-web"
+root-slot = "management-web"
+
+[package.metadata.lenso.host-facilities.mcp]
+workers = "host_facilities::mcp"
+workers-adapter-package = "lenso-management-http"
+workers-adapter = "src/workers/mcp.mjs"
+
+[dependencies]
+lenso = "=0.5.28"
+lenso-kernel = "=0.3.12"
+lenso-capability-http-endpoint = "=0.3.6"
+lenso-management-http = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-management = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-management-human = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+serde = { version = "1", features = ["derive"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+wasm-bindgen-futures = "0.4"
+
+[lints.rust]
+unsafe_code = "forbid"

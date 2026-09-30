@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+  "ancestor": "a5f87335121622b11369a4baa478b194b67c1bea",
+  "layer": "node_component_not_workerd_or_ordinary_app",
+  "change": "JS-only finite list read receipt validation; no Rust/Role/schema change",
+  "command": "node --test crates/lenso-audit-log-d1-plugin/tests/d1-store.test.mjs",
+  "passed": 7,
+  "failed": 0,
+  "new_vector": "Explicit failure with empty results and malformed success/results rejects as unavailable; later successful read sees persisted SQLite event and append batch count is unchanged",
+  "actual_workerd": false,
+  "ordinary_source_app": false,
+  "registry_archive_passed": false,
+  "registry_publication": false,
+  "source_sha256": {
+    "crates/lenso-audit-log-d1-plugin/src/host_facilities/store.mjs": "3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+    "crates/lenso-audit-log-d1-plugin/tests/d1-store.test.mjs": "1c471c365b2c6cb011f2a4b7f4037eabaf6e80f7d057a7bc8de3b71abdd17712",
+    "crates/lenso-audit-log-d1-plugin/tests/d1-fixture.mjs": "08e7e4183789c33d0a160d0e3c3fb49f51fac669b2befaed6eedcb4f1cfc1449"
+  },
+  "required_gate": {
+    "id": 36663139622,
+    "sha": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "state": "in_progress_at_snapshot"
+  },
+  "candidate_ref": "candidate/codex/audit-d1-read-receipt-20260930"
+}

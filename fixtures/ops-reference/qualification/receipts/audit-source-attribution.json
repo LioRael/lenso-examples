@@ -1,0 +1,61 @@
+{
+  "schema": "lenso.audit-source-attribution.v1",
+  "recorded_at": "2026-09-30T00:55:03.738557+00:00",
+  "repository": "https://github.com/LioRael/lenso-audit-log-plugin",
+  "base": "59ecc79e38de72891e6a164d7e74617c618038f8",
+  "candidate": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+  "candidate_branch": "candidate/codex-audit-source-attribution-20260930",
+  "test_only": true,
+  "production_changed": false,
+  "capability_schema_changed": false,
+  "cargo_changed": false,
+  "consumer_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+  "checks": [
+    {
+      "command": "cargo fmt --all",
+      "status": "passed",
+      "executor": "Root normal configured Cargo"
+    },
+    {
+      "command": "cargo test --locked -p lenso-audit-log-postgres-plugin --lib source_",
+      "session": 47671,
+      "status": "passed",
+      "tests_passed": 3,
+      "tests_ignored": 1,
+      "tests_filtered": 20,
+      "log": ".artifacts/audit-source-spoof.log"
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-audit-log-postgres-plugin --lib --tests -- -D warnings",
+      "session": 40572,
+      "status": "passed"
+    }
+  ],
+  "vectors": [
+    "Generated decode ignores top-level forged source; no source field survives typed re-encoding",
+    "Actual generated Client dispatch derives source_instance from admitted Runtime caller",
+    "Nested metadata.source_instance remains untrusted metadata and cannot replace outer source"
+  ],
+  "boundary": "Native owner/component wire and actual Kernel Client test; not whole-App/HTTP/browser/remote audit proof. No claim that undeclared fields are rejected.",
+  "remote_gate": {
+    "status": "success",
+    "run_id": 36652212653,
+    "run_url": "https://github.com/LioRael/lenso-audit-log-plugin/actions/runs/36652212653",
+    "head_sha": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "required_jobs": {
+      "quality": "success"
+    },
+    "attempt": 1
+  },
+  "landing": {
+    "status": "landed",
+    "previous": "59ecc79e38de72891e6a164d7e74617c618038f8",
+    "destination": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "fresh_base_was_ancestor": true,
+    "normal_push_no_force": true,
+    "remote_readback": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "readback_at": "2026-09-30T00:55:03.738557+00:00"
+  },
+  "publication": "not_requested",
+  "cleanup": "active worktree and shared targets preserved"
+}

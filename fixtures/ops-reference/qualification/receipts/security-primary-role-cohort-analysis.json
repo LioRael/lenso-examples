@@ -1,0 +1,263 @@
+{
+  "roles": [
+    {
+      "package": "lenso-capability-auth",
+      "registered_version": "0.2.0",
+      "normalized_dependencies": {
+        "lenso-contract-authoring": "0.1.1",
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0",
+        "lenso-contract-codegen": "=0.9.0"
+      },
+      "source_files_equal": [
+        "build.rs",
+        "schemas/authenticate-response.schema.json",
+        "schemas/authenticate-error.schema.json",
+        "schemas/authenticate-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "build.rs",
+        "capability.json",
+        "schemas/authenticate-response.schema.json",
+        "schemas/authenticate-error.schema.json",
+        "schemas/authenticate-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-credential-issuer",
+      "registered_version": "0.3.0",
+      "normalized_dependencies": {
+        "lenso-contract-authoring": "0.1.1",
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0",
+        "lenso-contract-codegen": "=0.9.0"
+      },
+      "source_files_equal": [
+        "build.rs",
+        "schemas/revoke-error.schema.json",
+        "schemas/revoke-credential-request.schema.json",
+        "schemas/revoke-credential-error.schema.json",
+        "schemas/issue-response.schema.json",
+        "schemas/revoke-request.schema.json",
+        "schemas/issue-error.schema.json",
+        "schemas/issue-request.schema.json",
+        "schemas/revoke-response.schema.json",
+        "schemas/revoke-credential-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "build.rs",
+        "capability.json",
+        "schemas/revoke-error.schema.json",
+        "schemas/revoke-credential-request.schema.json",
+        "schemas/revoke-credential-error.schema.json",
+        "schemas/issue-response.schema.json",
+        "schemas/revoke-request.schema.json",
+        "schemas/issue-error.schema.json",
+        "schemas/issue-request.schema.json",
+        "schemas/revoke-response.schema.json",
+        "schemas/revoke-credential-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-identity-directory",
+      "registered_version": "0.3.0",
+      "normalized_dependencies": {
+        "lenso-contract-authoring": "0.1.1",
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0",
+        "lenso-contract-codegen": "=0.9.0"
+      },
+      "source_files_equal": [
+        "build.rs",
+        "schemas/read-status-request.schema.json",
+        "schemas/ensure-identity-request.schema.json",
+        "schemas/ensure-identity-error.schema.json",
+        "schemas/read-status-error.schema.json",
+        "schemas/ensure-identity-response.schema.json",
+        "schemas/read-status-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "build.rs",
+        "capability.json",
+        "schemas/read-status-request.schema.json",
+        "schemas/ensure-identity-request.schema.json",
+        "schemas/ensure-identity-error.schema.json",
+        "schemas/read-status-error.schema.json",
+        "schemas/ensure-identity-response.schema.json",
+        "schemas/read-status-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-password-auth",
+      "registered_version": "0.3.0",
+      "normalized_dependencies": {
+        "lenso-contract-authoring": "0.1.1",
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0",
+        "lenso-contract-codegen": "=0.9.0"
+      },
+      "source_files_equal": [
+        "build.rs",
+        "schemas/register-error.schema.json",
+        "schemas/login-error.schema.json",
+        "schemas/register-response.schema.json",
+        "schemas/login-request.schema.json",
+        "schemas/login-response.schema.json",
+        "schemas/register-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "build.rs",
+        "capability.json",
+        "schemas/register-error.schema.json",
+        "schemas/login-error.schema.json",
+        "schemas/register-response.schema.json",
+        "schemas/login-request.schema.json",
+        "schemas/login-response.schema.json",
+        "schemas/register-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs",
+        "src/contract.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-access-control",
+      "registered_version": "0.2.0",
+      "normalized_dependencies": {
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0"
+      },
+      "source_files_equal": [
+        "schemas/check-permission-request.schema.json",
+        "schemas/check-permission-error.schema.json",
+        "schemas/check-permission-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "capability.json",
+        "schemas/check-permission-request.schema.json",
+        "schemas/check-permission-error.schema.json",
+        "schemas/check-permission-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-access-control-admin",
+      "registered_version": "0.2.0",
+      "normalized_dependencies": {
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0"
+      },
+      "source_files_equal": [
+        "schemas/bootstrap-scope-request.schema.json",
+        "schemas/create-role-request.schema.json",
+        "schemas/delete-role-request.schema.json",
+        "schemas/bootstrap-scope-response.schema.json",
+        "schemas/bootstrap-scope-error.schema.json",
+        "schemas/role-binding-request.schema.json",
+        "schemas/mutation-response.schema.json",
+        "schemas/admin-error.schema.json",
+        "schemas/set-role-permissions-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "capability.json",
+        "schemas/bootstrap-scope-request.schema.json",
+        "schemas/create-role-request.schema.json",
+        "schemas/delete-role-request.schema.json",
+        "schemas/bootstrap-scope-response.schema.json",
+        "schemas/bootstrap-scope-error.schema.json",
+        "schemas/role-binding-request.schema.json",
+        "schemas/mutation-response.schema.json",
+        "schemas/admin-error.schema.json",
+        "schemas/set-role-permissions-request.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    },
+    {
+      "package": "lenso-capability-access-control-directory",
+      "registered_version": "0.2.0",
+      "normalized_dependencies": {
+        "lenso-contract-runtime": "0.2.0",
+        "lenso-kernel": "0.3.5",
+        "lenso-plugin-authoring": "0.2.0"
+      },
+      "source_files_equal": [
+        "schemas/list-subject-roles-error.schema.json",
+        "schemas/list-roles-response.schema.json",
+        "schemas/list-subject-roles-request.schema.json",
+        "schemas/get-role-error.schema.json",
+        "schemas/list-roles-error.schema.json",
+        "schemas/list-roles-request.schema.json",
+        "schemas/get-role-request.schema.json",
+        "schemas/list-subject-roles-response.schema.json",
+        "schemas/get-role-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "source_files_changed_or_missing": [],
+      "all_nonmanifest_archive_files_equal": [
+        "capability.json",
+        "schemas/list-subject-roles-error.schema.json",
+        "schemas/list-roles-response.schema.json",
+        "schemas/list-subject-roles-request.schema.json",
+        "schemas/get-role-error.schema.json",
+        "schemas/list-roles-error.schema.json",
+        "schemas/list-roles-request.schema.json",
+        "schemas/get-role-request.schema.json",
+        "schemas/list-subject-roles-response.schema.json",
+        "schemas/get-role-response.schema.json",
+        "src/lib.rs",
+        "src/generated.rs"
+      ],
+      "all_nonmanifest_archive_files_changed_or_missing": []
+    }
+  ],
+  "registered_transitive_dependencies": {
+    "lenso-contract-runtime": {},
+    "lenso-plugin-authoring": {}
+  },
+  "conclusion": "Seven registered Role archives have unchanged non-manifest files and compatible caret Kernel/Core dependencies. Preserve immutable published Role versions; no fresh Role publication required for latest SDK consumer lock selection."
+}

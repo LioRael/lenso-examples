@@ -1,0 +1,21 @@
+[package]
+name = "lenso-ops-reference-management-tools"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata.lenso]
+plugin-id = "example.ops-management-tools"
+root-slot = "management-tools-http"
+
+[dependencies]
+lenso = "=0.5.28"
+lenso-auth-sdk = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-agent-tool-provider = { git = "https://github.com/LioRael/lenso-agent", rev = "bec995997fffc4ae04e7b88c31a7156251812d24" }
+lenso-agent-management-tools-plugin = { git = "https://github.com/LioRael/lenso-agent", rev = "bec995997fffc4ae04e7b88c31a7156251812d24" }
+lenso-capability-http-endpoint = "=0.3.6"
+serde = { version = "1", features = ["derive"] }
+
+[lints.rust]
+unsafe_code = "forbid"

@@ -1,0 +1,15 @@
+{
+  "schema": "lenso.source-focused-validation.v1",
+  "revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+  "command": "cargo clippy --locked --workspace --all-targets -- -D warnings",
+  "status": "passed",
+  "exit_code": 0,
+  "log_sha256": "4b4ee4d57fbb40c48fee5c4566d4d76b0668dc37c1beb2d053bd685b2e30353b",
+  "publication_performed": false,
+  "parent_revision": "805947813f15dea43462543c1864de8bbc0bc165",
+  "validation_before_commit_same_frozen_source": true,
+  "source_changes": [
+    "integrity fixture adds empty capabilities",
+    "ACP LocalSet startup future heap-pinned"
+  ]
+}

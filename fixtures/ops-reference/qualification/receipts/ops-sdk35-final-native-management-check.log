@@ -1,0 +1,108 @@
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+   Compiling lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking time v0.3.55
+    Checking lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-capability-http-endpoint-macros v0.1.5 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-contract-codegen v0.9.0
+    Checking sqlx-core v0.9.0
+    Checking lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+    Checking lenso-capability-secrets v0.1.4
+    Checking lenso-capability-access-control v0.2.0 (https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066a)
+    Checking lenso-capability-access-control-admin v0.2.0 (https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066a)
+    Checking lenso-capability-business-approval v0.1.0 (https://github.com/LioRael/lenso-business-approval-plugin?rev=a6e73aa756c45db8260b5a7544328d97624ea896#a6e73aa7)
+    Checking lenso-capability-audit-log v0.1.1 (https://github.com/LioRael/lenso-audit-log-plugin?rev=8fb929d066a5ce4bc145db47a6aae0527b62f230#8fb929d0)
+    Checking lenso-capability-access-control-directory v0.2.0 (https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066a)
+   Compiling lenso-capability-auth v0.2.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+   Compiling lenso-capability-management v0.1.0 (https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec0)
+   Compiling lenso-capability-credential-state v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+   Compiling lenso-capability-human-api-token v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+   Compiling lenso-capability-management-human v0.1.0 (https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec0)
+    Checking lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-capability-credential-issuer v0.3.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso v0.5.28 (https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b)
+   Compiling lenso-capability-password-auth v0.3.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+   Compiling lenso-capability-api-token-admin v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking sqlx-postgres v0.9.0
+   Compiling lenso-capability-auth-delegation v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-auth-sdk v0.2.4 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-management-core v0.1.0 (https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec0)
+   Compiling lenso-capability-agent-model v0.1.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+    Checking lenso-auth-sdk v0.2.3
+   Compiling example-ops-state-v2-contract v2.0.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/contracts/example.ops-state-v2)
+   Compiling lenso-capability-agent-model-selection v0.1.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+   Compiling lenso-capability-identity-directory v0.3.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-access-control-core v0.1.1 (https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066a)
+    Checking lenso-business-approval-core v0.1.0 (https://github.com/LioRael/lenso-business-approval-plugin?rev=a6e73aa756c45db8260b5a7544328d97624ea896#a6e73aa7)
+    Checking lenso-audit-log-core v0.1.0 (https://github.com/LioRael/lenso-audit-log-plugin?rev=8fb929d066a5ce4bc145db47a6aae0527b62f230#8fb929d0)
+   Compiling lenso-capability-account-admin v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+   Compiling lenso-capability-agent-tool-provider v0.3.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+    Checking lenso-management-authority v0.1.0 (https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec0)
+    Checking lenso-capability-agent-tools v0.1.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+    Checking lenso-management-mcp v0.1.0 (https://github.com/LioRael/lenso-console?rev=ed1cfec08808dd38e068148224256b663d31fd44#ed1cfec0)
+    Checking lenso-auth-human-api-token-plugin v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-ops-reference-management-web v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/web)
+    Checking lenso-ops-reference-bootstrap v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/bootstrap)
+    Checking lenso-ops-reference-management-mcp v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/mcp)
+    Checking lenso-ops-reference-human-bootstrap v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/human-bootstrap)
+    Checking lenso-ops-reference-secrets v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/secrets)
+    Checking sqlx v0.9.0
+    Checking lenso-postgres-kit v0.1.1
+    Checking lenso-audit-log-postgres-plugin v0.1.1 (https://github.com/LioRael/lenso-audit-log-plugin?rev=8fb929d066a5ce4bc145db47a6aae0527b62f230#8fb929d0)
+    Checking lenso-business-approval-postgres-plugin v0.1.0 (https://github.com/LioRael/lenso-business-approval-plugin?rev=a6e73aa756c45db8260b5a7544328d97624ea896#a6e73aa7)
+    Checking lenso-auth-api-token-plugin v0.1.3 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-access-control-postgres-plugin v0.2.2 (https://github.com/LioRael/lenso-access-control-plugin?rev=5485066ae3e99191862701f753b3ae186755ee80#5485066a)
+    Checking lenso-auth-password-plugin v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-auth-account-plugin v0.1.0 (https://github.com/LioRael/lenso-auth-plugin?rev=1d101fbc9ba1efc12aaa2cf459628e6383100264#1d101fbc)
+    Checking lenso-capability-agent v0.1.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+    Checking lenso-agent-management-tools-plugin v0.1.0 (https://github.com/LioRael/lenso-agent?rev=805947813f15dea43462543c1864de8bbc0bc165#80594781)
+    Checking lenso-ops-reference-management v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/core)
+    Checking lenso-ops-reference-management-tools v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/tools)
+    Checking lenso-ops-reference-human-tokens v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/project/app/management/human-tokens)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.05s
+mbx[cache]: 0 hits, 0 misses, 92 not looked up; 0 B downloaded, 0 B uploaded, 169.9 MiB stored locally
+mbx[savings]: 270.8 GiB logical of target/ was waiting for checkouts that are never coming back. it has stopped waiting.

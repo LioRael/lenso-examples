@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["value", "expected_revision", "idempotency_key"],
+  "properties": {
+    "value": {
+      "type": "integer"
+    },
+    "expected_revision": {
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "title": "UpdateRequest"
+}

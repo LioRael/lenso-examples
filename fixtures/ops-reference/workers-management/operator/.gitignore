@@ -1,0 +1,7 @@
+/target/
+/pkg/
+/owner-assets/
+/wrangler.json
+/.wrangler/
+/.dev.vars
+/__pycache__/

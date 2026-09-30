@@ -1,0 +1,160 @@
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+   Compiling lenso-engine-app v0.3.2 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-engine-app)
+   Compiling lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)
+mbx[progress]: 15s elapsed; 0 hits, 0 misses, 0 bypassed, 8 not looked up; ~0.0s compiler work saved
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.71s
+     Running unittests src/lib.rs (target/debug/deps/lenso_app_authoring-7fa78faf7825622e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/lenso-6c4188cd496c8ed4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s
+
+     Running tests/configuration_source_crash_fence.rs (target/debug/deps/configuration_source_crash_fence-c954fb35009b87a8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/configuration_source_dev.rs (target/debug/deps/configuration_source_dev-b5581a4960b52b77)
+
+running 1 test
+mbx[progress]: 30s elapsed; 0 hits, 0 misses, 0 bypassed, 18 not looked up; ~0.0s compiler work saved
+mbx[progress]: 45s elapsed; 0 hits, 0 misses, 0 bypassed, 18 not looked up; ~0.0s compiler work saved
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] initial Process distribution build: 26.03s; visible Cargo durations (newest first): ["20.38s"]; compilations: 80; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source revision 1, last activation 1: 1.85s; visible Cargo durations (newest first): []; compilations: 0; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source revision 2, last activation 1: 220.99ms; visible Cargo durations (newest first): []; compilations: 0; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source outage or rejection: 932.68ms; visible Cargo durations (newest first): []; compilations: 0; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source revision 3, last activation 1: 1.03s; visible Cargo durations (newest first): []; compilations: 0; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source outage or rejection: 1.04s; visible Cargo durations (newest first): []; compilations: 0; lock waits: 0
+[configuration_source_dev/real_process_host_recovers_missing_file_source_and_activates_new_revision] source revision 3, last activation 3: 1.85s; visible Cargo durations (newest first): ["0.04s"]; compilations: 0; lock waits: 0
+test real_process_host_recovers_missing_file_source_and_activates_new_revision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 35.33s
+
+     Running tests/configuration_source_retirement.rs (target/debug/deps/configuration_source_retirement-ffa9e1cf58279144)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+     Running tests/configuration_source_start.rs (target/debug/deps/configuration_source_start-3e734373511b12d8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/conventions.rs (target/debug/deps/conventions-a49da39eb2cff8c6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/engine.rs (target/debug/deps/engine-cde7b30c07e0af45)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/linked_catalog_adoption.rs (target/debug/deps/linked_catalog_adoption-038c4215580a8cb6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/local_assembly.rs (target/debug/deps/local_assembly-35c09f9dd040625a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/local_discovery.rs (target/debug/deps/local_discovery-4f113766d516e62d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/local_host_bindings.rs (target/debug/deps/local_host_bindings-230184f5b16ac6ea)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/local_workflow.rs (target/debug/deps/local_workflow-12543292ecb15da5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+     Running tests/mcp.rs (target/debug/deps/mcp-fdec1fe887981fac)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+     Running tests/process_notes.rs (target/debug/deps/process_notes-60df05685fd6433c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/release_content_adoption.rs (target/debug/deps/release_content_adoption-cfb86d8179868d68)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/release_details_cargo_adoption.rs (target/debug/deps/release_details_cargo_adoption-0ac8e9c37df5b975)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/signed_portable_install.rs (target/debug/deps/signed_portable_install-ffa4057aa2e616de)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/source_plugin_toggle.rs (target/debug/deps/source_plugin_toggle-bb802f9820bc868a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/v6_linked_catalog_adoption.rs (target/debug/deps/v6_linked_catalog_adoption-b6e98f1184f015b9)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/v6_linked_pack.rs (target/debug/deps/v6_linked_pack-c52083673e1a1f6d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+mbx[cache]: 0 hits, 0 misses, 18 not looked up, 6 incremental; 0 B downloaded, 0 B uploaded, 173.9 MiB stored locally
+mbx[savings]: cleaned up 270.8 GiB logical after checkouts that left without saying goodbye.
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+    Checking lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.49s
+mbx[cache]: 0 hits, 0 misses, 1 incremental; 0 B downloaded, 0 B uploaded, 0 B stored locally
+mbx[savings]: 1d 1h saved across 1491 builds. put it toward something with a progress bar.

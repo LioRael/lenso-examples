@@ -1,0 +1,1 @@
+{"same_request": true, "tool_name": "management__78b479bfcc21544bb05c4ce711dc7ab6f4ec1d263f175ea6", "before_revoke_status": 200, "after_revoke_status": 403, "catalog_after_revoke_status": 403, "owner_revoke_before_expiry": true}

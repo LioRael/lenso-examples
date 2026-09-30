@@ -1,0 +1,50 @@
+{
+  "schema": "lenso.agent-normalized-primary-compatibility-index.v1",
+  "status": "passed",
+  "proof_layer": "source-cohort normalized SDK archive compatibility",
+  "agent_source": "d1d0fd0c950f9a5c5575251d69d1db002d4ab6ef",
+  "core_source": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "registry_only": false,
+  "registry_publication": false,
+  "role_repacked": false,
+  "role_source_patches": false,
+  "initial_failure": "consumer omitted the required package.metadata.lenso; immutable archive and Role integrity checks completed before this fixture compile error",
+  "continuation": "only exact Source SDK fixture metadata was added to an independent consumer; existing normalized SDK archives, original lock, seven PRIMARY checksums and unchanged tests were reused",
+  "checks": [
+    "fresh SDK4/macros4 normalized archives",
+    "seven exact immutable PRIMARY registry Roles",
+    "legacy PRIMARY build Codegen 0.9.0",
+    "PRIMARY empty CatalogRequest without Copy",
+    "one-provider multiple typed-tool derive/dispatch",
+    "domain/runtime/context/cancellation and structured response preservation"
+  ],
+  "sdk_archives": [
+    {
+      "name": "lenso-agent-tool-sdk-macros",
+      "version": "0.4.0",
+      "sha256": "7de37e331bf9e1802f5087f4f68b6d38fb2eada3e9f26a17d581628b200f9c06"
+    },
+    {
+      "name": "lenso-agent-tool-sdk",
+      "version": "0.4.0",
+      "sha256": "c4dc177a0e09b1f8b433efa687453dce787a64dc695ade155a5797e19c1ae635"
+    }
+  ],
+  "tests_passed": 2,
+  "root_sessions": {
+    "initial": 12353,
+    "metadata_continuation": 27494
+  },
+  "does_not_qualify": [
+    "new Agent Host adaptation",
+    "a later Source candidate",
+    "registry-only install or publication",
+    "whole-App runtime or remote profile"
+  ],
+  "evidence": {
+    "initial_receipt": "agent-sdk-primary-normalized-initial-failure.json",
+    "initial_log": "agent-sdk-primary-normalized-initial-failure.log",
+    "continuation_receipt": "agent-sdk-primary-normalized-metadata-continuation.json",
+    "continuation_log": "agent-sdk-primary-normalized-metadata-continuation.log"
+  }
+}

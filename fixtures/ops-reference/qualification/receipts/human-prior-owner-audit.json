@@ -1,0 +1,47 @@
+{
+  "schema": "lenso.ops-owner-audit-proof.v1",
+  "status": "passed",
+  "proof_layer": "supplemental_owner_kernel_reader",
+  "deployment": "ops_human_869248904",
+  "operation_id": "2a6ad52c-565d-4927-a720-c4dc13ccaeb6",
+  "source_instance": "example.ops-management/default",
+  "event_count": 6,
+  "actions": [
+    "management.attempt",
+    "management.completed",
+    "management.dispatch",
+    "management.human_attempt",
+    "management.human_decided"
+  ],
+  "additional_requester_attempts_verified": 1,
+  "lookup": "actual_owner_receipt_matched_qualified_business_state",
+  "requester_and_decider_verified": true,
+  "actors_distinct": true,
+  "intent_digest_consistent": true,
+  "domain_value_revision_verified": true,
+  "exact_response_receipt_verified": false,
+  "metadata_and_actor_identifiers_redacted": true,
+  "append_invoked": false,
+  "audit_owner_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+  "receipt_matched_actual_business_owner": true,
+  "business_owner_api": "lenso_ops_reference_pg::PgStateHandle::receipt",
+  "business_owner_source_sha256": "c1684c5c365fd2e7398948a790ca021afa524ded3373f4279c78324bf7d5619e",
+  "inspection_runtime": {
+    "source": "immutable_registry",
+    "app_plan": "0.4.6",
+    "kernel": "0.3.11",
+    "native_adapter": "0.3.18",
+    "runner": "0.2.19"
+  },
+  "real_database": true,
+  "shutdown": "clean",
+  "ordinary_qualification": {
+    "sha256": "a383fdf9f92229b987a90812f24d928dfe01cf937ff1c794bf9cc16a1e991efc",
+    "schema": "lenso.ops-human-qualification.v1",
+    "profile": "password-account-personal-token",
+    "host_build_sha256": "308c908a7ceed3d1b02211739a4a5b312305fc571305cc3c40df43820019e81c",
+    "cli_sha256": "bccfc1a7323f2b2b6734318d13ad3f28be703aae1fc9ef660677f8375de272e3"
+  },
+  "reader_executable_sha256": "5261b9294d248e7a1b872f16ecd71fbba1fa3fd3337df2ec10506915a2ac7339",
+  "inspection_boundary": "A separate fixed, deployment-scoped Kernel reader queried existing Audit Owner facts. It correlated the opaque audit receipt with the business Owner receipt API. It did not instrument the original ordinary App graph, initialize storage, or append events."
+}

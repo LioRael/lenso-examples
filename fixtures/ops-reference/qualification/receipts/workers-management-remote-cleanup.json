@@ -1,0 +1,31 @@
+{
+  "schema": "lenso.qualification.cleanup.v1",
+  "infrastructure": "cloudflare-workers",
+  "scope": "two-task-workers-and-seven-task-d1",
+  "workers": {
+    "graph": {
+      "deleted_and_api_absent": true,
+      "delete_dispatches": 1,
+      "force": false,
+      "cli_exit_code": 1,
+      "post_delete_kv_permission_error": 10000,
+      "absence_code": 10007,
+      "replayed": false
+    },
+    "operator": {
+      "deleted_and_api_absent": true,
+      "delete_dispatches": 1,
+      "force": false,
+      "cli_exit_code": 1,
+      "post_delete_kv_permission_error": 10000,
+      "absence_code": 10007,
+      "replayed": false
+    }
+  },
+  "database_count": 7,
+  "database_absence_verified": true,
+  "all_registered_test_resources_absent": true,
+  "fault_database_owner_setup": "not_performed",
+  "resource_names_and_ids_emitted": false,
+  "untrusted_approved_probe_pending_until_resource_deletion": true
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "status": "passed",
+  "layer": "supplemental-owner-kernel-read",
+  "infrastructure": "local-workerd-d1",
+  "ordinary_app_response_correlated": true,
+  "whole_profile_complete": false,
+  "recorded_at": "2026-09-30T04:44:45.918736+00:00",
+  "proof": {
+    "schema": "lenso.ops-workers-audit-proof.v1",
+    "status": "passed",
+    "proof_layer": "supplemental_owner_kernel_reader",
+    "operation_id": "846d06550f7d45fd370be9e06e2172ccc78d4575e0d6e13d25abbb32e4302cc6",
+    "deployment": "ops-workers-management-9ee3d8542048",
+    "source_instance": "example.ops-management/default",
+    "event_count": 6,
+    "actions": [
+      "management.attempt",
+      "management.completed",
+      "management.dispatch",
+      "management.human_attempt",
+      "management.human_decided"
+    ],
+    "additional_requester_attempts_verified": 1,
+    "requester_and_decider_verified": true,
+    "actors_distinct": true,
+    "intent_digest_consistent": true,
+    "exact_response_receipt_verified": true,
+    "domain_value_revision_verified": false,
+    "append_invoked": false,
+    "metadata_and_actor_identifiers_redacted": true,
+    "audit_owner_source": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "inspection_boundary": "Separate fixed, deployment-scoped Kernel reader; actual Owner typed list port; no setup, append or SQL. Opaque receipt compared with supplied actual ordinary-App response.",
+    "shutdown": "clean"
+  },
+  "actual_journey_sha256": "6b66b1386f3be587d685828cbdfc1c780a9c6741124f81da6aeeabe83599ccac",
+  "actual_journey_receipt": "workers-management-local-journey.json",
+  "inspector_wasm_sha256": "b840e9c7ee46865d33388cc427e3ac8cac884b33d5f5241de114898a12be2553",
+  "ordinary_artifact": {
+    "console_source": "898f76dfc35cddfec63534d9057a070709e0bfe6",
+    "runtime_core": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+    "builder_source": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+    "asset_digests": {
+      "source_digest": "sha256:4c6eb2c912e54b5498b6b52c0c7de9dca6d75ca94b5fbb79fb963128911ec47b",
+      "plan_digest": "sha256:f9529ff709a7a3f28b5982ab8ac73056f93952197bddecee4d77583c9ab35a59",
+      "host_wasm_digest": "sha256:3ee5d4ef51ccabdd7fe0272af1963d549b1a5cff693072d7afa77767399d0954",
+      "host_bindings_digest": "sha256:ad0c6013466e06d0828048e12f90a502576dd9886682445a081778aced85b957",
+      "worker_entry_digest": "sha256:ad362bd0f074276fda88c13f5b5d9f9ad19c5ae0852cc4004ad273c90373df55"
+    }
+  },
+  "security_sources": {
+    "auth": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+    "access": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+    "audit": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "approval": "3346ce45beacdb74918666c045c802d31da585f6"
+  },
+  "javascript_source": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+  "mutations_invoked": false,
+  "operator_setup_repeated": false,
+  "registry_archive_qualified": false,
+  "pending": [
+    "restart and fresh revocation",
+    "read-only no-Approval profile",
+    "fault and malformed-receipt profile",
+    "remote ordinary Management graph"
+  ],
+  "history": "The first different intent remains an unavailable legacy malformed journal record. This inspector neither rewrites nor replays it."
+}

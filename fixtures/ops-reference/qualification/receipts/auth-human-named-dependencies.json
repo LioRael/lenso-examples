@@ -1,0 +1,102 @@
+{
+  "schema": "lenso.auth-human-named-dependencies.v1",
+  "recorded_at": "2026-09-30T00:35:26.911375+00:00",
+  "repository": "https://github.com/LioRael/lenso-auth-plugin",
+  "base": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+  "candidate": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+  "candidate_branch": "candidate/codex-auth-human-live-guard-20260930",
+  "plugin": "lenso.auth.human-api-token",
+  "authoring_version": 2,
+  "requirements": {
+    "account_state": "lenso.auth.credential-state@1",
+    "api_tokens": "lenso.auth.api-token-admin@1",
+    "access": "lenso.access-control@1"
+  },
+  "capability_abi_changed": false,
+  "configuration_changed": false,
+  "operation_logic_changed": true,
+  "migration": "Replace this private Plugin descriptor synthetic dependency choices with the three named requirements; select exact Account, API token and human ACL instances. No automatic fallback or data migration.",
+  "focused_checks": [
+    {
+      "command": "cargo fmt --all",
+      "status": "passed",
+      "executor": "Root normal configured Cargo"
+    },
+    {
+      "command": "cargo test --locked -p lenso-auth-human-api-token-plugin --lib --test source_dependencies",
+      "status": "passed",
+      "session": 26418,
+      "lib_tests_passed": 2,
+      "source_resolution_tests_passed": 1,
+      "vectors": [
+        "two CredentialState candidates",
+        "two ACL candidates",
+        "exact named owner choices"
+      ]
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-auth-human-api-token-plugin --all-targets -- -D warnings",
+      "status": "passed",
+      "session": 77648
+    },
+    {
+      "command": "cargo test --locked -p lenso-auth-human-api-token-plugin --test postgres_lifecycle real_account_session_owns_live_human_pat_lifecycle -- --ignored --exact --test-threads=1",
+      "status": "passed",
+      "session": 30828,
+      "tests_passed": 1,
+      "boundary": "actual disposable NativePG lifecycle and authoring2 factory; not ordinary Source/browser/H2",
+      "tests_filtered": 2,
+      "database_configuration": "private file loaded into test environment only; never command-line or output"
+    },
+    {
+      "command": "cargo test --locked -p lenso-auth-human-api-token-plugin --lib",
+      "status": "passed",
+      "session": 69184,
+      "tests_passed": 3,
+      "vectors": [
+        "six generated dependency error decoders",
+        "known domain denials",
+        "Runtime and ProtocolViolation preservation",
+        "scoped child human denial"
+      ]
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-auth-human-api-token-plugin --all-targets -- -D warnings",
+      "status": "passed",
+      "session": 53018
+    }
+  ],
+  "remote_gate": {
+    "status": "success",
+    "run_id": 36651764905,
+    "run_url": "https://github.com/LioRael/lenso-auth-plugin/actions/runs/36651764905",
+    "required_job": "Check",
+    "head_sha": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "required_jobs": {
+      "Check": "success"
+    },
+    "attempt": 1
+  },
+  "landing": {
+    "status": "landed",
+    "destination": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "previous": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+    "fresh_base_was_ancestor": true,
+    "normal_push_no_force": true,
+    "remote_readback": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "readback_at": "2026-09-30T00:55:03.738557+00:00"
+  },
+  "publication": "not_requested",
+  "historical_proofs": "Earlier same-capability owner PG/D1 evidence remains SHA-specific; this migration does not promote those artifacts to ordinary Source/browser or current remote D1 qualification. RealPG factory-v2 test session30828 ran on39161 before this error-only followup; no repeated local PG claim.",
+  "named_dependencies_candidate": "39161c01d57f4b9ec626d4374c0b1991c14caf59",
+  "named_dependencies_gate": {
+    "status": "success",
+    "run_id": 36651009385,
+    "required_job": "Check",
+    "run_url": "https://github.com/LioRael/lenso-auth-plugin/actions/runs/36651009385",
+    "head_sha": "39161c01d57f4b9ec626d4374c0b1991c14caf59",
+    "historical": true,
+    "superseded_by": "5fb16bbcbff51cce394fd6e29df9079485f7f37e"
+  },
+  "live_guard_change": "Generated Unknown CredentialState/ACL domain replies remain RuntimeUnavailable; known denials and original Runtime failures keep their semantics. Admin issue/list/receipt/revoke retain the same rule."
+}

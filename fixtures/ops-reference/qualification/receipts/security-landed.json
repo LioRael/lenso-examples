@@ -1,0 +1,270 @@
+[
+  {
+    "repo": "lenso-access-control-plugin",
+    "candidate": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "destination": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "previous": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+    "ci_run": 36644691127,
+    "ci_conclusion": "success",
+    "ci_head_sha": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "consumer_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "main_readback_at": "2026-09-29T23:25:42.659970+00:00",
+    "published": false,
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "quality": "success",
+      "workers": "success"
+    },
+    "prior_source_acceptance": {
+      "repo": "lenso-access-control-plugin",
+      "candidate": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+      "destination": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+      "previous": "9ac3bd537b7767f118f3c55f6f849e1cdc04d572",
+      "ci_run": 36621196748,
+      "ci_conclusion": "success",
+      "ci_head_sha": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+      "consumer_source": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+      "main_readback_at": "2026-09-29T21:55:50Z",
+      "published": false
+    },
+    "followup_scope": "Supported Native/D1 Plugin configuration schemas, unchanged Owner strict format validation",
+    "next_consumer_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "consumer_roll_status": "Console normal/dev pins aligned; ordinary SourceApp qualification separate pending proof"
+  },
+  {
+    "repo": "lenso-audit-log-plugin",
+    "candidate": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "destination": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "previous": "59ecc79e38de72891e6a164d7e74617c618038f8",
+    "ci_run": 36652212653,
+    "ci_conclusion": "success",
+    "ci_head_sha": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "consumer_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+    "main_readback_at": "2026-09-30T00:55:03.738557+00:00",
+    "published": false,
+    "required_ci_jobs": {
+      "quality": "success"
+    },
+    "followup_scope": "Test-only Q18 generated decode and real typed Client prove ignored forged source cannot replace actual Runtime caller; production/schema/Cargo unchanged",
+    "ci_attempt": 1,
+    "prior_source_acceptance": {
+      "repo": "lenso-audit-log-plugin",
+      "candidate": "59ecc79e38de72891e6a164d7e74617c618038f8",
+      "destination": "59ecc79e38de72891e6a164d7e74617c618038f8",
+      "previous": "58fffda0ce8acc527ec788d78caa3f003e9f3ebf",
+      "ci_run": 36621366198,
+      "ci_conclusion": "success",
+      "ci_head_sha": "59ecc79e38de72891e6a164d7e74617c618038f8",
+      "consumer_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+      "main_readback_at": "2026-09-29T21:55:50Z",
+      "published": false
+    },
+    "test_only": true,
+    "functional_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+    "explicit_source_vector_receipt": ".artifacts/audit-source-attribution.json"
+  },
+  {
+    "schema": "lenso.security-source-delivery.v1",
+    "repo": "lenso-service-account-plugin",
+    "candidate": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+    "destination": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+    "previous": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+    "ci_run": 36673403339,
+    "ci_conclusion": "success",
+    "ci_head_sha": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+    "ci_url": "https://github.com/LioRael/lenso-service-account-plugin/actions/runs/36673403339",
+    "required_ci_jobs": {
+      "check": "success"
+    },
+    "main_readback_at": "2026-09-30T06:04:29.107999+00:00",
+    "core_source": "cac6db9d3293197754cce0ec707e909e0bed79a6",
+    "producer_final_source": "bc7039114b9848bab8c3cae0346945ac804a33c3",
+    "producer_delta": "Test-only EngineApp scaffold expectations; production SDK bytes unchanged.",
+    "scope": "SDK35 manifest/lock/coherent Source upgrade; immutable registered ACL archive reuse; no production Rust, Capability, schema or generated Role changes.",
+    "source_archive_check": {
+      "status": "passed",
+      "log": ".artifacts/service-latest-sdk-immutable-role-archive.log",
+      "registry_only_archive": "pending producer registry publication approval"
+    },
+    "normal_checks": {
+      "session": 44610,
+      "lib_passed": 10,
+      "lib_ignored": 1,
+      "all_targets_strict": "passed"
+    },
+    "public_capability_abi_changed": false,
+    "published": false,
+    "registry_publication_approval": "pending human reply",
+    "s1_optional_machine_console_profile": "not selected",
+    "workers_service_profile": "unsupported",
+    "prior_source_acceptance": {
+      "repo": "lenso-service-account-plugin",
+      "candidate": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+      "destination": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+      "previous": "2f943361414596adbae54060f33e406f77c0f091",
+      "ci_run": 36634169857,
+      "ci_conclusion": "success",
+      "ci_head_sha": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+      "consumer_source": "8d28d45958eeeb85012abd02580fdd7bc615cbf0",
+      "core_source": "1dbc6b441ccc5571e2349ab4ae6e23a072a9093e",
+      "main_readback_at": "2026-09-29T21:45:28Z",
+      "prior_source_acceptance": {
+        "candidate": "2f943361414596adbae54060f33e406f77c0f091",
+        "previous": "8858297042b12f47c1afe6dcbaa58df9db781918",
+        "ci_run": 36623489258,
+        "runtime_source_and_capability_abi_unchanged_in_followup": true
+      },
+      "published": false
+    },
+    "consumer_source": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0"
+  },
+  {
+    "repo": "lenso-business-approval-plugin",
+    "candidate": "3346ce45beacdb74918666c045c802d31da585f6",
+    "destination": "3346ce45beacdb74918666c045c802d31da585f6",
+    "previous": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "ci_run": 36661069304,
+    "ci_conclusion": "success",
+    "ci_head_sha": "3346ce45beacdb74918666c045c802d31da585f6",
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "quality": "success"
+    },
+    "main_readback_at": "2026-09-30T02:55:07.205860+00:00",
+    "published": false,
+    "core_source": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+    "consumer_source": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "workers_candidate_source": "3346ce45beacdb74918666c045c802d31da585f6",
+    "followup_scope": "Shared Approval policy with finite source-selected D1 store; fresh primary per finite operation; explicit setup; atomic immutable decision and Unknown read reconciliation. Ordinary Workers profile pending real proof. Existing Native consumer source retained.",
+    "normal_checks": {
+      "native_strict": "52360",
+      "wasm_strict": "7189",
+      "exclusive_native_pg": "29292",
+      "node_components": {
+        "passed": 6,
+        "actual_workerd": false
+      }
+    },
+    "prior_source_acceptance": {
+      "repo": "lenso-business-approval-plugin",
+      "candidate": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+      "destination": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+      "previous": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+      "ci_run": 36653544540,
+      "ci_conclusion": "success",
+      "ci_head_sha": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+      "consumer_source": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+      "main_readback_at": "2026-09-30T01:10:34.737984+00:00",
+      "published": false,
+      "prior_source_acceptance": {
+        "repo": "lenso-business-approval-plugin",
+        "candidate": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+        "destination": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+        "previous": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+        "ci_run": 36642622983,
+        "ci_conclusion": "success",
+        "ci_head_sha": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+        "consumer_source": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+        "main_readback_at": "2026-09-29T23:05:28.213190+00:00",
+        "published": false,
+        "prior_source_acceptance": {
+          "repo": "lenso-business-approval-plugin",
+          "candidate": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+          "destination": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+          "previous": "a31ee3b14f6f9f5e3fd3a1ab839eaec97afef1ef",
+          "ci_run": 36625187511,
+          "ci_conclusion": "success",
+          "ci_head_sha": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+          "consumer_source": "fd45d8306891eed7ab7b3148d9f3da7b269e2721",
+          "main_readback_at": "2026-09-29T21:55:50Z",
+          "published": false
+        },
+        "followup_scope": "Denial-only scoped-child and non-user guard with exact Auth SDK source be751; trusted local decider admission unchanged"
+      },
+      "followup_scope": "Selected Source App configuration schema compatibility; inline exact caller shapes with existing strict owner format validators, unchanged Capability ABI/DDL/decision logic",
+      "ci_attempt": 1,
+      "required_ci_jobs": {
+        "quality": "success"
+      },
+      "configuration_schema_receipt": ".artifacts/approval-configuration-schema.json"
+    }
+  },
+  {
+    "repo": "lenso-auth-plugin",
+    "candidate": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "destination": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "previous": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+    "ci_run": 36651764905,
+    "ci_conclusion": "success",
+    "ci_head_sha": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "consumer_source": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "consumer_ci_run": 36651764905,
+    "consumer_ci_conclusion": "success",
+    "followup_scope": "Named Human owner dependencies on authoring2; generated Unknown live CredentialState/ACL replies remain RuntimeUnavailable without changing public Capability ABI",
+    "main_readback_at": "2026-09-30T00:55:03.738557+00:00",
+    "published": false,
+    "prior_source_acceptance": {
+      "repo": "lenso-auth-plugin",
+      "candidate": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "destination": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "previous": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+      "ci_run": 36645392088,
+      "ci_conclusion": "success",
+      "ci_head_sha": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "consumer_source": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "consumer_ci_run": 36645392088,
+      "consumer_ci_conclusion": "success",
+      "followup_scope": "Unknown Human lifecycle owner-domain outcomes remain Runtime unavailable; shared Access Role normal/dev source cohort aligned to landed ACL8aab",
+      "main_readback_at": "2026-09-29T23:44:27.642566+00:00",
+      "published": false,
+      "prior_source_acceptance": {
+        "repo": "lenso-auth-plugin",
+        "candidate": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+        "destination": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+        "previous": "abbf5c6ff28072e0da5013a58f9f72f9fbb19278",
+        "ci_run": 36641952873,
+        "ci_conclusion": "success",
+        "ci_head_sha": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+        "consumer_source": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+        "consumer_ci_run": 36641952873,
+        "consumer_ci_conclusion": "success",
+        "followup_scope": "Scoped owner delegation, removable display projection/cache, Token activity metadata; exact final candidate CI and owner remote D1 proof",
+        "main_readback_at": "2026-09-29T23:03:09.988877+00:00",
+        "published": false,
+        "prior_source_acceptance": {
+          "repo": "lenso-auth-plugin",
+          "candidate": "abbf5c6ff28072e0da5013a58f9f72f9fbb19278",
+          "destination": "abbf5c6ff28072e0da5013a58f9f72f9fbb19278",
+          "previous": "23bbe1e415fe07978970b52b1b7f5a00486e2ae3",
+          "ci_run": 36634262735,
+          "ci_conclusion": "success",
+          "ci_head_sha": "abbf5c6ff28072e0da5013a58f9f72f9fbb19278",
+          "consumer_source": "23bbe1e415fe07978970b52b1b7f5a00486e2ae3",
+          "consumer_ci_run": 36631681564,
+          "consumer_ci_conclusion": "success",
+          "followup_scope": "docs/management-realm-admission.md only; runtime source and Capability ABI unchanged",
+          "main_readback_at": "2026-09-29T21:55:50Z",
+          "published": false
+        },
+        "remote_owner_d1_receipt": ".artifacts/auth-pat-activity-remote-d1.json"
+      },
+      "remote_owner_d1_receipt": ".artifacts/auth-pat-activity-remote-d1.json",
+      "ci_attempt": 1,
+      "required_ci_jobs": {
+        "Check": "success"
+      },
+      "consumer_pin_receipt": "Console normal/dev final cohort7be+8aab; ordinary SourceApp qualification separate pending proof",
+      "shared_access_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+      "remote_owner_d1_source": "be751f795b254ab228ae4fb2fde7cf79a934d09b"
+    },
+    "remote_owner_d1_receipt": ".artifacts/auth-pat-activity-remote-d1.json",
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "Check": "success"
+    },
+    "consumer_pin_receipt": "Console and ordinary Source consumers select final5fb; actual whole-App qualification remains separate",
+    "shared_access_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "remote_owner_d1_source": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+    "named_authoring_receipt": ".artifacts/auth-human-named-dependencies.json"
+  }
+]

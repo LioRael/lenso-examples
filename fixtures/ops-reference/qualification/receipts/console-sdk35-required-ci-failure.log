@@ -1,0 +1,1297 @@
+quality	Run quality gates	﻿2026-09-30T06:51:05.3290532Z ##[group]Run pnpm check:full
+quality	Run quality gates	2026-09-30T06:51:05.3290855Z ^[[36;1mpnpm check:full^[[0m
+quality	Run quality gates	2026-09-30T06:51:05.3355669Z shell: /usr/bin/bash -e {0}
+quality	Run quality gates	2026-09-30T06:51:05.3355940Z env:
+quality	Run quality gates	2026-09-30T06:51:05.3356201Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+quality	Run quality gates	2026-09-30T06:51:05.3356541Z   CARGO_HOME: /home/runner/.cargo
+quality	Run quality gates	2026-09-30T06:51:05.3356803Z   CARGO_INCREMENTAL: 0
+quality	Run quality gates	2026-09-30T06:51:05.3357028Z   CARGO_TERM_COLOR: always
+quality	Run quality gates	2026-09-30T06:51:05.3357262Z ##[endgroup]
+quality	Run quality gates	2026-09-30T06:51:05.7908625Z $ pnpm test && pnpm test:distribution && pnpm build:local && pnpm service:check && pnpm management:check && pnpm management:mcp:check && pnpm management:workers:check
+quality	Run quality gates	2026-09-30T06:51:06.2207597Z $ pnpm test:local && pnpm test:browser
+quality	Run quality gates	2026-09-30T06:51:06.6425184Z $ vitest run src --exclude '**/*.browser.test.*'
+quality	Run quality gates	2026-09-30T06:51:07.1674104Z 
+quality	Run quality gates	2026-09-30T06:51:07.1679001Z ^[[1m^[[30m^[[46m RUN ^[[49m^[[39m^[[22m ^[[36mv4.1.10 ^[[39m^[[90m/home/runner/work/lenso-console/lenso-console^[[39m
+quality	Run quality gates	2026-09-30T06:51:07.1680244Z 
+quality	Run quality gates	2026-09-30T06:51:07.5992077Z  ^[[32m✓^[[39m src/features/plugins/plugin-runtime-state.test.ts ^[[2m(^[[22m^[[2m29 tests^[[22m^[[2m)^[[22m^[[32m 19^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:07.6149664Z  ^[[32m✓^[[39m src/features/plugins/plugin-workbench-model.test.ts ^[[2m(^[[22m^[[2m40 tests^[[22m^[[2m)^[[22m^[[32m 31^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:07.6529365Z  ^[[32m✓^[[39m src/features/agent/agent-runtime.test.ts ^[[2m(^[[22m^[[2m36 tests^[[22m^[[2m)^[[22m^[[32m 46^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:07.8799719Z  ^[[32m✓^[[39m src/features/plugins/plugin-agent-receipt.test.ts ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[32m 14^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:07.9971502Z  ^[[32m✓^[[39m src/features/plugins/plugin-operation.test.ts ^[[2m(^[[22m^[[2m28 tests^[[22m^[[2m)^[[22m^[[32m 69^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.1452824Z  ^[[32m✓^[[39m src/dev/console-dev-vite-plugin.test.ts ^[[2m(^[[22m^[[2m16 tests^[[22m^[[2m)^[[22m^[[32m 233^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.2546042Z  ^[[32m✓^[[39m src/features/plugins/plugin-configuration-draft.test.ts ^[[2m(^[[22m^[[2m12 tests^[[22m^[[2m)^[[22m^[[32m 14^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.3029656Z  ^[[32m✓^[[39m src/features/plugins/use-plugin-workbench.test.ts ^[[2m(^[[22m^[[2m10 tests^[[22m^[[2m)^[[22m^[[32m 12^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.4451744Z  ^[[32m✓^[[39m src/features/agent/agent-stream-buffer.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 22^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.5835720Z  ^[[32m✓^[[39m src/features/extensions/workspace-service-client.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 57^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.6200363Z  ^[[32m✓^[[39m src/features/extensions/page-contribution-catalog.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 20^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.6727074Z  ^[[32m✓^[[39m src/features/plugins/plugin-agent-workbench-request.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 10^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.7978294Z  ^[[32m✓^[[39m src/features/agent/agent-execution-state.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:08.8351439Z  ^[[32m✓^[[39m src/features/agent/agent-history-menu.test.ts ^[[2m(^[[22m^[[2m7 tests^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.0569924Z  ^[[32m✓^[[39m src/features/plugins/configuration-schema-references.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 9^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.1193325Z  ^[[32m✓^[[39m src/features/plugins/plugin-categories.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.2575842Z  ^[[32m✓^[[39m src/features/agent/agent-tool-error.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.3730169Z  ^[[32m✓^[[39m src/features/agent/agent-turn-projection.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.5239317Z  ^[[32m✓^[[39m src/features/plugins/plugin-configuration-schema.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 7^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.5851035Z  ^[[32m✓^[[39m src/features/agent/task-snapshot-poller.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.7609149Z  ^[[32m✓^[[39m src/features/agent/mcp-connection-model.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 13^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.8179125Z  ^[[32m✓^[[39m src/features/agent/agent-speed.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:09.9987472Z  ^[[32m✓^[[39m src/features/agent/agent-diff.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 9^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:10.0312532Z  ^[[32m✓^[[39m src/dev/console-dev-config.test.ts ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:10.2910132Z  ^[[32m✓^[[39m src/features/agent/business-connection-model.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 23^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:10.6346582Z  ^[[32m✓^[[39m src/features/plugins/configuration-field-groups.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:10.7378708Z  ^[[32m✓^[[39m src/features/plugins/plugin-agent-handoff.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:11.1431821Z  ^[[32m✓^[[39m src/features/agent/business-tool-changes.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:11.2292844Z  ^[[32m✓^[[39m src/features/agent/agent-context-usage-model.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:11.4036014Z  ^[[32m✓^[[39m src/dev/console-dev-server-config.test.ts ^[[2m(^[[22m^[[2m6 tests^[[22m^[[2m)^[[22m^[[32m 10^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:11.7421468Z  ^[[32m✓^[[39m src/features/apps/app-management-context.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:12.0844194Z  ^[[32m✓^[[39m src/app/console-i18n.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 5^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:12.7612331Z  ^[[32m✓^[[39m src/features/agent/agent-markdown.test.tsx ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 81^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:12.8079399Z  ^[[32m✓^[[39m src/lib/http-problem.test.ts ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 41^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:13.1930054Z  ^[[32m✓^[[39m src/features/agent/agent-shimmer-text.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 14^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:13.2757526Z  ^[[32m✓^[[39m src/lib/http-client.test.ts ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:13.5492194Z  ^[[32m✓^[[39m src/features/agent/agent-page-state.test.ts ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 6^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:13.6868481Z  ^[[32m✓^[[39m src/features/plugins/plugin-status.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 14^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:14.4740834Z  ^[[32m✓^[[39m src/router.test.ts ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 8^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:14.4773870Z 
+quality	Run quality gates	2026-09-30T06:51:14.4780404Z ^[[2m Test Files ^[[22m ^[[1m^[[32m39 passed^[[39m^[[22m^[[90m (39)^[[39m
+quality	Run quality gates	2026-09-30T06:51:14.4781927Z ^[[2m      Tests ^[[22m ^[[1m^[[32m275 passed^[[39m^[[22m^[[90m (275)^[[39m
+quality	Run quality gates	2026-09-30T06:51:14.4782767Z ^[[2m   Start at ^[[22m 06:51:07
+quality	Run quality gates	2026-09-30T06:51:14.4784212Z ^[[2m   Duration ^[[22m 7.29s^[[2m (transform 4.89s, setup 0ms, import 10.91s, tests 871ms, environment 6ms)^[[22m
+quality	Run quality gates	2026-09-30T06:51:14.4786212Z 
+quality	Run quality gates	2026-09-30T06:51:14.9739615Z $ vitest run --config vitest.browser.config.ts
+quality	Run quality gates	2026-09-30T06:51:15.5626130Z 
+quality	Run quality gates	2026-09-30T06:51:15.5630602Z ^[[1m^[[30m^[[46m RUN ^[[49m^[[39m^[[22m ^[[36mv4.1.10 ^[[39m^[[90m/home/runner/work/lenso-console/lenso-console^[[39m
+quality	Run quality gates	2026-09-30T06:51:15.5631107Z 
+quality	Run quality gates	2026-09-30T06:51:17.1771299Z ^[[2m6:51:17 AM^[[22m ^[[36m^[[1m[vite]^[[22m^[[39m ^[[90m^[[2m(client)^[[22m^[[39m [optimizer] bundling dependencies...
+quality	Run quality gates	2026-09-30T06:51:24.6702023Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-quick-panel.browser.test.tsx ^[[2m(^[[22m^[[2m17 tests^[[22m^[[2m)^[[22m^[[33m 5110^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:24.6703672Z      ^[[33m^[[2m✓^[[22m^[[39m command menu remains clickable above the compact composer ^[[33m 316^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:24.6704582Z      ^[[33m^[[2m✓^[[22m^[[39m keeps the mini dialog open while using portaled composer controls ^[[33m 1255^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:24.6705441Z      ^[[33m^[[2m✓^[[22m^[[39m switches retained chats in one drawer and removes closed tray items ^[[33m 998^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:24.6706652Z      ^[[33m^[[2m✓^[[22m^[[39m closing an inactive chip keeps the current window open ^[[33m 402^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:28.8196113Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-workbench.browser.test.tsx ^[[2m(^[[22m^[[2m9 tests^[[22m^[[2m)^[[22m^[[33m 3148^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:28.8198844Z    ^[[33m^[[2m✓^[[22m^[[39m a project task exposes its streamed diff in the existing conversation page ^[[33m 1324^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:28.8199989Z    ^[[33m^[[2m✓^[[22m^[[39m project picker preserves project identity in navigation and resumed history ^[[33m 690^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:28.8201406Z    ^[[33m^[[2m✓^[[22m^[[39m coding entry follows readiness and Agent role: 'app'/true ^[[33m 381^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:30.9174850Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/plugins/plugin-configuration-fields.browser.test.tsx ^[[2m(^[[22m^[[2m15 tests^[[22m^[[2m)^[[22m^[[33m 1720^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:32.0275053Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/app/console-session.browser.test.tsx ^[[2m(^[[22m^[[2m11 tests^[[22m^[[2m)^[[22m^[[33m 829^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:34.0077347Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/components/runtime/context-navigation.browser.test.tsx ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[33m 952^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:34.0079483Z      ^[[33m^[[2m✓^[[22m^[[39m shows hover feedback on an unselected sidebar item ^[[33m 312^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:34.6071281Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/extensions/page-contribution-outlet.browser.test.tsx ^[[2m(^[[22m^[[2m5 tests^[[22m^[[2m)^[[22m^[[32m 288^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:35.6330383Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-composer-controls.browser.test.tsx ^[[2m(^[[22m^[[2m4 tests^[[22m^[[2m)^[[22m^[[33m 822^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:35.6332505Z      ^[[33m^[[2m✓^[[22m^[[39m groups searchable model, reasoning, and speed controls ^[[33m 334^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:36.9726900Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/management/human-controls.browser.test.tsx ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[33m 874^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:36.9728584Z    ^[[33m^[[2m✓^[[22m^[[39m locks an uncertain human decision until a fresh owner intent is read ^[[33m 324^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:36.9729602Z    ^[[33m^[[2m✓^[[22m^[[39m retains only the receipt reference after a submitted rejection and recovers across remount ^[[33m 433^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:37.4520958Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/extensions/observe-workspace.browser.test.tsx ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[32m 269^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:39.0512968Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-profiles-page.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 689^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:39.0514429Z    ^[[33m^[[2m✓^[[22m^[[39m Profiles routes guard unsaved navigation and activate only from the list ^[[33m 688^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:40.2244687Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-profile-editor.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 999^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:40.2247109Z    ^[[33m^[[2m✓^[[22m^[[39m Profile editor preserves hidden choices and saves without activation ^[[33m 999^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:41.5679558Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/plugins/plugin-scope.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 923^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:41.5680956Z    ^[[33m^[[2m✓^[[22m^[[39m manages non-Agent Apps without an Agent identity provider and keeps all scopes isolated ^[[33m 922^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:42.6714890Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/management/management-page.browser.test.tsx ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[33m 824^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:42.6716898Z    ^[[33m^[[2m✓^[[22m^[[39m keeps approved parameters immutable and queries an unknown result without replaying ^[[33m 309^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:42.6719046Z    ^[[33m^[[2m✓^[[22m^[[39m locks a lost continuation reply until the retained operation is queried ^[[33m 415^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:45.3689985Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/auth-connections.browser.test.tsx ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[33m 2338^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:45.3691703Z    ^[[33m^[[2m✓^[[22m^[[39m business consent opens loopback App and polls without receiving credentials ^[[33m 2240^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:46.7355051Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-coding-setup.browser.test.tsx ^[[2m(^[[22m^[[2m2 tests^[[22m^[[2m)^[[22m^[[33m 1111^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:46.7357463Z    ^[[33m^[[2m✓^[[22m^[[39m requires explicit Tool selection after import and environment validation ^[[33m 629^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:46.7359254Z    ^[[33m^[[2m✓^[[22m^[[39m shows a failed Ready Gate without exposing an authorization step ^[[33m 482^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:47.4374857Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-execution-state.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 262^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:48.2884769Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-settings-page.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 611^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:48.2886835Z    ^[[33m^[[2m✓^[[22m^[[39m bulk edits cover all tools and remain drafts until explicitly saved ^[[33m 611^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:48.6719438Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-composer-input.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 189^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:48.9347218Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-trajectory.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 131^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:49.3994803Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/agent-turn-activity.browser.test.tsx ^[[2m(^[[22m^[[2m3 tests^[[22m^[[2m)^[[22m^[[32m 274^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:50.1103291Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/add-business-app-connection.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 436^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:50.1105528Z    ^[[33m^[[2m✓^[[22m^[[39m business App setup validates the proposal before publishing and preserves failed drafts ^[[33m 436^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:50.8613088Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/add-mcp-connection.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 432^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:50.8614220Z    ^[[33m^[[2m✓^[[22m^[[39m MCP add validates before publication and preserves the draft on failure ^[[33m 432^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:51.3884194Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/extensions/convention-router.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 352^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:51.3885647Z    ^[[33m^[[2m✓^[[22m^[[39m directory boundaries compose layouts, suspend, recover errors and reset on navigation ^[[33m 352^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:52.4830033Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/plugins/plugin-draft-navigation-guard.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 850^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:52.4831252Z    ^[[33m^[[2m✓^[[22m^[[39m keeps a draft on cancelled navigation and leaves only after confirmation ^[[33m 850^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:52.9615439Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/settings/settings-page.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[33m 319^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:52.9617178Z      ^[[33m^[[2m✓^[[22m^[[39m keeps row hover transparent and removes the final separator ^[[33m 318^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:53.1820001Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/extensions/workspace-sidebar-slot.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 109^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:53.3065473Z  ^[[32m✓^[[39m ^[[30m^[[43m chromium ^[[49m^[[39m src/features/agent/business-tool-result.browser.test.tsx ^[[2m(^[[22m^[[2m1 test^[[22m^[[2m)^[[22m^[[32m 4^[[2mms^[[22m^[[39m
+quality	Run quality gates	2026-09-30T06:51:53.3096851Z 
+quality	Run quality gates	2026-09-30T06:51:53.3101224Z ^[[2m Test Files ^[[22m ^[[1m^[[32m27 passed^[[39m^[[22m^[[90m (27)^[[39m
+quality	Run quality gates	2026-09-30T06:51:53.3102142Z ^[[2m      Tests ^[[22m ^[[1m^[[32m95 passed^[[39m^[[22m^[[90m (95)^[[39m
+quality	Run quality gates	2026-09-30T06:51:53.3102834Z ^[[2m   Start at ^[[22m 06:51:15
+quality	Run quality gates	2026-09-30T06:51:53.3104913Z ^[[2m   Duration ^[[22m 37.74s^[[2m (transform 0ms, setup 0ms, import 7.64s, tests 24.86s, environment 0ms)^[[22m
+quality	Run quality gates	2026-09-30T06:51:53.3106450Z 
+quality	Run quality gates	2026-09-30T06:52:03.3910701Z close timed out after 10000ms
+quality	Run quality gates	2026-09-30T06:52:03.3911795Z Tests closed successfully but something prevents the main process from exiting
+quality	Run quality gates	2026-09-30T06:52:03.3914239Z You can try to identify the cause by enabling "hanging-process" reporter. See https://vitest.dev/guide/reporters.html#hanging-process-reporter
+quality	Run quality gates	2026-09-30T06:52:03.8921731Z $ node --test scripts/distribution/*.test.mjs
+quality	Run quality gates	2026-09-30T06:52:04.0002268Z ﹣ Console creation, build and startup work with only development-kit tools (1.284314ms) # SKIP
+quality	Run quality gates	2026-09-30T06:52:04.0405043Z ✔ validates CLI options before resolving or starting a runtime (2.173632ms)
+quality	Run quality gates	2026-09-30T06:52:04.0407282Z ✔ supervised process retains workspace and explicit packaged paths, and propagates failure (44.285579ms)
+quality	Run quality gates	2026-09-30T06:52:04.0752741Z ✔ help and version work without downloading a runtime (36.798075ms)
+quality	Run quality gates	2026-09-30T06:52:04.0759538Z ✔ native dispatch preserves arguments and does not intercept subcommand help (0.626408ms)
+quality	Run quality gates	2026-09-30T06:52:04.1051190Z ✔ native launch uses the bundled executable, preserves cwd and args, and propagates failure (29.72846ms)
+quality	Run quality gates	2026-09-30T06:52:04.2996897Z ✔ native stdio is transparent and signals stop the owned child (194.50705ms)
+quality	Run quality gates	2026-09-30T06:52:04.3074378Z ✔ waits through withheld metadata and tarball before declaring readiness (32.272095ms)
+quality	Run quality gates	2026-09-30T06:52:04.3075971Z ✔ a different published archive fails without accepting a same-version replacement (0.901621ms)
+quality	Run quality gates	2026-09-30T06:52:04.3077290Z ✔ registry errors are not mistaken for pending publication (0.288057ms)
+quality	Run quality gates	2026-09-30T06:52:04.3078580Z ✔ withheld publication has a bounded deadline (0.780325ms)
+quality	Run quality gates	2026-09-30T06:52:04.3079691Z ✔ unexpected tarball origins fail before any external request (0.613083ms)
+quality	Run quality gates	2026-09-30T06:52:04.3081148Z ℹ tests 12
+quality	Run quality gates	2026-09-30T06:52:04.3081595Z ℹ suites 0
+quality	Run quality gates	2026-09-30T06:52:04.3082011Z ℹ pass 11
+quality	Run quality gates	2026-09-30T06:52:04.3082420Z ℹ fail 0
+quality	Run quality gates	2026-09-30T06:52:04.3082806Z ℹ cancelled 0
+quality	Run quality gates	2026-09-30T06:52:04.3083200Z ℹ skipped 1
+quality	Run quality gates	2026-09-30T06:52:04.3083616Z ℹ todo 0
+quality	Run quality gates	2026-09-30T06:52:04.3084057Z ℹ duration_ms 381.486859
+quality	Run quality gates	2026-09-30T06:52:04.7426070Z $ pnpm typecheck:local && pnpm bundle:local
+quality	Run quality gates	2026-09-30T06:52:05.1618804Z $ tsc -b --pretty false
+quality	Run quality gates	2026-09-30T06:52:08.0333613Z $ pnpm clean:web && VITE_CONSOLE_MODE=${VITE_CONSOLE_MODE:-api} VITE_API_BASE_URL=${VITE_API_BASE_URL:-/} vite build
+quality	Run quality gates	2026-09-30T06:52:08.4430054Z $ node scripts/clean-console-web.mjs
+quality	Run quality gates	2026-09-30T06:52:09.6366129Z ^[[36mvite v8.2.0 ^[[32mbuilding client environment for production...^[[36m^[[39m
+quality	Run quality gates	2026-09-30T06:52:09.6595198Z ^[[2K
+quality	Run quality gates	2026-09-30T06:52:14.3127982Z transforming...✓ 4724 modules transformed.
+quality	Run quality gates	2026-09-30T06:52:14.5033521Z rendering chunks...
+quality	Run quality gates	2026-09-30T06:52:14.7436498Z computing gzip size...
+quality	Run quality gates	2026-09-30T06:52:14.7601589Z dist/client/assets/roboto-mono-vietnamese-400-normal-yYTFiTTs.woff2         4.63 kB
+quality	Run quality gates	2026-09-30T06:52:14.7602906Z dist/client/assets/roboto-mono-vietnamese-400-normal-CzWHQABp.woff          5.80 kB
+quality	Run quality gates	2026-09-30T06:52:14.7603730Z dist/client/assets/roboto-mono-greek-400-normal-CH_u3Aru.woff2              5.94 kB
+quality	Run quality gates	2026-09-30T06:52:14.7604899Z dist/client/assets/ibm-plex-sans-vietnamese-400-normal-fK1oJ5dG.woff        6.39 kB
+quality	Run quality gates	2026-09-30T06:52:14.7606129Z dist/client/assets/ibm-plex-sans-vietnamese-600-normal-DgdngZtN.woff        6.58 kB
+quality	Run quality gates	2026-09-30T06:52:14.7607278Z dist/client/assets/ibm-plex-sans-vietnamese-500-normal-BEb3_waV.woff        6.58 kB
+quality	Run quality gates	2026-09-30T06:52:14.7609091Z dist/client/assets/roboto-mono-greek-400-normal-P8xe1gs1.woff               7.17 kB
+quality	Run quality gates	2026-09-30T06:52:14.7610088Z dist/client/assets/roboto-mono-cyrillic-400-normal-C-_K-ZCn.woff2           7.45 kB
+quality	Run quality gates	2026-09-30T06:52:14.7610838Z dist/client/assets/ibm-plex-sans-vietnamese-400-normal-DG4YqDda.woff2       8.20 kB
+quality	Run quality gates	2026-09-30T06:52:14.7611887Z dist/client/assets/ibm-plex-sans-vietnamese-500-normal-e4dixQRQ.woff2       8.41 kB
+quality	Run quality gates	2026-09-30T06:52:14.7612619Z dist/client/assets/ibm-plex-sans-vietnamese-600-normal-DpPYBSTl.woff2       8.46 kB
+quality	Run quality gates	2026-09-30T06:52:14.7613545Z dist/client/assets/ibm-plex-sans-greek-400-normal-D9ESIMu3.woff             8.76 kB
+quality	Run quality gates	2026-09-30T06:52:14.7614213Z dist/client/assets/roboto-mono-cyrillic-400-normal-B3hIXASd.woff            9.10 kB
+quality	Run quality gates	2026-09-30T06:52:14.7615082Z dist/client/assets/ibm-plex-sans-greek-500-normal-CuWXN6rf.woff             9.14 kB
+quality	Run quality gates	2026-09-30T06:52:14.7615723Z dist/client/assets/ibm-plex-sans-greek-600-normal-D-CqTdkO.woff             9.22 kB
+quality	Run quality gates	2026-09-30T06:52:14.7616364Z dist/client/assets/roboto-mono-latin-ext-400-normal-DLAV9S_w.woff2          9.59 kB
+quality	Run quality gates	2026-09-30T06:52:14.7616992Z dist/client/assets/ibm-plex-sans-greek-400-normal-_efipK4i.woff2            9.94 kB
+quality	Run quality gates	2026-09-30T06:52:14.7617904Z dist/client/assets/inter-vietnamese-wght-normal-CBcvBZtf.woff2             10.25 kB
+quality	Run quality gates	2026-09-30T06:52:14.7618588Z dist/client/assets/ibm-plex-sans-cyrillic-ext-400-normal-Dsrv2Tcn.woff     10.28 kB
+quality	Run quality gates	2026-09-30T06:52:14.7619234Z dist/client/assets/ibm-plex-sans-greek-600-normal-DzTrcv_p.woff2           10.36 kB
+quality	Run quality gates	2026-09-30T06:52:14.7619867Z dist/client/assets/ibm-plex-sans-greek-500-normal-JMMifIXV.woff2           10.37 kB
+quality	Run quality gates	2026-09-30T06:52:14.7620514Z dist/client/assets/ibm-plex-sans-cyrillic-ext-500-normal-DB5PtV2g.woff     10.59 kB
+quality	Run quality gates	2026-09-30T06:52:14.7621173Z dist/client/assets/ibm-plex-sans-cyrillic-ext-600-normal-Bz0x94Yp.woff     10.61 kB
+quality	Run quality gates	2026-09-30T06:52:14.7621817Z dist/client/assets/inter-greek-ext-wght-normal-DlzME5K_.woff2              11.23 kB
+quality	Run quality gates	2026-09-30T06:52:14.7622489Z dist/client/assets/ibm-plex-sans-cyrillic-ext-400-normal-g30qAdWV.woff2    12.14 kB
+quality	Run quality gates	2026-09-30T06:52:14.7623148Z dist/client/assets/roboto-mono-latin-ext-400-normal-BwLXVYNz.woff          12.16 kB
+quality	Run quality gates	2026-09-30T06:52:14.7623820Z dist/client/assets/ibm-plex-sans-cyrillic-ext-600-normal-DUMzJB7m.woff2    12.30 kB
+quality	Run quality gates	2026-09-30T06:52:14.7624482Z dist/client/assets/ibm-plex-sans-cyrillic-ext-500-normal-Cs5J6C77.woff2    12.30 kB
+quality	Run quality gates	2026-09-30T06:52:14.7625133Z dist/client/assets/roboto-mono-latin-400-normal-GekRknry.woff2             12.68 kB
+quality	Run quality gates	2026-09-30T06:52:14.7625780Z dist/client/assets/ibm-plex-sans-cyrillic-400-normal-BTotfTJu.woff         13.51 kB
+quality	Run quality gates	2026-09-30T06:52:14.7626424Z dist/client/assets/roboto-mono-cyrillic-ext-400-normal-BHxv52bw.woff2      13.73 kB
+quality	Run quality gates	2026-09-30T06:52:14.7627082Z dist/client/assets/ibm-plex-sans-cyrillic-500-normal-ByOcLdNv.woff         13.85 kB
+quality	Run quality gates	2026-09-30T06:52:14.7628065Z dist/client/assets/ibm-plex-sans-cyrillic-600-normal-BGq0mW3O.woff         13.88 kB
+quality	Run quality gates	2026-09-30T06:52:14.7628792Z dist/client/assets/ibm-plex-sans-latin-ext-400-normal-RBey6euL.woff        14.36 kB
+quality	Run quality gates	2026-09-30T06:52:14.7629465Z dist/client/assets/ibm-plex-sans-latin-ext-500-normal-D0aIdm-b.woff        14.73 kB
+quality	Run quality gates	2026-09-30T06:52:14.7630111Z dist/client/assets/ibm-plex-sans-latin-ext-600-normal-DIrixKbi.woff        14.77 kB
+quality	Run quality gates	2026-09-30T06:52:14.7630753Z dist/client/assets/ibm-plex-sans-cyrillic-400-normal-DZqxrq2p.woff2        14.80 kB
+quality	Run quality gates	2026-09-30T06:52:14.7631393Z dist/client/assets/ibm-plex-sans-cyrillic-500-normal-CocWQlwt.woff2        15.00 kB
+quality	Run quality gates	2026-09-30T06:52:14.7632033Z dist/client/assets/ibm-plex-sans-cyrillic-600-normal-71GNu3SW.woff2        15.04 kB
+quality	Run quality gates	2026-09-30T06:52:14.7632672Z dist/client/assets/roboto-mono-latin-400-normal-DBZPkcnn.woff              15.72 kB
+quality	Run quality gates	2026-09-30T06:52:14.7633428Z dist/client/assets/ibm-plex-sans-latin-ext-400-normal-C5H60-Va.woff2       15.98 kB
+quality	Run quality gates	2026-09-30T06:52:14.7634278Z dist/client/assets/ibm-plex-sans-latin-ext-600-normal-DOrvGEcy.woff2       16.44 kB
+quality	Run quality gates	2026-09-30T06:52:14.7635135Z dist/client/assets/ibm-plex-sans-latin-ext-500-normal-DakdToA3.woff2       16.45 kB
+quality	Run quality gates	2026-09-30T06:52:14.7635898Z dist/client/assets/roboto-mono-cyrillic-ext-400-normal-W26xs1TL.woff       17.11 kB
+quality	Run quality gates	2026-09-30T06:52:14.7636873Z dist/client/assets/inter-cyrillic-wght-normal-DqGufNeO.woff2               18.74 kB
+quality	Run quality gates	2026-09-30T06:52:14.7637542Z dist/client/assets/inter-greek-wght-normal-CkhJZR-_.woff2                  18.99 kB
+quality	Run quality gates	2026-09-30T06:52:14.7638523Z dist/client/assets/ibm-plex-sans-latin-400-normal-CYLoc0-x.woff            22.10 kB
+quality	Run quality gates	2026-09-30T06:52:14.7639166Z dist/client/assets/ibm-plex-sans-latin-400-normal-CDDApCn2.woff2           22.58 kB
+quality	Run quality gates	2026-09-30T06:52:14.7639824Z dist/client/assets/ibm-plex-sans-latin-600-normal-Cu4Hd6ag.woff            23.87 kB
+quality	Run quality gates	2026-09-30T06:52:14.7640743Z dist/client/assets/ibm-plex-sans-latin-500-normal-BgVn5rGT.woff            23.91 kB
+quality	Run quality gates	2026-09-30T06:52:14.7641906Z dist/client/assets/ibm-plex-sans-latin-500-normal-6ng42L7E.woff2           24.18 kB
+quality	Run quality gates	2026-09-30T06:52:14.7643055Z dist/client/assets/ibm-plex-sans-latin-600-normal-CuJfVYMP.woff2           24.25 kB
+quality	Run quality gates	2026-09-30T06:52:14.7644239Z dist/client/assets/inter-cyrillic-ext-wght-normal-BOeWTOD4.woff2           25.96 kB
+quality	Run quality gates	2026-09-30T06:52:14.7645396Z dist/client/assets/inter-latin-wght-normal-Dx4kXJAl.woff2                  48.25 kB
+quality	Run quality gates	2026-09-30T06:52:14.7646541Z dist/client/assets/inter-latin-ext-wght-normal-DO1Apj_S.woff2              85.06 kB
+quality	Run quality gates	2026-09-30T06:52:14.7648500Z dist/client/assets/use-agent-conversation-P3S1-xel.css                      2.07 kB │ gzip:   0.70 kB
+quality	Run quality gates	2026-09-30T06:52:14.7649954Z dist/client/assets/index-MjBTTxMp.css                                     130.81 kB │ gzip:  29.31 kB
+quality	Run quality gates	2026-09-30T06:52:14.7651270Z dist/client/assets/mermaid-HWGCJPDP-CuxmUJxi.js                             0.07 kB │ gzip:   0.08 kB
+quality	Run quality gates	2026-09-30T06:52:14.7652669Z dist/client/assets/settings-B3RS6oJa.js                                     0.07 kB │ gzip:   0.09 kB
+quality	Run quality gates	2026-09-30T06:52:14.7653992Z dist/client/assets/settings_.profiles-Br6yYZWa.js                           0.08 kB │ gzip:   0.09 kB
+quality	Run quality gates	2026-09-30T06:52:14.7655364Z dist/client/assets/settings_.appearance-CPxJfmUp.js                         0.15 kB │ gzip:   0.14 kB
+quality	Run quality gates	2026-09-30T06:52:14.7656691Z dist/client/assets/settings_.connections-D_ZiRB9w.js                        0.15 kB │ gzip:   0.14 kB
+quality	Run quality gates	2026-09-30T06:52:14.7658262Z dist/client/assets/settings_.ai_.agent-hEBmqP47.js                          0.16 kB │ gzip:   0.15 kB
+quality	Run quality gates	2026-09-30T06:52:14.7659735Z dist/client/assets/settings_.agent_.skills.new-D8NwFDjw.js                  0.16 kB │ gzip:   0.15 kB
+quality	Run quality gates	2026-09-30T06:52:14.7661188Z dist/client/assets/settings_.agent-6rBioMUb.js                              0.17 kB │ gzip:   0.15 kB
+quality	Run quality gates	2026-09-30T06:52:14.7662577Z dist/client/assets/settings_.ai-DhpyRnFo.js                                 0.17 kB │ gzip:   0.16 kB
+quality	Run quality gates	2026-09-30T06:52:14.7663957Z dist/client/assets/agent._chatId-BhaCV0WA.js                                0.24 kB │ gzip:   0.19 kB
+quality	Run quality gates	2026-09-30T06:52:14.7665391Z dist/client/assets/styled-part-HPXodmFP-DOcsEzkK.js                         0.30 kB │ gzip:   0.22 kB
+quality	Run quality gates	2026-09-30T06:52:14.7666929Z dist/client/assets/workspaces._workspaceId._-GkcokitI.js                    0.32 kB │ gzip:   0.25 kB
+quality	Run quality gates	2026-09-30T06:52:14.7668652Z dist/client/assets/apps._appId.pages._workspaceId._-4Fkc2AGt.js             0.34 kB │ gzip:   0.26 kB
+quality	Run quality gates	2026-09-30T06:52:14.7670150Z dist/client/assets/settings_.profiles_._agentId._profileName-B59YmyCX.js    0.34 kB │ gzip:   0.24 kB
+quality	Run quality gates	2026-09-30T06:52:14.7671668Z dist/client/assets/agent._agentId._chatId-BnnqCpY8.js                       0.40 kB │ gzip:   0.29 kB
+quality	Run quality gates	2026-09-30T06:52:14.7673177Z dist/client/assets/highlighted-body-KPVGNVTW-CMV1972x.js                    0.59 kB │ gzip:   0.38 kB
+quality	Run quality gates	2026-09-30T06:52:14.7674681Z dist/client/assets/routes-CKfSP0qq.js                                       0.59 kB │ gzip:   0.38 kB
+quality	Run quality gates	2026-09-30T06:52:14.7676212Z dist/client/assets/plugin-agent-workbench-context-Bn6yFQOG.js               0.63 kB │ gzip:   0.40 kB
+quality	Run quality gates	2026-09-30T06:52:14.7678292Z dist/client/assets/rolldown-runtime-hePW80VL.js                             0.71 kB │ gzip:   0.42 kB
+quality	Run quality gates	2026-09-30T06:52:14.7679733Z dist/client/assets/workspace-sidebar-slot-DNsSD-gQ.js                       0.74 kB │ gzip:   0.42 kB
+quality	Run quality gates	2026-09-30T06:52:14.7681192Z dist/client/assets/agent-quick-panel-context-CgQ0-DoI.js                    0.76 kB │ gzip:   0.44 kB
+quality	Run quality gates	2026-09-30T06:52:14.7682627Z dist/client/assets/useNavigate-BkNG8X2_.js                                  0.76 kB │ gzip:   0.43 kB
+quality	Run quality gates	2026-09-30T06:52:14.7683957Z dist/client/assets/useSearch-LSAZVmpp.js                                    0.79 kB │ gzip:   0.46 kB
+quality	Run quality gates	2026-09-30T06:52:14.7685317Z dist/client/assets/surface-BJSNS1NX.js                                      0.81 kB │ gzip:   0.53 kB
+quality	Run quality gates	2026-09-30T06:52:14.7686654Z dist/client/assets/console-appearance-BmWF5kkS.js                           0.93 kB │ gzip:   0.50 kB
+quality	Run quality gates	2026-09-30T06:52:14.7688567Z dist/client/assets/workspaces._workspaceId._-B8pKBar3.js                    0.96 kB │ gzip:   0.53 kB
+quality	Run quality gates	2026-09-30T06:52:14.7690032Z dist/client/assets/apps._appId.pages._workspaceId._-D1h4XrB8.js             0.98 kB │ gzip:   0.54 kB
+quality	Run quality gates	2026-09-30T06:52:14.7691514Z dist/client/assets/plugins_._agentId._packageId._instanceKey-B-FND9p6.js    1.18 kB │ gzip:   0.65 kB
+quality	Run quality gates	2026-09-30T06:52:14.7692893Z dist/client/assets/agent._chatId-CxXJb2fj.js                                1.19 kB │ gzip:   0.66 kB
+quality	Run quality gates	2026-09-30T06:52:14.7694319Z dist/client/assets/preload-helper-Czpn1I53.js                               1.19 kB │ gzip:   0.67 kB
+quality	Run quality gates	2026-09-30T06:52:14.7695676Z dist/client/assets/settings_.profiles_._agentId._profileName-Ize64XlN.js    1.32 kB │ gzip:   0.72 kB
+quality	Run quality gates	2026-09-30T06:52:14.7697096Z dist/client/assets/agent._agentId._chatId-8Ur6BDAp.js                       1.44 kB │ gzip:   0.79 kB
+quality	Run quality gates	2026-09-30T06:52:14.7698829Z dist/client/assets/useBlocker-DLn2SWxm.js                                   1.58 kB │ gzip:   0.70 kB
+quality	Run quality gates	2026-09-30T06:52:14.7700164Z dist/client/assets/tabs-dfOQ0DtQ.js                                         2.11 kB │ gzip:   1.08 kB
+quality	Run quality gates	2026-09-30T06:52:14.7701456Z dist/client/assets/icon-button-CpoPsFbx-DHBECnwz.js                         2.21 kB │ gzip:   1.17 kB
+quality	Run quality gates	2026-09-30T06:52:14.7702759Z dist/client/assets/settings-page-header-CC1me5M5.js                         2.38 kB │ gzip:   1.13 kB
+quality	Run quality gates	2026-09-30T06:52:14.7703649Z dist/client/assets/app-management-context-BlAbGUmw.js                       2.46 kB │ gzip:   1.09 kB
+quality	Run quality gates	2026-09-30T06:52:14.7704483Z dist/client/assets/console-locale-CuZHSTSc.js                               2.51 kB │ gzip:   1.30 kB
+quality	Run quality gates	2026-09-30T06:52:14.7705254Z dist/client/assets/dialog-2Ldesgni.js                                       4.01 kB │ gzip:   1.53 kB
+quality	Run quality gates	2026-09-30T06:52:14.7706020Z dist/client/assets/settings-page-fcWeRx6_.js                                4.17 kB │ gzip:   1.75 kB
+quality	Run quality gates	2026-09-30T06:52:14.7706859Z dist/client/assets/lazyRouteComponent-D7F0Lwwx.js                           4.25 kB │ gzip:   1.53 kB
+quality	Run quality gates	2026-09-30T06:52:14.7708085Z dist/client/assets/settings-section-D7epuesl.js                             4.50 kB │ gzip:   1.80 kB
+quality	Run quality gates	2026-09-30T06:52:14.7708975Z dist/client/assets/page-contribution-catalog-BbNpP9AT.js                    7.82 kB │ gzip:   2.52 kB
+quality	Run quality gates	2026-09-30T06:52:14.7709767Z dist/client/assets/menu-CYTuwqdl.js                                         7.84 kB │ gzip:   2.51 kB
+quality	Run quality gates	2026-09-30T06:52:14.7710508Z dist/client/assets/stringify-D24i2xjm.js                                    7.87 kB │ gzip:   3.29 kB
+quality	Run quality gates	2026-09-30T06:52:14.7711298Z dist/client/assets/page-contribution-outlet-C_2FMOx2.js                     9.24 kB │ gzip:   3.74 kB
+quality	Run quality gates	2026-09-30T06:52:14.7712092Z dist/client/assets/plugins-DG6c2M_W.js                                     10.13 kB │ gzip:   3.75 kB
+quality	Run quality gates	2026-09-30T06:52:14.7712883Z dist/client/assets/tokens.stylex-CgMTyjdJ-B2MFBiyF.js                      12.18 kB │ gzip:   2.60 kB
+quality	Run quality gates	2026-09-30T06:52:14.7713739Z dist/client/assets/plugin-workbench-dialogs-Bt3wVYt0.js                    14.26 kB │ gzip:   4.88 kB
+quality	Run quality gates	2026-09-30T06:52:14.7714522Z dist/client/assets/select-rBxN_ozJ.js                                      16.47 kB │ gzip:   4.50 kB
+quality	Run quality gates	2026-09-30T06:52:14.7715621Z dist/client/assets/agent-settings-page-DtlUey5I.js                         28.14 kB │ gzip:   9.24 kB
+quality	Run quality gates	2026-09-30T06:52:14.7716419Z dist/client/assets/management-WK1LagG4.js                                  29.04 kB │ gzip:   9.10 kB
+quality	Run quality gates	2026-09-30T06:52:14.7717210Z dist/client/assets/agent-identity-context-BBGT46Ji.js                      29.44 kB │ gzip:   8.33 kB
+quality	Run quality gates	2026-09-30T06:52:14.7718509Z dist/client/assets/agent-profiles-page-lfB_qngR.js                         30.68 kB │ gzip:   9.06 kB
+quality	Run quality gates	2026-09-30T06:52:14.7719357Z dist/client/assets/use-plugin-workbench-OZoZF7sB.js                        39.10 kB │ gzip:   9.96 kB
+quality	Run quality gates	2026-09-30T06:52:14.7720174Z dist/client/assets/console-session-W-Caqumt.js                             44.15 kB │ gzip:  14.95 kB
+quality	Run quality gates	2026-09-30T06:52:14.7721160Z dist/client/assets/console-i18n-CVUBlf2u.js                                52.27 kB │ gzip:  20.56 kB
+quality	Run quality gates	2026-09-30T06:52:14.7721998Z dist/client/assets/agent-page-CAy5vFk1.js                                  53.51 kB │ gzip:  15.89 kB
+quality	Run quality gates	2026-09-30T06:52:14.7722825Z dist/client/assets/plugins_._agentId._packageId._instanceKey-DjO0ZWtj.js   69.53 kB │ gzip:  21.62 kB
+quality	Run quality gates	2026-09-30T06:52:14.7723619Z dist/client/assets/index-Dhi4LNFE.js                                      163.81 kB │ gzip:  51.40 kB
+quality	Run quality gates	2026-09-30T06:52:14.7724352Z dist/client/assets/react-bym5aI3S.js                                      189.75 kB │ gzip:  59.66 kB
+quality	Run quality gates	2026-09-30T06:52:14.7725685Z dist/client/assets/ui-vendor-hoq0eNCe.js                                  279.02 kB │ gzip:  92.36 kB
+quality	Run quality gates	2026-09-30T06:52:14.7726953Z dist/client/assets/chunk-YOKDWASO-3HdvFx0s.js                             485.84 kB │ gzip: 148.06 kB
+quality	Run quality gates	2026-09-30T06:52:14.7728424Z dist/client/assets/use-agent-conversation-Bq4hqlBp.js                     584.50 kB │ gzip: 183.53 kB
+quality	Run quality gates	2026-09-30T06:52:14.7729014Z 
+quality	Run quality gates	2026-09-30T06:52:14.7729400Z ^[[33m[plugin builtin:vite-reporter] 
+quality	Run quality gates	2026-09-30T06:52:14.7730066Z (!) Some chunks are larger than 500 kB after minification. Consider:
+quality	Run quality gates	2026-09-30T06:52:14.7730815Z - Using dynamic import() to code-split the application
+quality	Run quality gates	2026-09-30T06:52:14.7732060Z - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+quality	Run quality gates	2026-09-30T06:52:14.7733490Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.^[[39m
+quality	Run quality gates	2026-09-30T06:52:14.7734229Z ^[[32m✓ built in 5.13s^[[39m
+quality	Run quality gates	2026-09-30T06:52:14.7789000Z ^[[33m^[[33m[PLUGIN_TIMINGS] ^[[0mYour build spent 90% of 5.1s inside plugin hooks (4.6s).
+quality	Run quality gates	2026-09-30T06:52:14.7828660Z Measured inside the callback, so queue time is excluded and time the callback itself awaited is not:
+quality	Run quality gates	2026-09-30T06:52:14.7829919Z ^[[36mvite v8.2.0 ^[[32mbuilding ssr environment for production...^[[36m^[[39m
+quality	Run quality gates	2026-09-30T06:52:14.7838375Z   - @stylexjs/unplugin transform (56%, 2.9s, 4724 calls)
+quality	Run quality gates	2026-09-30T06:52:14.7839265Z Those rows are 56% of the build; the rest of the 90% is below.
+quality	Run quality gates	2026-09-30T06:52:14.7841044Z Not measurable — 3 hooks whose calls overlap, so elapsed time covers work other calls were doing. Profile with `node --cpu-prof`:
+quality	Run quality gates	2026-09-30T06:52:14.7842291Z   - tanstack-start-core:import-protection resolveId (14613 calls)
+quality	Run quality gates	2026-09-30T06:52:14.7842972Z   - vite:css transform (10 calls)
+quality	Run quality gates	2026-09-30T06:52:14.7843753Z   - tanstack-start-core::server-fn:client transform (5 calls)
+quality	Run quality gates	2026-09-30T06:52:14.7844809Z See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+quality	Run quality gates	2026-09-30T06:52:14.7845622Z ^[[39m
+quality	Run quality gates	2026-09-30T06:52:14.7918432Z ^[[2K
+quality	Run quality gates	2026-09-30T06:52:17.3991023Z transforming...✓ 292 modules transformed.
+quality	Run quality gates	2026-09-30T06:52:17.4436101Z rendering chunks...
+quality	Run quality gates	2026-09-30T06:52:17.5118845Z computing gzip size...
+quality	Run quality gates	2026-09-30T06:52:17.5156278Z dist/server/assets/settings-DNmXGXcu.js                                     0.20 kB │ gzip:  0.15 kB
+quality	Run quality gates	2026-09-30T06:52:17.5158007Z dist/server/assets/settings_.profiles-D-73AccU.js                           0.23 kB │ gzip:  0.16 kB
+quality	Run quality gates	2026-09-30T06:52:17.5159876Z dist/server/assets/empty-plugin-adapters-C2k1_KAE.js                        0.28 kB │ gzip:  0.18 kB
+quality	Run quality gates	2026-09-30T06:52:17.5161235Z dist/server/assets/start-Bun_EM3E.js                                        0.28 kB │ gzip:  0.20 kB
+quality	Run quality gates	2026-09-30T06:52:17.5162515Z dist/server/assets/settings_.ai-CAe9tdJT.js                                 0.31 kB │ gzip:  0.22 kB
+quality	Run quality gates	2026-09-30T06:52:17.5163891Z dist/server/assets/settings_.appearance-DdUluLUt.js                         0.31 kB │ gzip:  0.22 kB
+quality	Run quality gates	2026-09-30T06:52:17.5165294Z dist/server/assets/settings_.connections-DmQZLqBb.js                        0.32 kB │ gzip:  0.23 kB
+quality	Run quality gates	2026-09-30T06:52:17.5166271Z dist/server/assets/settings_.ai_.agent-Dc9OvHYO.js                          0.32 kB │ gzip:  0.22 kB
+quality	Run quality gates	2026-09-30T06:52:17.5167071Z dist/server/assets/settings_.agent-i6WITtRI.js                              0.32 kB │ gzip:  0.23 kB
+quality	Run quality gates	2026-09-30T06:52:17.5168304Z dist/server/assets/settings_.agent_.skills.new-CBQkS6mS.js                  0.33 kB │ gzip:  0.23 kB
+quality	Run quality gates	2026-09-30T06:52:17.5169133Z dist/server/assets/agent._chatId-CL3otVae.js                                0.41 kB │ gzip:  0.27 kB
+quality	Run quality gates	2026-09-30T06:52:17.5169934Z dist/server/assets/workspaces._workspaceId._-CkTsZcsC.js                    0.54 kB │ gzip:  0.34 kB
+quality	Run quality gates	2026-09-30T06:52:17.5170765Z dist/server/assets/settings_.profiles_._agentId._profileName-CNk8qCmP.js    0.57 kB │ gzip:  0.33 kB
+quality	Run quality gates	2026-09-30T06:52:17.5171597Z dist/server/assets/apps._appId.pages._workspaceId._-CSSUpqaf.js             0.57 kB │ gzip:  0.36 kB
+quality	Run quality gates	2026-09-30T06:52:17.5172410Z dist/server/assets/agent._agentId._chatId-DGKqr42Q.js                       0.64 kB │ gzip:  0.39 kB
+quality	Run quality gates	2026-09-30T06:52:17.5173188Z dist/server/assets/routes-DkmGQzFS.js                                       0.99 kB │ gzip:  0.49 kB
+quality	Run quality gates	2026-09-30T06:52:17.5173981Z dist/server/assets/plugin-agent-workbench-context-CfF53mnA.js               1.21 kB │ gzip:  0.51 kB
+quality	Run quality gates	2026-09-30T06:52:17.5174818Z dist/server/assets/console-locale-CChLLbdW.js                               2.02 kB │ gzip:  0.81 kB
+quality	Run quality gates	2026-09-30T06:52:17.5175631Z dist/server/assets/settings-section-C6sunC81.js                             3.00 kB │ gzip:  0.95 kB
+quality	Run quality gates	2026-09-30T06:52:17.5176423Z dist/server/assets/settings-page-header-DbCGwO3w.js                         3.43 kB │ gzip:  1.28 kB
+quality	Run quality gates	2026-09-30T06:52:17.5177250Z dist/server/assets/_tanstack-start-manifest_v-Ceydb6gz.js                   6.68 kB │ gzip:  1.58 kB
+quality	Run quality gates	2026-09-30T06:52:17.5178234Z dist/server/assets/settings-page-CXBh5Nkl.js                                7.17 kB │ gzip:  2.23 kB
+quality	Run quality gates	2026-09-30T06:52:17.5179051Z dist/server/assets/page-contribution-outlet-D4yb0Nr8.js                    15.61 kB │ gzip:  4.85 kB
+quality	Run quality gates	2026-09-30T06:52:17.5179838Z dist/server/assets/plugins-BkyeG3lg.js                                     17.37 kB │ gzip:  4.82 kB
+quality	Run quality gates	2026-09-30T06:52:17.5180601Z dist/server/assets/console-session-zgC3LvA-.js                             18.53 kB │ gzip:  5.64 kB
+quality	Run quality gates	2026-09-30T06:52:17.5181403Z dist/server/assets/plugin-workbench-dialogs-CFqocVHo.js                    21.07 kB │ gzip:  5.48 kB
+quality	Run quality gates	2026-09-30T06:52:17.5182214Z dist/server/assets/console-i18n-CQ05v67k.js                                25.67 kB │ gzip:  9.91 kB
+quality	Run quality gates	2026-09-30T06:52:17.5183020Z dist/server/assets/agent-settings-page-CCTTB51W.js                         47.38 kB │ gzip: 11.53 kB
+quality	Run quality gates	2026-09-30T06:52:17.5183844Z dist/server/assets/agent-identity-context-zbfomTrv.js                      50.03 kB │ gzip: 10.69 kB
+quality	Run quality gates	2026-09-30T06:52:17.5197299Z dist/server/assets/management-DrUL7yVv.js                                  51.72 kB │ gzip: 10.92 kB
+quality	Run quality gates	2026-09-30T06:52:17.5199045Z dist/server/assets/agent-profiles-page-DpUfXWPP.js                         52.24 kB │ gzip: 11.50 kB
+quality	Run quality gates	2026-09-30T06:52:17.5200572Z dist/server/assets/use-plugin-workbench-Drb--IG4.js                        64.02 kB │ gzip: 12.33 kB
+quality	Run quality gates	2026-09-30T06:52:17.5202003Z dist/server/assets/agent-page-B8lDkq9D.js                                  93.54 kB │ gzip: 20.80 kB
+quality	Run quality gates	2026-09-30T06:52:17.5203123Z dist/server/assets/plugins_._agentId._packageId._instanceKey-BLPEOl5-.js   95.89 kB │ gzip: 21.61 kB
+quality	Run quality gates	2026-09-30T06:52:17.5204181Z dist/server/server.js                                                     218.90 kB │ gzip: 49.61 kB
+quality	Run quality gates	2026-09-30T06:52:17.5204898Z dist/server/assets/router-Bd6k2LHX.js                                     282.36 kB │ gzip: 63.74 kB
+quality	Run quality gates	2026-09-30T06:52:17.5205236Z 
+quality	Run quality gates	2026-09-30T06:52:17.5205401Z ^[[32m✓ built in 2.74s^[[39m
+quality	Run quality gates	2026-09-30T06:52:17.6155626Z [prerender] Prerendering pages...
+quality	Run quality gates	2026-09-30T06:52:17.6160709Z [prerender] Concurrency: 4
+quality	Run quality gates	2026-09-30T06:52:17.6166233Z [prerender] Crawling: /
+quality	Run quality gates	2026-09-30T06:52:18.6911469Z [prerender] Prerendered 1 pages:
+quality	Run quality gates	2026-09-30T06:52:18.6912082Z [prerender] - /
+quality	Run quality gates	2026-09-30T06:52:19.1979548Z $ pnpm service:boundary && pnpm relay:check && pnpm launcher:check && pnpm contracts:check && pnpm observe:check && pnpm contracts:package && cargo fmt --manifest-path service/Cargo.toml --all -- --check && cargo clippy --locked --manifest-path service/Cargo.toml --workspace --all-targets --all-features -- -D warnings && cargo test --locked --manifest-path service/Cargo.toml --workspace --all-features
+quality	Run quality gates	2026-09-30T06:52:19.6023147Z $ node scripts/check-console-boundary.mjs
+quality	Run quality gates	2026-09-30T06:52:19.9983062Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9984813Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9986559Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9988757Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9990318Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9991852Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9993350Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9994779Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9996250Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9998076Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:19.9999602Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0001443Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0004050Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0007128Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0009169Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0010646Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0012090Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:52:20.0013134Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:52:20.0013766Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:52:20.0014325Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:52:20.0014869Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:52:20.0204396Z Console Shell has no concrete Plugin dependencies.
+quality	Run quality gates	2026-09-30T06:52:20.0224337Z Console App production dependencies contain no test fixtures.
+quality	Run quality gates	2026-09-30T06:52:20.0226420Z Local Agent launcher has no Lenso or HTTP implementation dependencies.
+quality	Run quality gates	2026-09-30T06:52:20.0229581Z Agent turn relay has no Lenso implementation dependencies.
+quality	Run quality gates	2026-09-30T06:52:20.4461664Z $ cargo fmt --manifest-path runtime/agent-turn-relay/Cargo.toml --all -- --check && cargo clippy --locked --manifest-path runtime/agent-turn-relay/Cargo.toml --all-targets -- -D warnings && cargo test --locked --manifest-path runtime/agent-turn-relay/Cargo.toml
+quality	Run quality gates	2026-09-30T06:52:20.6110839Z ^[[1m^[[92m    Updating^[[0m crates.io index
+quality	Run quality gates	2026-09-30T06:52:20.6426593Z ^[[1m^[[92m Downloading^[[0m crates ...
+quality	Run quality gates	2026-09-30T06:52:20.7222214Z ^[[1m^[[92m  Downloaded^[[0m lru-slab v0.1.2
+quality	Run quality gates	2026-09-30T06:52:20.7239179Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.13.2
+quality	Run quality gates	2026-09-30T06:52:20.7274119Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.7
+quality	Run quality gates	2026-09-30T06:52:20.7288071Z ^[[1m^[[92m  Downloaded^[[0m tokio-rustls v0.26.5
+quality	Run quality gates	2026-09-30T06:52:20.7307790Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.20
+quality	Run quality gates	2026-09-30T06:52:20.7324846Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.13.2
+quality	Run quality gates	2026-09-30T06:52:20.7361575Z ^[[1m^[[92m  Downloaded^[[0m hyper-rustls v0.27.9
+quality	Run quality gates	2026-09-30T06:52:20.7377597Z ^[[1m^[[92m  Downloaded^[[0m rand v0.10.2
+quality	Run quality gates	2026-09-30T06:52:20.7417854Z ^[[1m^[[92m  Downloaded^[[0m quinn v0.11.11
+quality	Run quality gates	2026-09-30T06:52:20.7451919Z ^[[1m^[[92m  Downloaded^[[0m cc v1.4.5
+quality	Run quality gates	2026-09-30T06:52:20.7483929Z ^[[1m^[[92m  Downloaded^[[0m hyper-util v0.1.20
+quality	Run quality gates	2026-09-30T06:52:20.7546285Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.20
+quality	Run quality gates	2026-09-30T06:52:20.7613764Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.12
+quality	Run quality gates	2026-09-30T06:52:20.7631242Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.16.1
+quality	Run quality gates	2026-09-30T06:52:20.7645566Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.2
+quality	Run quality gates	2026-09-30T06:52:20.7659629Z ^[[1m^[[92m  Downloaded^[[0m tinyvec_macros v0.1.1
+quality	Run quality gates	2026-09-30T06:52:20.7671057Z ^[[1m^[[92m  Downloaded^[[0m quinn-proto v0.11.17
+quality	Run quality gates	2026-09-30T06:52:20.7739130Z ^[[1m^[[92m  Downloaded^[[0m syn v3.0.5
+quality	Run quality gates	2026-09-30T06:52:20.7844383Z ^[[1m^[[92m  Downloaded^[[0m rustls v0.23.44
+quality	Run quality gates	2026-09-30T06:52:20.8342763Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+quality	Run quality gates	2026-09-30T06:52:20.8344009Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+quality	Run quality gates	2026-09-30T06:52:20.8345180Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.24
+quality	Run quality gates	2026-09-30T06:52:20.8346193Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:52:20.8935014Z ^[[1m^[[92m    Checking^[[0m stable_deref_trait v1.2.1
+quality	Run quality gates	2026-09-30T06:52:20.9179363Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:52:20.9569335Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:52:21.0009226Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:52:21.0579650Z ^[[1m^[[92m    Checking^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:52:21.1454271Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:52:21.2599188Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.12
+quality	Run quality gates	2026-09-30T06:52:21.3858979Z ^[[1m^[[92m   Compiling^[[0m shlex v2.0.1
+quality	Run quality gates	2026-09-30T06:52:21.4350370Z ^[[1m^[[92m    Checking^[[0m smallvec v1.16.1
+quality	Run quality gates	2026-09-30T06:52:21.5769119Z ^[[1m^[[92m   Compiling^[[0m cc v1.4.5
+quality	Run quality gates	2026-09-30T06:52:21.6939545Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.5
+quality	Run quality gates	2026-09-30T06:52:21.6999008Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
+quality	Run quality gates	2026-09-30T06:52:22.0471259Z ^[[1m^[[92m    Checking^[[0m socket2 v0.6.5
+quality	Run quality gates	2026-09-30T06:52:22.3059115Z ^[[1m^[[92m    Checking^[[0m mio v1.2.3
+quality	Run quality gates	2026-09-30T06:52:22.5791655Z ^[[1m^[[92m    Checking^[[0m http v1.5.0
+quality	Run quality gates	2026-09-30T06:52:23.0896170Z ^[[1m^[[92m    Checking^[[0m litemap v0.8.3
+quality	Run quality gates	2026-09-30T06:52:23.2189442Z ^[[1m^[[92m    Checking^[[0m writeable v0.6.4
+quality	Run quality gates	2026-09-30T06:52:23.2213940Z ^[[1m^[[92m    Checking^[[0m http-body v1.1.0
+quality	Run quality gates	2026-09-30T06:52:23.2849561Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+quality	Run quality gates	2026-09-30T06:52:23.3539539Z ^[[1m^[[92m    Checking^[[0m tracing-core v0.1.36
+quality	Run quality gates	2026-09-30T06:52:23.6289486Z ^[[1m^[[92m    Checking^[[0m utf8_iter v1.0.4
+quality	Run quality gates	2026-09-30T06:52:23.6424901Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.3.0
+quality	Run quality gates	2026-09-30T06:52:23.6870182Z ^[[1m^[[92m    Checking^[[0m log v0.4.34
+quality	Run quality gates	2026-09-30T06:52:23.7319944Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:52:23.7844959Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.13.2
+quality	Run quality gates	2026-09-30T06:52:23.9229687Z ^[[1m^[[92m    Checking^[[0m percent-encoding v2.3.2
+quality	Run quality gates	2026-09-30T06:52:23.9922818Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.3.0
+quality	Run quality gates	2026-09-30T06:52:24.1019447Z ^[[1m^[[92m    Checking^[[0m tracing v0.1.44
+quality	Run quality gates	2026-09-30T06:52:24.2625589Z ^[[1m^[[92m    Checking^[[0m zeroize v1.9.0
+quality	Run quality gates	2026-09-30T06:52:24.3441055Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:52:24.4193836Z ^[[1m^[[92m   Compiling^[[0m httparse v1.10.1
+quality	Run quality gates	2026-09-30T06:52:24.5776131Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.4
+quality	Run quality gates	2026-09-30T06:52:24.5994227Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:52:24.6639487Z ^[[1m^[[92m    Checking^[[0m tower-service v0.3.3
+quality	Run quality gates	2026-09-30T06:52:24.6916482Z ^[[1m^[[92m    Checking^[[0m getrandom v0.2.17
+quality	Run quality gates	2026-09-30T06:52:24.7412661Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.7
+quality	Run quality gates	2026-09-30T06:52:24.7683208Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.2
+quality	Run quality gates	2026-09-30T06:52:25.2965306Z ^[[1m^[[92m    Checking^[[0m zerofrom v0.1.8
+quality	Run quality gates	2026-09-30T06:52:25.3570844Z ^[[1m^[[92m    Checking^[[0m yoke v0.8.3
+quality	Run quality gates	2026-09-30T06:52:25.3639532Z ^[[1m^[[92m    Checking^[[0m rustls-pki-types v1.15.1
+quality	Run quality gates	2026-09-30T06:52:25.6158432Z ^[[1m^[[92m    Checking^[[0m try-lock v0.2.5
+quality	Run quality gates	2026-09-30T06:52:25.6394444Z ^[[1m^[[92m    Checking^[[0m untrusted v0.9.0
+quality	Run quality gates	2026-09-30T06:52:25.6745331Z ^[[1m^[[92m    Checking^[[0m want v0.3.1
+quality	Run quality gates	2026-09-30T06:52:25.8769522Z ^[[1m^[[92m    Checking^[[0m form_urlencoded v1.2.2
+quality	Run quality gates	2026-09-30T06:52:25.9395650Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:52:26.0769954Z ^[[1m^[[92m    Checking^[[0m sync_wrapper v1.0.2
+quality	Run quality gates	2026-09-30T06:52:26.1169084Z ^[[1m^[[92m    Checking^[[0m atomic-waker v1.1.2
+quality	Run quality gates	2026-09-30T06:52:26.1499175Z ^[[1m^[[92m    Checking^[[0m httpdate v1.0.3
+quality	Run quality gates	2026-09-30T06:52:26.2319460Z ^[[1m^[[92m    Checking^[[0m tower-layer v0.3.3
+quality	Run quality gates	2026-09-30T06:52:26.2969720Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.6
+quality	Run quality gates	2026-09-30T06:52:26.3319390Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.7
+quality	Run quality gates	2026-09-30T06:52:26.8321120Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
+quality	Run quality gates	2026-09-30T06:52:27.3515569Z ^[[1m^[[92m    Checking^[[0m zerovec v0.11.8
+quality	Run quality gates	2026-09-30T06:52:27.3642337Z ^[[1m^[[92m    Checking^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:52:27.4699300Z ^[[1m^[[92m    Checking^[[0m zerotrie v0.2.5
+quality	Run quality gates	2026-09-30T06:52:27.6418993Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
+quality	Run quality gates	2026-09-30T06:52:27.8182620Z ^[[1m^[[92m    Checking^[[0m tinystr v0.8.4
+quality	Run quality gates	2026-09-30T06:52:27.9288580Z ^[[1m^[[92m    Checking^[[0m icu_locale_core v2.3.0
+quality	Run quality gates	2026-09-30T06:52:28.1584610Z ^[[1m^[[92m    Checking^[[0m potential_utf v0.1.6
+quality	Run quality gates	2026-09-30T06:52:28.1953019Z ^[[1m^[[92m    Checking^[[0m icu_collections v2.3.0
+quality	Run quality gates	2026-09-30T06:52:28.3772798Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:52:28.6002368Z ^[[1m^[[92m    Checking^[[0m icu_provider v2.3.1
+quality	Run quality gates	2026-09-30T06:52:28.7834605Z ^[[1m^[[92m    Checking^[[0m icu_normalizer v2.3.0
+quality	Run quality gates	2026-09-30T06:52:29.0496934Z ^[[1m^[[92m    Checking^[[0m icu_properties v2.3.0
+quality	Run quality gates	2026-09-30T06:52:29.5236653Z ^[[1m^[[92m   Compiling^[[0m rustls v0.23.44
+quality	Run quality gates	2026-09-30T06:52:29.5799892Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:52:29.7002400Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+quality	Run quality gates	2026-09-30T06:52:30.1238537Z ^[[1m^[[92m    Checking^[[0m idna_adapter v1.2.2
+quality	Run quality gates	2026-09-30T06:52:30.1707148Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:52:30.3050325Z ^[[1m^[[92m    Checking^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:52:30.4896932Z ^[[1m^[[92m    Checking^[[0m hyper v1.11.1
+quality	Run quality gates	2026-09-30T06:52:30.4934106Z ^[[1m^[[92m    Checking^[[0m ipnet v2.12.2
+quality	Run quality gates	2026-09-30T06:52:30.6156390Z ^[[1m^[[92m    Checking^[[0m subtle v2.6.1
+quality	Run quality gates	2026-09-30T06:52:30.6685962Z ^[[1m^[[92m    Checking^[[0m tower v0.5.3
+quality	Run quality gates	2026-09-30T06:52:30.9371951Z ^[[1m^[[92m    Checking^[[0m idna v1.1.0
+quality	Run quality gates	2026-09-30T06:52:31.0692735Z ^[[1m^[[92m    Checking^[[0m http-body-util v0.1.5
+quality	Run quality gates	2026-09-30T06:52:31.1688365Z ^[[1m^[[92m    Checking^[[0m hyper-util v0.1.20
+quality	Run quality gates	2026-09-30T06:52:31.2056134Z ^[[1m^[[92m    Checking^[[0m ryu v1.0.23
+quality	Run quality gates	2026-09-30T06:52:31.2583403Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:52:31.3321213Z ^[[1m^[[92m    Checking^[[0m url v2.5.8
+quality	Run quality gates	2026-09-30T06:52:31.8746498Z ^[[1m^[[92m    Checking^[[0m webpki-roots v1.0.9
+quality	Run quality gates	2026-09-30T06:52:31.9349986Z ^[[1m^[[92m    Checking^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:52:32.1029042Z ^[[1m^[[92m    Checking^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:52:32.1880137Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:52:32.2293725Z ^[[1m^[[92m    Checking^[[0m tokio-util v0.7.19
+quality	Run quality gates	2026-09-30T06:52:32.5127164Z ^[[1m^[[92m    Checking^[[0m tower-http v0.6.11
+quality	Run quality gates	2026-09-30T06:52:32.6176610Z ^[[1m^[[92m    Checking^[[0m serde_urlencoded v0.7.1
+quality	Run quality gates	2026-09-30T06:52:32.7188876Z ^[[1m^[[92m    Checking^[[0m mime v0.3.17
+quality	Run quality gates	2026-09-30T06:52:32.7571819Z ^[[1m^[[92m    Checking^[[0m serde_path_to_error v0.1.20
+quality	Run quality gates	2026-09-30T06:52:32.8029505Z ^[[1m^[[92m    Checking^[[0m axum-core v0.5.6
+quality	Run quality gates	2026-09-30T06:52:32.9032057Z ^[[1m^[[92m    Checking^[[0m matchit v0.8.4
+quality	Run quality gates	2026-09-30T06:52:33.0105927Z ^[[1m^[[92m    Checking^[[0m tokio-stream v0.1.19
+quality	Run quality gates	2026-09-30T06:52:33.6186715Z ^[[1m^[[92m    Checking^[[0m axum v0.8.9
+quality	Run quality gates	2026-09-30T06:52:36.5623320Z ^[[1m^[[92m    Checking^[[0m rustls-webpki v0.103.15
+quality	Run quality gates	2026-09-30T06:52:38.3773083Z ^[[1m^[[92m    Checking^[[0m tokio-rustls v0.26.5
+quality	Run quality gates	2026-09-30T06:52:38.4815597Z ^[[1m^[[92m    Checking^[[0m hyper-rustls v0.27.9
+quality	Run quality gates	2026-09-30T06:52:38.5508872Z ^[[1m^[[92m    Checking^[[0m reqwest v0.12.28
+quality	Run quality gates	2026-09-30T06:52:38.9665793Z ^[[1m^[[92m    Checking^[[0m lenso-agent-turn-relay v0.1.0 (/home/runner/work/lenso-console/lenso-console/runtime/agent-turn-relay)
+quality	Run quality gates	2026-09-30T06:52:39.1866696Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 18.61s
+quality	Run quality gates	2026-09-30T06:52:39.3396374Z ^[[1m^[[92m   Compiling^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:52:39.3397193Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:52:39.3399552Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
+quality	Run quality gates	2026-09-30T06:52:39.3413997Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
+quality	Run quality gates	2026-09-30T06:52:39.3699901Z ^[[1m^[[92m   Compiling^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:52:39.4046573Z ^[[1m^[[92m   Compiling^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:52:39.4226879Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.3
+quality	Run quality gates	2026-09-30T06:52:39.4869211Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:52:39.5649610Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.8
+quality	Run quality gates	2026-09-30T06:52:39.6133525Z ^[[1m^[[92m   Compiling^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:52:39.7709247Z ^[[1m^[[92m   Compiling^[[0m smallvec v1.16.1
+quality	Run quality gates	2026-09-30T06:52:39.9349365Z ^[[1m^[[92m   Compiling^[[0m http v1.5.0
+quality	Run quality gates	2026-09-30T06:52:39.9859325Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.3
+quality	Run quality gates	2026-09-30T06:52:40.1236259Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.4
+quality	Run quality gates	2026-09-30T06:52:40.1288917Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.4
+quality	Run quality gates	2026-09-30T06:52:40.2629276Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.6
+quality	Run quality gates	2026-09-30T06:52:40.3212274Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.3.0
+quality	Run quality gates	2026-09-30T06:52:40.3483019Z ^[[1m^[[92m   Compiling^[[0m tracing-core v0.1.36
+quality	Run quality gates	2026-09-30T06:52:40.3949383Z ^[[1m^[[92m   Compiling^[[0m mio v1.2.3
+quality	Run quality gates	2026-09-30T06:52:40.9239095Z ^[[1m^[[92m   Compiling^[[0m socket2 v0.6.5
+quality	Run quality gates	2026-09-30T06:52:40.9649240Z ^[[1m^[[92m   Compiling^[[0m http-body v1.1.0
+quality	Run quality gates	2026-09-30T06:52:41.0454123Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.5
+quality	Run quality gates	2026-09-30T06:52:41.0580445Z ^[[1m^[[92m   Compiling^[[0m percent-encoding v2.3.2
+quality	Run quality gates	2026-09-30T06:52:41.1859295Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.0.4
+quality	Run quality gates	2026-09-30T06:52:41.2748842Z ^[[1m^[[92m   Compiling^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:52:41.3121789Z ^[[1m^[[92m   Compiling^[[0m log v0.4.34
+quality	Run quality gates	2026-09-30T06:52:41.4319398Z ^[[1m^[[92m   Compiling^[[0m tracing v0.1.44
+quality	Run quality gates	2026-09-30T06:52:41.4775465Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.3.1
+quality	Run quality gates	2026-09-30T06:52:41.6540269Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.3.0
+quality	Run quality gates	2026-09-30T06:52:41.6578846Z ^[[1m^[[92m   Compiling^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:52:41.7757226Z ^[[1m^[[92m   Compiling^[[0m tower-service v0.3.3
+quality	Run quality gates	2026-09-30T06:52:41.7773444Z ^[[1m^[[92m   Compiling^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:52:41.8169322Z ^[[1m^[[92m   Compiling^[[0m zeroize v1.9.0
+quality	Run quality gates	2026-09-30T06:52:41.8859243Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.4
+quality	Run quality gates	2026-09-30T06:52:41.9149330Z ^[[1m^[[92m   Compiling^[[0m rustls-pki-types v1.15.1
+quality	Run quality gates	2026-09-30T06:52:41.9479192Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.2.17
+quality	Run quality gates	2026-09-30T06:52:42.0629392Z ^[[1m^[[92m   Compiling^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:52:42.1919350Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:52:42.3939248Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.3.0
+quality	Run quality gates	2026-09-30T06:52:42.4329139Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.3.0
+quality	Run quality gates	2026-09-30T06:52:42.5359488Z ^[[1m^[[92m   Compiling^[[0m try-lock v0.2.5
+quality	Run quality gates	2026-09-30T06:52:42.5779419Z ^[[1m^[[92m   Compiling^[[0m untrusted v0.9.0
+quality	Run quality gates	2026-09-30T06:52:42.6369273Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+quality	Run quality gates	2026-09-30T06:52:44.0619787Z ^[[1m^[[92m   Compiling^[[0m want v0.3.1
+quality	Run quality gates	2026-09-30T06:52:44.1599871Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.3.0
+quality	Run quality gates	2026-09-30T06:52:44.6089562Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.3.0
+quality	Run quality gates	2026-09-30T06:52:45.0529124Z ^[[1m^[[92m   Compiling^[[0m httparse v1.10.1
+quality	Run quality gates	2026-09-30T06:52:45.2079282Z ^[[1m^[[92m   Compiling^[[0m form_urlencoded v1.2.2
+quality	Run quality gates	2026-09-30T06:52:45.3233453Z ^[[1m^[[92m   Compiling^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:52:45.3241541Z ^[[1m^[[92m   Compiling^[[0m sync_wrapper v1.0.2
+quality	Run quality gates	2026-09-30T06:52:45.3709690Z ^[[1m^[[92m   Compiling^[[0m tower-layer v0.3.3
+quality	Run quality gates	2026-09-30T06:52:45.4846542Z ^[[1m^[[92m   Compiling^[[0m httpdate v1.0.3
+quality	Run quality gates	2026-09-30T06:52:45.4868979Z ^[[1m^[[92m   Compiling^[[0m atomic-waker v1.1.2
+quality	Run quality gates	2026-09-30T06:52:45.5429324Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
+quality	Run quality gates	2026-09-30T06:52:45.6089304Z ^[[1m^[[92m   Compiling^[[0m hyper v1.11.1
+quality	Run quality gates	2026-09-30T06:52:45.6229836Z ^[[1m^[[92m   Compiling^[[0m rustls-webpki v0.103.15
+quality	Run quality gates	2026-09-30T06:52:45.6559144Z ^[[1m^[[92m   Compiling^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:52:45.9489816Z ^[[1m^[[92m   Compiling^[[0m subtle v2.6.1
+quality	Run quality gates	2026-09-30T06:52:46.0449401Z ^[[1m^[[92m   Compiling^[[0m ipnet v2.12.2
+quality	Run quality gates	2026-09-30T06:52:46.5631270Z ^[[1m^[[92m   Compiling^[[0m hyper-util v0.1.20
+quality	Run quality gates	2026-09-30T06:52:46.8149446Z ^[[1m^[[92m   Compiling^[[0m rustls v0.23.44
+quality	Run quality gates	2026-09-30T06:52:47.2749462Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:52:47.3539250Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
+quality	Run quality gates	2026-09-30T06:52:47.8679645Z ^[[1m^[[92m   Compiling^[[0m tower v0.5.3
+quality	Run quality gates	2026-09-30T06:52:48.2239726Z ^[[1m^[[92m   Compiling^[[0m http-body-util v0.1.5
+quality	Run quality gates	2026-09-30T06:52:48.3739828Z ^[[1m^[[92m   Compiling^[[0m ryu v1.0.23
+quality	Run quality gates	2026-09-30T06:52:48.4489620Z ^[[1m^[[92m   Compiling^[[0m url v2.5.8
+quality	Run quality gates	2026-09-30T06:52:48.4905354Z ^[[1m^[[92m   Compiling^[[0m serde_urlencoded v0.7.1
+quality	Run quality gates	2026-09-30T06:52:48.4958871Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:52:48.6869304Z ^[[1m^[[92m   Compiling^[[0m webpki-roots v1.0.9
+quality	Run quality gates	2026-09-30T06:52:48.7669518Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:52:48.7870861Z ^[[1m^[[92m   Compiling^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:52:48.8370256Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:52:48.9179385Z ^[[1m^[[92m   Compiling^[[0m tower-http v0.6.11
+quality	Run quality gates	2026-09-30T06:52:49.2950209Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:52:49.3789512Z ^[[1m^[[92m   Compiling^[[0m tokio-util v0.7.19
+quality	Run quality gates	2026-09-30T06:52:49.5999452Z ^[[1m^[[92m   Compiling^[[0m mime v0.3.17
+quality	Run quality gates	2026-09-30T06:52:49.8199678Z ^[[1m^[[92m   Compiling^[[0m axum-core v0.5.6
+quality	Run quality gates	2026-09-30T06:52:49.8579203Z ^[[1m^[[92m   Compiling^[[0m serde_path_to_error v0.1.20
+quality	Run quality gates	2026-09-30T06:52:50.1919354Z ^[[1m^[[92m   Compiling^[[0m tokio-rustls v0.26.5
+quality	Run quality gates	2026-09-30T06:52:50.3949871Z ^[[1m^[[92m   Compiling^[[0m hyper-rustls v0.27.9
+quality	Run quality gates	2026-09-30T06:52:50.6129203Z ^[[1m^[[92m   Compiling^[[0m reqwest v0.12.28
+quality	Run quality gates	2026-09-30T06:52:50.7749861Z ^[[1m^[[92m   Compiling^[[0m matchit v0.8.4
+quality	Run quality gates	2026-09-30T06:52:51.1192906Z ^[[1m^[[92m   Compiling^[[0m tokio-stream v0.1.19
+quality	Run quality gates	2026-09-30T06:52:51.5161883Z ^[[1m^[[92m   Compiling^[[0m axum v0.8.9
+quality	Run quality gates	2026-09-30T06:52:52.4560221Z ^[[1m^[[92m   Compiling^[[0m lenso-agent-turn-relay v0.1.0 (/home/runner/work/lenso-console/lenso-console/runtime/agent-turn-relay)
+quality	Run quality gates	2026-09-30T06:52:55.8580611Z ^[[1m^[[92m    Finished^[[0m `test` profile [unoptimized + debuginfo] target(s) in 16.63s
+quality	Run quality gates	2026-09-30T06:52:55.8663199Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (runtime/agent-turn-relay/target/debug/deps/lenso_agent_turn_relay-8429e08ada38aa0f)
+quality	Run quality gates	2026-09-30T06:52:55.8676560Z 
+quality	Run quality gates	2026-09-30T06:52:55.8677074Z running 6 tests
+quality	Run quality gates	2026-09-30T06:52:55.8715588Z test tests::failed_upstream_body_is_a_stream_error_not_successful_eof ... ok
+quality	Run quality gates	2026-09-30T06:52:55.8758887Z test tests::activity_records_terminal_agent_events_without_interpreting_details ... ok
+quality	Run quality gates	2026-09-30T06:52:55.8764528Z test tests::active_reader_receives_exact_bytes_and_isolated_activity ... ok
+quality	Run quality gates	2026-09-30T06:52:55.8765861Z test tests::disconnect_before_headers_does_not_abandon_the_turn ... ok
+quality	Run quality gates	2026-09-30T06:52:55.8782857Z test tests::upstream_failures_release_admission_and_preserve_http_rejections ... ok
+quality	Run quality gates	2026-09-30T06:52:55.9098855Z test tests::slow_reader_gets_an_error_while_upstream_and_activity_complete ... ok
+quality	Run quality gates	2026-09-30T06:52:55.9099494Z 
+quality	Run quality gates	2026-09-30T06:52:55.9100067Z test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+quality	Run quality gates	2026-09-30T06:52:55.9100621Z 
+quality	Run quality gates	2026-09-30T06:52:55.9105069Z ^[[1m^[[92m   Doc-tests^[[0m lenso_agent_turn_relay
+quality	Run quality gates	2026-09-30T06:52:55.9381377Z 
+quality	Run quality gates	2026-09-30T06:52:55.9381896Z running 0 tests
+quality	Run quality gates	2026-09-30T06:52:55.9382181Z 
+quality	Run quality gates	2026-09-30T06:52:55.9382628Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:52:55.9382997Z 
+quality	Run quality gates	2026-09-30T06:52:56.3538264Z $ cargo fmt --manifest-path runtime/local-agent-launcher/Cargo.toml --all -- --check && cargo clippy --locked --manifest-path runtime/local-agent-launcher/Cargo.toml --all-targets -- -D warnings && cargo test --locked --manifest-path runtime/local-agent-launcher/Cargo.toml
+quality	Run quality gates	2026-09-30T06:52:56.5118555Z ^[[1m^[[92m Downloading^[[0m crates ...
+quality	Run quality gates	2026-09-30T06:52:56.5394539Z ^[[1m^[[92m  Downloaded^[[0m rustix v1.1.4
+quality	Run quality gates	2026-09-30T06:52:56.5898886Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:52:56.5899841Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+quality	Run quality gates	2026-09-30T06:52:56.5909025Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+quality	Run quality gates	2026-09-30T06:52:56.5910230Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.24
+quality	Run quality gates	2026-09-30T06:52:56.6439504Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:52:56.7529331Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:52:56.8769958Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:52:57.0219177Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.4
+quality	Run quality gates	2026-09-30T06:52:57.0620115Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.4
+quality	Run quality gates	2026-09-30T06:52:57.4272566Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.5
+quality	Run quality gates	2026-09-30T06:52:57.4809699Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:52:57.6519755Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.104
+quality	Run quality gates	2026-09-30T06:52:57.8415940Z ^[[1m^[[92m    Checking^[[0m errno v0.3.14
+quality	Run quality gates	2026-09-30T06:52:57.9029536Z ^[[1m^[[92m    Checking^[[0m winnow v1.0.4
+quality	Run quality gates	2026-09-30T06:52:57.9058786Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:52:58.0039378Z ^[[1m^[[92m    Checking^[[0m signal-hook-registry v1.4.8
+quality	Run quality gates	2026-09-30T06:52:58.1501167Z ^[[1m^[[92m    Checking^[[0m mio v1.2.3
+quality	Run quality gates	2026-09-30T06:52:58.1679196Z ^[[1m^[[92m    Checking^[[0m toml_parser v1.1.3+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:52:58.4760166Z ^[[1m^[[92m    Checking^[[0m toml_writer v1.1.2+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:52:58.5967337Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:52:58.6999285Z ^[[1m^[[92m    Checking^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:52:58.7889214Z ^[[1m^[[92m    Checking^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:52:58.8908330Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:52:58.8948665Z ^[[1m^[[92m    Checking^[[0m serde_spanned v1.1.1
+quality	Run quality gates	2026-09-30T06:52:58.9219409Z ^[[1m^[[92m    Checking^[[0m toml_datetime v0.7.5+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:52:58.9519659Z ^[[1m^[[92m    Checking^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:52:59.0288367Z ^[[1m^[[92m    Checking^[[0m winnow v0.7.15
+quality	Run quality gates	2026-09-30T06:52:59.0699189Z ^[[1m^[[92m    Checking^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:53:00.3239538Z ^[[1m^[[92m    Checking^[[0m uuid v1.26.1
+quality	Run quality gates	2026-09-30T06:53:00.4119185Z ^[[1m^[[92m    Checking^[[0m toml v0.9.12+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:00.5466461Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:53:00.6649374Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:53:00.7779518Z ^[[1m^[[92m    Checking^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:53:01.0236157Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+quality	Run quality gates	2026-09-30T06:53:01.0237148Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
+quality	Run quality gates	2026-09-30T06:53:01.3331293Z ^[[1m^[[92m    Checking^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:53:02.9863557Z ^[[1m^[[92m    Checking^[[0m lenso-local-agent-launcher v0.1.0 (/home/runner/work/lenso-console/lenso-console/runtime/local-agent-launcher)
+quality	Run quality gates	2026-09-30T06:53:03.2364485Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 6.76s
+quality	Run quality gates	2026-09-30T06:53:03.3365289Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:53:03.3366456Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:53:03.3368085Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.4
+quality	Run quality gates	2026-09-30T06:53:03.3392440Z ^[[1m^[[92m   Compiling^[[0m winnow v1.0.4
+quality	Run quality gates	2026-09-30T06:53:03.3688244Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:53:03.6562520Z ^[[1m^[[92m   Compiling^[[0m toml_parser v1.1.3+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:03.6976591Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:53:03.8343284Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:53:04.0089081Z ^[[1m^[[92m   Compiling^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:53:04.3427307Z ^[[1m^[[92m   Compiling^[[0m winnow v0.7.15
+quality	Run quality gates	2026-09-30T06:53:04.4019404Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:53:04.4629166Z ^[[1m^[[92m   Compiling^[[0m errno v0.3.14
+quality	Run quality gates	2026-09-30T06:53:04.5109238Z ^[[1m^[[92m   Compiling^[[0m mio v1.2.3
+quality	Run quality gates	2026-09-30T06:53:04.5460748Z ^[[1m^[[92m   Compiling^[[0m signal-hook-registry v1.4.8
+quality	Run quality gates	2026-09-30T06:53:04.8009293Z ^[[1m^[[92m   Compiling^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:53:05.0288560Z ^[[1m^[[92m   Compiling^[[0m toml_writer v1.1.2+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:05.1894972Z ^[[1m^[[92m   Compiling^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:53:05.2269822Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:53:05.5311306Z ^[[1m^[[92m   Compiling^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:53:05.8579065Z ^[[1m^[[92m   Compiling^[[0m toml_datetime v0.7.5+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:05.9743954Z ^[[1m^[[92m   Compiling^[[0m serde_spanned v1.1.1
+quality	Run quality gates	2026-09-30T06:53:06.0560378Z ^[[1m^[[92m   Compiling^[[0m toml v0.9.12+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:06.0589696Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:53:06.1035991Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:53:06.6655645Z ^[[1m^[[92m   Compiling^[[0m uuid v1.26.1
+quality	Run quality gates	2026-09-30T06:53:07.0389109Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.4
+quality	Run quality gates	2026-09-30T06:53:07.4509337Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.104
+quality	Run quality gates	2026-09-30T06:53:07.8201067Z ^[[1m^[[92m   Compiling^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:53:07.9439297Z ^[[1m^[[92m   Compiling^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:53:08.0030298Z ^[[1m^[[92m   Compiling^[[0m lenso-local-agent-launcher v0.1.0 (/home/runner/work/lenso-console/lenso-console/runtime/local-agent-launcher)
+quality	Run quality gates	2026-09-30T06:53:08.6396095Z ^[[1m^[[92m   Compiling^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:53:09.4982094Z ^[[1m^[[92m    Finished^[[0m `test` profile [unoptimized + debuginfo] target(s) in 6.22s
+quality	Run quality gates	2026-09-30T06:53:09.5020806Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (runtime/local-agent-launcher/target/debug/deps/lenso_local_agent_launcher-81570423f66410e1)
+quality	Run quality gates	2026-09-30T06:53:09.5032653Z 
+quality	Run quality gates	2026-09-30T06:53:09.5032807Z running 3 tests
+quality	Run quality gates	2026-09-30T06:53:09.5047335Z test process_tests::failed_start_does_not_publish_a_project_or_leave_its_home ... ok
+quality	Run quality gates	2026-09-30T06:53:09.5050756Z test tests::project_seed_excludes_history_and_rejects_shared_roots ... ok
+quality	Run quality gates	2026-09-30T06:53:09.5317468Z test process_tests::processes_restart_and_shutdown_without_losing_project_state ... ok
+quality	Run quality gates	2026-09-30T06:53:09.5318458Z 
+quality	Run quality gates	2026-09-30T06:53:09.5319062Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+quality	Run quality gates	2026-09-30T06:53:09.5319582Z 
+quality	Run quality gates	2026-09-30T06:53:09.5320149Z ^[[1m^[[92m   Doc-tests^[[0m lenso_local_agent_launcher
+quality	Run quality gates	2026-09-30T06:53:09.5725826Z 
+quality	Run quality gates	2026-09-30T06:53:09.5726427Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:09.5726648Z 
+quality	Run quality gates	2026-09-30T06:53:09.5727055Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:09.5727463Z 
+quality	Run quality gates	2026-09-30T06:53:09.9979248Z $ node scripts/check-console-sdk.mjs && cargo fmt --manifest-path contracts/Cargo.toml --all -- --check && cargo clippy --locked --manifest-path contracts/Cargo.toml --workspace --all-targets -- -D warnings && cargo test --locked --manifest-path contracts/Cargo.toml --workspace
+quality	Run quality gates	2026-09-30T06:53:10.2011017Z ^[[1m^[[33mwarning^[[0m: patch `lenso v0.5.28 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2013845Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2016672Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2019591Z ^[[1m^[[33mwarning^[[0m: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2022362Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2025242Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2028225Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2031137Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2034063Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2036700Z ^[[1m^[[33mwarning^[[0m: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2039386Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2041940Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2044925Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2048028Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2050648Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2053135Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2055712Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2058577Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2061326Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2064044Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2066678Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2069610Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2072319Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2074996Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2077805Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2080331Z ^[[1m^[[33mwarning^[[0m: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2082752Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2085318Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2088149Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2090859Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2093586Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:10.2095538Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:53:10.2096901Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:53:10.2098432Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:53:10.2099410Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:53:10.2531476Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+quality	Run quality gates	2026-09-30T06:53:10.2532435Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+quality	Run quality gates	2026-09-30T06:53:10.2533387Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.26
+quality	Run quality gates	2026-09-30T06:53:10.2534253Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:53:10.3139469Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+quality	Run quality gates	2026-09-30T06:53:10.4081530Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:53:10.4569818Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:53:10.5425314Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+quality	Run quality gates	2026-09-30T06:53:10.5593520Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:53:10.6389612Z ^[[1m^[[92m   Compiling^[[0m ref-cast v1.0.27
+quality	Run quality gates	2026-09-30T06:53:10.6589272Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:53:10.6607310Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.1
+quality	Run quality gates	2026-09-30T06:53:11.2919241Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.6
+quality	Run quality gates	2026-09-30T06:53:11.3399048Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+quality	Run quality gates	2026-09-30T06:53:11.9578689Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+quality	Run quality gates	2026-09-30T06:53:11.9909264Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+quality	Run quality gates	2026-09-30T06:53:12.0179575Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
+quality	Run quality gates	2026-09-30T06:53:12.9391491Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:53:13.0485412Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+quality	Run quality gates	2026-09-30T06:53:13.1079248Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+quality	Run quality gates	2026-09-30T06:53:13.1699222Z ^[[1m^[[92m   Compiling^[[0m aho-corasick v1.1.5
+quality	Run quality gates	2026-09-30T06:53:14.5629232Z ^[[1m^[[92m   Compiling^[[0m serde_derive_internals v0.30.0
+quality	Run quality gates	2026-09-30T06:53:14.9784486Z ^[[1m^[[92m   Compiling^[[0m dyn-clone v1.0.20
+quality	Run quality gates	2026-09-30T06:53:15.1859775Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+quality	Run quality gates	2026-09-30T06:53:15.4152536Z ^[[1m^[[92m   Compiling^[[0m ref-cast-impl v1.0.27
+quality	Run quality gates	2026-09-30T06:53:15.4692239Z ^[[1m^[[92m   Compiling^[[0m schemars_derive v1.2.2
+quality	Run quality gates	2026-09-30T06:53:15.8065335Z ^[[1m^[[92m   Compiling^[[0m regex-syntax v0.8.11
+quality	Run quality gates	2026-09-30T06:53:15.8545972Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:16.2538993Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+quality	Run quality gates	2026-09-30T06:53:16.3856348Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.5
+quality	Run quality gates	2026-09-30T06:53:16.4130282Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+quality	Run quality gates	2026-09-30T06:53:16.4449867Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+quality	Run quality gates	2026-09-30T06:53:17.4854348Z ^[[1m^[[92m   Compiling^[[0m regex-automata v0.4.18
+quality	Run quality gates	2026-09-30T06:53:18.2869914Z ^[[1m^[[92m   Compiling^[[0m semver v1.0.28
+quality	Run quality gates	2026-09-30T06:53:18.8099212Z ^[[1m^[[92m   Compiling^[[0m schemars v1.2.2
+quality	Run quality gates	2026-09-30T06:53:19.6720017Z ^[[1m^[[92m   Compiling^[[0m regex v1.13.1
+quality	Run quality gates	2026-09-30T06:53:19.9820365Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:20.0676903Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:20.5651921Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.6178181Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.6573948Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.7898791Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.8009198Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.8749629Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:53:20.8997050Z ^[[1m^[[92m    Checking^[[0m futures-io v0.3.34
+quality	Run quality gates	2026-09-30T06:53:20.9562841Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:53:20.9739559Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:53:21.1349333Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:53:21.2467328Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.5
+quality	Run quality gates	2026-09-30T06:53:21.4925734Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:53:21.7393872Z ^[[1m^[[92m    Checking^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:53:21.8509511Z ^[[1m^[[92m    Checking^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:53:22.2400175Z ^[[1m^[[92m    Checking^[[0m lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:22.2739387Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:53:22.3932841Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:53:22.4999262Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:53:22.9269071Z ^[[1m^[[92m    Checking^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:53:23.1279279Z ^[[1m^[[92m    Checking^[[0m hex v0.4.3
+quality	Run quality gates	2026-09-30T06:53:23.3119713Z ^[[1m^[[92m    Checking^[[0m lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:23.4199811Z ^[[1m^[[92m    Checking^[[0m lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:23.6065883Z ^[[1m^[[92m    Checking^[[0m lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:23.6948708Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)
+quality	Run quality gates	2026-09-30T06:53:23.6989220Z ^[[1m^[[92m    Checking^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:53:23.7987148Z ^[[1m^[[92m    Checking^[[0m futures-executor v0.3.34
+quality	Run quality gates	2026-09-30T06:53:23.8451162Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-workspace-service v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-workspace-service)
+quality	Run quality gates	2026-09-30T06:53:23.8729691Z ^[[1m^[[92m    Checking^[[0m futures v0.3.34
+quality	Run quality gates	2026-09-30T06:53:23.8970438Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-management-human v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-management-human)
+quality	Run quality gates	2026-09-30T06:53:23.9009518Z ^[[1m^[[92m    Checking^[[0m lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:24.0540283Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-management v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-management)
+quality	Run quality gates	2026-09-30T06:53:24.9730508Z ^[[1m^[[92m    Checking^[[0m lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:26.7009269Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 16.55s
+quality	Run quality gates	2026-09-30T06:53:26.7904202Z ^[[1m^[[33mwarning^[[0m: patch `lenso v0.5.28 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7906196Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7908357Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7910177Z ^[[1m^[[33mwarning^[[0m: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7912085Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7914034Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7916144Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7918422Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7920264Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7921742Z ^[[1m^[[33mwarning^[[0m: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7923146Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7924577Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7926033Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7927474Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7929048Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7930488Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7931962Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7933430Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7934905Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7936362Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7937908Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7939381Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7940850Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7942289Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7943727Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7945313Z ^[[1m^[[33mwarning^[[0m: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7946807Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7948556Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7950031Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7951458Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7952912Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:26.7953953Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:53:26.7954572Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:53:26.7955118Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:53:26.7955661Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:53:26.8372990Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:53:26.8376054Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+quality	Run quality gates	2026-09-30T06:53:26.8384100Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+quality	Run quality gates	2026-09-30T06:53:26.8394735Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:53:26.8719324Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:53:26.9979701Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.1
+quality	Run quality gates	2026-09-30T06:53:27.1349276Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.5
+quality	Run quality gates	2026-09-30T06:53:27.1589305Z ^[[1m^[[92m   Compiling^[[0m ref-cast v1.0.27
+quality	Run quality gates	2026-09-30T06:53:27.1949223Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+quality	Run quality gates	2026-09-30T06:53:27.2239671Z ^[[1m^[[92m   Compiling^[[0m dyn-clone v1.0.20
+quality	Run quality gates	2026-09-30T06:53:27.2914394Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:53:27.4170230Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+quality	Run quality gates	2026-09-30T06:53:27.7309609Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+quality	Run quality gates	2026-09-30T06:53:28.0649762Z ^[[1m^[[92m   Compiling^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.0949663Z ^[[1m^[[92m   Compiling^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.1147071Z ^[[1m^[[92m   Compiling^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.1870481Z ^[[1m^[[92m   Compiling^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.2465481Z ^[[1m^[[92m   Compiling^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:53:28.2709141Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+quality	Run quality gates	2026-09-30T06:53:28.3294427Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+quality	Run quality gates	2026-09-30T06:53:28.3609303Z ^[[1m^[[92m   Compiling^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:53:28.3729242Z ^[[1m^[[92m   Compiling^[[0m futures-io v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.3936992Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+quality	Run quality gates	2026-09-30T06:53:28.3985680Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:53:28.4589381Z ^[[1m^[[92m   Compiling^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:53:28.5309229Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+quality	Run quality gates	2026-09-30T06:53:28.8916433Z ^[[1m^[[92m   Compiling^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:53:29.2279592Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:53:29.3429138Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:53:29.4089544Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:53:29.9559319Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:53:30.0739532Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.5
+quality	Run quality gates	2026-09-30T06:53:31.0289215Z ^[[1m^[[92m   Compiling^[[0m schemars v1.2.2
+quality	Run quality gates	2026-09-30T06:53:31.0620900Z ^[[1m^[[92m   Compiling^[[0m lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:31.3079745Z ^[[1m^[[92m   Compiling^[[0m futures-executor v0.3.34
+quality	Run quality gates	2026-09-30T06:53:31.5399743Z ^[[1m^[[92m   Compiling^[[0m futures v0.3.34
+quality	Run quality gates	2026-09-30T06:53:31.5719426Z ^[[1m^[[92m   Compiling^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:53:31.7289411Z ^[[1m^[[92m   Compiling^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:53:31.8690253Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:31.9620164Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:32.3449538Z ^[[1m^[[92m   Compiling^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:53:32.7439020Z ^[[1m^[[92m   Compiling^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:53:32.9719092Z ^[[1m^[[92m   Compiling^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:53:33.0259737Z ^[[1m^[[92m   Compiling^[[0m hex v0.4.3
+quality	Run quality gates	2026-09-30T06:53:33.2570244Z ^[[1m^[[92m   Compiling^[[0m lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:33.6460269Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:33.8019892Z ^[[1m^[[92m   Compiling^[[0m lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:34.1010270Z ^[[1m^[[92m   Compiling^[[0m lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:34.3560385Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-management v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-management)
+quality	Run quality gates	2026-09-30T06:53:34.9191032Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)
+quality	Run quality gates	2026-09-30T06:53:35.1440905Z ^[[1m^[[92m   Compiling^[[0m lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:36.1490965Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-workspace-service v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-workspace-service)
+quality	Run quality gates	2026-09-30T06:53:36.3670539Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-management-human v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-management-human)
+quality	Run quality gates	2026-09-30T06:53:40.3453452Z ^[[1m^[[92m    Finished^[[0m `test` profile [unoptimized + debuginfo] target(s) in 13.60s
+quality	Run quality gates	2026-09-30T06:53:40.3514237Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (contracts/target/debug/deps/lenso_capability_management-99ed2b6a81574eac)
+quality	Run quality gates	2026-09-30T06:53:40.3524511Z 
+quality	Run quality gates	2026-09-30T06:53:40.3524997Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.3525274Z 
+quality	Run quality gates	2026-09-30T06:53:40.3527138Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.3527979Z 
+quality	Run quality gates	2026-09-30T06:53:40.3529494Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (contracts/target/debug/deps/lenso_capability_management_human-bcf159749c4f8e6c)
+quality	Run quality gates	2026-09-30T06:53:40.3536792Z 
+quality	Run quality gates	2026-09-30T06:53:40.3536980Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.3538966Z 
+quality	Run quality gates	2026-09-30T06:53:40.3539581Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.3540088Z 
+quality	Run quality gates	2026-09-30T06:53:40.3541400Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (contracts/target/debug/deps/lenso_capability_ui_contribution-bb137e37c2d33bc1)
+quality	Run quality gates	2026-09-30T06:53:40.3548864Z 
+quality	Run quality gates	2026-09-30T06:53:40.3549059Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.3549306Z 
+quality	Run quality gates	2026-09-30T06:53:40.3549901Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.3550499Z 
+quality	Run quality gates	2026-09-30T06:53:40.3552048Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (contracts/target/debug/deps/lenso_capability_workspace_service-1c715157a1532807)
+quality	Run quality gates	2026-09-30T06:53:40.3560848Z 
+quality	Run quality gates	2026-09-30T06:53:40.3561350Z running 2 tests
+quality	Run quality gates	2026-09-30T06:53:40.3564282Z test tests::unknown_domain_errors_remain_representable ... ok
+quality	Run quality gates	2026-09-30T06:53:40.3564876Z test tests::request_projection_round_trips_portable_json ... ok
+quality	Run quality gates	2026-09-30T06:53:40.3565200Z 
+quality	Run quality gates	2026-09-30T06:53:40.3565566Z test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.3565929Z 
+quality	Run quality gates	2026-09-30T06:53:40.3566465Z ^[[1m^[[92m   Doc-tests^[[0m lenso_capability_management
+quality	Run quality gates	2026-09-30T06:53:40.4420413Z 
+quality	Run quality gates	2026-09-30T06:53:40.4421001Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.4421211Z 
+quality	Run quality gates	2026-09-30T06:53:40.4421626Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.4421981Z 
+quality	Run quality gates	2026-09-30T06:53:40.4436480Z ^[[1m^[[92m   Doc-tests^[[0m lenso_capability_management_human
+quality	Run quality gates	2026-09-30T06:53:40.5156686Z 
+quality	Run quality gates	2026-09-30T06:53:40.5157230Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.5157534Z 
+quality	Run quality gates	2026-09-30T06:53:40.5158310Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.5158774Z 
+quality	Run quality gates	2026-09-30T06:53:40.5175178Z ^[[1m^[[92m   Doc-tests^[[0m lenso_capability_ui_contribution
+quality	Run quality gates	2026-09-30T06:53:40.5763225Z 
+quality	Run quality gates	2026-09-30T06:53:40.5764191Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.5764537Z 
+quality	Run quality gates	2026-09-30T06:53:40.5765323Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.5766032Z 
+quality	Run quality gates	2026-09-30T06:53:40.5779105Z ^[[1m^[[92m   Doc-tests^[[0m lenso_capability_workspace_service
+quality	Run quality gates	2026-09-30T06:53:40.6441668Z 
+quality	Run quality gates	2026-09-30T06:53:40.6442345Z running 0 tests
+quality	Run quality gates	2026-09-30T06:53:40.6442643Z 
+quality	Run quality gates	2026-09-30T06:53:40.6443206Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:53:40.6443593Z 
+quality	Run quality gates	2026-09-30T06:53:41.0609957Z $ cargo fmt --manifest-path plugins/observe/Cargo.toml --all -- --check && cargo clippy --locked --manifest-path plugins/observe/Cargo.toml --workspace --all-targets -- -D warnings && cargo test --locked --manifest-path plugins/observe/Cargo.toml --workspace
+quality	Run quality gates	2026-09-30T06:53:41.3080440Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3084019Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3086502Z ^[[1m^[[33mwarning^[[0m: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3089114Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3091461Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3093725Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3096025Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3098022Z ^[[1m^[[33mwarning^[[0m: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3099568Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3101575Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3103274Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3104831Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3106405Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3108058Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3109572Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3111074Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3112524Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3114016Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3115527Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3117008Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3118622Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3120049Z ^[[1m^[[33mwarning^[[0m: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3121444Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3122933Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3124403Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3125869Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3127353Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:53:41.3128689Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:53:41.3129317Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:53:41.3129868Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:53:41.3130579Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:53:41.3829438Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+quality	Run quality gates	2026-09-30T06:53:41.3830965Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+quality	Run quality gates	2026-09-30T06:53:41.3831969Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.26
+quality	Run quality gates	2026-09-30T06:53:41.3832812Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+quality	Run quality gates	2026-09-30T06:53:41.4437147Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:53:41.5514944Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:53:41.6139763Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+quality	Run quality gates	2026-09-30T06:53:41.6163226Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.5
+quality	Run quality gates	2026-09-30T06:53:41.6344005Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:53:41.7239706Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+quality	Run quality gates	2026-09-30T06:53:42.2646650Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+quality	Run quality gates	2026-09-30T06:53:42.3059926Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+quality	Run quality gates	2026-09-30T06:53:42.4539160Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.6
+quality	Run quality gates	2026-09-30T06:53:42.6685747Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
+quality	Run quality gates	2026-09-30T06:53:42.9830186Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:53:43.3779411Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:53:43.4979215Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:53:43.7401196Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:53:43.8019197Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.1
+quality	Run quality gates	2026-09-30T06:53:44.5169323Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:53:44.7379404Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:53:45.3719663Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:53:45.5499253Z ^[[1m^[[92m   Compiling^[[0m ref-cast v1.0.27
+quality	Run quality gates	2026-09-30T06:53:46.3939189Z ^[[1m^[[92m   Compiling^[[0m ref-cast-impl v1.0.27
+quality	Run quality gates	2026-09-30T06:53:46.6440059Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
+quality	Run quality gates	2026-09-30T06:53:46.6558824Z ^[[1m^[[92m   Compiling^[[0m serde_derive_internals v0.30.0
+quality	Run quality gates	2026-09-30T06:53:47.3057012Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:53:47.3806754Z ^[[1m^[[92m    Checking^[[0m futures-io v0.3.34
+quality	Run quality gates	2026-09-30T06:53:47.4405326Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:53:47.5789214Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:53:47.6929433Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:53:47.7239370Z ^[[1m^[[92m   Compiling^[[0m schemars_derive v1.2.2
+quality	Run quality gates	2026-09-30T06:53:48.7099664Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+quality	Run quality gates	2026-09-30T06:53:49.2609792Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+quality	Run quality gates	2026-09-30T06:53:49.2939577Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+quality	Run quality gates	2026-09-30T06:53:49.3449761Z ^[[1m^[[92m   Compiling^[[0m aho-corasick v1.1.5
+quality	Run quality gates	2026-09-30T06:53:49.6029057Z ^[[1m^[[92m   Compiling^[[0m dyn-clone v1.0.20
+quality	Run quality gates	2026-09-30T06:53:49.6609604Z ^[[1m^[[92m   Compiling^[[0m regex-syntax v0.8.11
+quality	Run quality gates	2026-09-30T06:53:50.0949865Z ^[[1m^[[92m    Checking^[[0m futures-executor v0.3.34
+quality	Run quality gates	2026-09-30T06:53:50.1729273Z ^[[1m^[[92m   Compiling^[[0m schemars v1.2.2
+quality	Run quality gates	2026-09-30T06:53:51.5679447Z ^[[1m^[[92m   Compiling^[[0m regex-automata v0.4.18
+quality	Run quality gates	2026-09-30T06:53:51.9790245Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+quality	Run quality gates	2026-09-30T06:53:52.1210936Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:52.2962335Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+quality	Run quality gates	2026-09-30T06:53:52.3295554Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+quality	Run quality gates	2026-09-30T06:53:52.4210527Z ^[[1m^[[92m   Compiling^[[0m semver v1.0.28
+quality	Run quality gates	2026-09-30T06:53:52.5179859Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:52.6499705Z ^[[1m^[[92m    Checking^[[0m futures v0.3.34
+quality	Run quality gates	2026-09-30T06:53:52.6779687Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:53:52.6929725Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:53:52.8069399Z ^[[1m^[[92m    Checking^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:53:52.8260347Z ^[[1m^[[92m    Checking^[[0m lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:52.9079180Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.5
+quality	Run quality gates	2026-09-30T06:53:53.1751474Z ^[[1m^[[92m   Compiling^[[0m winnow v1.0.4
+quality	Run quality gates	2026-09-30T06:53:53.2179455Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.3.4
+quality	Run quality gates	2026-09-30T06:53:53.4009854Z ^[[1m^[[92m    Checking^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:53:53.7128905Z ^[[1m^[[92m   Compiling^[[0m regex v1.13.1
+quality	Run quality gates	2026-09-30T06:53:54.1090227Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:54.3086373Z ^[[1m^[[92m    Checking^[[0m lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:54.4580192Z ^[[1m^[[92m    Checking^[[0m lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:54.5275121Z ^[[1m^[[92m   Compiling^[[0m zerocopy v0.8.59
+quality	Run quality gates	2026-09-30T06:53:54.8069226Z ^[[1m^[[92m   Compiling^[[0m toml_parser v1.1.3+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:55.4169046Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:53:55.5279566Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.104
+quality	Run quality gates	2026-09-30T06:53:55.5661148Z ^[[1m^[[92m    Checking^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:53:55.7119165Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:53:55.7600226Z ^[[1m^[[92m    Checking^[[0m lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:55.9489329Z ^[[1m^[[92m    Checking^[[0m hex v0.4.3
+quality	Run quality gates	2026-09-30T06:53:56.1349436Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.21
+quality	Run quality gates	2026-09-30T06:53:56.3179780Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.14
+quality	Run quality gates	2026-09-30T06:53:56.3399271Z ^[[1m^[[92m   Compiling^[[0m toml_datetime v1.1.1+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:56.4540760Z ^[[1m^[[92m    Checking^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:53:56.4937525Z ^[[1m^[[92m   Compiling^[[0m shlex v2.0.1
+quality	Run quality gates	2026-09-30T06:53:56.5023797Z ^[[1m^[[92m   Compiling^[[0m toml_edit v0.25.15+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:56.5980170Z ^[[1m^[[92m    Checking^[[0m lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:53:56.6089167Z ^[[1m^[[92m   Compiling^[[0m cc v1.5.1
+quality	Run quality gates	2026-09-30T06:53:57.0779309Z ^[[1m^[[92m    Checking^[[0m rand_core v0.9.5
+quality	Run quality gates	2026-09-30T06:53:57.1889298Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.21
+quality	Run quality gates	2026-09-30T06:53:57.6209523Z ^[[1m^[[92m   Compiling^[[0m serde_spanned v1.1.1
+quality	Run quality gates	2026-09-30T06:53:57.6939378Z ^[[1m^[[92m   Compiling^[[0m toml_datetime v0.7.5+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:57.9289412Z ^[[1m^[[92m   Compiling^[[0m pkg-config v0.3.34
+quality	Run quality gates	2026-09-30T06:53:58.1745490Z ^[[1m^[[92m   Compiling^[[0m either v1.18.0
+quality	Run quality gates	2026-09-30T06:53:58.3499440Z ^[[1m^[[92m   Compiling^[[0m toml_writer v1.1.2+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:58.4032684Z ^[[1m^[[92m   Compiling^[[0m vcpkg v0.2.15
+quality	Run quality gates	2026-09-30T06:53:58.4306984Z ^[[1m^[[92m   Compiling^[[0m winnow v0.7.15
+quality	Run quality gates	2026-09-30T06:53:58.5239147Z ^[[1m^[[92m   Compiling^[[0m itertools v0.14.0
+quality	Run quality gates	2026-09-30T06:53:59.0499414Z ^[[1m^[[92m   Compiling^[[0m libsqlite3-sys v0.37.0
+quality	Run quality gates	2026-09-30T06:53:59.2649681Z ^[[1m^[[92m   Compiling^[[0m proc-macro-crate v3.5.0
+quality	Run quality gates	2026-09-30T06:53:59.5701193Z ^[[1m^[[92m    Checking^[[0m ppv-lite86 v0.2.21
+quality	Run quality gates	2026-09-30T06:53:59.7240487Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-observability-query v0.1.0 (/home/runner/work/lenso-console/lenso-console/plugins/observe/crates/lenso-capability-observability-query)
+quality	Run quality gates	2026-09-30T06:53:59.8979338Z ^[[1m^[[92m    Checking^[[0m rand_chacha v0.9.0
+quality	Run quality gates	2026-09-30T06:53:59.9369096Z ^[[1m^[[92m   Compiling^[[0m toml v0.9.12+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:53:59.9886489Z ^[[1m^[[92m   Compiling^[[0m crc32fast v1.5.2
+quality	Run quality gates	2026-09-30T06:54:00.0374618Z ^[[1m^[[92m    Checking^[[0m foldhash v0.2.0
+quality	Run quality gates	2026-09-30T06:54:00.1266999Z ^[[1m^[[92m    Checking^[[0m hashbrown v0.16.1
+quality	Run quality gates	2026-09-30T06:54:00.1469129Z ^[[1m^[[92m    Checking^[[0m rand v0.9.5
+quality	Run quality gates	2026-09-30T06:54:00.2639960Z ^[[1m^[[92m   Compiling^[[0m prost-derive v0.14.4
+quality	Run quality gates	2026-09-30T06:54:00.6617203Z ^[[1m^[[92m    Checking^[[0m opentelemetry v0.32.0
+quality	Run quality gates	2026-09-30T06:54:01.0114008Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)
+quality	Run quality gates	2026-09-30T06:54:01.2041853Z ^[[1m^[[92m   Compiling^[[0m lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:01.2272820Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-workspace-service v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-workspace-service)
+quality	Run quality gates	2026-09-30T06:54:01.4479928Z ^[[1m^[[92m    Checking^[[0m lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:01.6424751Z ^[[1m^[[92m    Checking^[[0m percent-encoding v2.3.2
+quality	Run quality gates	2026-09-30T06:54:01.7179846Z ^[[1m^[[92m    Checking^[[0m inventory v0.3.24
+quality	Run quality gates	2026-09-30T06:54:01.7529643Z ^[[1m^[[92m    Checking^[[0m simd-adler32 v0.3.10
+quality	Run quality gates	2026-09-30T06:54:01.7709150Z ^[[1m^[[92m    Checking^[[0m adler2 v2.0.1
+quality	Run quality gates	2026-09-30T06:54:01.8129336Z ^[[1m^[[92m    Checking^[[0m prost v0.14.4
+quality	Run quality gates	2026-09-30T06:54:01.8399312Z ^[[1m^[[92m    Checking^[[0m miniz_oxide v0.9.1
+quality	Run quality gates	2026-09-30T06:54:02.0889835Z ^[[1m^[[92m    Checking^[[0m opentelemetry_sdk v0.32.1
+quality	Run quality gates	2026-09-30T06:54:02.2089581Z ^[[1m^[[92m    Checking^[[0m hashlink v0.11.1
+quality	Run quality gates	2026-09-30T06:54:02.4599807Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
+quality	Run quality gates	2026-09-30T06:54:02.5279233Z ^[[1m^[[92m    Checking^[[0m smallvec v1.16.2
+quality	Run quality gates	2026-09-30T06:54:02.6739557Z ^[[1m^[[92m    Checking^[[0m fallible-streaming-iterator v0.1.9
+quality	Run quality gates	2026-09-30T06:54:02.7529155Z ^[[1m^[[92m    Checking^[[0m fallible-iterator v0.3.0
+quality	Run quality gates	2026-09-30T06:54:02.9886916Z ^[[1m^[[92m    Checking^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:54:03.0107555Z ^[[1m^[[92m    Checking^[[0m flate2 v1.1.10
+quality	Run quality gates	2026-09-30T06:54:03.1190855Z ^[[1m^[[92m    Checking^[[0m lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:03.2769101Z ^[[1m^[[92m    Checking^[[0m opentelemetry-proto v0.32.0
+quality	Run quality gates	2026-09-30T06:54:03.3499990Z ^[[1m^[[92m    Checking^[[0m lenso v0.5.28 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:04.3000332Z ^[[1m^[[92m    Checking^[[0m lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:04.4069491Z ^[[1m^[[92m    Checking^[[0m uuid v1.26.1
+quality	Run quality gates	2026-09-30T06:54:04.6329671Z ^[[1m^[[92m    Checking^[[0m http v1.5.0
+quality	Run quality gates	2026-09-30T06:54:08.5919112Z ^[[1m^[[92m    Checking^[[0m rusqlite v0.39.0
+quality	Run quality gates	2026-09-30T06:54:09.0635415Z ^[[1m^[[92m    Checking^[[0m lenso-observe-plugin v0.1.0 (/home/runner/work/lenso-console/lenso-console/plugins/observe)
+quality	Run quality gates	2026-09-30T06:54:09.9797187Z ^[[1m^[[92m    Finished^[[0m `dev` profile [unoptimized + debuginfo] target(s) in 28.73s
+quality	Run quality gates	2026-09-30T06:54:10.0901325Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0904164Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0906914Z ^[[1m^[[33mwarning^[[0m: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0910090Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0912916Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0915696Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0919483Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0922136Z ^[[1m^[[33mwarning^[[0m: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0924743Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0927336Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0930209Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0932876Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0935483Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0938232Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0941027Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0943799Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0946424Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0949343Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0952078Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0954754Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0957372Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0960177Z ^[[1m^[[33mwarning^[[0m: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0962656Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0965374Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0968271Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0971251Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0974097Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:10.0975960Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:54:10.0977034Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:54:10.0978211Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:54:10.0979154Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:54:10.1685026Z ^[[1m^[[92m   Compiling^[[0m cfg-if v1.0.5
+quality	Run quality gates	2026-09-30T06:54:10.1686151Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.1
+quality	Run quality gates	2026-09-30T06:54:10.1688564Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.2
+quality	Run quality gates	2026-09-30T06:54:10.1702231Z ^[[1m^[[92m   Compiling^[[0m itoa v1.0.18
+quality	Run quality gates	2026-09-30T06:54:10.1993786Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+quality	Run quality gates	2026-09-30T06:54:10.2078903Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.1
+quality	Run quality gates	2026-09-30T06:54:10.3179309Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+quality	Run quality gates	2026-09-30T06:54:10.3550291Z ^[[1m^[[92m   Compiling^[[0m memchr v2.8.3
+quality	Run quality gates	2026-09-30T06:54:10.5078717Z ^[[1m^[[92m   Compiling^[[0m futures-sink v0.3.34
+quality	Run quality gates	2026-09-30T06:54:10.5581943Z ^[[1m^[[92m   Compiling^[[0m pin-project-lite v0.2.17
+quality	Run quality gates	2026-09-30T06:54:10.5999429Z ^[[1m^[[92m   Compiling^[[0m futures-core v0.3.34
+quality	Run quality gates	2026-09-30T06:54:10.6949077Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+quality	Run quality gates	2026-09-30T06:54:10.7549426Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+quality	Run quality gates	2026-09-30T06:54:10.9989446Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+quality	Run quality gates	2026-09-30T06:54:11.1209285Z ^[[1m^[[92m   Compiling^[[0m futures-channel v0.3.34
+quality	Run quality gates	2026-09-30T06:54:11.3751884Z ^[[1m^[[92m   Compiling^[[0m futures-task v0.3.34
+quality	Run quality gates	2026-09-30T06:54:11.4309291Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.151
+quality	Run quality gates	2026-09-30T06:54:11.4926321Z ^[[1m^[[92m   Compiling^[[0m futures-io v0.3.34
+quality	Run quality gates	2026-09-30T06:54:11.5869525Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+quality	Run quality gates	2026-09-30T06:54:11.5898976Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+quality	Run quality gates	2026-09-30T06:54:11.6566836Z ^[[1m^[[92m   Compiling^[[0m digest v0.10.7
+quality	Run quality gates	2026-09-30T06:54:11.6589324Z ^[[1m^[[92m   Compiling^[[0m slab v0.4.12
+quality	Run quality gates	2026-09-30T06:54:11.7801112Z ^[[1m^[[92m   Compiling^[[0m futures-util v0.3.34
+quality	Run quality gates	2026-09-30T06:54:11.8009246Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+quality	Run quality gates	2026-09-30T06:54:12.1829183Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.189
+quality	Run quality gates	2026-09-30T06:54:12.7080161Z ^[[1m^[[92m   Compiling^[[0m schemars v1.2.2
+quality	Run quality gates	2026-09-30T06:54:13.1434720Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+quality	Run quality gates	2026-09-30T06:54:13.7570328Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:13.8439883Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:14.1690370Z ^[[1m^[[92m   Compiling^[[0m bytes v1.12.1
+quality	Run quality gates	2026-09-30T06:54:14.6219627Z ^[[1m^[[92m   Compiling^[[0m futures-executor v0.3.34
+quality	Run quality gates	2026-09-30T06:54:14.8279557Z ^[[1m^[[92m   Compiling^[[0m futures v0.3.34
+quality	Run quality gates	2026-09-30T06:54:14.8560797Z ^[[1m^[[92m   Compiling^[[0m lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:14.8619587Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+quality	Run quality gates	2026-09-30T06:54:14.8670147Z ^[[1m^[[92m   Compiling^[[0m lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:14.9359855Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+quality	Run quality gates	2026-09-30T06:54:15.0259631Z ^[[1m^[[92m   Compiling^[[0m base64 v0.22.1
+quality	Run quality gates	2026-09-30T06:54:15.0552840Z ^[[1m^[[92m   Compiling^[[0m linux-raw-sys v0.12.1
+quality	Run quality gates	2026-09-30T06:54:15.3089155Z ^[[1m^[[92m   Compiling^[[0m lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:15.4169565Z ^[[1m^[[92m   Compiling^[[0m rustix v1.1.5
+quality	Run quality gates	2026-09-30T06:54:15.4729289Z ^[[1m^[[92m   Compiling^[[0m once_cell v1.21.4
+quality	Run quality gates	2026-09-30T06:54:15.6179558Z ^[[1m^[[92m   Compiling^[[0m fastrand v2.5.0
+quality	Run quality gates	2026-09-30T06:54:15.7839489Z ^[[1m^[[92m   Compiling^[[0m zerocopy v0.8.59
+quality	Run quality gates	2026-09-30T06:54:16.0619196Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.3.4
+quality	Run quality gates	2026-09-30T06:54:16.2139102Z ^[[1m^[[92m   Compiling^[[0m hex v0.4.3
+quality	Run quality gates	2026-09-30T06:54:16.4589456Z ^[[1m^[[92m   Compiling^[[0m toml_edit v0.25.15+spec-1.1.0
+quality	Run quality gates	2026-09-30T06:54:17.5389494Z ^[[1m^[[92m   Compiling^[[0m lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:17.5439498Z ^[[1m^[[92m   Compiling^[[0m tempfile v3.27.0
+quality	Run quality gates	2026-09-30T06:54:17.9719786Z ^[[1m^[[92m   Compiling^[[0m rand_core v0.9.5
+quality	Run quality gates	2026-09-30T06:54:18.1287553Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-observability-query v0.1.0 (/home/runner/work/lenso-console/lenso-console/plugins/observe/crates/lenso-capability-observability-query)
+quality	Run quality gates	2026-09-30T06:54:18.3540446Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.21
+quality	Run quality gates	2026-09-30T06:54:18.4617154Z ^[[1m^[[92m   Compiling^[[0m anyhow v1.0.104
+quality	Run quality gates	2026-09-30T06:54:18.8389228Z ^[[1m^[[92m   Compiling^[[0m proc-macro-crate v3.5.0
+quality	Run quality gates	2026-09-30T06:54:19.2770195Z ^[[1m^[[92m   Compiling^[[0m lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:19.6099207Z ^[[1m^[[92m   Compiling^[[0m ppv-lite86 v0.2.21
+quality	Run quality gates	2026-09-30T06:54:19.9469137Z ^[[1m^[[92m   Compiling^[[0m rand_chacha v0.9.0
+quality	Run quality gates	2026-09-30T06:54:20.3779502Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.2.0
+quality	Run quality gates	2026-09-30T06:54:20.4949224Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.16.1
+quality	Run quality gates	2026-09-30T06:54:21.0659817Z ^[[1m^[[92m   Compiling^[[0m rand v0.9.5
+quality	Run quality gates	2026-09-30T06:54:21.2830406Z ^[[1m^[[92m   Compiling^[[0m lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:21.3529747Z ^[[1m^[[92m   Compiling^[[0m prost-derive v0.14.4
+quality	Run quality gates	2026-09-30T06:54:21.6839695Z ^[[1m^[[92m   Compiling^[[0m opentelemetry v0.32.0
+quality	Run quality gates	2026-09-30T06:54:22.5950611Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-workspace-service v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-workspace-service)
+quality	Run quality gates	2026-09-30T06:54:22.7890119Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)
+quality	Run quality gates	2026-09-30T06:54:22.8550880Z ^[[1m^[[92m   Compiling^[[0m lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:22.8779865Z ^[[1m^[[92m   Compiling^[[0m simd-adler32 v0.3.10
+quality	Run quality gates	2026-09-30T06:54:22.9969658Z ^[[1m^[[92m   Compiling^[[0m adler2 v2.0.1
+quality	Run quality gates	2026-09-30T06:54:23.0349333Z ^[[1m^[[92m   Compiling^[[0m percent-encoding v2.3.2
+quality	Run quality gates	2026-09-30T06:54:23.0629484Z ^[[1m^[[92m   Compiling^[[0m inventory v0.3.24
+quality	Run quality gates	2026-09-30T06:54:23.1152121Z ^[[1m^[[92m   Compiling^[[0m miniz_oxide v0.9.1
+quality	Run quality gates	2026-09-30T06:54:23.1839891Z ^[[1m^[[92m   Compiling^[[0m opentelemetry_sdk v0.32.1
+quality	Run quality gates	2026-09-30T06:54:23.2083354Z ^[[1m^[[92m   Compiling^[[0m lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:23.4437874Z ^[[1m^[[92m   Compiling^[[0m prost v0.14.4
+quality	Run quality gates	2026-09-30T06:54:23.8379228Z ^[[1m^[[92m   Compiling^[[0m libsqlite3-sys v0.37.0
+quality	Run quality gates	2026-09-30T06:54:23.8629095Z ^[[1m^[[92m   Compiling^[[0m hashlink v0.11.1
+quality	Run quality gates	2026-09-30T06:54:23.9459937Z ^[[1m^[[92m   Compiling^[[0m crc32fast v1.5.2
+quality	Run quality gates	2026-09-30T06:54:24.0939631Z ^[[1m^[[92m   Compiling^[[0m fallible-iterator v0.3.0
+quality	Run quality gates	2026-09-30T06:54:24.1209225Z ^[[1m^[[92m   Compiling^[[0m fallible-streaming-iterator v0.1.9
+quality	Run quality gates	2026-09-30T06:54:24.2169236Z ^[[1m^[[92m   Compiling^[[0m smallvec v1.16.2
+quality	Run quality gates	2026-09-30T06:54:24.3768859Z ^[[1m^[[92m   Compiling^[[0m rusqlite v0.39.0
+quality	Run quality gates	2026-09-30T06:54:24.3813382Z ^[[1m^[[92m   Compiling^[[0m tokio v1.53.1
+quality	Run quality gates	2026-09-30T06:54:24.7590014Z ^[[1m^[[92m   Compiling^[[0m flate2 v1.1.10
+quality	Run quality gates	2026-09-30T06:54:26.0369607Z ^[[1m^[[92m   Compiling^[[0m opentelemetry-proto v0.32.0
+quality	Run quality gates	2026-09-30T06:54:27.0269974Z ^[[1m^[[92m   Compiling^[[0m lenso v0.5.28 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:27.0590383Z ^[[1m^[[92m   Compiling^[[0m lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)
+quality	Run quality gates	2026-09-30T06:54:27.1749222Z ^[[1m^[[92m   Compiling^[[0m uuid v1.26.1
+quality	Run quality gates	2026-09-30T06:54:27.5289761Z ^[[1m^[[92m   Compiling^[[0m http v1.5.0
+quality	Run quality gates	2026-09-30T06:54:28.4670269Z ^[[1m^[[92m   Compiling^[[0m lenso-observe-plugin v0.1.0 (/home/runner/work/lenso-console/lenso-console/plugins/observe)
+quality	Run quality gates	2026-09-30T06:54:31.4394970Z ^[[1m^[[92m    Finished^[[0m `test` profile [unoptimized + debuginfo] target(s) in 21.41s
+quality	Run quality gates	2026-09-30T06:54:31.4492572Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (plugins/observe/target/debug/deps/lenso_capability_observability_query-baa06fd7ea8ed9eb)
+quality	Run quality gates	2026-09-30T06:54:31.4503903Z 
+quality	Run quality gates	2026-09-30T06:54:31.4504518Z running 2 tests
+quality	Run quality gates	2026-09-30T06:54:31.4506861Z test tests::descriptor_identity_and_stream_are_stable ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4508011Z test tests::unknown_domain_errors_remain_representable ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4508457Z 
+quality	Run quality gates	2026-09-30T06:54:31.4509267Z test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:54:31.4510429Z ^[[1m^[[92m     Running^[[0m unittests src/lib.rs (plugins/observe/target/debug/deps/lenso_observe_plugin-cea6705ba5ef857b)
+quality	Run quality gates	2026-09-30T06:54:31.4510963Z 
+quality	Run quality gates	2026-09-30T06:54:31.4521629Z 
+quality	Run quality gates	2026-09-30T06:54:31.4521795Z running 12 tests
+quality	Run quality gates	2026-09-30T06:54:31.4883460Z test store::tests::failed_ingest_and_retention_roll_back_data_accounting_and_health ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4884672Z test store::tests::saturated_ingestion_queue_is_rejected_and_counted ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4885798Z test store::tests::accounting_fails_closed_when_missing_negative_or_overflowing ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4895255Z test tests::descriptor_and_workspace_are_removable_plugin_contributions ... ok
+quality	Run quality gates	2026-09-30T06:54:31.4948749Z test store::tests::accounting_matches_recomputation_after_mixed_mutations ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5105916Z test store::tests::multi_trace_eviction_and_ingest_prepare_no_full_size_aggregates ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5107132Z test tests::logical_size_retention_removes_the_oldest_complete_trace ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5335526Z test tests::request_pagination_and_time_retention_are_enforced ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5347376Z test tests::token_is_created_outside_the_plan_with_private_permissions ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5433899Z test store::tests::startup_reconciles_legacy_stale_and_missing_totals_before_retention ... ok
+quality	Run quality gates	2026-09-30T06:54:31.5510066Z test tests::request_feed_reports_and_counts_subscriber_lag ... ok
+quality	Run quality gates	2026-09-30T06:54:31.7470287Z test tests::real_otlp_http_ingestion_persists_queries_and_redacts_secrets ... ok
+quality	Run quality gates	2026-09-30T06:54:31.7470790Z 
+quality	Run quality gates	2026-09-30T06:54:31.7471170Z test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+quality	Run quality gates	2026-09-30T06:54:31.7471517Z 
+quality	Run quality gates	2026-09-30T06:54:31.7476304Z ^[[1m^[[92m   Doc-tests^[[0m lenso_capability_observability_query
+quality	Run quality gates	2026-09-30T06:54:31.8767270Z 
+quality	Run quality gates	2026-09-30T06:54:31.8768086Z running 0 tests
+quality	Run quality gates	2026-09-30T06:54:31.8768390Z 
+quality	Run quality gates	2026-09-30T06:54:31.8768913Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:54:31.8769285Z 
+quality	Run quality gates	2026-09-30T06:54:31.8782304Z ^[[1m^[[92m   Doc-tests^[[0m lenso_observe_plugin
+quality	Run quality gates	2026-09-30T06:54:31.9647474Z 
+quality	Run quality gates	2026-09-30T06:54:31.9648665Z running 0 tests
+quality	Run quality gates	2026-09-30T06:54:31.9648955Z 
+quality	Run quality gates	2026-09-30T06:54:31.9649468Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+quality	Run quality gates	2026-09-30T06:54:31.9649837Z 
+quality	Run quality gates	2026-09-30T06:54:32.3858078Z $ cargo package --locked --allow-dirty --manifest-path contracts/Cargo.toml -p lenso-capability-ui-contribution && cargo package --locked --allow-dirty --manifest-path contracts/Cargo.toml -p lenso-capability-workspace-service && cargo package --locked --allow-dirty --manifest-path contracts/Cargo.toml -p lenso-capability-management && cargo package --locked --allow-dirty --manifest-path contracts/Cargo.toml -p lenso-capability-management-human && cargo package --locked --allow-dirty --manifest-path plugins/observe/Cargo.toml -p lenso-capability-observability-query
+quality	Run quality gates	2026-09-30T06:54:32.4540068Z ^[[1m^[[33mwarning^[[0m: patch `lenso v0.5.28 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4543492Z ^[[1m^[[33mwarning^[[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4545819Z ^[[1m^[[33mwarning^[[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4547535Z ^[[1m^[[33mwarning^[[0m: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4549634Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4551438Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4553224Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4555046Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4556879Z ^[[1m^[[33mwarning^[[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4558506Z ^[[1m^[[33mwarning^[[0m: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4559904Z ^[[1m^[[33mwarning^[[0m: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4561337Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4562766Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4564213Z ^[[1m^[[33mwarning^[[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4565654Z ^[[1m^[[33mwarning^[[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4567049Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4568595Z ^[[1m^[[33mwarning^[[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4570052Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4571927Z ^[[1m^[[33mwarning^[[0m: patch `lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4573700Z ^[[1m^[[33mwarning^[[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4575189Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4576686Z ^[[1m^[[33mwarning^[[0m: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4578329Z ^[[1m^[[33mwarning^[[0m: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4579799Z ^[[1m^[[33mwarning^[[0m: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4581251Z ^[[1m^[[33mwarning^[[0m: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4582640Z ^[[1m^[[33mwarning^[[0m: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4583999Z ^[[1m^[[33mwarning^[[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4585462Z ^[[1m^[[33mwarning^[[0m: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4586919Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4588603Z ^[[1m^[[33mwarning^[[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4590079Z ^[[1m^[[33mwarning^[[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=1b34db24797c58bf756290e35f54f0b73f24af94#1b34db24)` was not used in the crate graph
+quality	Run quality gates	2026-09-30T06:54:32.4591110Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Run quality gates	2026-09-30T06:54:32.4591735Z       with the dependency requirements. If the patch has a different version from
+quality	Run quality gates	2026-09-30T06:54:32.4592289Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Run quality gates	2026-09-30T06:54:32.4592835Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Run quality gates	2026-09-30T06:54:32.4638741Z ^[[1m^[[92m   Packaging^[[0m lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)
+quality	Run quality gates	2026-09-30T06:54:32.4657858Z ^[[1m^[[92m    Updating^[[0m crates.io index
+quality	Run quality gates	2026-09-30T06:54:32.5249370Z ^[[1m^[[91merror^[[0m: failed to prepare local package for uploading
+quality	Run quality gates	2026-09-30T06:54:32.5249916Z 
+quality	Run quality gates	2026-09-30T06:54:32.5250043Z Caused by:
+quality	Run quality gates	2026-09-30T06:54:32.5250721Z   failed to select a version for the requirement `lenso-kernel = "^0.3.12"`
+quality	Run quality gates	2026-09-30T06:54:32.5251646Z   candidate versions found which didn't match: 0.3.11, 0.3.9, 0.3.8, ...
+quality	Run quality gates	2026-09-30T06:54:32.5252408Z   location searched: crates.io index
+quality	Run quality gates	2026-09-30T06:54:32.5253890Z   required by package `lenso-capability-ui-contribution v0.1.0 (/home/runner/work/lenso-console/lenso-console/contracts/crates/lenso-capability-ui-contribution)`
+quality	Run quality gates	2026-09-30T06:54:32.5446699Z [ELIFECYCLE] Command failed with exit code 101.
+quality	Run quality gates	2026-09-30T06:54:32.6017802Z [ELIFECYCLE] Command failed with exit code 101.
+quality	Run quality gates	2026-09-30T06:54:32.6388576Z [ELIFECYCLE] Command failed with exit code 101.
+quality	Run quality gates	2026-09-30T06:54:32.6601482Z ##[error]Process completed with exit code 101.

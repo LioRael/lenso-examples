@@ -1,0 +1,176 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-workers-artifact",
+  "infrastructure": "cloudflare-workers",
+  "build": "passed",
+  "runtime_qualification": "passed",
+  "source_snapshot": "source-snapshot.json",
+  "runtime_core": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "builder_source": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+  "console_functional_source": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+  "security_sources": {
+    "auth": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+    "acl": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+    "audit": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "approval": "3346ce45beacdb74918666c045c802d31da585f6"
+  },
+  "workers_build_manifest": "distribution/workers-build.json",
+  "artifact_digests": {
+    "source_digest": "sha256:8b86c9ca4cd336a4f6d80f248fa8762081d569954ded8a7aaa480557d16d7887",
+    "plan_digest": "sha256:24a8fe58615c7e9db09e9bc66c2e2537a4ded30e6c31d6e53f447afe0a5f09b2",
+    "host_wasm_digest": "sha256:226f4f2ee3957179ba9f5a746409a1b7c78ade0c86696dd3cf5709b9942f68b3",
+    "host_bindings_digest": "sha256:dc5b5f4c82ba983d9d9d13f5c9b7371713693ce60d2114472602c97ef6215b25",
+    "worker_entry_digest": "sha256:01a1a35591df59c437d70dadb05f88b43a6922343283948e498ee6805004d0c7"
+  },
+  "facility_modules": [
+    {
+      "package_id": "example.ops-management",
+      "slot": "authority",
+      "module": "facilities/owner_0.mjs",
+      "digest": "sha256:d63ce485b22d2069e7553bbe82edb8efa470b5b398a99f12aab57c33cccac597",
+      "owner": {
+        "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#lenso-management-core@0.1.0",
+        "name": "lenso-management-core",
+        "version": "0.1.0",
+        "source": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#dbea6e41fa77de867a3daa55ad43efe0113de574",
+        "relative_path": "src/workers/journal.mjs"
+      }
+    },
+    {
+      "package_id": "example.ops-management-web",
+      "slot": "mcp",
+      "module": "facilities/owner_1.mjs",
+      "digest": "sha256:9571e6fbe0144f3aab7e4710033f9242f8dce3a489cb38913cdbf04ada36d8a7",
+      "owner": {
+        "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#lenso-management-http@0.1.0",
+        "name": "lenso-management-http",
+        "version": "0.1.0",
+        "source": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#dbea6e41fa77de867a3daa55ad43efe0113de574",
+        "relative_path": "src/workers/mcp.mjs"
+      }
+    },
+    {
+      "package_id": "example.ops-secrets",
+      "slot": "secrets",
+      "module": "facilities/owner_2.mjs",
+      "digest": "sha256:066dde5b3dd6eb68117f4209db79935cbf61c51c6f1e05a5c67e53f114f44daf",
+      "owner": null
+    },
+    {
+      "package_id": "example.ops-state",
+      "slot": "state",
+      "module": "facilities/owner_3.mjs",
+      "digest": "sha256:cd58cc725d91547ec54ef4a214999f101fc124fff5f54694b19de7f57cccc3d1",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.access-control.d1",
+      "slot": "state",
+      "module": "facilities/owner_4.mjs",
+      "digest": "sha256:d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.audit-log.d1",
+      "slot": "store",
+      "module": "facilities/owner_5.mjs",
+      "digest": "sha256:3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.auth.api-token",
+      "slot": "state",
+      "module": "facilities/owner_6.mjs",
+      "digest": "sha256:9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d",
+      "owner": null
+    },
+    {
+      "package_id": "lenso.business-approval.d1",
+      "slot": "store",
+      "module": "facilities/owner_7.mjs",
+      "digest": "sha256:ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995",
+      "owner": null
+    }
+  ],
+  "mcp_authentication": "preissued-bearer",
+  "oauth_discovery": false,
+  "binding_count": 6,
+  "closed_module_count": 8,
+  "owner_setup_by_graph": false,
+  "receipts": {
+    "qualification-direct/journey.json": {
+      "path": "qualification-direct/journey.json",
+      "sha256": "901f1811e8cd2c57bfa6179e687398ace5f206875399a02ad701f2eada836bee"
+    },
+    "qualification-official2/official-mcp-lost-reply.json": {
+      "path": "qualification-official2/official-mcp-lost-reply.json",
+      "sha256": "a2d2195d1885ffb9e3c9b3b4ff86e8c3928eb3919486d0db455f3edfc52df663"
+    },
+    "redeploy-observed/official-mcp-restart-observed.json": {
+      "path": "redeploy-observed/official-mcp-restart-observed.json",
+      "sha256": "0ce76905b96a46de365a3c7b51cd6ea60ca02a23df14e7c0660793236aa0fc15"
+    },
+    "read-only/qualification/read-only.json": {
+      "path": "read-only/qualification/read-only.json",
+      "sha256": "7cf2b5b28934b1d78bd410c42505a20e958438968e68039760347d2c18549b83"
+    },
+    "auth-fault/qualification/auth-storage-unavailable.json": {
+      "path": "auth-fault/qualification/auth-storage-unavailable.json",
+      "sha256": "5c5ea9a75c656bb33553b8f0e2f0b44cfa4135aaf54a287d7ce36e74007993cf"
+    },
+    "credential-revocation/before.json": {
+      "path": "credential-revocation/before.json",
+      "sha256": "a81c6cd9ffe4ef87a2e47886e2e515dd1eba7150664f1caebb8d486f9de729bc"
+    },
+    "credential-revocation/after.json": {
+      "path": "credential-revocation/after.json",
+      "sha256": "8b210a3040c98173b3081a0feab98e40aad1ec4703474a8d6197046e22145068"
+    },
+    "credential-revocation/credential-aliases.json": {
+      "path": "credential-revocation/credential-aliases.json",
+      "sha256": "412920af3d34fe5ef8f61b782133560c398a9840bc43d1fb283b39bb8d1a4523"
+    },
+    "raw-approved-flag/raw-approved-flag.json": {
+      "path": "raw-approved-flag/raw-approved-flag.json",
+      "sha256": "7dc1240e200592e6b9366cc28c19237b05153cc606f04b06657361542434ca1a"
+    },
+    "cleanup.json": {
+      "path": "cleanup.json",
+      "sha256": "6b4239689099ba76480ff57eea400522817432709f19e32dad6df55e6dfc22d6"
+    },
+    "operator-private/audit-direct-verified-1.read.json": {
+      "private_path": "operator-private/audit-direct-verified-1.read.json",
+      "sha256": "f407d28073e47256598b1965099cb9477a84eaa1b551bf76c1dc58bccb49cb1b",
+      "owner_mutation": false
+    },
+    "operator-private/audit-mcp-verified-1.read.json": {
+      "private_path": "operator-private/audit-mcp-verified-1.read.json",
+      "sha256": "402e6da7debb651ec16c37047b96f2f18f574806bdd81d8e617eef9d7650c015",
+      "owner_mutation": false
+    }
+  },
+  "cases": {
+    "direct_guarded_journey": 13,
+    "official_client_mcp_journey": 9,
+    "lost_response_upstream_commit_calls": 1,
+    "target_replayed": false,
+    "same_artifact_redeploy": "passed",
+    "physical_process_restart": "not_asserted",
+    "read_only_without_approval": 5,
+    "auth_storage_fault": "503-before-kernel-ready-with-healthy-before-and-restored-controls",
+    "authentication_after_ready_storage_fault": "not_exercised",
+    "raw_approved_flag": "pending-without-write",
+    "live_credential_revocations": 1,
+    "cached_mcp_payload_after_revoke": 401,
+    "alice_direct_after_revoke": 401,
+    "bob_current_control": 200,
+    "business_state": {
+      "value": 49,
+      "revision": 2
+    },
+    "all_task_resources_absent": true
+  },
+  "latest_sdk35_source_candidate": "ed1cfec08808dd38e068148224256b663d31fd44",
+  "latest_sdk35_whole_graph_qualification": "separate-not-inferred-from-this-artifact",
+  "production_readiness": "not_asserted"
+}

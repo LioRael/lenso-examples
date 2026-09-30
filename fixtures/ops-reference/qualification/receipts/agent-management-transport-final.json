@@ -1,0 +1,137 @@
+{
+  "schema": "lenso.agent.management-fixture@1",
+  "host": "actual_embedded_agent_host",
+  "model": "fixture",
+  "real_model": "not_run",
+  "target_deployment": "alpha",
+  "fixture_model_loop": true,
+  "real_remote_child": false,
+  "auth_owner_issuance": "not_run_transport_fixture",
+  "selected_agent_instances": [
+    {
+      "instance": "fixture.management-task-surface/default",
+      "package_id": "fixture.management-task-surface",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.artifact.file/default",
+      "package_id": "lenso.agent.artifact.file",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.context-compaction/default",
+      "package_id": "lenso.agent.context-compaction",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.loop/default",
+      "package_id": "lenso.agent.loop",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.management-connection/default",
+      "package_id": "lenso.agent.management-connection",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.management-tools/default",
+      "package_id": "lenso.agent.management-tools",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.memory.sqlite/default",
+      "package_id": "lenso.agent.memory.sqlite",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.model.fixture/default",
+      "package_id": "lenso.agent.model.fixture",
+      "package_revision": "0.5.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.prompt.static/default",
+      "package_id": "lenso.agent.prompt.static",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.prompt/default",
+      "package_id": "lenso.agent.prompt",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.session.file/default",
+      "package_id": "lenso.agent.session.file",
+      "package_revision": "0.1.0",
+      "execution_class": "lenso.native-rust@1"
+    },
+    {
+      "instance": "lenso.agent.tools/default",
+      "package_id": "lenso.agent.tools",
+      "package_revision": "0.2.0",
+      "execution_class": "lenso.native-rust@1"
+    }
+  ],
+  "executable": "/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/target/debug/examples/management_task",
+  "executable_sha256": "b40313935165db37335175bcdb65108373007f42ae0a300a7a6d0514edb9c5dd",
+  "shutdown": "clean",
+  "vectors": [
+    {
+      "id": "bound_read",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "metadata_and_hidden_tool",
+      "passed": true,
+      "terminal": "failed"
+    },
+    {
+      "id": "target_and_approval_argument_rejected",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "server_pending_approval",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "unknown_queried_after_restart",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "unknown_never_replayed",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "uncertain_transport",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "unaccepted_write_has_no_replay_or_old_reference",
+      "passed": true,
+      "terminal": "succeeded"
+    },
+    {
+      "id": "current_remote_denial",
+      "passed": true
+    },
+    {
+      "id": "private_trajectory",
+      "passed": true
+    }
+  ]
+}

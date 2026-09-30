@@ -1,0 +1,260 @@
+{
+  "schema": "lenso.agent-primary-role-readonly-review.v1",
+  "source_revision_observed": "d1d0fd0c950f9a5c5575251d69d1db002d4ab6ef",
+  "source_clean_at_observation": true,
+  "analysis_file_sha256": "2a5fc2af21401ac99e9f6a9725c04da1da049716da20c07081a90d07b4d53be4",
+  "proof_layer": "read-only source and cached PRIMARY archive comparison",
+  "cargo_executed": false,
+  "registry_write": false,
+  "role_version_bump_required_by_review": false,
+  "normalized_source_archive_byte_identity_claimed": false,
+  "compatibility_consumer_status": "prepared, not run",
+  "claims": [
+    "wire Descriptor/schema/contract files remain equal",
+    "reuse PRIMARY registry archives by exact version and checksum",
+    "PRIMARY Kernel/Codec requirements are caret and permit current patch releases",
+    "PRIMARY build Codegen remains exactly 0.9.0",
+    "Source manifests and the two Copy derives differ; they are not byte-identical PRIMARY archives"
+  ],
+  "roles": [
+    {
+      "name": "lenso-capability-agent-tool-provider",
+      "version": "0.3.0",
+      "primary_archive_sha256": "3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/catalog-error.schema.json",
+        "schemas/catalog-request.schema.json",
+        "schemas/catalog-response.schema.json",
+        "schemas/execute-error.schema.json",
+        "schemas/execute-request.schema.json",
+        "schemas/execute-response.schema.json",
+        "src/contract.rs",
+        "src/lib.rs"
+      ],
+      "generated_files_differing": [
+        "src/generated.rs"
+      ],
+      "catalog_request": {
+        "primary_copy": false,
+        "source_copy": true,
+        "only_generated_change": "add Copy derive on the empty CatalogRequest"
+      }
+    },
+    {
+      "name": "lenso-capability-agent-extension-state",
+      "version": "0.1.0",
+      "primary_archive_sha256": "578108fa3fba0365752f5b27a31b3d4ef61a5c62c2b53cf2f138feb7eca603cc",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/append-error.schema.json",
+        "schemas/append-request.schema.json",
+        "schemas/append-response.schema.json",
+        "schemas/read-error.schema.json",
+        "schemas/read-request.schema.json",
+        "schemas/read-response.schema.json",
+        "src/contract.rs",
+        "src/generated.rs",
+        "src/lib.rs",
+        "src/runtime.rs"
+      ],
+      "generated_files_differing": [],
+      "catalog_request": null
+    },
+    {
+      "name": "lenso-capability-agent-model",
+      "version": "0.1.0",
+      "primary_archive_sha256": "14e6cfb28ffef7088cfd1ed44b170cd5d7c0b2d78498eaeb70c03f79f086bfd4",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/catalog-error.schema.json",
+        "schemas/catalog-request.schema.json",
+        "schemas/catalog-response.schema.json",
+        "schemas/complete-error.schema.json",
+        "schemas/complete-message.schema.json",
+        "schemas/complete-open.schema.json",
+        "src/contract.rs",
+        "src/lib.rs",
+        "src/turn_profile.rs"
+      ],
+      "generated_files_differing": [
+        "src/generated.rs"
+      ],
+      "catalog_request": {
+        "primary_copy": false,
+        "source_copy": true,
+        "only_generated_change": "add Copy derive on the empty CatalogRequest"
+      }
+    },
+    {
+      "name": "lenso-capability-agent-dynamic-authority",
+      "version": "0.1.0",
+      "primary_archive_sha256": "1449f0540b075e5daccb23422bc2e47d10a0cb4f61f9390c74dc5492df6e7ec6",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/revalidate-error.schema.json",
+        "schemas/revalidate-request.schema.json",
+        "schemas/revalidate-response.schema.json",
+        "schemas/select-error.schema.json",
+        "schemas/select-request.schema.json",
+        "schemas/select-response.schema.json",
+        "src/contract.rs",
+        "src/generated.rs",
+        "src/lib.rs",
+        "src/runtime.rs"
+      ],
+      "generated_files_differing": [],
+      "catalog_request": null
+    },
+    {
+      "name": "lenso-capability-agent-turn-processing",
+      "version": "0.1.0",
+      "primary_archive_sha256": "f397c86d54e5af1cfe9d4657ddc7a56130cb9317b6cd14f5858c513ac3076e5f",
+      "primary_registry_requirements": {
+        "dependencies/lenso-capability-agent-model": "0.1.0",
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/project-model-request-error.schema.json",
+        "schemas/project-model-request-request.schema.json",
+        "schemas/project-model-request-response.schema.json",
+        "schemas/project-tool-result-error.schema.json",
+        "schemas/project-tool-result-request.schema.json",
+        "schemas/project-tool-result-response.schema.json",
+        "schemas/transform-tool-call-error.schema.json",
+        "schemas/transform-tool-call-request.schema.json",
+        "schemas/transform-tool-call-response.schema.json",
+        "src/contract.rs",
+        "src/generated.rs",
+        "src/lib.rs",
+        "src/runtime.rs"
+      ],
+      "generated_files_differing": [],
+      "catalog_request": null
+    },
+    {
+      "name": "lenso-capability-agent-interaction",
+      "version": "0.1.0",
+      "primary_archive_sha256": "49faaf45f4fece2897158b18845d9751c8953db5141917e05a23c0f207df49b9",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/connect-error.schema.json",
+        "schemas/connect-message.schema.json",
+        "schemas/connect-open.schema.json",
+        "src/contract.rs",
+        "src/generated.rs",
+        "src/lib.rs",
+        "src/runtime.rs"
+      ],
+      "generated_files_differing": [],
+      "catalog_request": null
+    },
+    {
+      "name": "lenso-capability-agent-durable-task",
+      "version": "0.1.0",
+      "primary_archive_sha256": "90f6225f8b830d227b742c39e2810552389a895ea6c18667d1bf855a3ffead1f",
+      "primary_registry_requirements": {
+        "dependencies/lenso-contract-authoring": "0.1.1",
+        "dependencies/lenso-contract-runtime": "0.2.0",
+        "dependencies/lenso-guest-sdk": "0.5.0",
+        "dependencies/lenso-kernel": "0.3.5",
+        "dependencies/lenso-plugin-authoring": "0.2.0",
+        "dependencies/lenso-runtime-codec": "0.4.1",
+        "build-dependencies/lenso-contract-authoring": "0.1.1",
+        "build-dependencies/lenso-contract-codegen": "=0.9.0"
+      },
+      "equal_descriptor_schema_contract_files": [
+        "build.rs",
+        "capability.json",
+        "schemas/cancel-error.schema.json",
+        "schemas/cancel-request.schema.json",
+        "schemas/cancel-response.schema.json",
+        "schemas/observe-error.schema.json",
+        "schemas/observe-request.schema.json",
+        "schemas/observe-response.schema.json",
+        "schemas/recover-error.schema.json",
+        "schemas/recover-request.schema.json",
+        "schemas/recover-response.schema.json",
+        "schemas/signal-error.schema.json",
+        "schemas/signal-request.schema.json",
+        "schemas/signal-response.schema.json",
+        "schemas/start-error.schema.json",
+        "schemas/start-request.schema.json",
+        "schemas/start-response.schema.json",
+        "schemas/wait-error.schema.json",
+        "schemas/wait-message.schema.json",
+        "schemas/wait-open.schema.json",
+        "src/contract.rs",
+        "src/generated.rs",
+        "src/lib.rs",
+        "src/runtime.rs"
+      ],
+      "generated_files_differing": [],
+      "catalog_request": null
+    }
+  ]
+}

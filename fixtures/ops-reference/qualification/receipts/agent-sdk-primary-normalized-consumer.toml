@@ -1,0 +1,25 @@
+[package]
+name = "lenso-agent-sdk-primary-normalized-consumer"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+lenso-agent-tool-sdk = { version = "=0.4.0", path = "/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/extracted/lenso-agent-tool-sdk-0.4.0" }
+lenso = "=0.5.28"
+lenso-kernel = "=0.3.12"
+lenso-runtime-codec = "=0.4.4"
+futures = "0.3"
+schemars = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+lenso-capability-agent-tool-provider = "=0.3.0"
+lenso-capability-agent-extension-state = "=0.1.0"
+lenso-capability-agent-model = "=0.1.0"
+lenso-capability-agent-dynamic-authority = "=0.1.0"
+lenso-capability-agent-turn-processing = "=0.1.0"
+lenso-capability-agent-interaction = "=0.1.0"
+lenso-capability-agent-durable-task = "=0.1.0"
+
+[package.metadata.lenso]
+plugin-id = "lenso.agent.tool-sdk.fixture"
+root-slot = "tool-providers"

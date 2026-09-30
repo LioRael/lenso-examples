@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "layer": "supplemental-owner-operator",
+  "ordinary_source_app": false,
+  "owner": "audit",
+  "operation": "verify_operation",
+  "request_sha256": "a1a292b19ac26182487309ba67b79d65c9f9be29d706a636dc524fdb5e85271d",
+  "state": "completed",
+  "result": {
+    "schema": "lenso.ops-workers-audit-proof.v1",
+    "status": "passed",
+    "proof_layer": "supplemental_owner_kernel_reader",
+    "operation_id": "d9aef37e572e6433dde7d0918dbd914292cbea4f5b5c1dcd9e297ee6f3b1d75f",
+    "deployment": "ops-workers-management-9ee3d8542048",
+    "source_instance": "example.ops-management/default",
+    "event_count": 6,
+    "actions": [
+      "management.attempt",
+      "management.completed",
+      "management.dispatch",
+      "management.human_attempt",
+      "management.human_decided"
+    ],
+    "additional_requester_attempts_verified": 1,
+    "requester_and_decider_verified": true,
+    "actors_distinct": true,
+    "intent_digest_consistent": true,
+    "exact_response_receipt_verified": true,
+    "domain_value_revision_verified": false,
+    "append_invoked": false,
+    "metadata_and_actor_identifiers_redacted": true,
+    "audit_owner_source": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "inspection_boundary": "Separate fixed, deployment-scoped Kernel reader; actual Owner typed list port; no setup, append or SQL. Opaque receipt compared with supplied actual ordinary-App response.",
+    "shutdown": "clean"
+  },
+  "secret_saved": false
+}

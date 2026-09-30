@@ -1,0 +1,17 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-worker-graph",
+  "infrastructure": "cloudflare-workers",
+  "fault": "isolated-uninitialized-auth-binding",
+  "result": "503-host-unavailable-before-kernel-ready",
+  "credential_denial": "healthy-401-without-evidence-before-and-after",
+  "authentication_after_ready_fault": "not_exercised",
+  "original_alice_and_bob_live": true,
+  "owner_setup": "not_performed",
+  "business_state_unchanged": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "no_store": true
+}

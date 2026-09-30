@@ -1,0 +1,10 @@
+{
+  "owned_pid": 96492,
+  "owned_command": "check-emitted-bun-sdk-local-registry.py",
+  "port": 55383,
+  "signal": "SIGTERM",
+  "listener_absent": true,
+  "http_unreachable": true,
+  "proof_and_cache_preserved": true,
+  "other_previews_touched": false
+}

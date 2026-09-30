@@ -1,0 +1,23 @@
+[package]
+name = "lenso-ops-reference-human-bootstrap"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[package.metadata.lenso]
+plugin-id = "example.ops-human-bootstrap"
+root-slot = "human-bootstrap"
+[package.metadata.lenso.host-facilities.bootstrap]
+native = "host_facilities::bootstrap"
+[dependencies]
+lenso = "=0.5.28"
+lenso-native-adapter = "=0.3.19"
+lenso-auth-sdk = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-password-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-capability-credential-issuer = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+lenso-management-authority = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-access-control-admin = { git = "https://github.com/LioRael/lenso-access-control-plugin", rev = "5485066ae3e99191862701f753b3ae186755ee80" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+[lints.rust]
+unsafe_code = "forbid"

@@ -1,0 +1,84 @@
+{
+  "schema": "lenso.qualification.portable-receipt-index.v1",
+  "artifact_receipt": "workers-management-remote-artifact-qualification.json",
+  "byte_identical_copies": true,
+  "original_receipt_paths_retained": true,
+  "new_owner_calls": 0,
+  "aliases": [
+    {
+      "original_relative_path": "cleanup.json",
+      "portable_relative_path": "workers-management-remote-cleanup.json",
+      "sha256": "6b4239689099ba76480ff57eea400522817432709f19e32dad6df55e6dfc22d6"
+    },
+    {
+      "original_relative_path": "artifact-qualification.json",
+      "portable_relative_path": "workers-management-remote-artifact-qualification.json",
+      "sha256": "7ddfed9693dcf4ae414b381e26b28a39355696e1c6a5114b47c6f53820a63fc4"
+    },
+    {
+      "original_relative_path": "source-snapshot.json",
+      "portable_relative_path": "workers-management-remote-source-snapshot.json",
+      "sha256": "f92e8ca4af25d5747a003e85237a863474d241600ebcb7ac271947ac71e50743"
+    },
+    {
+      "original_relative_path": "distribution/workers-build.json",
+      "portable_relative_path": "workers-management-remote-workers-build.json",
+      "sha256": "368ec6dd7336b64d9036b143e9bea714f5de4e91ac01645915adea59c3ca4be4"
+    },
+    {
+      "original_relative_path": "qualification-direct/journey.json",
+      "portable_relative_path": "workers-management-remote-journey.json",
+      "sha256": "901f1811e8cd2c57bfa6179e687398ace5f206875399a02ad701f2eada836bee"
+    },
+    {
+      "original_relative_path": "qualification-official2/official-mcp-lost-reply.json",
+      "portable_relative_path": "workers-management-remote-mcp-write.json",
+      "sha256": "a2d2195d1885ffb9e3c9b3b4ff86e8c3928eb3919486d0db455f3edfc52df663"
+    },
+    {
+      "original_relative_path": "redeploy-observed/official-mcp-restart-observed.json",
+      "portable_relative_path": "workers-management-remote-redeploy-observed.json",
+      "sha256": "0ce76905b96a46de365a3c7b51cd6ea60ca02a23df14e7c0660793236aa0fc15"
+    },
+    {
+      "original_relative_path": "read-only/qualification/read-only.json",
+      "portable_relative_path": "workers-management-remote-read-only.json",
+      "sha256": "7cf2b5b28934b1d78bd410c42505a20e958438968e68039760347d2c18549b83"
+    },
+    {
+      "original_relative_path": "auth-fault/qualification/auth-storage-unavailable.json",
+      "portable_relative_path": "workers-management-remote-auth-storage-fault.json",
+      "sha256": "5c5ea9a75c656bb33553b8f0e2f0b44cfa4135aaf54a287d7ce36e74007993cf"
+    },
+    {
+      "original_relative_path": "credential-revocation/before.json",
+      "portable_relative_path": "workers-management-remote-revocation-before.json",
+      "sha256": "a81c6cd9ffe4ef87a2e47886e2e515dd1eba7150664f1caebb8d486f9de729bc"
+    },
+    {
+      "original_relative_path": "credential-revocation/after.json",
+      "portable_relative_path": "workers-management-remote-revocation-after.json",
+      "sha256": "8b210a3040c98173b3081a0feab98e40aad1ec4703474a8d6197046e22145068"
+    },
+    {
+      "original_relative_path": "credential-revocation/credential-aliases.json",
+      "portable_relative_path": "workers-management-remote-credential-aliases.json",
+      "sha256": "412920af3d34fe5ef8f61b782133560c398a9840bc43d1fb283b39bb8d1a4523"
+    },
+    {
+      "original_relative_path": "raw-approved-flag/raw-approved-flag.json",
+      "portable_relative_path": "workers-management-remote-approved-flag.json",
+      "sha256": "7dc1240e200592e6b9366cc28c19237b05153cc606f04b06657361542434ca1a"
+    },
+    {
+      "original_relative_path": "operator-private/audit-direct-verified-1.read.json",
+      "portable_relative_path": "workers-management-remote-direct-owner-audit.json",
+      "sha256": "f407d28073e47256598b1965099cb9477a84eaa1b551bf76c1dc58bccb49cb1b"
+    },
+    {
+      "original_relative_path": "operator-private/audit-mcp-verified-1.read.json",
+      "portable_relative_path": "workers-management-remote-mcp-owner-audit.json",
+      "sha256": "402e6da7debb651ec16c37047b96f2f18f574806bdd81d8e617eef9d7650c015"
+    }
+  ]
+}

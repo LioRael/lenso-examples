@@ -1,0 +1,50 @@
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	﻿2026-09-30T06:21:15.0530542Z ##[group]Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0531524Z ^[[36;1mcargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin^[[0m
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0593954Z shell: /usr/bin/bash -e {0}
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0594224Z env:
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0594434Z   CARGO_HOME: /home/runner/.cargo
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0594711Z   CARGO_INCREMENTAL: 0
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0594948Z   CARGO_TERM_COLOR: always
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0595189Z   CACHE_ON_FAILURE: false
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0595491Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.0595819Z ##[endgroup]
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1503553Z ^[[1m^[[33mwarning^[[0m: patch `lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=f670422953b42cc33b83a9b8cde9a4c74e9f6ceb#f6704229)` was not used in the crate graph
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1505485Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1506346Z       with the dependency requirements. If the patch has a different version from
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1507033Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1507710Z       version. This may also occur with an optional dependency that is not enabled.
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1649257Z ^[[1m^[[92m   Packaging^[[0m lenso-access-control-core v0.1.1 (/home/runner/work/lenso-access-control-plugin/lenso-access-control-plugin/crates/lenso-access-control-core)
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.1692639Z ^[[1m^[[92m    Updating^[[0m crates.io index
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2455696Z ^[[1m^[[91merror^[[0m: failed to prepare local package for uploading
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2456110Z 
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2456231Z Caused by:
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2456654Z   failed to select a version for the requirement `lenso = "=0.5.28"`
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2457294Z   candidate versions found which didn't match: 0.5.27, 0.5.25, 0.5.23, ...
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2457849Z   location searched: crates.io index
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2458879Z   required by package `lenso-access-control-core v0.1.1 (/home/runner/work/lenso-access-control-plugin/lenso-access-control-plugin/crates/lenso-access-control-core)`
+workers	Run cargo package --locked --target wasm32-unknown-unknown -p lenso-access-control-core -p lenso-access-control-d1-plugin	2026-09-30T06:21:15.2503053Z ##[error]Process completed with exit code 101.
+quality	Verify the coordinated package release	﻿2026-09-30T06:22:39.8058877Z ##[group]Run cargo package --locked -p lenso-access-control-core -p lenso-access-control-postgres-plugin -p lenso-access-control-d1-plugin
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8059900Z ^[[36;1mcargo package --locked -p lenso-access-control-core -p lenso-access-control-postgres-plugin -p lenso-access-control-d1-plugin^[[0m
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8096262Z shell: /usr/bin/bash -e {0}
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8096530Z env:
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8097150Z   LENSO_ACCESS_CONTROL_TEST_DATABASE_URL: postgres://postgres@127.0.0.1:5432/lenso_access_control_test
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8097633Z   CARGO_HOME: /home/runner/.cargo
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8097881Z   CARGO_INCREMENTAL: 0
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8098103Z   CARGO_TERM_COLOR: always
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8098326Z   CACHE_ON_FAILURE: false
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8098546Z ##[endgroup]
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8862027Z ^[[1m^[[33mwarning^[[0m: patch `lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=f670422953b42cc33b83a9b8cde9a4c74e9f6ceb#f6704229)` was not used in the crate graph
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8864006Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8865182Z       with the dependency requirements. If the patch has a different version from
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8866175Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Verify the coordinated package release	2026-09-30T06:22:39.8866743Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Verify the coordinated package release	2026-09-30T06:22:39.9006551Z ^[[1m^[[92m   Packaging^[[0m lenso-access-control-core v0.1.1 (/home/runner/work/lenso-access-control-plugin/lenso-access-control-plugin/crates/lenso-access-control-core)
+quality	Verify the coordinated package release	2026-09-30T06:22:39.9054251Z ^[[1m^[[92m    Updating^[[0m crates.io index
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0377353Z ^[[1m^[[91merror^[[0m: failed to prepare local package for uploading
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0378037Z 
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0378209Z Caused by:
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0378744Z   failed to select a version for the requirement `lenso = "=0.5.28"`
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0379269Z   candidate versions found which didn't match: 0.5.27, 0.5.25, 0.5.23, ...
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0379748Z   location searched: crates.io index
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0380579Z   required by package `lenso-access-control-core v0.1.1 (/home/runner/work/lenso-access-control-plugin/lenso-access-control-plugin/crates/lenso-access-control-core)`
+quality	Verify the coordinated package release	2026-09-30T06:22:40.0414122Z ##[error]Process completed with exit code 101.

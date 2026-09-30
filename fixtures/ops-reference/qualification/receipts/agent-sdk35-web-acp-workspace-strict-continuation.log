@@ -1,0 +1,119 @@
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Checking lenso-agent-acp v0.1.13 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-acp)
+    Checking lenso-capability-agent-durable-task v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-durable-task)
+    Checking lenso-capability-agent-extension-state v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-extension-state)
+    Checking lenso-capability-agent-interaction v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-interaction)
+    Checking lenso-agent-tui v0.1.13 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-tui)
+    Checking lenso-agent-dialogue v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-dialogue)
+    Checking lenso-agent-web v0.1.13 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-web)
+    Checking lenso-agent-cli v0.1.13 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-cli)
+    Checking lenso-agent-channel v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/apps/lenso-agent-channel)
+    Checking lenso-agent-session-terminal-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-session-terminal-plugin)
+    Checking lenso-agent-code-mode-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-code-mode-tools-plugin)
+    Checking lenso-agent-business-connection-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-business-connection-plugin)
+    Checking lenso-agent-worktree-provider-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-worktree-provider-plugin)
+    Checking lenso-agent-model-openai-codex-direct-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-model-openai-codex-direct-plugin)
+    Checking lenso-agent-auth-openai-codex-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-auth-openai-codex-plugin)
+    Checking lenso-agent-tool-sdk v0.4.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-tool-sdk)
+    Checking lenso-agent-text-tools-plugin v0.2.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-text-tools-plugin)
+    Checking lenso-capability-agent-plugin-selection-authority v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-plugin-selection)
+    Checking lenso-capability-agent-plugin-configuration-authority v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-plugin-configuration)
+    Checking lenso-agent-model-openai-compatible-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-model-openai-compatible-plugin)
+    Checking lenso-agent-multimodal-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-multimodal-tools-plugin)
+    Checking lenso-agent-console-app-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-console-app-tools-plugin)
+    Checking lenso-terminal-tui-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-terminal-tui-plugin)
+    Checking lenso-agent-tui-static-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-tui-static-plugin)
+    Checking lenso-agent-http-fetch-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-http-fetch-plugin)
+    Checking lenso-agent-workspace-read-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-workspace-read-tools-plugin)
+    Checking lenso-agent-workspace-import-read-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-workspace-import-read-plugin)
+    Checking lenso-capability-agent-tool-target v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-tool-target)
+    Checking lenso-capability-agent-plugin-management-target v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-plugin-management-target)
+    Checking lenso-agent-tools-plugin v0.2.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-tools-plugin)
+    Checking lenso-agent-process-tools-plugin v0.2.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-process-tools-plugin)
+    Checking lenso-agent-github-workflows-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-github-workflows-plugin)
+    Checking lenso-agent-browser-playwright-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-browser-playwright-plugin)
+    Checking lenso-agent-git-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-git-tools-plugin)
+    Checking lenso-agent-process-sandbox-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-process-sandbox-plugin)
+    Checking lenso-agent-process-native-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-process-native-plugin)
+    Checking lenso-agent-tui-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-tui-plugin)
+    Checking lenso-agent-web-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-web-plugin)
+    Checking lenso-agent-skills-filesystem-plugin v0.2.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-skills-filesystem-plugin)
+    Checking lenso-terminal-web-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-terminal-web-plugin)
+    Checking lenso-agent-tui-workspace-suggestions-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-tui-workspace-suggestions-plugin)
+    Checking lenso-agent-oauth-client-credentials-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-oauth-client-credentials-plugin)
+    Checking lenso-agent-mcp-client-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-mcp-client-plugin)
+    Checking lenso-capability-agent-dynamic-authority v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-dynamic-authority)
+    Checking lenso-agent-session-sqlite-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-session-sqlite-plugin)
+    Checking lenso-agent-memory-sqlite-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-memory-sqlite-plugin)
+    Checking lenso-capability-agent-oauth-access v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-oauth-access)
+    Checking lenso-agent-prompt-filesystem-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-prompt-filesystem-plugin)
+    Checking lenso-agent-prompt-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-prompt-plugin)
+    Checking lenso-agent-session-file-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-session-file-plugin)
+    Checking lenso-capability-agent-turn-processing v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-turn-processing)
+    Checking lenso-agent-session-presentation-model-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-session-presentation-model-plugin)
+    Checking lenso-agent-lifecycle-audit-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-lifecycle-audit-plugin)
+    Checking lenso-agent-lifecycle-command-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-lifecycle-command-plugin)
+    Checking lenso-agent-session-presentation-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-session-presentation-plugin)
+    Checking lenso-agent-context-compaction-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-context-compaction-plugin)
+    Checking lenso-agent-artifact-file-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-artifact-file-plugin)
+    Checking lenso-agent-context-compaction-command-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-context-compaction-command-plugin)
+    Checking lenso-capability-agent-turn-input v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-turn-input)
+    Checking lenso-agent-memory-command-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-memory-command-plugin)
+    Checking lenso-capability-agent-turn-binding v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-turn-binding)
+    Checking lenso-capability-agent-auth-connection v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-auth-connection)
+    Checking lenso-capability-agent-session-control v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-session-control)
+    Checking lenso-capability-agent-memory v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-memory)
+    Checking lenso-agent-interactive-approval-hook-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-interactive-approval-hook-plugin)
+    Checking lenso-capability-agent-artifact v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-artifact)
+    Checking lenso-capability-agent-context-compaction v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-context-compaction)
+    Checking lenso-capability-agent-session-presentation v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-session-presentation)
+    Checking lenso-agent-approval-hook-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-approval-hook-plugin)
+    Checking lenso-agent-cli-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-cli-plugin)
+    Checking lenso-agent-user-interaction-local-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-user-interaction-local-plugin)
+    Checking lenso-agent-ask-user-tools-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-ask-user-tools-plugin)
+    Checking lenso-agent-workspace-instructions-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-workspace-instructions-plugin)
+    Checking lenso-agent-console-instructions-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-console-instructions-plugin)
+    Checking lenso-capability-agent-user-interaction v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-user-interaction)
+    Checking lenso-agent-prompt-static-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-prompt-static-plugin)
+    Checking lenso-agent-telegram-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-telegram-plugin)
+    Checking lenso-agent-discord-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-discord-plugin)
+    Checking lenso-agent-model-selection-plugin v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-model-selection-plugin)
+    Checking lenso-capability-agent v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent)
+    Checking lenso-agent-workspace-read-plugin v0.2.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-workspace-read-plugin)
+    Checking lenso-capability-agent-model-selection v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-model-selection)
+    Checking lenso-agent-model-fixture-plugin v0.5.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-model-fixture-plugin)
+    Checking lenso-agent-workspace-edit-plugin v0.3.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-workspace-edit-plugin)
+    Checking lenso-capability-agent-model v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-model)
+    Checking lenso-agent-management-log-fixture v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-management-connection-plugin/examples/third-party-log-plugin)
+    Checking lenso-capability-agent-tools v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-capability-agent-tools)
+    Checking lenso-agent-native-support v0.1.0 (/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management/crates/lenso-agent-native-support)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.71s
+mbx[cache]: 0 hits, 2 misses, 112 not looked up; 0 B downloaded, 0 B uploaded, 15.6 MiB stored locally
+mbx[savings]: swept up 380.2 GiB logical so far. the broom is content-addressed.

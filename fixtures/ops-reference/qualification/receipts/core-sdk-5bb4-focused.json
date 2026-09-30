@@ -1,0 +1,34 @@
+{
+  "schema": "lenso.core-source-focused-validation.v1",
+  "revision": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "commands": [
+    {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test --locked -p lenso-engine-app plugin_scaffold",
+      "passed": 4
+    },
+    {
+      "command": "cargo test --locked -p lenso-engine-app multi_scaffold",
+      "passed": 1
+    },
+    {
+      "command": "cargo test --locked -p lenso-engine-app generated_host_lock_allows_current_legacy_codec_pair",
+      "passed": 1
+    },
+    {
+      "command": "cargo test --locked -p lenso-engine-app adopted_terminal_rust_sdk",
+      "passed": 1
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-engine-app -p lenso-cli --all-targets -- -D warnings",
+      "status": "passed"
+    }
+  ],
+  "passed_tests": 7,
+  "exit_code": 0,
+  "log": "core-sdk-5bb4-focused.log",
+  "registry_publication": false
+}

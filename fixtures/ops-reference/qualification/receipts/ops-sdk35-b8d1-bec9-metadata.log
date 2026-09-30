@@ -1,0 +1,409 @@
+    Blocking waiting for file lock on package cache
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 14 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-capability-http-endpoint-macros v0.1.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+RESOLVED project
+    Blocking waiting for file lock on package cache
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 13 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+RESOLVED project/app/state
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+    Updating git repository `https://github.com/LioRael/lenso-agent`
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 20 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-agent-management-tools-plugin v0.1.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-capability-agent v0.1.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-capability-agent-model v0.1.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-capability-agent-model-selection v0.1.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-capability-agent-tool-provider v0.3.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-capability-agent-tools v0.1.0 (https://github.com/LioRael/lenso-agent?rev=bec995997fffc4ae04e7b88c31a7156251812d24#bec99599)
+      Adding lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-capability-http-endpoint-macros v0.1.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+    Blocking waiting for file lock on package cache
+RESOLVED project/app/management
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 9 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+RESOLVED project/contracts/example.ops-state
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 9 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+    Blocking waiting for file lock on package cache
+RESOLVED project/contracts/example.ops-state-v2
+RESOLVED storage/native-pg
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 12 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+    Blocking waiting for file lock on package cache
+RESOLVED operator
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 9 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+RESOLVED audit-reader
+    Updating git repository `https://github.com/LioRael/lenso`
+    Updating crates.io index
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-bun-adapter v0.1.17 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-cli v0.6.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-dylib-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-authoring v0.2.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-guest-sdk v0.5.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-bundle v0.6.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-plugin-control-plane v0.4.26 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-process-adapter v0.3.15 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-quickjs-adapter v0.2.11 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-remote-adapter v0.1.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-runner v0.2.20 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-wasm-component-adapter v0.2.18 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+     Locking 12 packages to latest Rust 1.98.1 compatible versions
+      Adding lenso v0.5.28 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-app-plan v0.4.6 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-authoring-macros v0.1.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-contract-runtime v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-kernel v0.3.12 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter v0.3.19 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-native-adapter-macros v0.2.8 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-plugin-authoring v0.2.0 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-runtime-codec v0.4.4 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+      Adding lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d7)
+RESOLVED workers-management/operator

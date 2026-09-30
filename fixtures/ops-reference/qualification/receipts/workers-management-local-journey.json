@@ -1,0 +1,42 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-worker-graph",
+  "infrastructure": "local-workerd",
+  "deployment": "ops-workers-management-9ee3d8542048",
+  "operation_id": "846d06550f7d45fd370be9e06e2172ccc78d4575e0d6e13d25abbb32e4302cc6",
+  "intent_digest": "67f43f6b90c640dab19eca6e46d1795ead9e8f174c0c25396c4b6abe180bcdf0",
+  "request": {
+    "entry_id": "state.update",
+    "version": "2.0.0",
+    "input_json": "{\"value\":47}",
+    "expected_revision": "0",
+    "idempotency_key": "workers-reviewed-9ee3d8542048wire2"
+  },
+  "committed": {
+    "audit_pending": false,
+    "operation_id": "846d06550f7d45fd370be9e06e2172ccc78d4575e0d6e13d25abbb32e4302cc6",
+    "receipt": "primary-state:1:f81e683c306cb57627d689a2c1e7b532ea03571e7a956fd28643bdf25974b028",
+    "result_json": "{\"label\":\"primary-state\",\"receipt_id\":\"primary-state:1:f81e683c306cb57627d689a2c1e7b532ea03571e7a956fd28643bdf25974b028\",\"revision\":1,\"value\":47}",
+    "state": "succeeded"
+  },
+  "final_business_state": {
+    "label": "primary-state",
+    "value": 47,
+    "revision": 1
+  },
+  "cases": [
+    "fresh_bearer_authentication",
+    "current_catalog",
+    "typed_read",
+    "expected_subject_predispatch_denial",
+    "immutable_pending_without_target_write",
+    "self_approval_denied",
+    "real_machine_actor_approval_denied",
+    "wrong_intent_denied",
+    "distinct_human_approved",
+    "original_operation_commit",
+    "durable_status_exact_receipt",
+    "secret_free_http_no_store",
+    "wrong_deployment_hidden_catalog_and_write_status_denied"
+  ]
+}

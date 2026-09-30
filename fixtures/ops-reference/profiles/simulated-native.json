@@ -1,0 +1,7 @@
+{
+  "schema": "lenso.host-facilities.v1",
+  "instances": {
+    "example.ops-state/primary": { "state": { "profile": "simulated" } },
+    "example.ops-state/secondary": { "state": { "profile": "simulated" } }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "lenso.ops-state-test-simulator-qualification.v1",
+  "core_revision": "1dbc6b441ccc5571e2349ab4ae6e23a072a9093e",
+  "target": "native_test_simulator",
+  "real_database": false,
+  "tests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "cases": [
+    "real_kernel_named_bindings",
+    "single_contender_commit",
+    "invalid_input_denied",
+    "durable_owner_receipt_across_generation",
+    "retired_handle_rejected",
+    "clean_shutdown"
+  ],
+  "strict_clippy": "passed",
+  "source_sha256": {
+    "src/host_facilities.rs": "106057e502b28a667c51fa3b6c46b76b2d1ab12aeef6552e083427c8460809c6",
+    "src/lib.rs": "19c7c28e448b49c9bd0fc0811bc0c06735d363e5b07cdc4b0c53406fe76f7357",
+    "src/simulated_tests.rs": "608ea340cd44023a1ec5c881bc993902713e8307d13831f9eed4954740203c00"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "source_tree": "immutable copied ordinary mcp-preissued/project",
+  "console_sha": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+  "runtime_core_sha": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "builder_sha": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+  "owners": {
+    "auth": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+    "acl": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+    "audit": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+    "approval": "3346ce45beacdb74918666c045c802d31da585f6"
+  },
+  "locks": [
+    {
+      "path": "project/Cargo.lock",
+      "sha256": "0fe723098570488af09d0439a7c5f8ec371d44a5f01c771189978c1eac4d2b89"
+    },
+    {
+      "path": "project/app/management/Cargo.lock",
+      "sha256": "6a6139209cb86271ac9e90d46e520dd1e55a14feffa08f573d0d3b0f5ec0d0c5"
+    },
+    {
+      "path": "project/app/state/Cargo.lock",
+      "sha256": "1860fc1b19c9332f32a25dcdd0db00ff81bf9680fc3c2fed4551de7ae8d969dc"
+    },
+    {
+      "path": "project/contracts/example.ops-state/Cargo.lock",
+      "sha256": "80788f5aa0612ba966a3ae1bbfdb92289c3eec6743714d79094e5475bbc65e44"
+    },
+    {
+      "path": "project/contracts/example.ops-state-v2/Cargo.lock",
+      "sha256": "d3a3b6ea1c21dd8a5aa29d2d956dbe258a81a33845ad72adb39b43d085d55fe8"
+    }
+  ],
+  "configuration": "awaiting actual remote Owner derived publickey",
+  "remote_build": "not_run"
+}

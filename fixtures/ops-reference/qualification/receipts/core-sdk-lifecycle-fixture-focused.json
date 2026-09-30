@@ -1,0 +1,14 @@
+{
+  "schema": "lenso.source-focused-validation.v1",
+  "revision": "b8d134d739698812a039a79633719e14947df1e3",
+  "command": "cargo test --locked -p lenso-cli real_process_host_recovers_missing_file_source_and_activates_new_revision; cargo clippy --locked -p lenso-cli --all-targets -- -D warnings",
+  "status": "passed",
+  "exit_code": 0,
+  "log_sha256": "0944fab11df5fb8f9b4e997daa7f8b36dc342c037538e0fe3d568ae8ecab5ce2",
+  "publication_performed": false,
+  "parent_revision": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "validation_before_commit_same_frozen_source": true,
+  "passed_tests": 1,
+  "fixture_sdk_selection": "=0.3.3 published only for Source lifecycle test",
+  "production_emitted_sdk_selection": "0.4.0 unchanged"
+}

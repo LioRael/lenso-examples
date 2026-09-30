@@ -1,0 +1,16 @@
+{
+  "schema": "lenso.ops-management-source-check.v1",
+  "core_revision": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "agent_revision": "805947813f15dea43462543c1864de8bbc0bc165",
+  "console_revision": "ed1cfec08808dd38e068148224256b663d31fd44",
+  "command": "cargo check --locked --manifest-path fixtures/ops-reference/project/app/management/Cargo.toml --workspace --all-targets",
+  "exit_code": 0,
+  "qualification_layer": "Native source compilation",
+  "registry_only": false,
+  "owner_setup": false,
+  "runtime_executed": false,
+  "remote_profile_qualified": false,
+  "log": "ops-sdk35-final-native-management-check.log",
+  "log_sha256": "e9ae4e3c3eeffb1367d849ac8d5b107bc573332156c76fe512db40083e58c99c",
+  "resolution_receipt": "ops-sdk35-final-metadata.json"
+}

@@ -1,0 +1,30 @@
+{
+  "repository": "https://github.com/LioRael/lenso-agent",
+  "base": "7147d922cc95d19ea22bee2daf067ee9d0acd7e2",
+  "candidate": "cdcb659e34092404fceeda41ef8a20457302e117",
+  "candidate_ref": "codex/verify/lenso-agent/final-console-cohort-20260930",
+  "console_role_source": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+  "required_checks": [
+    {
+      "name": "quality",
+      "run": "https://github.com/LioRael/lenso-agent/actions/runs/36654140436",
+      "conclusion": "success",
+      "head_sha": "cdcb659e34092404fceeda41ef8a20457302e117"
+    },
+    {
+      "name": "SDK Consumer Qualification",
+      "run": "https://github.com/LioRael/lenso-agent/actions/runs/36654140435",
+      "conclusion": "success",
+      "head_sha": "cdcb659e34092404fceeda41ef8a20457302e117"
+    }
+  ],
+  "landing": {
+    "method": "normal_fast_forward_push",
+    "destination": "main",
+    "remote_readback": "cdcb659e34092404fceeda41ef8a20457302e117",
+    "no_merge_commits": true
+  },
+  "publication": "not_run",
+  "production_deployment": "not_run",
+  "ordinary_source_owner_joint_qualification": "pending"
+}

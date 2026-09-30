@@ -1,0 +1,31 @@
+{
+  "schema": "lenso.agent-primary-consumer-metadata-continuation.v1",
+  "original_receipt_sha256": "b3cf75d4570606e36b48713e316db88f753ffb296dda43b79db52e7dba415396",
+  "original_log_sha256": "6d02b681e6914ffba51bfc5993e500def179175a9313ea2cf230ac4e0e911628",
+  "source_snapshot_sha256": "37b44908801d7b88c2c9a35ad2d794b5f664d1ccc8f65c92f4444085e9aedbe2",
+  "original_lock_sha256": "bba843c98eaf40fdc48b11c07a4dc51d877f4cea6b0e42b7c237543cfad48fb6",
+  "original_manifest_sha256": "511f3c45cc00cd4719843d27130b833ba038fb5274e22b681b4f788ff99a0c47",
+  "test_source_sha256": "d216b7b1a606135bc31a15907e1d036ac31cd7e802b16b325d7949eebed5ac60",
+  "core_config_sha256": "0b787f5aca949e4efa590f9fdd808e9a036f69cef0ad138a8c3d9515fe70beae",
+  "package_metadata_from_source_sdk": {
+    "plugin-id": "lenso.agent.tool-sdk.fixture",
+    "root-slot": "tool-providers"
+  },
+  "archives": [
+    {
+      "name": "lenso-agent-tool-sdk-macros",
+      "version": "0.4.0",
+      "sha256": "7de37e331bf9e1802f5087f4f68b6d38fb2eada3e9f26a17d581628b200f9c06"
+    },
+    {
+      "name": "lenso-agent-tool-sdk",
+      "version": "0.4.0",
+      "sha256": "c4dc177a0e09b1f8b433efa687453dce787a64dc695ade155a5797e19c1ae635"
+    }
+  ],
+  "no_repackage": true,
+  "no_role_patch": true,
+  "no_publication": true,
+  "source_revision": "d1d0fd0c950f9a5c5575251d69d1db002d4ab6ef",
+  "core_source": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "choices": [
+    {
+      "consumer": { "plugin_id": "example.ops-web", "instance_key": "default" },
+      "requirement_id": "cache",
+      "provider": null
+    },
+    {
+      "consumer": { "plugin_id": "example.ops-web", "instance_key": "default" },
+      "requirement_id": "primary",
+      "provider": { "plugin_id": "example.ops-state", "instance_key": "primary" }
+    },
+    {
+      "consumer": { "plugin_id": "example.ops-web", "instance_key": "default" },
+      "requirement_id": "secondary",
+      "provider": { "plugin_id": "example.ops-state", "instance_key": "secondary" }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "source_sha": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "source_clean_at_build_receipt": true,
+  "command": [
+    "cargo",
+    "install",
+    "--path",
+    "crates/lenso-cli",
+    "--locked",
+    "--root",
+    "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-83bf-tools"
+  ],
+  "exit_code": 0,
+  "binary": "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-83bf-tools/bin/lenso",
+  "binary_sha256": "02cc475212ea144a8377cff6e75fd65ef9c80678de42ccd01ecca5f7e2828e55",
+  "version": "lenso 0.6.5",
+  "log": "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-83bf-cli-build.log",
+  "log_sha256": "9625b763171dfe7f1a367fd8b8af5bb45c5f14c898652e0b08c04a1cac47af78",
+  "publication_performed": false
+}

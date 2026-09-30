@@ -1,0 +1,42 @@
+{
+  "schema": "lenso.source-delivery.v1",
+  "repository": "lenso-console",
+  "candidate_sha": "ed1cfec08808dd38e068148224256b663d31fd44",
+  "candidate_branch": "codex/verify/console/sdk35-managed-plugins-20260930",
+  "core_source": "1b34db24797c58bf756290e35f54f0b73f24af94",
+  "owners": {
+    "auth": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+    "access": "5485066ae3e99191862701f753b3ae186755ee80",
+    "audit": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+    "approval": "a6e73aa756c45db8260b5a7544328d97624ea896"
+  },
+  "versions": {
+    "lenso": "0.5.28",
+    "kernel": "0.3.12",
+    "native_adapter": "0.3.19",
+    "codec": "0.4.4",
+    "contract_codegen": "0.10.1",
+    "workers_driver": "0.1.2"
+  },
+  "source_checks": {
+    "five_workspace_metadata": "passed",
+    "five_workspace_source_checks": "passed",
+    "management_wasm": "passed",
+    "management_native_strict": "passed",
+    "mcp_native_strict": "passed",
+    "service_all_features_strict": "passed",
+    "format": "passed",
+    "schema_and_projection_bytes": "unchanged",
+    "generated_freshness_codegen": "0.10.1"
+  },
+  "required_ci": {
+    "run_id": 36680257279,
+    "state": "in_progress_at_recording",
+    "archive_gate_preserved": true
+  },
+  "publication": "not_performed",
+  "registry_archive_qualification": "pending_producer_publication",
+  "main_landing": "not_performed",
+  "historical_remote_artifact": "dbea6e41fa77de867a3daa55ad43efe0113de574",
+  "native_only_mcp_wasm": "unsupported_socket_transport_not_selected_by_workers_profile"
+}

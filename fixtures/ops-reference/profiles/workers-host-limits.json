@@ -1,0 +1,5 @@
+{
+  "eventLimitMs": 10000,
+  "cleanupTimeoutMs": 1000,
+  "cancellationLimitMs": 1000
+}

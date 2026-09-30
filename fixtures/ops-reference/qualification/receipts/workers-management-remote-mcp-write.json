@@ -1,0 +1,41 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "layer": "ordinary-source-worker-graph",
+  "infrastructure": "cloudflare-workers",
+  "client": {
+    "package": "@modelcontextprotocol/client",
+    "version": "2.2.0",
+    "protocol_version": "2025-11-25"
+  },
+  "authentication": "explicit-preissued-bearer",
+  "oauth_discovery": "absent",
+  "operation_id": "a34b1ce6071f2be1333f5bee5d06e17ed9c7d0921b6ad929ea12808eb69cc238",
+  "intent_digest": "c2d26172d80fbd733b827f6e6f34f7127239c92ec6e9aef11f8def53a8220a67",
+  "committed": {
+    "audit_pending": false,
+    "operation_id": "a34b1ce6071f2be1333f5bee5d06e17ed9c7d0921b6ad929ea12808eb69cc238",
+    "receipt": "primary-state:2:06a826bf6f72b3d0e59f7344ec3a51cfeb8342c2e0a5e5134dc2209f8095b40a",
+    "result_json": "{\"label\":\"primary-state\",\"receipt_id\":\"primary-state:2:06a826bf6f72b3d0e59f7344ec3a51cfeb8342c2e0a5e5134dc2209f8095b40a\",\"revision\":2,\"value\":49}",
+    "state": "succeeded"
+  },
+  "final_business_state": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "upstream_commit_calls": 1,
+  "lost_client_response": true,
+  "recovery": "status-and-read-only",
+  "target_replayed": false,
+  "cases": [
+    "actual_official_client_handshake_catalog_read",
+    "no_human_or_token_tools",
+    "hidden_tool_denied",
+    "target_override_denied",
+    "actual_mcp_pending",
+    "self_and_machine_approval_denied",
+    "distinct_human_approved",
+    "commit_response_discarded",
+    "same_operation_receipt_recovered_without_invoke"
+  ]
+}

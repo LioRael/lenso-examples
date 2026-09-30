@@ -1,0 +1,62 @@
+{
+  "schema": "lenso.approval-configuration-schema.v1",
+  "repository": "https://github.com/LioRael/lenso-business-approval-plugin",
+  "base": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+  "candidate": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+  "candidate_branch": "candidate/codex-approval-configuration-schema-20260930",
+  "scope": "Private Plugin configuration schema compatibility with selected Source App; inline caller lists replace unsupported $ref/$defs and patterns. Existing owner schema/secret-reference/exact-caller validators unchanged.",
+  "capability_schema_changed": false,
+  "cargo_changed": false,
+  "storage_or_ddl_changed": false,
+  "business_decision_logic_changed": false,
+  "checks": [
+    {
+      "command": "cargo fmt --all",
+      "status": "passed",
+      "executor": "Root normal configured Cargo"
+    },
+    {
+      "command": "cargo test --locked -p lenso-business-approval-postgres-plugin --lib tests::configuration_schema_resolves_and_owner_formats_remain_strict -- --exact",
+      "session": 28717,
+      "status": "passed",
+      "tests_passed": 1,
+      "tests_filtered": 9,
+      "log": ".artifacts/approval-config-final-test.log",
+      "boundary": "Actual generated Plugin Descriptor through Source HostCatalog resolver; owner rejects malformed SQL schema, traversal secret reference and all three malformed caller sets. No PG/HTTP qualification."
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-business-approval-postgres-plugin --all-targets -- -D warnings",
+      "session": 14291,
+      "status": "passed",
+      "log": ".artifacts/approval-config-final-strict.log"
+    }
+  ],
+  "actual_selected_catalog_scan": {
+    "artifact": ".artifacts/human-generated-host-catalog.json",
+    "configuration_schemas": 19,
+    "unsupported_configuration_keywords_before": "Only Approval pattern/$ref/$defs",
+    "other_selected_schemas": "clear against Core35 supported keyword list",
+    "capability_payload_patterns": "unchanged"
+  },
+  "remote_gate": {
+    "status": "success",
+    "run_id": 36653544540,
+    "run_url": "https://github.com/LioRael/lenso-business-approval-plugin/actions/runs/36653544540",
+    "head_sha": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "required_job": "quality",
+    "attempt": 1,
+    "required_jobs": {
+      "quality": "success"
+    }
+  },
+  "landing": {
+    "status": "landed",
+    "previous": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+    "destination": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "fresh_base_was_ancestor": true,
+    "normal_push_no_force": true,
+    "remote_readback": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "readback_at": "2026-09-30T01:10:34.737984+00:00"
+  },
+  "publication": "not_requested"
+}

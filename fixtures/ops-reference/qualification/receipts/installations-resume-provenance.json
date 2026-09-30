@@ -1,0 +1,21 @@
+{
+  "schema": "lenso.ops-installations-resume-provenance.v1",
+  "receipt_sha256": "cb3321a7e266ddb8453c43a5631ed9a06af33ea049e21ce5ba3a05cba8dc4d8d",
+  "completed_profiles_reused_at_identical_artifact": [
+    "business_only",
+    "management_no_network",
+    "management_mcp_no_console",
+    "management_console_no_agent"
+  ],
+  "fresh_profiles": [
+    "management_read_only_no_approval"
+  ],
+  "retained_agent_owner_qualification": true,
+  "fresh_negative_checks": [
+    "write_profile_without_approval_rejected_before_ready",
+    "required_access_control_provider_removal_rejected_at_build"
+  ],
+  "owner_setup_repeated": false,
+  "failed_pre_ready_artifacts_retained": true,
+  "resume_execution_log_sha256": "4bf8b60707b9e3ebb221ac28af4fe0cfcb54f210ce8effa0de9998c20b7cf5d2"
+}

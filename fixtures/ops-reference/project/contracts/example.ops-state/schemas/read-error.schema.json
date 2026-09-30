@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    { "const": "invalid_input" },
+    { "const": "stale_revision" },
+    { "const": "idempotency_conflict" },
+    { "const": "unavailable" },
+    { "const": "unknown_commit" }
+  ]
+}

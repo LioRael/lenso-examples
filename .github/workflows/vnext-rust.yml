@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [main, "candidate/**"]
+    branches: ["candidate/**"]
 
 permissions: {}
 
@@ -40,20 +40,20 @@ jobs:
       - name: Run released Plugin authoring acceptance
         working-directory: fixtures/vnext-plugin-authoring-v2
         run: |
-          npx --yes @lenso/cli@0.16.1 plugin check --repo-root . --json
-          npx --yes @lenso/cli@0.16.1 plugin pack --repo-root . --output document-sync.lenso-plugin --json
-          npx --yes @lenso/cli@0.16.1 app build --source acceptance/host.ts --target x86_64-unknown-linux-gnu --out /tmp/document-sync-host
-          npx --yes @lenso/cli@0.16.1 plugins add document-sync.lenso-plugin --root /tmp/document-sync-host
-          npx --yes @lenso/cli@0.16.1 app show --root /tmp/document-sync-host --json
-          npx --yes @lenso/cli@0.16.1 plugins remove example.document-sync --root /tmp/document-sync-host
-          npx --yes @lenso/cli@0.16.1 app check --root /tmp/document-sync-host
+          npx --yes @lenso/cli@0.17.4 plugin check --repo-root . --json
+          npx --yes @lenso/cli@0.17.4 plugin pack --repo-root . --output document-sync.lenso-plugin --json
+          npx --yes @lenso/cli@0.17.4 app build --source acceptance/host.ts --target x86_64-unknown-linux-gnu --out /tmp/document-sync-host
+          npx --yes @lenso/cli@0.17.4 plugins add document-sync.lenso-plugin --root /tmp/document-sync-host
+          npx --yes @lenso/cli@0.17.4 app show --root /tmp/document-sync-host --json
+          npx --yes @lenso/cli@0.17.4 plugins remove example.document-sync --root /tmp/document-sync-host
+          npx --yes @lenso/cli@0.17.4 app check --root /tmp/document-sync-host
           app_root="$(mktemp -d)"
           mkdir -p "$app_root/.lenso" "$app_root/plugins"
           cp host-catalog.json "$app_root/.lenso/host-catalog.json"
           printf 'document = "guide"\nruleset = "identity-v1"\n' > "$app_root/config.toml"
-          npx --yes @lenso/cli@0.16.1 plugins add document-sync.lenso-plugin --root "$app_root"
-          npx --yes @lenso/cli@0.16.1 plugins configure example.document-sync default --file "$app_root/config.toml" --root "$app_root"
-          npx --yes @lenso/cli@0.16.1 plugins list --root "$app_root" | grep 'example.document-sync/default.*PluginRoot'
+          npx --yes @lenso/cli@0.17.4 plugins add document-sync.lenso-plugin --root "$app_root"
+          npx --yes @lenso/cli@0.17.4 plugins configure example.document-sync default --file "$app_root/config.toml" --root "$app_root"
+          npx --yes @lenso/cli@0.17.4 plugins list --root "$app_root" | grep 'example.document-sync/default.*PluginRoot'
           mkdir /tmp/document-sync-bundle
           unzip -q document-sync.lenso-plugin -d /tmp/document-sync-bundle
           LENSO_DOCUMENT_SYNC_BUN_ARTIFACT=/tmp/document-sync-bundle/implementations/typescript-bun/plugin.js \

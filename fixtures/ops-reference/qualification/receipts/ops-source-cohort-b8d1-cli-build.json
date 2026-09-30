@@ -1,0 +1,18 @@
+{
+  "schema": "lenso.source-cli-build.v1",
+  "repository": "https://github.com/LioRael/lenso.git",
+  "revision": "b8d134d739698812a039a79633719e14947df1e3",
+  "source_tracked_clean_before_and_after": true,
+  "command": "cargo install --path crates/lenso-cli --locked --root /Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-b8d1-tools",
+  "exit_code": 0,
+  "cli": "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-b8d1-tools/bin/lenso",
+  "cli_version": "lenso 0.6.5",
+  "cli_sha256": "ca8f8885734a1c3c22afd5ddf284e2ac7e093f3283ec266a244f304dd4fd8f5b",
+  "log_sha256": "dc12c253cbdb8a79f82e2cffd199da7801f1edda9a4aeb2c0023f9585a1f12eb",
+  "previous_provenance": "ops-source-cohort-5bb4-cli-build.json",
+  "binary_byte_equal_previous": true,
+  "only_changed_source_since_previous": "crates/lenso-cli/tests/configuration_source_dev.rs",
+  "actual_emitter_runtime_proof": "ops-generated-managed-rust-5bb4.json",
+  "actual_emitter_proof_replayed": false,
+  "registry_publication": false
+}

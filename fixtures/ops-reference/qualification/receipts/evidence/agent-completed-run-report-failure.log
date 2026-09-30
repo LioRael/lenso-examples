@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/verify_agent.py", line 347, in <module>
+    main()
+    ~~~~^^
+  File "/Users/leosouthey/Projects/framework/.worktrees/lenso-examples/feat-ops-reference-qualification/fixtures/ops-reference/verify_agent.py", line 332, in main
+    'real_model': 'user_deferred', 'selected_agent_instances': status['selected_agent_instances'],
+                                                               ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable

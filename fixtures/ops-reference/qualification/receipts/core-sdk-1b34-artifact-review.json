@@ -1,0 +1,238 @@
+{
+  "schema": "lenso.sdk-artifact-review@1",
+  "source": "1b34db24797c58bf756290e35f54f0b73f24af94",
+  "source_tree": "a049fd8accfebd0ec0acf94a6c8cdb095665c0b2",
+  "base": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+  "candidate": "candidate/codex-managed-sdk-terminal-cohort-20260930",
+  "candidate_ci": {
+    "run_id": 36679118455,
+    "state": "in_progress",
+    "conclusion": null
+  },
+  "artifact_preflight": {
+    "terminal": "completed",
+    "root_process_exit_code": 0,
+    "log_path": "/Users/leosouthey/Projects/framework/.artifacts/core-sdk-1b34-archive-preflight.log",
+    "log_sha256": "860b844b2fb4214647ac0b5180f735c41aa66e025ff3a56d1351aaa232fbb88d",
+    "package_count": 35,
+    "checks": [
+      "exact committed snapshot",
+      "normalized cohort requirements",
+      "all-targets extracted cleanroom compilation",
+      "extracted cleanroom test compilation"
+    ],
+    "artifacts_in_dependency_order": [
+      {
+        "package_name": "lenso-contract-authoring-macros",
+        "version": "0.1.1",
+        "sha256": "d8271822cdbeb5660c1ecb4052e401728da13253e028031d398f793ad10a7aa9"
+      },
+      {
+        "package_name": "lenso-kernel",
+        "version": "0.3.12",
+        "sha256": "517d2007c58c11cd487c483122a458f240fc3c7cb79dce9dd4dafa8dae6f5b1f"
+      },
+      {
+        "package_name": "lenso-native-adapter-macros",
+        "version": "0.2.8",
+        "sha256": "3dff4fe2c4a13a3704c1ca6d5dcefca70a3dd26edbc07afcec0e637957a44eaa"
+      },
+      {
+        "package_name": "lenso-runtime-codec",
+        "version": "0.4.4",
+        "sha256": "1c62ef5d6ec2800d44262bf48eaa0d1581dc4da4a1c268cc43d0f37f5ecd1cd0"
+      },
+      {
+        "package_name": "lenso-wasm-component-adapter",
+        "version": "0.2.18",
+        "sha256": "292667f74efda4379db1f02621f55b99ec144cc2a3825bfb246778d8a7577700"
+      },
+      {
+        "package_name": "lenso-workers-driver",
+        "version": "0.1.2",
+        "sha256": "c9b5a428a426a074a5fb0b6832e4412cee1853e18e04273dfc948443f1dc394b"
+      },
+      {
+        "package_name": "lenso-browser-driver",
+        "version": "0.1.10",
+        "sha256": "e665021947b05a25c09c590b803cca3c64186b50bcd8cd182b7c9bd3b1d73c08"
+      },
+      {
+        "package_name": "lenso-contract-authoring",
+        "version": "0.1.2",
+        "sha256": "93e0873448cffc14b4c86ec2811d7172ce7fbe4e671b58ee458137b791233979"
+      },
+      {
+        "package_name": "lenso-contract-codegen",
+        "version": "0.10.1",
+        "sha256": "0b4cf1ffd24182481516f00ac86ba20472d541fa17c3018c6cee16a9263a1ccb"
+      },
+      {
+        "package_name": "lenso-dylib-adapter",
+        "version": "0.2.11",
+        "sha256": "00361ea99c9f2ad92cd01c1b7d215fa3b89b0360f2f73aeb4dfc7435ae80b6f2"
+      },
+      {
+        "package_name": "lenso-native-adapter",
+        "version": "0.3.19",
+        "sha256": "099e7beb8f3085ded3c9af600a345cdb759b5adea3f680ac640faeed5b5da6f0"
+      },
+      {
+        "package_name": "lenso-process-adapter",
+        "version": "0.3.15",
+        "sha256": "a455e46b714ca8ce00da5f0a863392371aa964b1d4f85b754b40c77d022bea3a"
+      },
+      {
+        "package_name": "lenso-quickjs-adapter",
+        "version": "0.2.11",
+        "sha256": "527f908648b800751bf73fd44a3b3937879f26f6735e4e67ab3b912ba91195aa"
+      },
+      {
+        "package_name": "lenso-remote-adapter",
+        "version": "0.1.10",
+        "sha256": "667907b570c24c90845770955da80d6c35667372382448a9f3ec9b553a52ba20"
+      },
+      {
+        "package_name": "lenso-runner",
+        "version": "0.2.20",
+        "sha256": "c85b10f1e9ed013dde13dc799687ee0351c51f5108b38148c2271fcbc0704bde"
+      },
+      {
+        "package_name": "lenso-test",
+        "version": "0.1.3",
+        "sha256": "1f29e3a418e1a4b4fed53e25487ddaa2682879f8a09fbbbedbb70c2cfd2c8e1e"
+      },
+      {
+        "package_name": "lenso-bun-adapter",
+        "version": "0.1.17",
+        "sha256": "8e416f6b4796f75300f02fd5400b706663eb368089d4bc09d49f14c5e10d84ed"
+      },
+      {
+        "package_name": "lenso-capability-configuration-source",
+        "version": "0.1.1",
+        "sha256": "4d333261997fa4f4a5d3b1978b581d4bbfdbc940607389898cc1d0c7d89e447f"
+      },
+      {
+        "package_name": "lenso-capability-http-client",
+        "version": "0.3.3",
+        "sha256": "0df2ec7fa1b5dc8bf4d292bdc547fbfd004b82afa2ccf75cf36de10510fbd527"
+      },
+      {
+        "package_name": "lenso-capability-http-stream-endpoint",
+        "version": "0.1.3",
+        "sha256": "e37e0b06b510b69cfe314310866c47a88adbec153a5d299b3ab96c61c3a5fb74"
+      },
+      {
+        "package_name": "lenso-capability-websocket-endpoint",
+        "version": "0.1.3",
+        "sha256": "3d5148ca7602073f2f8489c51cd0382191db8af5684f8e1631e08126b4eb75b3"
+      },
+      {
+        "package_name": "lenso-engine-authoring",
+        "version": "0.2.4",
+        "sha256": "89f0ed300ba7d4b147c78f0b0c6422d592b39216c5563e3f704e79e5f6d95676"
+      },
+      {
+        "package_name": "lenso-engine-runtime",
+        "version": "0.2.1",
+        "sha256": "7041df627b6716c8214c0d1a956e5211ff35f327b0d37e7ffaef12c835926e22"
+      },
+      {
+        "package_name": "lenso-plugin-control-plane",
+        "version": "0.4.26",
+        "sha256": "7c91f90efebf3d9959cbb93ad77c7fb69fba899bb75fb61f752cab59df1c5767"
+      },
+      {
+        "package_name": "lenso",
+        "version": "0.5.28",
+        "sha256": "21e96d42c9fdee66321c310be774dda34858d7456107e10af43070fbc130dd87"
+      },
+      {
+        "package_name": "lenso-agent-tool-cli-plugin",
+        "version": "0.1.1",
+        "sha256": "167c1912dd04b0a7084d485d58e35b798c4d2863dad3180749b876228ed8cb92"
+      },
+      {
+        "package_name": "lenso-capability-http-endpoint",
+        "version": "0.3.6",
+        "sha256": "06fa2c2769428b9dcdc6fbf0167ecfa9bd1dd9ad5596740ad050e445a529d1b7"
+      },
+      {
+        "package_name": "lenso-host-runtime",
+        "version": "0.1.10",
+        "sha256": "c783ed8328eb13edd2f9f14936160b6f52adbc3e28f64bd73404932e46053c0b"
+      },
+      {
+        "package_name": "lenso-http-auth",
+        "version": "0.2.5",
+        "sha256": "721299fc091285f755ee76100c8b7b911a8ccb5e24171a404a6833c2e7a45960"
+      },
+      {
+        "package_name": "lenso-http-egress-plugin",
+        "version": "0.3.6",
+        "sha256": "c68183b376978c1723a59b23ac20c00e0bd074d3da1ff4d518d7aa357e44b9e4"
+      },
+      {
+        "package_name": "lenso-web-ingress-plugin",
+        "version": "0.4.10",
+        "sha256": "3b98c6d91b2c1f3560f79f288a88c605cf8c149f2738b0317664f5284aa536d5"
+      },
+      {
+        "package_name": "lenso-engine-app",
+        "version": "0.3.2",
+        "sha256": "9668f781d5b69c0322eefd5189ae483d4596934b81aeb5e5961d67480967d16b"
+      },
+      {
+        "package_name": "lenso-openapi-plugin",
+        "version": "0.2.6",
+        "sha256": "b06533e2b2036b35e30f0533974931b7a520f80dcc9017845c21f4755e471223"
+      },
+      {
+        "package_name": "lenso-web-host",
+        "version": "0.2.5",
+        "sha256": "3802a6b40c1aea1e64fef1a8bad9a2a824c35666cb15bcd27d0a244b1c7720a0"
+      },
+      {
+        "package_name": "lenso-cli",
+        "version": "0.6.5",
+        "sha256": "d4589ca383d10ca36c6dc99c95fe5376b9206e633fde5a0f5fb1f1504f4fcdbb"
+      }
+    ],
+    "registered_incompatible_legacy_dependencies": [
+      {
+        "package_name": "lenso-contract-codegen",
+        "version": "0.8.2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "cargo_package_id": "registry+https://github.com/rust-lang/crates.io-index#lenso-contract-codegen@0.8.2"
+      },
+      {
+        "package_name": "lenso-contract-codegen",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "cargo_package_id": "registry+https://github.com/rust-lang/crates.io-index#lenso-contract-codegen@0.9.0"
+      },
+      {
+        "package_name": "lenso-runtime-codec",
+        "version": "0.3.4",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "cargo_package_id": "registry+https://github.com/rust-lang/crates.io-index#lenso-runtime-codec@0.3.4"
+      }
+    ],
+    "archive_retention": "Preflight removed its task-owned temporary archive directory on normal exit; exact archive digests and order are retained in the log."
+  },
+  "actual_consumers": {
+    "clean_cli_build_receipt": "/Users/leosouthey/Projects/framework/.artifacts/ops-source-cohort-1b34-cli-build.json",
+    "ordinary_workers_ancestor_receipt": "/Users/leosouthey/Projects/framework/.artifacts/ops-latest-87fe-workers-local.json",
+    "ancestor_workers_source": "87fe28eceb4d3a7cda1276fbed5a0bd695879937",
+    "difference_from_workers_ancestor": "Only two terminal SDK dependency pins and the actual adoption regression changed; no Workers builder or runtime change."
+  },
+  "publication": {
+    "status": "not_run",
+    "workflow": ".github/workflows/release-plz.yml",
+    "source_sha_must_equal_main": true,
+    "requested_mode": "none",
+    "registry_visibility": "not_proven"
+  },
+  "downstream_boundary": "Required Owner archives remain blocked on SDK35 primary registry publication; their source checks do not satisfy those archive gates.",
+  "recorded_at": "2026-09-30T06:42:20.937763+00:00"
+}

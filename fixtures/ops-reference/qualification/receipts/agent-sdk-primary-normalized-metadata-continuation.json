@@ -1,0 +1,95 @@
+{
+  "schema": "lenso.agent-primary-consumer-metadata-continuation.v1",
+  "agent_source": "d1d0fd0c950f9a5c5575251d69d1db002d4ab6ef",
+  "core_source": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "proof_layer": "source-cohort normalized SDK archive compatibility",
+  "continuation_of_sha256": "b3cf75d4570606e36b48713e316db88f753ffb296dda43b79db52e7dba415396",
+  "no_repackage": true,
+  "role_source_patches": false,
+  "registry_only": false,
+  "publication_performed": false,
+  "sdk_archives": [
+    {
+      "name": "lenso-agent-tool-sdk-macros",
+      "version": "0.4.0",
+      "sha256": "7de37e331bf9e1802f5087f4f68b6d38fb2eada3e9f26a17d581628b200f9c06"
+    },
+    {
+      "name": "lenso-agent-tool-sdk",
+      "version": "0.4.0",
+      "sha256": "c4dc177a0e09b1f8b433efa687453dce787a64dc695ade155a5797e19c1ae635"
+    }
+  ],
+  "primary_roles": [
+    {
+      "name": "lenso-capability-agent-tool-provider",
+      "version": "0.3.0",
+      "checksum": "3bd04feb7f7926aeaa358fa007bc68e515e0ab819b6caec181acee3a9f87fba4",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-extension-state",
+      "version": "0.1.0",
+      "checksum": "578108fa3fba0365752f5b27a31b3d4ef61a5c62c2b53cf2f138feb7eca603cc",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-model",
+      "version": "0.1.0",
+      "checksum": "14e6cfb28ffef7088cfd1ed44b170cd5d7c0b2d78498eaeb70c03f79f086bfd4",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-dynamic-authority",
+      "version": "0.1.0",
+      "checksum": "1449f0540b075e5daccb23422bc2e47d10a0cb4f61f9390c74dc5492df6e7ec6",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-turn-processing",
+      "version": "0.1.0",
+      "checksum": "f397c86d54e5af1cfe9d4657ddc7a56130cb9317b6cd14f5858c513ac3076e5f",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-interaction",
+      "version": "0.1.0",
+      "checksum": "49faaf45f4fece2897158b18845d9751c8953db5141917e05a23c0f207df49b9",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "lenso-capability-agent-durable-task",
+      "version": "0.1.0",
+      "checksum": "90f6225f8b830d227b742c39e2810552389a895ea6c18667d1bf855a3ffead1f",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    }
+  ],
+  "source_fixture_metadata": {
+    "plugin-id": "lenso.agent.tool-sdk.fixture",
+    "root-slot": "tool-providers"
+  },
+  "test_source_sha256": "d216b7b1a606135bc31a15907e1d036ac31cd7e802b16b325d7949eebed5ac60",
+  "command": [
+    "cargo",
+    "--config",
+    "/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/core-source.toml",
+    "--config",
+    "patch.crates-io.lenso-agent-tool-sdk-macros.path=\"/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/extracted/lenso-agent-tool-sdk-macros-0.4.0\"",
+    "test",
+    "--locked",
+    "--target-dir",
+    "/private/tmp/lenso-agent-sdk-primary-normalized-20260930-mku9w602/consumer-target",
+    "--test",
+    "authoring"
+  ],
+  "primary_catalog_requests_have_no_copy": true,
+  "reused_primary_codegen": "0.9.0",
+  "status": "passed",
+  "exit_code": 0,
+  "tests": [
+    "one_provider_derives_and_dispatches_multiple_typed_tools",
+    "native_tools_preserve_domain_runtime_and_structured_outcomes"
+  ],
+  "log_sha256": "a9429dcafc3c287061034dac59e831a03a3a2864a2877e7c117ff12751caf880",
+  "consumer_manifest_sha256": "e270c6a9ed63f3c2540daf1e13de7da901f733d74ff473a0747acb0d2614a104"
+}

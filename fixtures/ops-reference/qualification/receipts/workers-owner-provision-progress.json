@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "layer": "supplemental-owner-operator-local-workerd",
+  "ordinary_source_app_qualified": false,
+  "remote_resources_created": false,
+  "setup": {
+    "auth": "completed",
+    "access": "completed",
+    "audit": "completed",
+    "approval": "completed",
+    "management": "completed"
+  },
+  "readiness": {
+    "auth": true,
+    "access": true,
+    "audit": true,
+    "approval": true,
+    "management": true
+  },
+  "owner_public_key_derived": true,
+  "issuance": {
+    "labels": [
+      "alice",
+      "bob",
+      "machine",
+      "wrong-deployment",
+      "bootstrap"
+    ],
+    "each_dispatched_once": true,
+    "secrets_private_files_only": true,
+    "machine_subject_same_as_alice": true,
+    "machine_actor_kind_confirmed": "service-account",
+    "user_actor_kind_confirmed": "user"
+  },
+  "acl_bootstrap": {
+    "original_state": "unknown",
+    "started_marker_preserved": true,
+    "authoritative_read": "ScopeNotBootstrapped",
+    "explicit_replacement_state": "completed",
+    "typed_permissions_verified": true,
+    "automatic_replay": false
+  },
+  "qualification_grants": "completed_alice_and_bob",
+  "sources": {
+    "schema_version": 1,
+    "layer": "private-owner-operator-assets",
+    "ordinary_source_app": false,
+    "owners": {
+      "auth": {
+        "sha": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+        "files": [
+          {
+            "path": "crates/lenso-auth-api-token-plugin/src/host_facilities/state.mjs",
+            "staged_path": "auth-state.mjs",
+            "sha256": "9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d"
+          }
+        ]
+      },
+      "access": {
+        "sha": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+        "files": [
+          {
+            "path": "crates/lenso-access-control-d1-plugin/src/host_facilities/state.mjs",
+            "staged_path": "access-state.mjs",
+            "sha256": "d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d"
+          }
+        ]
+      },
+      "audit": {
+        "sha": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+        "files": [
+          {
+            "path": "crates/lenso-audit-log-d1-plugin/src/host_facilities/store.mjs",
+            "staged_path": "audit-store.mjs",
+            "sha256": "3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658"
+          }
+        ]
+      },
+      "approval": {
+        "sha": "3346ce45beacdb74918666c045c802d31da585f6",
+        "files": [
+          {
+            "path": "crates/lenso-business-approval-d1-plugin/src/host_facilities/store.mjs",
+            "staged_path": "approval-store.mjs",
+            "sha256": "ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995"
+          }
+        ]
+      },
+      "management": {
+        "sha": "ffde175a8efe8952b34b249f357b2f1bb39eae22",
+        "files": [
+          {
+            "path": "plugins/management/crates/lenso-management-core/src/workers/journal.mjs",
+            "staged_path": "management-store.mjs",
+            "sha256": "d63ce485b22d2069e7553bbe82edb8efa470b5b398a99f12aab57c33cccac597"
+          }
+        ]
+      },
+      "runtime": {
+        "sha": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+        "files": [
+          {
+            "path": "packages/lenso-workers-runtime/build.mjs",
+            "staged_path": "workers-runtime/build.mjs",
+            "sha256": "5530d405ab7b47c4cf532786d7b312a2bce2d168d3d4297aadd3a1202f5b510d"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/clock.mjs",
+            "staged_path": "workers-runtime/clock.mjs",
+            "sha256": "f8ddb0befe68c65e91a51421ea1fa40a616a4f1b5617c299966d2e758948ce33"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/component-admission.mjs",
+            "staged_path": "workers-runtime/component-admission.mjs",
+            "sha256": "e06d95bc3fe958f72e4eefd4c97a21f6a81b94a65dd6ca32e0e61bfa4de5b14e"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/component-requests.mjs",
+            "staged_path": "workers-runtime/component-requests.mjs",
+            "sha256": "b5e315b999b2ee6fa6ab374c8238dff4428cfa0b792270d0953e12560cac0b43"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/facilities.mjs",
+            "staged_path": "workers-runtime/facilities.mjs",
+            "sha256": "b096e80dbee638204c5f57f88530a765e2654c5424c9f045b0ae5df62e605f1b"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/host.mjs",
+            "staged_path": "workers-runtime/host.mjs",
+            "sha256": "d6315c2105e4f0389789d755a42aa40209e8421d11403b10f79b5a61b754041c"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/http.mjs",
+            "staged_path": "workers-runtime/http.mjs",
+            "sha256": "a234f1bc5b0d3cbfec08809edfa400715c0834b6ce8a3c0c3cc1588bfd9cc72b"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/index.mjs",
+            "staged_path": "workers-runtime/index.mjs",
+            "sha256": "f1fd1135d6c34d2e4ae6840ee052c0206b764a3f1b468b38351b1a7d64203a2d"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/knowledge-settings-local.mjs",
+            "staged_path": "workers-runtime/knowledge-settings-local.mjs",
+            "sha256": "dfbbf31eea1db4c1cc17496316b0d9529fe45661abcd2dda80dcd00077a3711e"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/runner.mjs",
+            "staged_path": "workers-runtime/runner.mjs",
+            "sha256": "a2abb3e199c377918f32f026d495b82d919be3eb73e40fdb936baa3854a1dcc6"
+          },
+          {
+            "path": "packages/lenso-workers-runtime/scope.mjs",
+            "staged_path": "workers-runtime/scope.mjs",
+            "sha256": "450241c47c4468a37ef932dd24d610c49318d9afc9dc369bf051acac86f38a74"
+          }
+        ]
+      }
+    }
+  },
+  "wasm_sha256": "2170127ddfc0f78f01473fbf15e0f523a0cda18f9dd7fa9fad94b6c18374abb1",
+  "worker_js_sha256": "d5a77e54d09b437aedff3a1ffd9ec7a3f3f18ee956ad9dd153e8d7f15008e5c2",
+  "status": "owner_provision_ready"
+}

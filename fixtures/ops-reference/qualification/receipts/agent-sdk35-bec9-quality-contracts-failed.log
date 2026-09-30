@@ -1,0 +1,761 @@
+﻿2026-09-30T08:21:59.6044000Z Current runner version: '2.337.0'
+2026-09-30T08:21:59.6079623Z ##[group]Runner Image Provisioner
+2026-09-30T08:21:59.6081399Z Hosted Compute Agent
+2026-09-30T08:21:59.6082374Z Version: 20260901.588
+2026-09-30T08:21:59.6083528Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-09-30T08:21:59.6084741Z Build Date: 2026-09-01T19:56:44Z
+2026-09-30T08:21:59.6085866Z Worker ID: {4dfd9467-2824-4b08-86e0-4b5d0ff60bbc}
+2026-09-30T08:21:59.6087140Z Azure Region: eastus2
+2026-09-30T08:21:59.6088416Z ##[endgroup]
+2026-09-30T08:21:59.6090890Z ##[group]Operating System
+2026-09-30T08:21:59.6091971Z Ubuntu
+2026-09-30T08:21:59.6092800Z 24.04.5
+2026-09-30T08:21:59.6093821Z LTS
+2026-09-30T08:21:59.6094644Z ##[endgroup]
+2026-09-30T08:21:59.6095599Z ##[group]Runner Image
+2026-09-30T08:21:59.6096633Z Image: ubuntu-24.04
+2026-09-30T08:21:59.6097815Z Version: 20260927.320.1
+2026-09-30T08:21:59.6099997Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-30T08:21:59.6103128Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+2026-09-30T08:21:59.6104846Z ##[endgroup]
+2026-09-30T08:21:59.6106754Z ##[group]GITHUB_TOKEN Permissions
+2026-09-30T08:21:59.6109898Z Contents: read
+2026-09-30T08:21:59.6111061Z Metadata: read
+2026-09-30T08:21:59.6111985Z ##[endgroup]
+2026-09-30T08:21:59.6114949Z Secret source: Actions
+2026-09-30T08:21:59.6116580Z Cache mode: write
+2026-09-30T08:21:59.6118229Z Prepare workflow directory
+2026-09-30T08:21:59.6623378Z Prepare all required actions
+2026-09-30T08:21:59.6670197Z Getting action download info
+2026-09-30T08:21:59.9141899Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-09-30T08:22:00.0495801Z Download action repository 'dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88' (SHA:fa04a1451ff1842e2626ccb99004d0195b455a88)
+2026-09-30T08:22:00.1580227Z Download action repository 'Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32' (SHA:e18b497796c12c097a38f9edb9d0641fb99eee32)
+2026-09-30T08:22:00.5764458Z Complete job name: Generated contracts
+2026-09-30T08:22:00.6533882Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-09-30T08:22:00.6534998Z with:
+2026-09-30T08:22:00.6535441Z   persist-credentials: false
+2026-09-30T08:22:00.6535952Z   repository: LioRael/lenso-agent
+2026-09-30T08:22:00.6539765Z   token: ***
+2026-09-30T08:22:00.6540190Z   ssh-strict: true
+2026-09-30T08:22:00.6540612Z   ssh-user: git
+2026-09-30T08:22:00.6541019Z   clean: true
+2026-09-30T08:22:00.6541441Z   sparse-checkout-cone-mode: true
+2026-09-30T08:22:00.6541943Z   fetch-depth: 1
+2026-09-30T08:22:00.6542352Z   fetch-tags: false
+2026-09-30T08:22:00.6542781Z   show-progress: true
+2026-09-30T08:22:00.6543218Z   lfs: false
+2026-09-30T08:22:00.6543615Z   submodules: false
+2026-09-30T08:22:00.6544046Z   set-safe-directory: true
+2026-09-30T08:22:00.6544768Z env:
+2026-09-30T08:22:00.6545177Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:00.6545680Z ##[endgroup]
+2026-09-30T08:22:00.7570872Z Syncing repository: LioRael/lenso-agent
+2026-09-30T08:22:00.7573721Z ##[group]Getting Git version info
+2026-09-30T08:22:00.7574715Z Working directory is '/home/runner/work/lenso-agent/lenso-agent'
+2026-09-30T08:22:00.7576113Z [command]/usr/bin/git version
+2026-09-30T08:22:00.7661287Z git version 2.55.0
+2026-09-30T08:22:00.7688852Z ##[endgroup]
+2026-09-30T08:22:00.7706002Z Temporarily overriding HOME='/home/runner/work/_temp/e43b8223-c506-412d-b638-8d654e8beac9' before making global git config changes
+2026-09-30T08:22:00.7708618Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-30T08:22:00.7712293Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lenso-agent/lenso-agent
+2026-09-30T08:22:00.7771177Z Deleting the contents of '/home/runner/work/lenso-agent/lenso-agent'
+2026-09-30T08:22:00.7780182Z ##[group]Initializing the repository
+2026-09-30T08:22:00.7782400Z [command]/usr/bin/git init /home/runner/work/lenso-agent/lenso-agent
+2026-09-30T08:22:00.7903719Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-30T08:22:00.7905414Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-30T08:22:00.7907266Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-30T08:22:00.7908898Z hint: call:
+2026-09-30T08:22:00.7909565Z hint:
+2026-09-30T08:22:00.7910379Z hint: 	git config --global init.defaultBranch <name>
+2026-09-30T08:22:00.7911394Z hint:
+2026-09-30T08:22:00.7912304Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-30T08:22:00.7913925Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-30T08:22:00.7915168Z hint:
+2026-09-30T08:22:00.7915860Z hint: 	git branch -m <name>
+2026-09-30T08:22:00.7916610Z hint:
+2026-09-30T08:22:00.7917818Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-30T08:22:00.7919620Z Initialized empty Git repository in /home/runner/work/lenso-agent/lenso-agent/.git/
+2026-09-30T08:22:00.7926541Z [command]/usr/bin/git remote add origin https://github.com/LioRael/lenso-agent
+2026-09-30T08:22:00.7979249Z ##[endgroup]
+2026-09-30T08:22:00.7980562Z ##[group]Disabling automatic garbage collection
+2026-09-30T08:22:00.7983746Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-30T08:22:00.8030721Z ##[endgroup]
+2026-09-30T08:22:00.8032309Z ##[group]Setting up auth
+2026-09-30T08:22:00.8033579Z Removing SSH command configuration
+2026-09-30T08:22:00.8039728Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-30T08:22:00.8077561Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-30T08:22:00.8450079Z Removing HTTP extra header
+2026-09-30T08:22:00.8456325Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-30T08:22:00.8496454Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-30T08:22:00.8737689Z Removing includeIf entries pointing to credentials config files
+2026-09-30T08:22:00.8744902Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-30T08:22:00.8783534Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-30T08:22:00.9021112Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-30T08:22:00.9066719Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git.path /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:00.9106785Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:00.9149292Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:00.9188090Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:00.9222817Z ##[endgroup]
+2026-09-30T08:22:00.9223566Z ##[group]Fetching the repository
+2026-09-30T08:22:00.9232171Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bec995997fffc4ae04e7b88c31a7156251812d24:refs/remotes/origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.4810544Z From https://github.com/LioRael/lenso-agent
+2026-09-30T08:22:01.4814051Z  * [new ref]         bec995997fffc4ae04e7b88c31a7156251812d24 -> origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.4821091Z [command]/usr/bin/git branch --list --remote origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.4851081Z   origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.4860398Z [command]/usr/bin/git rev-parse refs/remotes/origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.4885387Z bec995997fffc4ae04e7b88c31a7156251812d24
+2026-09-30T08:22:01.4891763Z ##[endgroup]
+2026-09-30T08:22:01.4893908Z ##[group]Determining the checkout info
+2026-09-30T08:22:01.4896743Z ##[endgroup]
+2026-09-30T08:22:01.4898616Z [command]/usr/bin/git sparse-checkout disable
+2026-09-30T08:22:01.4953088Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-30T08:22:01.4985062Z ##[group]Checking out the ref
+2026-09-30T08:22:01.4989966Z [command]/usr/bin/git checkout --progress --force -B codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930 refs/remotes/origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930
+2026-09-30T08:22:01.5894814Z Switched to a new branch 'codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930'
+2026-09-30T08:22:01.5900527Z branch 'codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930' set up to track 'origin/codex/verify/lenso-agent/sdk35-workspace-adaptation-20260930'.
+2026-09-30T08:22:01.5909708Z ##[endgroup]
+2026-09-30T08:22:01.5957252Z [command]/usr/bin/git log -1 --format=%H
+2026-09-30T08:22:01.5987688Z bec995997fffc4ae04e7b88c31a7156251812d24
+2026-09-30T08:22:01.5998278Z ##[group]Removing auth
+2026-09-30T08:22:01.6000109Z Removing SSH command configuration
+2026-09-30T08:22:01.6003049Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-30T08:22:01.6044182Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-30T08:22:01.6303649Z Removing HTTP extra header
+2026-09-30T08:22:01.6311302Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-30T08:22:01.6356892Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-30T08:22:01.6623025Z Removing includeIf entries pointing to credentials config files
+2026-09-30T08:22:01.6628279Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-30T08:22:01.6661621Z includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git.path
+2026-09-30T08:22:01.6665689Z includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git/worktrees/*.path
+2026-09-30T08:22:01.6669676Z includeif.gitdir:/github/workspace/.git.path
+2026-09-30T08:22:01.6672805Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-30T08:22:01.6679479Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git.path
+2026-09-30T08:22:01.6703557Z /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6718046Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git.path /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6760306Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git/worktrees/*.path
+2026-09-30T08:22:01.6787619Z /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6801122Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/lenso-agent/lenso-agent/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6842867Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-30T08:22:01.6873075Z /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6893527Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6934640Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-30T08:22:01.6966080Z /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.6974379Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config
+2026-09-30T08:22:01.7015099Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-30T08:22:01.7254601Z Removing credentials config '/home/runner/work/_temp/git-credentials-1d6875df-9290-43a6-8d18-044819dfd7fa.config'
+2026-09-30T08:22:01.7265003Z ##[endgroup]
+2026-09-30T08:22:01.7928914Z ##[group]Run dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88
+2026-09-30T08:22:01.7930479Z with:
+2026-09-30T08:22:01.7931268Z   toolchain: nightly-2026-07-10
+2026-09-30T08:22:01.7932220Z env:
+2026-09-30T08:22:01.7932972Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.7933866Z ##[endgroup]
+2026-09-30T08:22:01.8046536Z ##[start-action display=Run : parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-09-30T08:22:01.8105831Z ##[group]Run : parse toolchain version
+2026-09-30T08:22:01.8107042Z [36;1m: parse toolchain version[0m
+2026-09-30T08:22:01.8108291Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-09-30T08:22:01.8110207Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-09-30T08:22:01.8112195Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-09-30T08:22:01.8113330Z [36;1m  exit 1[0m
+2026-09-30T08:22:01.8114616Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-09-30T08:22:01.8116149Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-09-30T08:22:01.8118724Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8120645Z [36;1m  else[0m
+2026-09-30T08:22:01.8122163Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8123880Z [36;1m  fi[0m
+2026-09-30T08:22:01.8124986Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-09-30T08:22:01.8126968Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8128808Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-09-30T08:22:01.8130748Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8132589Z [36;1melse[0m
+2026-09-30T08:22:01.8133502Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8134621Z [36;1mfi[0m
+2026-09-30T08:22:01.8410404Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:01.8411706Z env:
+2026-09-30T08:22:01.8412456Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.8413380Z   toolchain: nightly-2026-07-10
+2026-09-30T08:22:01.8414306Z ##[endgroup]
+2026-09-30T08:22:01.8574983Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=52]
+2026-09-30T08:22:01.8604811Z ##[start-action display=Run : construct rustup command line;id=__dtolnay_rust-toolchain.flags]
+2026-09-30T08:22:01.8645967Z ##[group]Run : construct rustup command line
+2026-09-30T08:22:01.8647156Z [36;1m: construct rustup command line[0m
+2026-09-30T08:22:01.8649055Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8651429Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8653243Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:01.8718757Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:01.8719996Z env:
+2026-09-30T08:22:01.8720716Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.8721579Z   targets: 
+2026-09-30T08:22:01.8722296Z   components: 
+2026-09-30T08:22:01.8723040Z ##[endgroup]
+2026-09-30T08:22:01.8843669Z ##[end-action id=__dtolnay_rust-toolchain.flags;outcome=success;conclusion=success;duration_ms=23]
+2026-09-30T08:22:01.8852621Z ##[start-action display=Run : set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-09-30T08:22:01.8893642Z ##[group]Run : set $CARGO_HOME
+2026-09-30T08:22:01.8894583Z [36;1m: set $CARGO_HOME[0m
+2026-09-30T08:22:01.8895791Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-09-30T08:22:01.8961861Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:01.8963126Z env:
+2026-09-30T08:22:01.8963853Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.8964712Z ##[endgroup]
+2026-09-30T08:22:01.9070885Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=21]
+2026-09-30T08:22:01.9077101Z ##[start-action display=Run : install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-09-30T08:22:01.9127000Z ##[group]Run : install rustup if needed
+2026-09-30T08:22:01.9128505Z [36;1m: install rustup if needed[0m
+2026-09-30T08:22:01.9129620Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-09-30T08:22:01.9132310Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-09-30T08:22:01.9134953Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-09-30T08:22:01.9136018Z [36;1mfi[0m
+2026-09-30T08:22:01.9195177Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:01.9196407Z env:
+2026-09-30T08:22:01.9197113Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.9198210Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:01.9199128Z ##[endgroup]
+2026-09-30T08:22:01.9298004Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=21]
+2026-09-30T08:22:01.9306374Z ##[start-action display=Run : install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-09-30T08:22:01.9321377Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-09-30T08:22:01.9329748Z ##[start-action display=rustup toolchain install nightly-2026-07-10;id=__dtolnay_rust-toolchain.__run_4]
+2026-09-30T08:22:01.9369148Z ##[group]Run rustup toolchain install nightly-2026-07-10 --profile minimal --no-self-update
+2026-09-30T08:22:01.9371356Z [36;1mrustup toolchain install nightly-2026-07-10 --profile minimal --no-self-update[0m
+2026-09-30T08:22:01.9430729Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:01.9431923Z env:
+2026-09-30T08:22:01.9432618Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:01.9433493Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:01.9434472Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-09-30T08:22:01.9435351Z ##[endgroup]
+2026-09-30T08:22:02.5548997Z info: syncing channel updates for nightly-2026-07-10-x86_64-unknown-linux-gnu
+2026-09-30T08:22:02.8455579Z info: latest update on 2026-07-10 for version 1.99.0-nightly (af3d95584 2026-07-09)
+2026-09-30T08:22:02.8456769Z info: downloading 3 components
+2026-09-30T08:22:10.1958375Z 
+2026-09-30T08:22:10.2028330Z   nightly-2026-07-10-x86_64-unknown-linux-gnu installed - rustc 1.99.0-nightly (af3d95584 2026-07-09)
+2026-09-30T08:22:10.2029236Z 
+2026-09-30T08:22:10.2091045Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=8275]
+2026-09-30T08:22:10.2100100Z ##[start-action display=Run rustup default nightly-2026-07-10;id=__dtolnay_rust-toolchain.__run_5]
+2026-09-30T08:22:10.2125248Z ##[group]Run rustup default nightly-2026-07-10
+2026-09-30T08:22:10.2125665Z [36;1mrustup default nightly-2026-07-10[0m
+2026-09-30T08:22:10.2192744Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.2193141Z env:
+2026-09-30T08:22:10.2193404Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.2193700Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.2194013Z ##[endgroup]
+2026-09-30T08:22:10.2319798Z info: using existing install for nightly-2026-07-10-x86_64-unknown-linux-gnu
+2026-09-30T08:22:10.2327780Z info: default toolchain set to nightly-2026-07-10-x86_64-unknown-linux-gnu
+2026-09-30T08:22:10.2328247Z 
+2026-09-30T08:22:10.2397481Z   nightly-2026-07-10-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0-nightly (af3d95584 2026-07-09)
+2026-09-30T08:22:10.2398189Z 
+2026-09-30T08:22:10.2414194Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=31]
+2026-09-30T08:22:10.2420510Z ##[start-action display=Run : create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-09-30T08:22:10.2474821Z ##[group]Run : create cachekey
+2026-09-30T08:22:10.2475168Z [36;1m: create cachekey[0m
+2026-09-30T08:22:10.2475773Z [36;1mDATE=$(rustc +nightly-2026-07-10 --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-09-30T08:22:10.2476574Z [36;1mHASH=$(rustc +nightly-2026-07-10 --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-09-30T08:22:10.2477187Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-09-30T08:22:10.2541202Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.2541609Z env:
+2026-09-30T08:22:10.2541867Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.2542215Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.2563864Z ##[endgroup]
+2026-09-30T08:22:10.2912669Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=49]
+2026-09-30T08:22:10.2915830Z ##[start-action display=Run : disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-09-30T08:22:10.2938798Z ##[group]Run : disable incremental compilation
+2026-09-30T08:22:10.2939215Z [36;1m: disable incremental compilation[0m
+2026-09-30T08:22:10.2939594Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-09-30T08:22:10.2939976Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-09-30T08:22:10.2940312Z [36;1mfi[0m
+2026-09-30T08:22:10.3008756Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.3009146Z env:
+2026-09-30T08:22:10.3009402Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.3009712Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.3010003Z ##[endgroup]
+2026-09-30T08:22:10.3099164Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=18]
+2026-09-30T08:22:10.3101699Z ##[start-action display=Run : enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-09-30T08:22:10.3122829Z ##[group]Run : enable colors in Cargo output
+2026-09-30T08:22:10.3123210Z [36;1m: enable colors in Cargo output[0m
+2026-09-30T08:22:10.3123575Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-09-30T08:22:10.3123975Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-09-30T08:22:10.3124319Z [36;1mfi[0m
+2026-09-30T08:22:10.3183984Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.3184380Z env:
+2026-09-30T08:22:10.3184629Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.3184925Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.3185233Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:10.3185661Z ##[endgroup]
+2026-09-30T08:22:10.3271496Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=16]
+2026-09-30T08:22:10.3276762Z ##[start-action display=Run : enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-09-30T08:22:10.3299287Z ##[group]Run : enable Cargo sparse registry
+2026-09-30T08:22:10.3299679Z [36;1m: enable Cargo sparse registry[0m
+2026-09-30T08:22:10.3300095Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-09-30T08:22:10.3300855Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-09-30T08:22:10.3301676Z [36;1m  if rustc +nightly-2026-07-10 --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-09-30T08:22:10.3302352Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-09-30T08:22:10.3302938Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-09-30T08:22:10.3303533Z [36;1m  elif rustc +nightly-2026-07-10 --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-09-30T08:22:10.3304176Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-09-30T08:22:10.3304907Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-09-30T08:22:10.3305316Z [36;1m  fi[0m
+2026-09-30T08:22:10.3305553Z [36;1mfi[0m
+2026-09-30T08:22:10.3368468Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.3368868Z env:
+2026-09-30T08:22:10.3369116Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.3369417Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.3369713Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:10.3369973Z ##[endgroup]
+2026-09-30T08:22:10.3683246Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=40]
+2026-09-30T08:22:10.3688804Z ##[start-action display=Run : work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-09-30T08:22:10.3713383Z ##[group]Run : work around spurious network errors in curl 8.0
+2026-09-30T08:22:10.3713871Z [36;1m: work around spurious network errors in curl 8.0[0m
+2026-09-30T08:22:10.3714508Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-09-30T08:22:10.3715259Z [36;1mif rustc +nightly-2026-07-10 --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-09-30T08:22:10.3715833Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-09-30T08:22:10.3716196Z [36;1mfi[0m
+2026-09-30T08:22:10.3784279Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.3784675Z env:
+2026-09-30T08:22:10.3784922Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.3785225Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.3785529Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:10.3785793Z ##[endgroup]
+2026-09-30T08:22:10.3985182Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=29]
+2026-09-30T08:22:10.3989914Z ##[start-action display=Run rustc +nightly-2026-07-10 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-09-30T08:22:10.4012263Z ##[group]Run rustc +nightly-2026-07-10 --version --verbose
+2026-09-30T08:22:10.4012740Z [36;1mrustc +nightly-2026-07-10 --version --verbose[0m
+2026-09-30T08:22:10.4076506Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-09-30T08:22:10.4076900Z env:
+2026-09-30T08:22:10.4077142Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.4077698Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.4078009Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:10.4078281Z ##[endgroup]
+2026-09-30T08:22:10.4258905Z rustc 1.99.0-nightly (af3d95584 2026-07-09)
+2026-09-30T08:22:10.4259551Z binary: rustc
+2026-09-30T08:22:10.4260122Z commit-hash: af3d95584dbddcae597890340995509a7fb47a50
+2026-09-30T08:22:10.4260783Z commit-date: 2026-07-09
+2026-09-30T08:22:10.4261796Z host: x86_64-unknown-linux-gnu
+2026-09-30T08:22:10.4262111Z release: 1.99.0-nightly
+2026-09-30T08:22:10.4262464Z LLVM version: 22.1.8
+2026-09-30T08:22:10.4275285Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=28]
+2026-09-30T08:22:10.4405045Z ##[group]Run Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32
+2026-09-30T08:22:10.4405526Z with:
+2026-09-30T08:22:10.4405773Z   prefix-key: v0-rust
+2026-09-30T08:22:10.4406051Z   add-job-id-key: true
+2026-09-30T08:22:10.4406347Z   add-rust-environment-hash-key: true
+2026-09-30T08:22:10.4406664Z   cache-targets: true
+2026-09-30T08:22:10.4406928Z   cache-all-crates: false
+2026-09-30T08:22:10.4407215Z   cache-workspace-crates: false
+2026-09-30T08:22:10.4407820Z   save-if: true
+2026-09-30T08:22:10.4408083Z   cache-provider: github
+2026-09-30T08:22:10.4408350Z   cache-bin: true
+2026-09-30T08:22:10.4408598Z   lookup-only: false
+2026-09-30T08:22:10.4408851Z   cmd-format: {0}
+2026-09-30T08:22:10.4409109Z env:
+2026-09-30T08:22:10.4409341Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:10.4409631Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:10.4409930Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:10.4410193Z ##[endgroup]
+2026-09-30T08:22:10.7185302Z (node:2480) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-30T08:22:10.7186741Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-30T08:22:13.9397314Z ##[group]Cache Configuration
+2026-09-30T08:22:13.9398090Z Cache Provider:
+2026-09-30T08:22:13.9398450Z     github
+2026-09-30T08:22:13.9398783Z Workspaces:
+2026-09-30T08:22:13.9399172Z     /home/runner/work/lenso-agent/lenso-agent
+2026-09-30T08:22:13.9399681Z Cache Paths:
+2026-09-30T08:22:13.9400036Z     /home/runner/.cargo/bin
+2026-09-30T08:22:13.9400494Z     /home/runner/.cargo/.crates.toml
+2026-09-30T08:22:13.9401000Z     /home/runner/.cargo/.crates2.json
+2026-09-30T08:22:13.9401478Z     /home/runner/.cargo/registry
+2026-09-30T08:22:13.9401951Z     /home/runner/.cargo/git
+2026-09-30T08:22:13.9402452Z     /home/runner/work/lenso-agent/lenso-agent/target
+2026-09-30T08:22:13.9403014Z Restore Key:
+2026-09-30T08:22:13.9403399Z     v0-rust-contracts-Linux-x64-97833ef5
+2026-09-30T08:22:13.9403954Z Cache Key:
+2026-09-30T08:22:13.9404396Z     v0-rust-contracts-Linux-x64-97833ef5-ec53c346
+2026-09-30T08:22:13.9404927Z .. Prefix:
+2026-09-30T08:22:13.9405282Z   - v0-rust-contracts-Linux-x64
+2026-09-30T08:22:13.9405760Z .. Environment considered:
+2026-09-30T08:22:13.9406199Z   - Rust Versions:
+2026-09-30T08:22:13.9406843Z     - 1.99.0-nightly x86_64-unknown-linux-gnu af3d95584dbddcae597890340995509a7fb47a50
+2026-09-30T08:22:13.9408046Z     - 1.98.1 x86_64-unknown-linux-gnu 48a229ceaefd4985c50990b14116b6d856af0985
+2026-09-30T08:22:13.9409002Z     - 1.99.0-nightly x86_64-unknown-linux-gnu af3d95584dbddcae597890340995509a7fb47a50
+2026-09-30T08:22:13.9409774Z   - CARGO_HOME
+2026-09-30T08:22:13.9410161Z   - CARGO_INCREMENTAL
+2026-09-30T08:22:13.9410536Z   - CARGO_TERM_COLOR
+2026-09-30T08:22:13.9410931Z .. Lockfiles considered:
+2026-09-30T08:22:13.9411577Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-acp/Cargo.toml
+2026-09-30T08:22:13.9412604Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-channel/Cargo.toml
+2026-09-30T08:22:13.9413585Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-cli/Cargo.toml
+2026-09-30T08:22:13.9414522Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-dialogue/Cargo.toml
+2026-09-30T08:22:13.9415554Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-foundation/Cargo.toml
+2026-09-30T08:22:13.9416535Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-tui/Cargo.toml
+2026-09-30T08:22:13.9418410Z   - /home/runner/work/lenso-agent/lenso-agent/apps/lenso-agent-web/Cargo.toml
+2026-09-30T08:22:13.9419314Z   - /home/runner/work/lenso-agent/lenso-agent/Cargo.lock
+2026-09-30T08:22:13.9420167Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-acp-plugin/Cargo.toml
+2026-09-30T08:22:13.9421956Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-approval-hook-plugin/Cargo.toml
+2026-09-30T08:22:13.9423589Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-artifact-file-plugin/Cargo.toml
+2026-09-30T08:22:13.9424931Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-ask-user-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9426299Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-auth-openai-codex-plugin/Cargo.toml
+2026-09-30T08:22:13.9427899Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-browser-playwright-plugin/Cargo.toml
+2026-09-30T08:22:13.9429270Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-business-connection-plugin/Cargo.toml
+2026-09-30T08:22:13.9430507Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-cli-plugin/Cargo.toml
+2026-09-30T08:22:13.9431737Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-code-mode-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9433074Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-console-app-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9434471Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-console-instructions-plugin/Cargo.toml
+2026-09-30T08:22:13.9435760Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-console-plugin-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9436953Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-console-plugins/Cargo.toml
+2026-09-30T08:22:13.9438458Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-context-compaction-command-plugin/Cargo.toml
+2026-09-30T08:22:13.9439791Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-context-compaction-plugin/Cargo.toml
+2026-09-30T08:22:13.9440975Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-default-plugins/Cargo.toml
+2026-09-30T08:22:13.9442022Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-dialogue-starter/Cargo.toml
+2026-09-30T08:22:13.9442993Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-discord-plugin/Cargo.toml
+2026-09-30T08:22:13.9443930Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-git-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9444972Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-github-workflows-plugin/Cargo.toml
+2026-09-30T08:22:13.9445997Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-host/Cargo.toml
+2026-09-30T08:22:13.9446999Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-http-fetch-plugin/Cargo.toml
+2026-09-30T08:22:13.9448452Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-interactive-approval-hook-plugin/Cargo.toml
+2026-09-30T08:22:13.9449699Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-lifecycle-audit-plugin/Cargo.toml
+2026-09-30T08:22:13.9450860Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-lifecycle-command-plugin/Cargo.toml
+2026-09-30T08:22:13.9451974Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-loop-plugin/Cargo.toml
+2026-09-30T08:22:13.9453221Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-management-connection-plugin/Cargo.toml
+2026-09-30T08:22:13.9454573Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-management-connection-plugin/examples/third-party-log-plugin/Cargo.toml
+2026-09-30T08:22:13.9455404Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-management-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9456061Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-mcp-client-plugin/Cargo.toml
+2026-09-30T08:22:13.9456768Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-memory-command-plugin/Cargo.toml
+2026-09-30T08:22:13.9457687Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-memory-sqlite-plugin/Cargo.toml
+2026-09-30T08:22:13.9458342Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-model-fixture-plugin/Cargo.toml
+2026-09-30T08:22:13.9459260Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-model-openai-codex-direct-plugin/Cargo.toml
+2026-09-30T08:22:13.9460280Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-model-openai-compatible-plugin/Cargo.toml
+2026-09-30T08:22:13.9461019Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-model-selection-plugin/Cargo.toml
+2026-09-30T08:22:13.9461704Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-multimodal-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9462352Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-native-support/Cargo.toml
+2026-09-30T08:22:13.9463028Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-oauth-client-credentials-plugin/Cargo.toml
+2026-09-30T08:22:13.9463812Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-process-native-plugin/Cargo.toml
+2026-09-30T08:22:13.9464673Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-process-sandbox-plugin/Cargo.toml
+2026-09-30T08:22:13.9465430Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-process-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9466245Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-prompt-filesystem-plugin/Cargo.toml
+2026-09-30T08:22:13.9467069Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-prompt-plugin/Cargo.toml
+2026-09-30T08:22:13.9468024Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-prompt-static-plugin/Cargo.toml
+2026-09-30T08:22:13.9468979Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-file-plugin/Cargo.toml
+2026-09-30T08:22:13.9469702Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-inspection/Cargo.toml
+2026-09-30T08:22:13.9470521Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-presentation-model-plugin/Cargo.toml
+2026-09-30T08:22:13.9471496Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-presentation-plugin/Cargo.toml
+2026-09-30T08:22:13.9472459Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-sqlite-plugin/Cargo.toml
+2026-09-30T08:22:13.9473908Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-session-terminal-plugin/Cargo.toml
+2026-09-30T08:22:13.9475339Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-skills-filesystem-plugin/Cargo.toml
+2026-09-30T08:22:13.9476218Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-subagent-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9541018Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-telegram-plugin/Cargo.toml
+2026-09-30T08:22:13.9542267Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-text-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9543428Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tool-sdk-macros/Cargo.toml
+2026-09-30T08:22:13.9544505Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tool-sdk/Cargo.toml
+2026-09-30T08:22:13.9545613Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9546688Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tui-plugin/Cargo.toml
+2026-09-30T08:22:13.9548086Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tui-static-plugin/Cargo.toml
+2026-09-30T08:22:13.9549386Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-tui-workspace-suggestions-plugin/Cargo.toml
+2026-09-30T08:22:13.9550777Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-user-interaction-local-plugin/Cargo.toml
+2026-09-30T08:22:13.9551990Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-web-plugin/Cargo.toml
+2026-09-30T08:22:13.9553126Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-workspace-edit-plugin/Cargo.toml
+2026-09-30T08:22:13.9554350Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-workspace-import-read-plugin/Cargo.toml
+2026-09-30T08:22:13.9556117Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-workspace-instructions-plugin/Cargo.toml
+2026-09-30T08:22:13.9557652Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-workspace-read-plugin/Cargo.toml
+2026-09-30T08:22:13.9559089Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-workspace-read-tools-plugin/Cargo.toml
+2026-09-30T08:22:13.9560358Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-agent-worktree-provider-plugin/Cargo.toml
+2026-09-30T08:22:13.9561570Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-artifact/Cargo.toml
+2026-09-30T08:22:13.9562787Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-connection/Cargo.toml
+2026-09-30T08:22:13.9564068Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-openai-codex/Cargo.toml
+2026-09-30T08:22:13.9565386Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-compaction/Cargo.toml
+2026-09-30T08:22:13.9566735Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-source/Cargo.toml
+2026-09-30T08:22:13.9568259Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-durable-task/Cargo.toml
+2026-09-30T08:22:13.9569538Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-dynamic-authority/Cargo.toml
+2026-09-30T08:22:13.9570858Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-extension-state/Cargo.toml
+2026-09-30T08:22:13.9572069Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-http-fetch/Cargo.toml
+2026-09-30T08:22:13.9573267Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-interaction/Cargo.toml
+2026-09-30T08:22:13.9574454Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-lifecycle/Cargo.toml
+2026-09-30T08:22:13.9575601Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-memory/Cargo.toml
+2026-09-30T08:22:13.9576791Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model-selection/Cargo.toml
+2026-09-30T08:22:13.9578147Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model/Cargo.toml
+2026-09-30T08:22:13.9579299Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-oauth-access/Cargo.toml
+2026-09-30T08:22:13.9580568Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-configuration/Cargo.toml
+2026-09-30T08:22:13.9581992Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-management-target/Cargo.toml
+2026-09-30T08:22:13.9583368Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-selection/Cargo.toml
+2026-09-30T08:22:13.9584693Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-process/Cargo.toml
+2026-09-30T08:22:13.9586038Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt-provider/Cargo.toml
+2026-09-30T08:22:13.9587624Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt/Cargo.toml
+2026-09-30T08:22:13.9588925Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-control/Cargo.toml
+2026-09-30T08:22:13.9590330Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-presentation/Cargo.toml
+2026-09-30T08:22:13.9591626Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session/Cargo.toml
+2026-09-30T08:22:13.9592932Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-task-supervisor/Cargo.toml
+2026-09-30T08:22:13.9594205Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-hook/Cargo.toml
+2026-09-30T08:22:13.9595288Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-progress/Cargo.toml
+2026-09-30T08:22:13.9596436Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-provider/Cargo.toml
+2026-09-30T08:22:13.9598152Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-target/Cargo.toml
+2026-09-30T08:22:13.9599454Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tools/Cargo.toml
+2026-09-30T08:22:13.9600603Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-binding/Cargo.toml
+2026-09-30T08:22:13.9601763Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-input/Cargo.toml
+2026-09-30T08:22:13.9603061Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-processing/Cargo.toml
+2026-09-30T08:22:13.9604368Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-user-interaction/Cargo.toml
+2026-09-30T08:22:13.9605728Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-workspace-read/Cargo.toml
+2026-09-30T08:22:13.9607048Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-worktree/Cargo.toml
+2026-09-30T08:22:13.9608419Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent/Cargo.toml
+2026-09-30T08:22:13.9609456Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-panel/Cargo.toml
+2026-09-30T08:22:13.9610511Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-suggestion/Cargo.toml
+2026-09-30T08:22:13.9611688Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-terminal-tui-plugin/Cargo.toml
+2026-09-30T08:22:13.9612798Z   - /home/runner/work/lenso-agent/lenso-agent/crates/lenso-terminal-web-plugin/Cargo.toml
+2026-09-30T08:22:13.9614031Z ##[endgroup]
+2026-09-30T08:22:13.9614237Z 
+2026-09-30T08:22:13.9614385Z ... Restoring cache ...
+2026-09-30T08:22:14.0272621Z Cache hit for restore-key: v0-rust-contracts-Linux-x64-97833ef5-8925eb02
+2026-09-30T08:22:14.8513269Z Received 149074092 of 149074092 (100.0%), 180.6 MBs/sec
+2026-09-30T08:22:14.8514200Z Cache Size: ~142 MB (149074092 B)
+2026-09-30T08:22:14.8551431Z [command]/usr/bin/tar -xf /home/runner/work/_temp/84b4bdd2-2cde-4a8f-a908-852ae8e95071/cache.tzst -P -C /home/runner/work/lenso-agent/lenso-agent --use-compress-program unzstd
+2026-09-30T08:22:15.7127690Z Cache restored successfully
+2026-09-30T08:22:15.7194956Z Restored from cache key "v0-rust-contracts-Linux-x64-97833ef5-8925eb02" full match: false.
+2026-09-30T08:22:15.7361400Z ##[group]Run cargo install lenso-contract-codegen --version '=0.10.0' --locked
+2026-09-30T08:22:15.7361983Z [36;1mcargo install lenso-contract-codegen --version '=0.10.0' --locked[0m
+2026-09-30T08:22:15.7425612Z shell: /usr/bin/bash -e {0}
+2026-09-30T08:22:15.7425873Z env:
+2026-09-30T08:22:15.7426081Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:15.7426337Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:15.7426598Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:15.7426826Z   CACHE_ON_FAILURE: false
+2026-09-30T08:22:15.7427064Z ##[endgroup]
+2026-09-30T08:22:15.7724879Z [1m[92m    Updating[0m crates.io index
+2026-09-30T08:22:15.9014854Z [1m[92m Downloading[0m crates ...
+2026-09-30T08:22:15.9601585Z [1m[92m  Downloaded[0m lenso-contract-codegen v0.10.0
+2026-09-30T08:22:15.9880665Z [1m[92m  Installing[0m lenso-contract-codegen v0.10.0
+2026-09-30T08:22:15.9890166Z [1m[92m    Updating[0m crates.io index
+2026-09-30T08:22:16.5943070Z [1m[92m    Updating[0m crates.io index
+2026-09-30T08:22:16.7586059Z [1m[92m Downloading[0m crates ...
+2026-09-30T08:22:16.7808496Z [1m[92m  Downloaded[0m syn v3.0.3
+2026-09-30T08:22:16.8084895Z [1m[92m   Compiling[0m proc-macro2 v1.0.107
+2026-09-30T08:22:16.8085738Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-09-30T08:22:16.8086607Z [1m[92m   Compiling[0m quote v1.0.47
+2026-09-30T08:22:16.8087227Z [1m[92m   Compiling[0m version_check v0.9.5
+2026-09-30T08:22:16.8704642Z [1m[92m   Compiling[0m memchr v2.8.3
+2026-09-30T08:22:16.9962364Z [1m[92m   Compiling[0m generic-array v0.14.7
+2026-09-30T08:22:17.1764720Z [1m[92m   Compiling[0m serde_core v1.0.229
+2026-09-30T08:22:17.2126874Z [1m[92m   Compiling[0m zmij v1.0.23
+2026-09-30T08:22:17.3329021Z [1m[92m   Compiling[0m typenum v1.20.1
+2026-09-30T08:22:18.0069470Z [1m[92m   Compiling[0m syn v3.0.3
+2026-09-30T08:22:18.1039229Z [1m[92m   Compiling[0m hashbrown v0.17.1
+2026-09-30T08:22:18.6540916Z [1m[92m   Compiling[0m ref-cast v1.0.27
+2026-09-30T08:22:18.8034167Z [1m[92m   Compiling[0m serde v1.0.229
+2026-09-30T08:22:18.8088780Z [1m[92m   Compiling[0m equivalent v1.0.2
+2026-09-30T08:22:18.8389807Z [1m[92m   Compiling[0m serde_json v1.0.151
+2026-09-30T08:22:18.9488887Z [1m[92m   Compiling[0m indexmap v2.14.2
+2026-09-30T08:22:19.3159342Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-09-30T08:22:19.5136891Z [1m[92m   Compiling[0m serde_derive_internals v0.30.0
+2026-09-30T08:22:20.4138784Z [1m[92m   Compiling[0m block-buffer v0.10.4
+2026-09-30T08:22:20.4487768Z [1m[92m   Compiling[0m ref-cast-impl v1.0.27
+2026-09-30T08:22:20.4948879Z [1m[92m   Compiling[0m schemars_derive v1.2.2
+2026-09-30T08:22:20.5568754Z [1m[92m   Compiling[0m crypto-common v0.1.7
+2026-09-30T08:22:20.6127934Z [1m[92m   Compiling[0m syn v2.0.119
+2026-09-30T08:22:20.7838783Z [1m[92m   Compiling[0m aho-corasick v1.1.5
+2026-09-30T08:22:21.9587160Z [1m[92m   Compiling[0m regex-syntax v0.8.11
+2026-09-30T08:22:23.3741251Z [1m[92m   Compiling[0m dyn-clone v1.0.20
+2026-09-30T08:22:23.4418889Z [1m[92m   Compiling[0m schemars v1.2.2
+2026-09-30T08:22:24.3779196Z [1m[92m   Compiling[0m lenso-contract-authoring-macros v0.1.0
+2026-09-30T08:22:24.6958927Z [1m[92m   Compiling[0m regex-automata v0.4.18
+2026-09-30T08:22:27.6338903Z [1m[92m   Compiling[0m digest v0.10.7
+2026-09-30T08:22:27.7918907Z [1m[92m   Compiling[0m cpufeatures v0.2.17
+2026-09-30T08:22:27.8215925Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-09-30T08:22:27.8579208Z [1m[92m   Compiling[0m sha2 v0.10.9
+2026-09-30T08:22:29.6118731Z [1m[92m   Compiling[0m regex v1.13.1
+2026-09-30T08:22:29.7448940Z [1m[92m   Compiling[0m lenso-contract-authoring v0.1.1
+2026-09-30T08:22:30.1133423Z [1m[92m   Compiling[0m semver v1.0.28
+2026-09-30T08:22:30.7248969Z [1m[92m   Compiling[0m lenso-contract-codegen v0.10.0
+2026-09-30T08:22:37.3576039Z [1m[92m    Finished[0m `release` profile [optimized] target(s) in 21.59s
+2026-09-30T08:22:37.3604010Z [1m[92m   Replacing[0m /home/runner/.cargo/bin/lenso-contract-codegen
+2026-09-30T08:22:37.3620615Z [1m[92m    Replaced[0m package `lenso-contract-codegen v0.9.0` with `lenso-contract-codegen v0.10.0` (executable `lenso-contract-codegen`)
+2026-09-30T08:22:37.3923387Z ##[group]Run lenso-contract-codegen workspace check --manifest-path Cargo.toml
+2026-09-30T08:22:37.3924317Z [36;1mlenso-contract-codegen workspace check --manifest-path Cargo.toml[0m
+2026-09-30T08:22:37.3986089Z shell: /usr/bin/bash -e {0}
+2026-09-30T08:22:37.3986344Z env:
+2026-09-30T08:22:37.3986552Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:37.3986805Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:37.3987079Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:37.3987529Z   CACHE_ON_FAILURE: false
+2026-09-30T08:22:37.3987788Z ##[endgroup]
+2026-09-30T08:22:37.4650693Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent/src/generated.rs
+2026-09-30T08:22:37.4658229Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-artifact/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-artifact/src/generated.rs
+2026-09-30T08:22:37.4669586Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-connection/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-connection/src/generated.rs
+2026-09-30T08:22:37.4671963Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-openai-codex/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-auth-openai-codex/src/generated.rs
+2026-09-30T08:22:37.4678773Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-compaction/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-compaction/src/generated.rs
+2026-09-30T08:22:37.4688064Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-source/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-context-source/src/generated.rs
+2026-09-30T08:22:37.4711248Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-durable-task/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-durable-task/src/generated.rs
+2026-09-30T08:22:37.4719354Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-dynamic-authority/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-dynamic-authority/src/generated.rs
+2026-09-30T08:22:37.4732779Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-extension-state/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-extension-state/src/generated.rs
+2026-09-30T08:22:37.4735967Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-http-fetch/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-http-fetch/src/generated.rs
+2026-09-30T08:22:37.4740269Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-interaction/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-interaction/src/generated.rs
+2026-09-30T08:22:37.4743146Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-lifecycle/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-lifecycle/src/generated.rs
+2026-09-30T08:22:37.4753019Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-memory/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-memory/src/generated.rs
+2026-09-30T08:22:37.4771835Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model/src/generated.rs
+2026-09-30T08:22:37.4775952Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model-selection/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-model-selection/src/generated.rs
+2026-09-30T08:22:37.4781229Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-oauth-access/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-oauth-access/src/generated.rs
+2026-09-30T08:22:37.4793242Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-configuration/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-configuration/src/generated.rs
+2026-09-30T08:22:37.4835993Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-management-target/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-management-target/src/generated.rs
+2026-09-30T08:22:37.4839944Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-selection/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-plugin-selection/src/generated.rs
+2026-09-30T08:22:37.4846494Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-process/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-process/src/generated.rs
+2026-09-30T08:22:37.4850356Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt/src/generated.rs
+2026-09-30T08:22:37.4853398Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt-provider/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-prompt-provider/src/generated.rs
+2026-09-30T08:22:37.4866787Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session/src/generated.rs
+2026-09-30T08:22:37.4870796Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-control/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-control/src/generated.rs
+2026-09-30T08:22:37.4874121Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-presentation/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-session-presentation/src/generated.rs
+2026-09-30T08:22:37.4881382Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-task-supervisor/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-task-supervisor/src/generated.rs
+2026-09-30T08:22:37.4886657Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-hook/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-hook/src/generated.rs
+2026-09-30T08:22:37.4892705Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-progress/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-progress/src/generated.rs
+2026-09-30T08:22:37.4900760Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-provider/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-provider/src/generated.rs
+2026-09-30T08:22:37.4906408Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-target/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tool-target/src/generated.rs
+2026-09-30T08:22:37.4916020Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tools/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-tools/src/generated.rs
+2026-09-30T08:22:37.4918804Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-binding/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-binding/src/generated.rs
+2026-09-30T08:22:37.4921410Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-input/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-input/src/generated.rs
+2026-09-30T08:22:37.4939405Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-processing/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-turn-processing/src/generated.rs
+2026-09-30T08:22:37.4958602Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-user-interaction/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-user-interaction/src/generated.rs
+2026-09-30T08:22:37.4962712Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-workspace-read/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-workspace-read/src/generated.rs
+2026-09-30T08:22:37.4967636Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-worktree/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-worktree/src/generated.rs
+2026-09-30T08:22:37.4973333Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-panel/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-panel/src/generated.rs
+2026-09-30T08:22:37.4978892Z check /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-suggestion/capability.json -> /home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-tui-suggestion/src/generated.rs
+2026-09-30T08:22:37.5033053Z ##[group]Run python3 examples/external-task-board-capability/verify-registry.py
+2026-09-30T08:22:37.5034181Z [36;1mpython3 examples/external-task-board-capability/verify-registry.py[0m
+2026-09-30T08:22:37.5125502Z shell: /usr/bin/bash -e {0}
+2026-09-30T08:22:37.5125934Z env:
+2026-09-30T08:22:37.5126276Z   CARGO_TERM_COLOR: always
+2026-09-30T08:22:37.5126716Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:22:37.5127176Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:22:37.5127838Z   CACHE_ON_FAILURE: false
+2026-09-30T08:22:37.5128262Z ##[endgroup]
+2026-09-30T08:23:03.0690021Z 
+2026-09-30T08:23:03.0690583Z running 3 tests
+2026-09-30T08:23:03.0691472Z test invalid_explicit_provider_binding_is_rejected_before_plugin_activation ... ok
+2026-09-30T08:23:03.0692462Z test invalid_plugin_configuration_is_rejected_before_ready ... ok
+2026-09-30T08:23:03.0693126Z test external_provider_consumer_resolve_invoke_cancel_and_close ... ok
+2026-09-30T08:23:03.0693539Z 
+2026-09-30T08:23:03.0693947Z test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-09-30T08:23:03.0694432Z 
+2026-09-30T08:23:03.0694437Z 
+2026-09-30T08:23:03.0694551Z {
+2026-09-30T08:23:03.0694826Z   "target": "trusted-native",
+2026-09-30T08:23:03.0695229Z   "artifacts": [
+2026-09-30T08:23:03.0695482Z     {
+2026-09-30T08:23:03.0695717Z       "name": "lenso",
+2026-09-30T08:23:03.0696022Z       "version": "0.5.27",
+2026-09-30T08:23:03.0696516Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0697006Z     },
+2026-09-30T08:23:03.0697234Z     {
+2026-09-30T08:23:03.0697726Z       "name": "lenso-app-plan",
+2026-09-30T08:23:03.0698061Z       "version": "0.4.6",
+2026-09-30T08:23:03.0698481Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0698971Z     },
+2026-09-30T08:23:03.0699192Z     {
+2026-09-30T08:23:03.0699454Z       "name": "lenso-contract-authoring",
+2026-09-30T08:23:03.0699822Z       "version": "0.1.1",
+2026-09-30T08:23:03.0700268Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0700740Z     },
+2026-09-30T08:23:03.0700963Z     {
+2026-09-30T08:23:03.0701246Z       "name": "lenso-contract-authoring-macros",
+2026-09-30T08:23:03.0701638Z       "version": "0.1.0",
+2026-09-30T08:23:03.0702049Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0702508Z     },
+2026-09-30T08:23:03.0702725Z     {
+2026-09-30T08:23:03.0702973Z       "name": "lenso-contract-codegen",
+2026-09-30T08:23:03.0703318Z       "version": "0.10.0",
+2026-09-30T08:23:03.0703730Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0704190Z     },
+2026-09-30T08:23:03.0704408Z     {
+2026-09-30T08:23:03.0704660Z       "name": "lenso-contract-runtime",
+2026-09-30T08:23:03.0704999Z       "version": "0.2.0",
+2026-09-30T08:23:03.0705413Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0705823Z     },
+2026-09-30T08:23:03.0706014Z     {
+2026-09-30T08:23:03.0706216Z       "name": "lenso-guest-sdk",
+2026-09-30T08:23:03.0706480Z       "version": "0.5.1",
+2026-09-30T08:23:03.0706839Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0707212Z     },
+2026-09-30T08:23:03.0707566Z     {
+2026-09-30T08:23:03.0707754Z       "name": "lenso-kernel",
+2026-09-30T08:23:03.0707998Z       "version": "0.3.11",
+2026-09-30T08:23:03.0708333Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0708697Z     },
+2026-09-30T08:23:03.0708870Z     {
+2026-09-30T08:23:03.0709065Z       "name": "lenso-native-adapter",
+2026-09-30T08:23:03.0709968Z       "version": "0.3.18",
+2026-09-30T08:23:03.0710330Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0710681Z     },
+2026-09-30T08:23:03.0710850Z     {
+2026-09-30T08:23:03.0711060Z       "name": "lenso-native-adapter-macros",
+2026-09-30T08:23:03.0711548Z       "version": "0.2.7",
+2026-09-30T08:23:03.0711906Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0712280Z     },
+2026-09-30T08:23:03.0712464Z     {
+2026-09-30T08:23:03.0712706Z       "name": "lenso-plugin-authoring",
+2026-09-30T08:23:03.0712993Z       "version": "0.2.0",
+2026-09-30T08:23:03.0713323Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0713686Z     },
+2026-09-30T08:23:03.0713857Z     {
+2026-09-30T08:23:03.0714048Z       "name": "lenso-runner",
+2026-09-30T08:23:03.0714289Z       "version": "0.2.19",
+2026-09-30T08:23:03.0714619Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0714981Z     },
+2026-09-30T08:23:03.0715152Z     {
+2026-09-30T08:23:03.0715351Z       "name": "lenso-runtime-codec",
+2026-09-30T08:23:03.0715607Z       "version": "0.4.3",
+2026-09-30T08:23:03.0715922Z       "source": "registry+https://github.com/rust-lang/crates.io-index"
+2026-09-30T08:23:03.0716268Z     }
+2026-09-30T08:23:03.0716446Z   ]
+2026-09-30T08:23:03.0716616Z }
+2026-09-30T08:23:03.0717246Z PASS: locked public registry dependencies; no sibling or Git patches. This qualifies the native Task Board consumer, not the new Agent contracts or isolation targets.
+2026-09-30T08:23:03.0808402Z ##[group]Run cargo package -p lenso-capability-agent-durable-task -p lenso-capability-agent-extension-state
+2026-09-30T08:23:03.0809300Z [36;1mcargo package -p lenso-capability-agent-durable-task -p lenso-capability-agent-extension-state[0m
+2026-09-30T08:23:03.0810085Z [36;1mpython3 examples/external-agent-durable-state/verify-artifacts.py --artifacts-dir target/package[0m
+2026-09-30T08:23:03.0871077Z shell: /usr/bin/bash -e {0}
+2026-09-30T08:23:03.0871336Z env:
+2026-09-30T08:23:03.0871539Z   CARGO_TERM_COLOR: always
+2026-09-30T08:23:03.0871792Z   CARGO_HOME: /home/runner/.cargo
+2026-09-30T08:23:03.0872055Z   CARGO_INCREMENTAL: 0
+2026-09-30T08:23:03.0872283Z   CACHE_ON_FAILURE: false
+2026-09-30T08:23:03.0872514Z ##[endgroup]
+2026-09-30T08:23:03.1515866Z [1m[92m    Updating[0m git repository `https://github.com/LioRael/lenso`
+2026-09-30T08:23:05.0794609Z [1m[92m    Updating[0m git repository `https://github.com/LioRael/lenso-console`
+2026-09-30T08:23:06.2626198Z [1m[92m    Updating[0m crates.io index
+2026-09-30T08:23:06.3360768Z [1m[33mwarning[0m: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3363341Z [1m[33mwarning[0m: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3366030Z [1m[33mwarning[0m: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3367795Z [1m[33mwarning[0m: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3369386Z [1m[33mwarning[0m: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3370864Z [1m[33mwarning[0m: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3372338Z [1m[33mwarning[0m: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3374497Z [1m[33mwarning[0m: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3375758Z [1m[33mwarning[0m: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3377046Z [1m[33mwarning[0m: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3378501Z [1m[33mwarning[0m: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3392184Z [1m[33mwarning[0m: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3393664Z [1m[33mwarning[0m: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3394932Z [1m[33mwarning[0m: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3400080Z [1m[33mwarning[0m: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3401534Z [1m[33mwarning[0m: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3402890Z [1m[33mwarning[0m: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+2026-09-30T08:23:06.3403867Z [1m[96mhelp[0m: Check that the patched package version and available features are compatible
+2026-09-30T08:23:06.3404451Z       with the dependency requirements. If the patch has a different version from
+2026-09-30T08:23:06.3404966Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+2026-09-30T08:23:06.3405464Z       version. This may also occur with an optional dependency that is not enabled.
+2026-09-30T08:23:06.3649090Z [1m[92m   Packaging[0m lenso-capability-agent-durable-task v0.1.0 (/home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-durable-task)
+2026-09-30T08:23:06.3921819Z [1m[92m    Updating[0m crates.io index
+2026-09-30T08:23:06.4177281Z [1m[91merror[0m: failed to prepare local package for uploading
+2026-09-30T08:23:06.4178221Z 
+2026-09-30T08:23:06.4178395Z Caused by:
+2026-09-30T08:23:06.4179067Z   failed to select a version for the requirement `lenso = "^0.5.28"`
+2026-09-30T08:23:06.4180085Z   candidate versions found which didn't match: 0.5.27, 0.5.25, 0.5.23, ...
+2026-09-30T08:23:06.4180938Z   location searched: crates.io index
+2026-09-30T08:23:06.4182361Z   required by package `lenso-capability-agent-durable-task v0.1.0 (/home/runner/work/lenso-agent/lenso-agent/crates/lenso-capability-agent-durable-task)`
+2026-09-30T08:23:06.4271168Z ##[error]Process completed with exit code 101.
+2026-09-30T08:23:06.4388364Z Post job cleanup.
+2026-09-30T08:23:06.5209506Z [command]/usr/bin/git version
+2026-09-30T08:23:06.5251244Z git version 2.55.0
+2026-09-30T08:23:06.5291920Z Temporarily overriding HOME='/home/runner/work/_temp/81951b40-ed58-42e5-869d-1f0193df2bb8' before making global git config changes
+2026-09-30T08:23:06.5293469Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-30T08:23:06.5297062Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/lenso-agent/lenso-agent
+2026-09-30T08:23:06.5327751Z Removing SSH command configuration
+2026-09-30T08:23:06.5334352Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-30T08:23:06.5369299Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-30T08:23:06.5606589Z Removing HTTP extra header
+2026-09-30T08:23:06.5613866Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-30T08:23:06.5650595Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-30T08:23:06.5891630Z Removing includeIf entries pointing to credentials config files
+2026-09-30T08:23:06.5899756Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-30T08:23:06.5935982Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-30T08:23:06.6358242Z Cleaning up orphan processes

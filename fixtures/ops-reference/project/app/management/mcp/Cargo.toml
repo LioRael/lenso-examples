@@ -1,0 +1,29 @@
+[package]
+name = "lenso-ops-reference-management-mcp"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata.lenso]
+plugin-id = "example.ops-management-mcp"
+root-slot = "management-mcp"
+
+[package.metadata.lenso.host-facilities.transport]
+native = "host_facilities::transport"
+native-clock = true
+
+[dependencies]
+lenso = "=0.5.28"
+lenso-native-adapter = "=0.3.19"
+lenso-management-mcp = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-management = { git = "https://github.com/LioRael/lenso-console", rev = "ed1cfec08808dd38e068148224256b663d31fd44" }
+lenso-capability-auth = { git = "https://github.com/LioRael/lenso-auth-plugin", rev = "1d101fbc9ba1efc12aaa2cf459628e6383100264" }
+axum = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["net", "rt", "sync"] }
+tokio-util = "0.7"
+url = "2"
+
+[lints.rust]
+unsafe_code = "forbid"

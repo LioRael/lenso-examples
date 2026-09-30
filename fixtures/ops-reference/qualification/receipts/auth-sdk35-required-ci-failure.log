@@ -1,0 +1,31 @@
+Check	Check extracted Workers Auth packages	﻿2026-09-30T06:39:48.9336125Z ##[group]Run python3 workers/check-packages.py
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9336500Z ^[[36;1mpython3 workers/check-packages.py^[[0m
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9403312Z shell: /usr/bin/bash -e {0}
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9403576Z env:
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9403901Z   LENSO_POSTGRES_TEST_URL: postgres://postgres@localhost:5432/postgres
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9404316Z   CARGO_HOME: /home/runner/.cargo
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9404582Z   CARGO_INCREMENTAL: 0
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9404809Z   CARGO_TERM_COLOR: always
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:48.9405036Z ##[endgroup]
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.2892062Z ^[[1m^[[92m   Packaging^[[0m lenso-auth-sdk v0.2.4 (/tmp/lenso-auth-packages-58pcayiu/source/crates/lenso-auth-sdk)
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.2989310Z ^[[1m^[[92m    Updating^[[0m crates.io index
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5938411Z ^[[1m^[[91merror^[[0m: failed to prepare local package for uploading
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5938780Z 
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5938889Z Caused by:
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5939286Z   failed to select a version for the requirement `lenso-kernel = "=0.3.12"`
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5939906Z   candidate versions found which didn't match: 0.3.11, 0.3.9, 0.3.8, ...
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5940326Z   location searched: crates.io index
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.5941185Z   required by package `lenso-auth-sdk v0.2.4 (/tmp/lenso-auth-packages-58pcayiu/source/crates/lenso-auth-sdk)`
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7043076Z Traceback (most recent call last):
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7044162Z   File "/home/runner/work/lenso-auth-plugin/lenso-auth-plugin/workers/check-packages.py", line 95, in <module>
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7045273Z     runtime_packages["lenso-auth-sdk"] = package("lenso-auth-sdk")
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7045996Z                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7046987Z   File "/home/runner/work/lenso-auth-plugin/lenso-auth-plugin/workers/check-packages.py", line 89, in package
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7047826Z     cargo(*args)
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7048621Z   File "/home/runner/work/lenso-auth-plugin/lenso-auth-plugin/workers/check-packages.py", line 37, in cargo
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7049492Z     return subprocess.run(
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7049866Z            ^^^^^^^^^^^^^^^
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7050367Z   File "/usr/lib/python3.12/subprocess.py", line 571, in run
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7051046Z     raise CalledProcessError(retcode, process.args,
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7054386Z subprocess.CalledProcessError: Command '['cargo', 'package', '--manifest-path', '/tmp/lenso-auth-packages-58pcayiu/source/crates/lenso-auth-sdk/Cargo.toml', '--no-verify', '--allow-dirty', '--target-dir', '/tmp/lenso-auth-packages-58pcayiu/artifacts', '--config', '/tmp/lenso-auth-packages-58pcayiu/cohort-patch.toml']' returned non-zero exit status 101.
+Check	Check extracted Workers Auth packages	2026-09-30T06:39:49.7214418Z ##[error]Process completed with exit code 1.

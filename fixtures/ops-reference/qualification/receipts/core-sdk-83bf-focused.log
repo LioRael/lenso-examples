@@ -1,0 +1,87 @@
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+    Blocking waiting for file lock on package cache
+   Compiling lenso-engine-app v0.3.2 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-engine-app)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.04s
+     Running unittests src/lib.rs (target/debug/deps/lenso_engine_app-e5dd0a4fbf94011b)
+
+running 1 test
+test plugin::tests::bun_plugin_scaffold_uses_generic_and_product_owned_declarations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 340 filtered out; finished in 0.00s
+
+     Running tests/embedding.rs (target/debug/deps/embedding-d6b4dca54327abf4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+mbx[cache]: 0 hits, 0 misses, 3 incremental; 0 B downloaded, 0 B uploaded, 0 B stored locally
+mbx[savings]: 1d 28m refunded over 1462 builds. no receipt necessary.
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s
+     Running unittests src/lib.rs (target/debug/deps/lenso_engine_app-e5dd0a4fbf94011b)
+
+running 1 test
+test app::convention_authoring::plugin_new_tests::adopted_terminal_rust_sdk_uses_the_current_host_contract_cohort ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 340 filtered out; finished in 0.01s
+
+     Running tests/embedding.rs (target/debug/deps/embedding-d6b4dca54327abf4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+    Blocking waiting for file lock on package cache
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running unittests src/lib.rs (target/debug/deps/lenso_engine_app-e5dd0a4fbf94011b)
+
+running 5 tests
+test app::contracts::tests::clean_room_source_contract_generates_before_a_stale_library_can_compile ... ignored, requires Cargo registry access; compiles actual source extraction
+test app::contracts::tests::all_contracts_validate_before_generated_files_change ... ok
+test app::contracts::tests::output_cannot_escape_package_or_overwrite_contract_source ... ok
+test app::contracts::tests::descriptor_generation_is_stable_and_rejects_incompatible_changes_before_output ... ok
+test app::contracts::tests::unrelated_contract_rs_does_not_claim_descriptor_source_authority ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 336 filtered out; finished in 0.28s
+
+     Running tests/embedding.rs (target/debug/deps/embedding-d6b4dca54327abf4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+      ┌─────────┐  mr boxington
+     ╱ ═══════ ╱│
+    ╱─────────╱ │
+    │ •    (◉)│≡│
+    │  ◟▄▄▄◞  │ ╱
+    │   ◀◆▶   │╱
+    └─────────┘
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Checking lenso-engine-app v0.3.2 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-engine-app)
+    Checking lenso-cli v0.6.5 (/Users/leosouthey/Projects/framework/.worktrees/lenso/codex-published-sdk-cohort/crates/lenso-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.52s
+mbx[cache]: 0 hits, 0 misses, 27 incremental; 0 B downloaded, 0 B uploaded, 0 B stored locally
+mbx[savings]: 96489 compilations on file. the box remembers.

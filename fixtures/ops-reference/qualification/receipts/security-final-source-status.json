@@ -1,0 +1,105 @@
+{
+  "schema": "lenso.qualification.source-gate-snapshot.v1",
+  "recorded_at": "2026-09-30T08:48:30.302945+00:00",
+  "proof_layer": "Remote source-gate status plus immutable local source/archive receipts; not package publication or new whole-App qualification.",
+  "observation_basis": "Root supplied exact remote run readbacks; failure evidence is retained byte for byte.",
+  "core": {
+    "revision": "b8d134d739698812a039a79633719e14947df1e3",
+    "required_run_id": 36689302394,
+    "quality": "success",
+    "bun_conformance": "success",
+    "same_sha_landing": "main_fast_forward_and_remote_readback_completed",
+    "review": {
+      "path": "./receipts/core-sdk-b8d1-artifact-review.json",
+      "sha256": "033bc1d9ad5f191010ab3fee29822d23ebfbfa4b1ff4af29af7e61a1a1427428"
+    },
+    "review_status_boundary": "Review retains in_progress_at_capture; this later status snapshot records the completed required CI without rewriting that review.",
+    "delivery_receipt": {
+      "path": "./receipts/core-sdk-b8d1-delivery.json",
+      "sha256": "778a54c05105c4119e9b1472a25a85927eeadcaaf907d4842d39c12f4a09bc9f"
+    }
+  },
+  "agent": {
+    "revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+    "required_quality_run_id": 36689241104,
+    "result": "failure",
+    "failed_required_step": "Generated contracts: unpublished producer prerequisite",
+    "passed_steps": [
+      "Static integrity",
+      "Whole-workspace tests and strict checks",
+      "Foundation gate",
+      "Marketplace gate"
+    ],
+    "failure_log": {
+      "path": "./receipts/agent-sdk35-bec9-quality-contracts-failed.log",
+      "sha256": "84c87a795bc0aec809aa8b16d3938771456f0a60e5540a4e8445a9c5c0fb8307"
+    },
+    "landing": "held",
+    "local_focused_receipt": {
+      "path": "./receipts/agent-sdk35-web-acp-workspace-strict-continuation.json",
+      "sha256": "8bc9cd6e8feeba998dab0e1a1caddadad3accb2c9925c7ed298516ec98934601"
+    }
+  },
+  "latest_security_owners": {
+    "auth": {
+      "revision": "1d101fbc9ba1efc12aaa2cf459628e6383100264",
+      "required_run_id": 36678998509,
+      "result": "failure",
+      "coordinated_landing": "held",
+      "reason": "Normalized package requires unpublished Kernel 0.3.12"
+    },
+    "access": {
+      "revision": "5485066ae3e99191862701f753b3ae186755ee80",
+      "required_run_id": 36677702907,
+      "result": "failure",
+      "coordinated_landing": "held",
+      "reason": "Normalized package requires unpublished facade 0.5.28"
+    },
+    "audit": {
+      "revision": "8fb929d066a5ce4bc145db47a6aae0527b62f230",
+      "required_run_id": 36677705331,
+      "result": "failure",
+      "coordinated_landing": "held",
+      "reason": "Normalized package requires unpublished Kernel 0.3.12"
+    },
+    "approval": {
+      "revision": "a6e73aa756c45db8260b5a7544328d97624ea896",
+      "required_run_id": 36679362476,
+      "result": "success",
+      "coordinated_landing": "held"
+    }
+  },
+  "console": {
+    "revision": "ed1cfec08808dd38e068148224256b663d31fd44",
+    "required_run_id": 36680257279,
+    "result": "failure",
+    "reason": "Normalized extracted package requires unpublished Kernel ^0.3.12",
+    "failure_log": {
+      "path": "./receipts/console-sdk35-required-ci-failure.log",
+      "sha256": "391f945130141186e319b3f366e46fa892104081d7807242688b2495d162d861"
+    },
+    "landing": "held"
+  },
+  "cli_npm_dry_run": {
+    "run_id": 36689506392,
+    "version": "0.17.5",
+    "mode": "dry-run",
+    "result": "not_recorded_completed_here",
+    "publication": false
+  },
+  "registry_publication": {
+    "authorization": "awaiting_explicit_human_reply",
+    "performed": false
+  },
+  "profile_input_index": {
+    "path": "../profile-inputs.json",
+    "sha256": "0641d536624462832f6a706238044c511f91cde08a89b2b90cdbf2ba6386cd59"
+  },
+  "historical_profile_receipts_renamed_as_latest": false,
+  "main_sdk_dry_run": {
+    "run_id": 36691729181,
+    "status_at_recording": "queued",
+    "mode": "dry-run",
+    "publication": false
+  }
+}

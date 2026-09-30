@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "state": "source_component_checkpoint_not_whole_app_qualification",
+  "core_source_pin": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "whole_source_workers_qualified": false,
+  "registry_publication": false,
+  "profiles": {
+    "initial_workers_management": "operator-issued fixture user API tokens; current credential state/current RBAC/immutable Approval/Audit",
+    "account_cookie_human_pat_workers": "unsupported not promoted"
+  },
+  "node_component_tests": {
+    "auth": {
+      "source": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+      "command": "node --test crates/lenso-auth-api-token-plugin/tests/source-facility.test.mjs",
+      "passed": 3,
+      "failed": 0,
+      "actual_workerd": false,
+      "database": "Node primary-session admission snapshot fixture and SQLite finite store where applicable",
+      "source_sha256": {
+        "crates/lenso-auth-api-token-plugin/src/host_facilities/state.mjs": "9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d",
+        "crates/lenso-auth-api-token-plugin/tests/source-facility.test.mjs": "356f06f93837fb04d7b914b556912877d8406aff46d4bec9b02479c13f6adf4e"
+      }
+    },
+    "access": {
+      "source": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+      "command": "node --test crates/lenso-access-control-d1-plugin/tests/source-facility.test.mjs",
+      "passed": 3,
+      "failed": 0,
+      "actual_workerd": false,
+      "database": "Node primary-session admission snapshot fixture and SQLite finite store where applicable",
+      "source_sha256": {
+        "crates/lenso-access-control-d1-plugin/src/host_facilities/state.mjs": "d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d",
+        "crates/lenso-access-control-d1-plugin/tests/source-facility.test.mjs": "356f06f93837fb04d7b914b556912877d8406aff46d4bec9b02479c13f6adf4e"
+      }
+    },
+    "audit": {
+      "source": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+      "command": "node --test crates/lenso-audit-log-d1-plugin/tests/d1-store.test.mjs",
+      "passed": 7,
+      "failed": 0,
+      "actual_workerd": false,
+      "database": "Node primary-session admission snapshot fixture and SQLite finite store where applicable",
+      "source_sha256": {
+        "crates/lenso-audit-log-d1-plugin/src/host_facilities/store.mjs": "3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+        "crates/lenso-audit-log-d1-plugin/tests/d1-store.test.mjs": "1c471c365b2c6cb011f2a4b7f4037eabaf6e80f7d057a7bc8de3b71abdd17712",
+        "crates/lenso-audit-log-d1-plugin/tests/d1-fixture.mjs": "08e7e4183789c33d0a160d0e3c3fb49f51fac669b2befaed6eedcb4f1cfc1449"
+      }
+    },
+    "approval": {
+      "source": "3346ce45beacdb74918666c045c802d31da585f6",
+      "command": "node --test crates/lenso-business-approval-d1-plugin/tests/d1-store.test.mjs",
+      "passed": 6,
+      "failed": 0,
+      "actual_workerd": false,
+      "database": "Node primary-session admission snapshot fixture and SQLite finite store where applicable",
+      "source_sha256": {
+        "crates/lenso-business-approval-d1-plugin/src/host_facilities/store.mjs": "ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995",
+        "crates/lenso-business-approval-d1-plugin/tests/d1-store.test.mjs": "cddf7c5d61e48e48e65e1d29a1c32b2c46f3b6d6b9f04dbc62613e419d8d45f7",
+        "crates/lenso-business-approval-d1-plugin/tests/d1-fixture.mjs": "7a0b3df5dc15e54c2dfd6e635e555d5b9121613731d8ddc4748fe6f02dbf9a90"
+      }
+    }
+  },
+  "normal_cargo_sessions": {
+    "alltargets_lockroll": {
+      "auth": "93628",
+      "access": "79317",
+      "audit": "16554",
+      "approval": "71372"
+    },
+    "native_strict": {
+      "auth": "65581",
+      "access": "20394",
+      "audit": "53758",
+      "approval": "52360"
+    },
+    "wasm_strict": {
+      "auth": "63988",
+      "access": "56067",
+      "audit": "67326",
+      "approval": "7189"
+    },
+    "auth_human_acl_roll": "18539",
+    "exclusive_postgres": {
+      "audit": "27815",
+      "approval": "29292"
+    }
+  },
+  "package_verification": {
+    "access": {
+      "state": "failed",
+      "session": "45149",
+      "log": "access-c839-required-archive.log"
+    },
+    "audit": {
+      "state": "failed",
+      "session": "57148",
+      "log": "audit-29c-required-archive.log",
+      "latest_exact_ci": 36661870425,
+      "latest_source": "a5f87335121622b11369a4baa478b194b67c1bea"
+    },
+    "reason": "Cargo normalized archives drop source patches and resolve the published adapter macros without the facility attribute. Required gates retained; coordinated producer release prerequisite remains.",
+    "auth": {
+      "state": "failed",
+      "ci": 36661419567,
+      "job_id": 109716821234,
+      "step": "Check extracted Workers Auth packages",
+      "source": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0"
+    }
+  },
+  "required_remote_ci": {
+    "auth": {
+      "id": 36661419567,
+      "sha": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+      "state": "failure",
+      "failure": "Check extracted Workers Auth packages: published adapter macros reject #[facility] in API provider src/lib.rs:298",
+      "job_id": 109716821234
+    },
+    "access": {
+      "id": 36661055774,
+      "sha": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+      "state": "failure",
+      "failure": "native and Workers package verification"
+    },
+    "audit_historical": {
+      "id": 36661069966,
+      "sha": "29c58e1ced0876a866dc6669387e7032bccd83f8",
+      "state": "failure",
+      "failure": "Clippy1.94 doc_markdown; docs-only fix a5f"
+    },
+    "approval": {
+      "id": 36661069304,
+      "sha": "3346ce45beacdb74918666c045c802d31da585f6",
+      "state": "success",
+      "main_readback": "3346ce45beacdb74918666c045c802d31da585f6"
+    },
+    "audit_a5_history": {
+      "id": 36661870425,
+      "sha": "a5f87335121622b11369a4baa478b194b67c1bea",
+      "state": "failure",
+      "failure": "Verify public packages independently: published adapter macros reject #[facility] in D1 provider src/lib.rs:19",
+      "job_id": 109718201990
+    },
+    "audit": {
+      "sha": "64068969061c4bbcd98dbecdba1afbde6ba0cffa",
+      "state": "in_progress_at_snapshot",
+      "candidate_ref": "candidate/codex/audit-d1-read-receipt-20260930",
+      "change": "JS-only read receipt validation",
+      "id": 36663139622
+    }
+  },
+  "remaining": [
+    "standard registry archives after separately authorized coherent producer release",
+    "ordinary Source Workers graph local workerd/D1 and remote qualification",
+    "public package publication not requested"
+  ],
+  "operator_component_check": {
+    "source_path": "fixtures/ops-reference/workers-management/operator",
+    "source_refs": {
+      "auth": "91d7bc677ce792dfc30c87fe688beecf6b4e16b0",
+      "access": "c839b4ee9f70d47ff584ba05fa85d7f2b3b41b16",
+      "core": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e"
+    },
+    "wasm_check": {
+      "session": "70689",
+      "log": "ops-workers-operator-final-cohort-wasm-check.log",
+      "observed_finished": true
+    },
+    "wasm_strict": {
+      "log": "ops-workers-operator-final-wasm-strict.log",
+      "observed_finished": true,
+      "session": "54462"
+    },
+    "actual_workerd": false,
+    "ordinary_source_host": false
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "core_revision": "b8d134d739698812a039a79633719e14947df1e3",
+  "agent_revision": "bec995997fffc4ae04e7b88c31a7156251812d24",
+  "source_graphs": [
+    {
+      "root": "project",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "866b20243d0c1ea63cc557f0bb0994cc80f84d944822d3e9ab39934b283c4302"
+    },
+    {
+      "root": "project/app/state",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "d80216d007270d9167534ce9bfc13f31df26915256c5de9ce51b3bd09770f396"
+    },
+    {
+      "root": "project/app/management",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "8c26c5244bc6d6a28c559e26609e623a8fbe73a558d5fa479a968a010abc8d82"
+    },
+    {
+      "root": "project/contracts/example.ops-state",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "ec517b47663002b85a98e514b4420335a2668e923c01ee4d331f8362bcbe386d"
+    },
+    {
+      "root": "project/contracts/example.ops-state-v2",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "80aa243932a698ce008034f823ef720439f11c72deb74268707498205b7dedd5"
+    },
+    {
+      "root": "storage/native-pg",
+      "kernel_version": null,
+      "kernel_source": null,
+      "lock_sha256": "ba04ee92ad63cb74cf90d4747af77317f0e230089cd546dae8a9330966ede347"
+    },
+    {
+      "root": "operator",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "225b1654fd5e69295c08ba11f8274ecc43bc588d8490a42ba39030560f2c1007"
+    },
+    {
+      "root": "audit-reader",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "61d2b5f7fe6c779e6a4e9d5d52354feb0aec579cd722d2d9b13c0df60b9dc65d"
+    },
+    {
+      "root": "workers-management/operator",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=b8d134d739698812a039a79633719e14947df1e3#b8d134d739698812a039a79633719e14947df1e3",
+      "lock_sha256": "12877d656c93eb95f8f768334208d15166fda6beaaa209a4d044f175c031b137"
+    }
+  ],
+  "registry_only": false,
+  "qualification_layer": "source_resolution"
+}

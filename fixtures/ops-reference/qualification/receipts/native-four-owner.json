@@ -1,0 +1,140 @@
+{
+  "auth": {
+    "candidate": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "base": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+    "change": "Generated Unknown CredentialState/ACL domain replies remain RuntimeUnavailable; known denials and original Runtime failures keep their semantics. Admin issue/list/receipt/revoke retain the same rule. Human dependency authoring2 uses exact named owner choices.",
+    "wire_test_session": 69184,
+    "strict_clippy_session": 55822,
+    "abi_changed": false,
+    "remote_gate": "success",
+    "landed": true,
+    "access_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "strict_clippy_root_session": 53018,
+    "public_role_identity_receipt": ".artifacts/auth-shared-access-role-cohort.json",
+    "superseded_integration_candidate": {
+      "candidate": "220d444faf3b06dd642b6218568dae2dcd411bb9",
+      "base": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+      "change": "unknown Admin domain replies remain Human Runtime unavailable",
+      "wire_test_session": 62324,
+      "strict_clippy_session": 55822,
+      "abi_changed": false,
+      "remote_gate": "success",
+      "landed": false,
+      "ci_run": 36644690953,
+      "ci_conclusion": "success",
+      "superseded_by": "7be032c349ec095b87bc953321fe6dd9727c63e6"
+    },
+    "ci_run": 36651764905,
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "Check": "success"
+    },
+    "destination": "5fb16bbcbff51cce394fd6e29df9079485f7f37e",
+    "main_readback_at": "2026-09-30T00:55:03.738557+00:00",
+    "named_dependency_receipt": ".artifacts/auth-human-named-dependencies.json",
+    "prior_source_acceptance": {
+      "candidate": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "base": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+      "change": "unknown Admin domain replies remain Human Runtime unavailable",
+      "wire_test_session": 38303,
+      "strict_clippy_session": 55822,
+      "abi_changed": false,
+      "remote_gate": "success",
+      "landed": true,
+      "access_source": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+      "strict_clippy_root_session": 82268,
+      "public_role_identity_receipt": ".artifacts/auth-shared-access-role-cohort.json",
+      "superseded_integration_candidate": {
+        "candidate": "220d444faf3b06dd642b6218568dae2dcd411bb9",
+        "base": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+        "change": "unknown Admin domain replies remain Human Runtime unavailable",
+        "wire_test_session": 62324,
+        "strict_clippy_session": 55822,
+        "abi_changed": false,
+        "remote_gate": "success",
+        "landed": false,
+        "ci_run": 36644690953,
+        "ci_conclusion": "success",
+        "superseded_by": "7be032c349ec095b87bc953321fe6dd9727c63e6"
+      },
+      "ci_run": 36645392088,
+      "ci_attempt": 1,
+      "required_ci_jobs": {
+        "Check": "success"
+      },
+      "destination": "7be032c349ec095b87bc953321fe6dd9727c63e6",
+      "main_readback_at": "2026-09-29T23:44:27.642566+00:00"
+    }
+  },
+  "access": {
+    "candidate": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "base": "62ed6b9a100242e6932a46cb369b21f1c26ab765",
+    "change": "supported Native/D1 configuration schemas with unchanged strict Owner format validation",
+    "resolved_configuration_test_session": 98925,
+    "focused_tests_passed": 2,
+    "strict_clippy_session": 18298,
+    "capability_schema_changed": false,
+    "remote_gate": "success",
+    "landed": true,
+    "ci_run": 36644691127,
+    "ci_attempt": 1,
+    "required_ci_jobs": {
+      "quality": "success",
+      "workers": "success"
+    },
+    "destination": "8aabedfeb21a049481d1d2e1ba2523dcb4c3a442",
+    "main_readback_at": "2026-09-29T23:25:42.659970+00:00"
+  },
+  "native_four_owner": {
+    "auth": "be751f795b254ab228ae4fb2fde7cf79a934d09b",
+    "approval": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+    "console": "2c817d25",
+    "session": 99185,
+    "tests_passed": 1,
+    "strict_test_clippy": "passed",
+    "boundary": "composed real typed Owner PG ports, not SourceApp/browser"
+  },
+  "publication": "not_requested",
+  "cleanup": "preserve active Worktrees/shared targets",
+  "remaining_app_profile_proof": "P3 explicit no-Approval Authority check96914/strict48707 and A-T6 generated owner fault tests98437 PASS2/normal strict82500 PASS. Manager final checkpoint and Root actual C5 ordinary profile proof pending.",
+  "console_credential_state_availability": {
+    "source_file": "plugins/management/crates/lenso-management-authority/src/lib.rs",
+    "change": "Known domain rejections retain Denied; Runtime and generated Unknown preserve Unavailable. Applies to live credential/ACL checks and human Approval read/decide; signature/current projection validation unchanged.",
+    "generated_wire_test": "current_credential_state_keeps_unknown_and_runtime_outcomes_unavailable",
+    "focused_test_session": 98437,
+    "focused_tests_passed": 2,
+    "toolchain": "configured Cargo 1.98.1",
+    "strict_check": "passed Root normal configured Cargo session82500",
+    "core_catalog": "already propagates non-Denied errors; no source change",
+    "abi_changed": false,
+    "console_checkpoint": "pending",
+    "ports_scope": [
+      "CredentialState.inspect",
+      "AccessControl.check_permission",
+      "BusinessApproval.read",
+      "BusinessApproval.decide"
+    ],
+    "prior_credential_only_test_session": 27745,
+    "generated_port_fault_test": "owner_reply_faults_do_not_become_permission_denials",
+    "wire_boundary": "Generated native dispatch with decoded future domain reply and malformed success reply \u2192 ProtocolViolation; unit fault classification, not owner commit/PG or HTTP proof",
+    "strict_check_session": 82500
+  },
+  "audit_source_attribution": {
+    "candidate": "47de93e62acd8bf0d84a10b900ec36f8eb24f802",
+    "functional_source": "59ecc79e38de72891e6a164d7e74617c618038f8",
+    "test_only": true,
+    "remote_gate": "success",
+    "landed": true,
+    "ci_run": 36652212653,
+    "receipt": ".artifacts/audit-source-attribution.json"
+  },
+  "approval_configuration_schema": {
+    "candidate": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+    "base": "7f5530caa477bc5c7e28ae7c41e01bfd1a59969b",
+    "remote_gate": "success",
+    "landed": true,
+    "ci_run": 36653544540,
+    "receipt": ".artifacts/approval-configuration-schema.json",
+    "scope": "Private Plugin configuration schema compatibility with selected Source App; inline caller lists replace unsupported $ref/$defs and patterns. Existing owner schema/secret-reference/exact-caller validators unchanged."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["found"],
+  "properties": {
+    "found": {
+      "type": "boolean"
+    },
+    "label": {
+      "type": ["string", "null"]
+    },
+    "value": {
+      "type": ["integer", "null"],
+      "format": "int64"
+    },
+    "revision": {
+      "type": ["integer", "null"],
+      "format": "int64"
+    },
+    "receipt_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false,
+  "title": "ReceiptResponse"
+}

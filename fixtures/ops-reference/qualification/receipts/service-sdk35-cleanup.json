@@ -1,0 +1,22 @@
+{
+  "schema": "lenso.task-worktree-cleanup.v1",
+  "repository": "lenso-service-account-plugin",
+  "source": "6f4d4d158a70cbde2f9d6d46cf45cfb64a2afce0",
+  "worktree": "/Users/leosouthey/Projects/framework/.worktrees/lenso-service-account-plugin/codex-security-management-modernize",
+  "branch": "codex/security-management-modernize",
+  "before": {
+    "git_and_worktrunk_inspection": "clean, unlocked, integrated at same origin/main SHA",
+    "process_inspection": "Root normal ps found no Service/worktree process except inspection itself"
+  },
+  "commands": [
+    "git fetch origin --prune",
+    "git merge-base --is-ancestor HEAD origin/main",
+    "wt remove --foreground codex/security-management-modernize"
+  ],
+  "result": "removed worktree and integrated local branch",
+  "readback": "git worktree list contains only primary checkout; task branch absent",
+  "dirty_primary_checkout_preserved": true,
+  "force_used": false,
+  "cargo_clean_used": false,
+  "recorded_at": "2026-09-30T06:38:30.950765+00:00"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "lenso.workers-app-build.v1",
+  "target": "workers",
+  "environment": "local-workerd",
+  "profile": "lenso.linked-rust-workers@1",
+  "builder_version": "0.3.1",
+  "compatibility_date": "2026-09-26",
+  "source_digest": "sha256:8b86c9ca4cd336a4f6d80f248fa8762081d569954ded8a7aaa480557d16d7887",
+  "plan_digest": "sha256:24a8fe58615c7e9db09e9bc66c2e2537a4ded30e6c31d6e53f447afe0a5f09b2",
+  "plugin_instances": 9,
+  "capability_bindings": 10,
+  "host_wasm_digest": "sha256:226f4f2ee3957179ba9f5a746409a1b7c78ade0c86696dd3cf5709b9942f68b3",
+  "host_bindings_digest": "sha256:dc5b5f4c82ba983d9d9d13f5c9b7371713693ce60d2114472602c97ef6215b25",
+  "worker_entry_digest": "sha256:01a1a35591df59c437d70dadb05f88b43a6922343283948e498ee6805004d0c7",
+  "workers_runtime": {
+    "package": "@lenso/workers-runtime",
+    "version": "0.1.6",
+    "module_digests": {
+      "clock.mjs": "sha256:f8ddb0befe68c65e91a51421ea1fa40a616a4f1b5617c299966d2e758948ce33",
+      "facilities.mjs": "sha256:b096e80dbee638204c5f57f88530a765e2654c5424c9f045b0ae5df62e605f1b",
+      "host.mjs": "sha256:d6315c2105e4f0389789d755a42aa40209e8421d11403b10f79b5a61b754041c",
+      "http.mjs": "sha256:a234f1bc5b0d3cbfec08809edfa400715c0834b6ce8a3c0c3cc1588bfd9cc72b",
+      "runner.mjs": "sha256:a2abb3e199c377918f32f026d495b82d919be3eb73e40fdb936baa3854a1dcc6",
+      "scope.mjs": "sha256:450241c47c4468a37ef932dd24d610c49318d9afc9dc369bf051acac86f38a74"
+    }
+  },
+  "host_facilities": {
+    "grants_digest": "sha256:b3ad293a9f61d5a841ad5ade1d62c012e27ee8478b7dcb95148e1048b3c6ab30",
+    "owner_modules": [
+      {
+        "package_id": "example.ops-management",
+        "slot": "authority",
+        "module": "facilities/owner_0.mjs",
+        "digest": "sha256:d63ce485b22d2069e7553bbe82edb8efa470b5b398a99f12aab57c33cccac597",
+        "owner": {
+          "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#lenso-management-core@0.1.0",
+          "name": "lenso-management-core",
+          "version": "0.1.0",
+          "source": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#dbea6e41fa77de867a3daa55ad43efe0113de574",
+          "relative_path": "src/workers/journal.mjs"
+        }
+      },
+      {
+        "package_id": "example.ops-management-web",
+        "slot": "mcp",
+        "module": "facilities/owner_1.mjs",
+        "digest": "sha256:9571e6fbe0144f3aab7e4710033f9242f8dce3a489cb38913cdbf04ada36d8a7",
+        "owner": {
+          "cargo_id": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#lenso-management-http@0.1.0",
+          "name": "lenso-management-http",
+          "version": "0.1.0",
+          "source": "git+https://github.com/LioRael/lenso-console?rev=dbea6e41fa77de867a3daa55ad43efe0113de574#dbea6e41fa77de867a3daa55ad43efe0113de574",
+          "relative_path": "src/workers/mcp.mjs"
+        }
+      },
+      {
+        "package_id": "example.ops-secrets",
+        "slot": "secrets",
+        "module": "facilities/owner_2.mjs",
+        "digest": "sha256:066dde5b3dd6eb68117f4209db79935cbf61c51c6f1e05a5c67e53f114f44daf",
+        "owner": null
+      },
+      {
+        "package_id": "example.ops-state",
+        "slot": "state",
+        "module": "facilities/owner_3.mjs",
+        "digest": "sha256:cd58cc725d91547ec54ef4a214999f101fc124fff5f54694b19de7f57cccc3d1",
+        "owner": null
+      },
+      {
+        "package_id": "lenso.access-control.d1",
+        "slot": "state",
+        "module": "facilities/owner_4.mjs",
+        "digest": "sha256:d2b977ad27212f98b5eb7ba075bf8d7ff1dfb3c790adf11aca2291490f08657d",
+        "owner": null
+      },
+      {
+        "package_id": "lenso.audit-log.d1",
+        "slot": "store",
+        "module": "facilities/owner_5.mjs",
+        "digest": "sha256:3ab68eb3464a730db3087345b69c7703d40003a20112fca5681494dd24478658",
+        "owner": null
+      },
+      {
+        "package_id": "lenso.auth.api-token",
+        "slot": "state",
+        "module": "facilities/owner_6.mjs",
+        "digest": "sha256:9de4ea2c810e710a3a6780fd2f69fe62b9af852ee9203a1ab216db08c061596d",
+        "owner": null
+      },
+      {
+        "package_id": "lenso.business-approval.d1",
+        "slot": "store",
+        "module": "facilities/owner_7.mjs",
+        "digest": "sha256:ddeaa5c442cc3cab9746383358a2e4e6de57f633554db034aaaa9c1136f26995",
+        "owner": null
+      }
+    ]
+  },
+  "host_limits": {
+    "eventLimitMs": 10000,
+    "cleanupTimeoutMs": 1000,
+    "cancellationLimitMs": 1000
+  },
+  "wasm_bindgen": "wasm-bindgen 0.2.127",
+  "state_lifetime": "event",
+  "remote_deployment": "not_run"
+}

@@ -1,0 +1,82 @@
+{
+  "core_revision": "5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+  "agent_revision": "805947813f15dea43462543c1864de8bbc0bc165",
+  "source_graphs": [
+    {
+      "root": "project",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": true,
+      "lock_sha256": "5fe91f230c22cc4ac27c44b180e3faec8ddc9b8bdf4ae0609054a6f3b5bf7cb8",
+      "metadata_sha256": "c020b6bb0788bb21998b17fa4107740c1af9bb4eb8152e2709389cc7abe3dc0a"
+    },
+    {
+      "root": "project/app/state",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": true,
+      "lock_sha256": "2b045911f8de2363fafff63d4fa8a216c3f1ee21560a5aaa60590aceaaed5692",
+      "metadata_sha256": "73a7516c8d5df42afe205a3527cf29e0931fa40486226b9a07e6b0a44070793d"
+    },
+    {
+      "root": "project/app/management",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": true,
+      "lock_sha256": "6d326133e02a22c6bb4cec2f678c789f4d7546b88b4c73afc1517b869065ea5b",
+      "metadata_sha256": "4e489d969502c680d744106f48fb7e07cdd694bd3df57961ba1886bd262de85b"
+    },
+    {
+      "root": "project/contracts/example.ops-state",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": true,
+      "lock_sha256": "e5a2c26d9ca39ccec2cf6741d63767cd5ac21e1c7dce9b6eac3c412f9066f1cc",
+      "metadata_sha256": "93631a507a053a59b5891b607dedba6a19ae81320fc58424c803e45bb91569e7"
+    },
+    {
+      "root": "project/contracts/example.ops-state-v2",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": true,
+      "lock_sha256": "8f867b186dbe42fbe7374bc66d8af9c13daf315e8ab65c138d5188a5fac2217b",
+      "metadata_sha256": "341b716f588d44525f7fbcacd29f7811c52b2f03d56ca70f118f2d289d679f71"
+    },
+    {
+      "root": "storage/native-pg",
+      "kernel_version": null,
+      "kernel_source": null,
+      "reused_same_resolution": false,
+      "lock_sha256": "ba04ee92ad63cb74cf90d4747af77317f0e230089cd546dae8a9330966ede347",
+      "metadata_sha256": "5fb0d358884dc68b214a81fce079c09ba9510d89b1cda7ac1c1e831eedaa74fb"
+    },
+    {
+      "root": "operator",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": false,
+      "lock_sha256": "e889e733991b6f614cfcf2a9f0f3c0d6985dcfa8ac014e2f6a1916bb75b0f4cb",
+      "metadata_sha256": "5a2af2e36daaa36984cd22484f6685d159bbce33266383f806094141b136609f"
+    },
+    {
+      "root": "audit-reader",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": false,
+      "lock_sha256": "4b28468cc684b716940e968afc9f54616936d36ecddf62f41e051a12d746aaec",
+      "metadata_sha256": "912786e090bb11c1a26bc67ee078b8e29e6298e98c8ca79ddadb97fef6988b66"
+    },
+    {
+      "root": "workers-management/operator",
+      "kernel_version": "0.3.12",
+      "kernel_source": "git+https://github.com/LioRael/lenso?rev=5bb4f72b78bfff82496d160bbd674aa609a5c7f8#5bb4f72b78bfff82496d160bbd674aa609a5c7f8",
+      "reused_same_resolution": false,
+      "lock_sha256": "23234cbd155cd2e5e3492ae8a901e64fe7d55947903d1fc369348a37f9c16eeb",
+      "metadata_sha256": "beb8c6029da4fc84f0c63bfd1774de87eef76fa969bf42178c151cb337c99823"
+    }
+  ],
+  "registry_only": false,
+  "qualification_layer": "source_resolution",
+  "continuation_reason": "Initial recorder wrongly required a Kernel in the standalone PostgreSQL storage helper; it has no Kernel dependency. The five already successful unchanged resolutions are retained without rerunning them.",
+  "initial_recorder_failure_log": "ops-sdk35-final-metadata.log"
+}

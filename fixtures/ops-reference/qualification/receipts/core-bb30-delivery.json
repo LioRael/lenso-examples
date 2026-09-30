@@ -1,0 +1,27 @@
+{
+  "schema": "lenso.source-delivery@1",
+  "source": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+  "base": "c0464691b6ae1c80b5606065dd4073e8b7d6a59e",
+  "candidate": "candidate/codex-workers-root-features-20260930",
+  "required_gate": {
+    "run_id": 36666948577,
+    "url": "https://github.com/LioRael/lenso/actions/runs/36666948577",
+    "quality": "success",
+    "bun_conformance": "success"
+  },
+  "destination": "refs/heads/main",
+  "remote_readback": "bb30baa9e899a068e4a580e5e0956ec07b29ff72",
+  "change": "Ordinary selected Root Cargo feature preservation and Workers root alias linking",
+  "runtime_cohort": "unchanged c046 versions",
+  "local_checks": {
+    "root_session": 9421,
+    "fmt": "passed",
+    "root_features": "passed",
+    "wasm_features": "passed",
+    "affected_strict": "passed",
+    "cli_build": "passed"
+  },
+  "publication": "not_run",
+  "production_deployment": "not_run",
+  "recorded_at": "2026-09-30T04:17:57.161328+00:00"
+}

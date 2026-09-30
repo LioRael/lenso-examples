@@ -1,0 +1,23 @@
+{
+  "schema": "lenso.source-delivery@1",
+  "repository": "https://github.com/LioRael/lenso-js.git",
+  "source": "cb6ef95559ccab64905013148f140c7d727937f7",
+  "destination": "main",
+  "prior_destination": "04a40669c46356323f0bad65cedd2752b046e52b",
+  "candidate": "candidate/codex-managed-facilities-npm-final-20260930",
+  "required_ci": {
+    "run_id": 36672371433,
+    "head_sha": "cb6ef95559ccab64905013148f140c7d727937f7",
+    "conclusion": "success"
+  },
+  "landing": "fast_forward_exact_candidate",
+  "remote_readback": "cb6ef95559ccab64905013148f140c7d727937f7",
+  "publication": "not_run",
+  "deployment": "not_run",
+  "prepared_packages": {
+    "@lenso/cli": "0.17.5",
+    "@lenso/workers-runtime": "0.1.6"
+  },
+  "runtime_package_bytes_unchanged_from": "18e3cfb2837c8dfe5d5b907e39fe95ae15dc0a65",
+  "recorded_at": "2026-09-30T05:17:20.430727+00:00"
+}

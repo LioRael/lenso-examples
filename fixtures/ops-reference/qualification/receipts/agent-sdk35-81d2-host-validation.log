@@ -1,0 +1,54 @@
+/Users/leosouthey/Projects/framework/.worktrees/lenso-agent-harness/codex-controlled-management
+81d2a53cb3a57a14fb411cebd808b71122044bcc
+cargo test: 2 passed, 129 filtered out (1 suite, 0.00s)
+warning: patch `lenso-agent-tool-cli-plugin v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-browser-driver v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-configuration-source v0.1.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-client v0.3.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-endpoint v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-http-stream-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-capability-websocket-endpoint v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-app v0.3.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-engine-runtime v0.2.1 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-host-runtime v0.1.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-auth v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-http-egress-plugin v0.3.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-openapi-plugin v0.2.6 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-test v0.1.3 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-host v0.2.5 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-web-ingress-plugin v0.4.10 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+warning: patch `lenso-workers-driver v0.1.2 (https://github.com/LioRael/lenso?rev=83bf2d94e29ed4fb7878ade88482abcd417c4ba1#83bf2d94)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+mbx[progress]: 15s elapsed; 2 hits, 0 misses, 1 bypassed, 96 not looked up; ~1.3s compiler work saved
+mbx[cache]: 2 hits, 0 misses, 99 not looked up, 1 bypassed; 0 B downloaded, 0 B uploaded, 248.3 MiB stored locally
+mbx[savings]: 1d 1h of compiling skipped across 1476 builds. rustc suspects nothing.
+cargo check: 0 errors, 17 warnings (75 crates)
+cargo clippy: 2 errors, 17 warnings
+
+Errors:
+  error: calling `QuickJsLimits::default()` is more clear than this expression
+      --> crates/lenso-agent-host/src/generation.rs:3711:39
+       |
+  3711 |     .with_limits(agent_wasm_limits(), Default::default(), Default::default())
+       |                                       ^^^^^^^^^^^^^^^^^^ help: try: `QuickJsLimits::default()`
+       |
+       = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#default_trait_access
+       = note: `-D clippy::default-trait-access` implied by `-D warnings`
+       = help: to override `-D warnings` add `#[allow(clippy::default_trait_access)]`
+
+  error: calling `DylibLimits::default()` is more clear than this expression
+      --> crates/lenso-agent-host/src/generation.rs:3711:59
+       |
+  3711 |     .with_limits(agent_wasm_limits(), Default::default(), Default::default())
+       |                                                           ^^^^^^^^^^^^^^^^^^ help: try: `DylibLimits::default()`
+       |
+       = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#default_trait_access
+
+  calling `DylibLimits::default()` is more clear than this expression (1x)
+    crates/lenso-agent-host/src/generation.rs:3711:59
+  calling `QuickJsLimits::default()` is more clear than this expression (1x)
+    crates/lenso-agent-host/src/generation.rs:3711:39
+[full output: rtk recall 03c8fe31ee7d]

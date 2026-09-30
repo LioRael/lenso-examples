@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches: [main, "candidate/**"]
+    branches: ["candidate/**"]
 
 permissions:
   contents: read
@@ -37,13 +37,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: LioRael/lenso
-          ref: a1830734124c6ec7b3d87e6406341fda32d294c1
+          ref: c0464691b6ae1c80b5606065dd4073e8b7d6a59e
           path: .lenso-ci-cli
           persist-credentials: false
       - uses: actions/checkout@v6
         with:
           repository: LioRael/lenso-auth-plugin
-          ref: afe386ae04f8a706c8182347a7d31ef273dc380f
+          ref: 5fb16bbcbff51cce394fd6e29df9079485f7f37e
           path: .lenso-ci-auth
           persist-credentials: false
       - uses: actions/checkout@v6
@@ -85,3 +85,166 @@ jobs:
       - run: cargo fmt --manifest-path fixtures/vnext-typed-local-app/project/app/web/Cargo.toml -- --check
       - run: cargo fmt --manifest-path fixtures/vnext-typed-local-app/project/contracts/text/Cargo.toml -- --check
       - run: python3 fixtures/vnext-typed-local-app/verify.py --cli "$PWD/.lenso-ci-cli/target/debug/lenso"
+
+  operations-qualification:
+    name: Clean source Native and workerd consumers
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: lenso_reference_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lenso_reference_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: Swatinem/rust-cache@v2
+      - name: Prepare exact source CLI and packed Workers runtime
+        run: |
+          python3 fixtures/ops-reference/prepare.py --cache "$RUNNER_TEMP/candidate-tools"
+          python3 - "$RUNNER_TEMP/candidate-tools/tools.json" "$GITHUB_ENV" <<'PY'
+          import json, sys
+          selection=json.load(open(sys.argv[1]))
+          with open(sys.argv[2],'a') as environment:
+              environment.write('OPS_CLI='+selection['cli']+'\n')
+              environment.write('OPS_RUNTIME='+selection['workers_runtime']+'\n')
+          PY
+      - name: Install selected Workers build and local Host tools
+        run: |
+          cargo install wasm-bindgen-cli --version 0.2.127 --locked
+          npm install --prefix "$RUNNER_TEMP/workers-tools" --no-audit --no-fund wrangler@4.143.1
+      - name: Verify configured operations Plugin graph
+        run: |
+          cargo fmt --manifest-path fixtures/ops-reference/project/Cargo.toml -- --check
+          cargo fmt --manifest-path fixtures/ops-reference/project/app/state/Cargo.toml -- --check
+          cargo fmt --manifest-path fixtures/ops-reference/project/contracts/example.ops-state/Cargo.toml -- --check
+          cargo fmt --manifest-path fixtures/ops-reference/project/contracts/example.ops-state-v2/Cargo.toml -- --check
+          python3 fixtures/ops-reference/verify.py --cli "$OPS_CLI" \
+            --receipt "$RUNNER_TEMP/ops-reference-native.json"
+      - name: Verify the ordinary generated Web starter
+        run: |
+          python3 fixtures/ops-reference/verify_starter.py --cli "$OPS_CLI" --source-cohort \
+            --receipt "$RUNNER_TEMP/ops-reference-generated-web.json"
+      - name: Verify explicit PostgreSQL facilities and offline distribution
+        env:
+          LENSO_OPS_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/lenso_reference_test
+        run: |
+          node --test fixtures/ops-reference/d1-reconciliation.test.mjs
+          python3 fixtures/ops-reference/verify_pg.py --cli "$OPS_CLI" \
+            --receipt "$RUNNER_TEMP/ops-reference-native-pg.json"
+      - name: Verify owner TestSimulator and persisted optional absence
+        run: |
+          cargo test --locked --manifest-path fixtures/ops-reference/project/app/state/Cargo.toml --lib
+          python3 fixtures/ops-reference/verify_optional_cache.py --cli "$OPS_CLI" \
+            --receipt "$RUNNER_TEMP/ops-reference-optional-cache.json"
+      - name: Verify ordinary Workers build and D1 emulation restart
+        run: |
+          python3 fixtures/ops-reference/verify_workers.py --cli "$OPS_CLI" --runtime "$OPS_RUNTIME" \
+            --wasm-bindgen "$HOME/.cargo/bin/wasm-bindgen" \
+            --wrangler "$RUNNER_TEMP/workers-tools/node_modules/.bin/wrangler" \
+            --receipt "$RUNNER_TEMP/ops-reference-workerd.json"
+      - name: Compile the selected portable Management Worker graph
+        run: |
+          python3 - "$RUNNER_TEMP/ops-management-workers-source" <<'PY'
+          import importlib.util, sys
+          from pathlib import Path
+          helper=Path('fixtures/ops-reference/workers-management/source.py').resolve()
+          specification=importlib.util.spec_from_file_location('worker_source', helper)
+          module=importlib.util.module_from_spec(specification)
+          specification.loader.exec_module(module)
+          directory=Path(sys.argv[1])
+          directory.mkdir()
+          module.resolve(module.stage(directory))
+          PY
+          cargo check --locked --manifest-path "$RUNNER_TEMP/ops-management-workers-source/project/app/management/Cargo.toml" \
+            --workspace --all-targets --target wasm32-unknown-unknown
+          cargo check --locked --manifest-path "$RUNNER_TEMP/ops-management-workers-source/project/app/state/Cargo.toml" \
+            --lib --target wasm32-unknown-unknown
+          cargo check --locked --manifest-path "$RUNNER_TEMP/ops-management-workers-source/project/Cargo.toml" \
+            --lib --target wasm32-unknown-unknown
+      - name: Verify Native management, human sessions and external MCP
+        run: |
+          cargo fmt --manifest-path fixtures/ops-reference/project/app/management/Cargo.toml --all -- --check
+          cargo fmt --manifest-path fixtures/ops-reference/operator/Cargo.toml -- --check
+          python3 - "$RUNNER_TEMP/ops-test-uri" <<'PY'
+          from pathlib import Path
+          import sys
+          uri=Path(sys.argv[1])
+          uri.write_text('postgres://postgres:postgres@localhost:5432/lenso_reference_test')
+          uri.chmod(0o600)
+          PY
+          python3 fixtures/ops-reference/verify_management.py --cli "$OPS_CLI" \
+            --directory "$RUNNER_TEMP/ops-management-api" \
+            --database-url-file "$RUNNER_TEMP/ops-test-uri" --audit-url-file "$RUNNER_TEMP/ops-test-uri" \
+            --receipt "$RUNNER_TEMP/ops-reference-management.json"
+          python3 fixtures/ops-reference/verify_management.py --cli "$OPS_CLI" --mcp-write \
+            --database-url-file "$RUNNER_TEMP/ops-test-uri" --audit-url-file "$RUNNER_TEMP/ops-test-uri" \
+            --receipt "$RUNNER_TEMP/ops-reference-mcp-write.json"
+          python3 fixtures/ops-reference/verify_human.py --cli "$OPS_CLI" \
+            --directory "$RUNNER_TEMP/ops-management-human" \
+            --database-url-file "$RUNNER_TEMP/ops-test-uri" --audit-url-file "$RUNNER_TEMP/ops-test-uri" \
+            --receipt "$RUNNER_TEMP/ops-reference-human.json"
+      - name: Build the exact independently selected fixture-model Agent
+        run: |
+          python3 - "$RUNNER_TEMP/ops-agent-source" <<'PY'
+          from pathlib import Path
+          import subprocess, sys, tomllib
+          manifest=tomllib.loads(Path('fixtures/ops-reference/project/app/management/tools/Cargo.toml').read_text())
+          selection=manifest['dependencies']['lenso-agent-management-tools-plugin']
+          revision=selection['rev']
+          assert len(revision)==40 and all(character in '0123456789abcdef' for character in revision)
+          source=Path(sys.argv[1])
+          subprocess.run(['git','clone','--no-checkout',selection['git'],str(source)],check=True)
+          subprocess.run(['git','checkout','--detach',revision],cwd=source,check=True)
+          assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=source,text=True).strip()==revision
+          PY
+          python3 fixtures/ops-reference/build_agent.py --source "$RUNNER_TEMP/ops-agent-source" \
+            --executable "$RUNNER_TEMP/ops-agent-task" --receipt "$RUNNER_TEMP/ops-agent-build.json"
+      - name: Verify a real Owner-issued child and removable App compositions
+        run: |
+          python3 fixtures/ops-reference/verify_agent.py --cli "$OPS_CLI" \
+            --third-party-log \
+            --directory "$RUNNER_TEMP/ops-management-human" \
+            --human-receipt "$RUNNER_TEMP/ops-reference-human.json" \
+            --executable "$RUNNER_TEMP/ops-agent-task" \
+            --executable-provenance "$RUNNER_TEMP/ops-agent-build.json" \
+            --prepare-task "$RUNNER_TEMP/ops-agent-source/crates/lenso-agent-management-connection-plugin/examples/prepare_task.py" \
+            --receipt "$RUNNER_TEMP/ops-reference-agent.json"
+          python3 fixtures/ops-reference/verify_installations.py --cli "$OPS_CLI" \
+            --api-root "$RUNNER_TEMP/ops-management-api" --human-root "$RUNNER_TEMP/ops-management-human" \
+            --api-receipt "$RUNNER_TEMP/ops-reference-management.json" \
+            --human-receipt "$RUNNER_TEMP/ops-reference-human.json" \
+            --agent-receipt "$RUNNER_TEMP/ops-reference-agent.json" \
+            --receipt "$RUNNER_TEMP/ops-reference-installations.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ops-reference-qualification
+          path: |
+            ${{ runner.temp }}/candidate-tools/tools.json
+            ${{ runner.temp }}/ops-reference-generated-web.json
+            ${{ runner.temp }}/ops-reference-native.json
+            ${{ runner.temp }}/ops-reference-native-pg.json
+            ${{ runner.temp }}/ops-reference-workerd.json
+            ${{ runner.temp }}/ops-reference-management.json
+            ${{ runner.temp }}/ops-reference-mcp-write.json
+            ${{ runner.temp }}/ops-reference-human.json
+            ${{ runner.temp }}/ops-reference-agent.json
+            ${{ runner.temp }}/ops-reference-installations.json
+            ${{ runner.temp }}/ops-reference-optional-cache.json

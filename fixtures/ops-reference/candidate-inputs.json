@@ -1,0 +1,22 @@
+{
+  "core": {
+    "repository": "https://github.com/LioRael/lenso.git",
+    "revision": "b8d134d739698812a039a79633719e14947df1e3",
+    "native_cli_version": "0.6.5"
+  },
+  "javascript": {
+    "repository": "https://github.com/LioRael/lenso-js.git",
+    "revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+    "runtime_version": "0.1.6"
+  },
+  "published_cli": {
+    "package": "@lenso/cli",
+    "version": "0.17.4",
+    "native_cli_version": "0.6.4"
+  },
+  "published_facade": {
+    "package": "lenso",
+    "version": "0.5.27"
+  },
+  "status": "source_candidates_not_registry_publication"
+}

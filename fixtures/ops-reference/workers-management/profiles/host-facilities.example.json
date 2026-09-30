@@ -1,0 +1,73 @@
+{
+  "schema": "lenso.host-facilities.v1",
+  "instances": {
+    "example.ops-state/primary": {
+      "state": {
+        "binding": "OPS_DB",
+        "configuration": {
+          "profile": "workers-d1"
+        }
+      }
+    },
+    "example.ops-management/default": {
+      "authority": {
+        "binding": "MANAGEMENT_DB",
+        "configuration": {
+          "profile": "workers-d1"
+        }
+      }
+    },
+    "example.ops-management-web/default": {
+      "mcp": {
+        "binding": "MCP_PROFILE",
+        "configuration": {
+          "profile": "read-only"
+        }
+      }
+    },
+    "example.ops-secrets/default": {
+      "secrets": {
+        "binding": "OPS_AUTH_SECRETS_JSON",
+        "configuration": {
+          "caller_instance": "lenso.auth.api-token/default",
+          "signing_reference": "operators/api-signing",
+          "pepper_reference": "operators/api-pepper"
+        }
+      }
+    },
+    "lenso.auth.api-token/default": {
+      "state": {
+        "binding": "AUTH_DB",
+        "configuration": {
+          "profile": "workers-d1",
+          "binding": "AUTH_DB"
+        }
+      }
+    },
+    "lenso.access-control.d1/default": {
+      "state": {
+        "binding": "ACCESS_CONTROL_DB",
+        "configuration": {
+          "profile": "workers-d1",
+          "binding": "ACCESS_CONTROL_DB"
+        }
+      }
+    },
+    "lenso.business-approval.d1/default": {
+      "store": {
+        "binding": "APPROVAL_DB",
+        "configuration": {
+          "profile": "workers-d1"
+        }
+      }
+    },
+    "lenso.audit-log.d1/default": {
+      "store": {
+        "binding": "AUDIT_DB",
+        "configuration": {
+          "profile": "workers-d1"
+        }
+      }
+    }
+  }
+}

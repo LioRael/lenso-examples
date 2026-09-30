@@ -1,0 +1,74 @@
+{
+  "schema": "lenso.console.delivery.v1",
+  "repository": "https://github.com/LioRael/lenso-console",
+  "functional_source_sha": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+  "destination": "main",
+  "destination_sha": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+  "fresh_destination_readback": true,
+  "fast_forward": true,
+  "workflow_only_descendant": false,
+  "accepted_required_gate": {
+    "run_id": 36653714731,
+    "event": "push",
+    "head_sha": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+    "job": "quality",
+    "conclusion": "success",
+    "url": "https://github.com/LioRael/lenso-console/actions/runs/36653714731"
+  },
+  "previous_accepted_gates": [
+    {
+      "run_id": 36648833536,
+      "head_sha": "49375dbef229c3ab1f962db60cea79c5d1297d59",
+      "conclusion": "success",
+      "scope": "native Codex push workflow"
+    },
+    {
+      "run_id": 36651010124,
+      "head_sha": "b916a633677be072d39d64c7ad5d669ecf736192",
+      "conclusion": "success",
+      "scope": "MCP admission classification; historical candidate"
+    },
+    {
+      "run_id": 36652049142,
+      "event": "push",
+      "head_sha": "08c1cbdef73fd4acb92e6eb830192dd81b1c2fcf",
+      "job": "quality",
+      "conclusion": "success",
+      "url": "https://github.com/LioRael/lenso-console/actions/runs/36652049142"
+    }
+  ],
+  "functional_dispatch_gate": {
+    "run_id": 36647584289,
+    "event": "workflow_dispatch",
+    "head_sha": "73b53c4d359664851b02d3e7dbac29ffc611d66b",
+    "conclusion": "success",
+    "branch_protection_accepted": false
+  },
+  "protection_modified": false,
+  "status_synthesized": false,
+  "delta_invoked": false,
+  "publication": "not_run",
+  "deployment": "not_run",
+  "normal_source_qualification": "pending",
+  "legacy_native_auth_receipt": "console-legacy-auth-73b53c4.json",
+  "worktree_cleanup": "preserved_until_active_qualification_complete",
+  "final_descendant": {
+    "sha": "7dc44a2d56ae4ee8f60e339b8dbb578ee11a71b6",
+    "scope": "UI lost-reply lock and source-only Approval config compatibility",
+    "focused_browser": "3 tests passed via Root session19583; shutdown timeout diagnostic retained, exit0",
+    "owner_source_gate": {
+      "repository": "lenso-business-approval-plugin",
+      "sha": "b7acf5926d178c118445a92dbebeb4fcdef4e67a",
+      "run_id": 36653544540,
+      "conclusion": "success",
+      "main_readback": true
+    },
+    "native_candidate_gate": {
+      "run_id": 36653714731,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "main_readback": true
+  }
+}

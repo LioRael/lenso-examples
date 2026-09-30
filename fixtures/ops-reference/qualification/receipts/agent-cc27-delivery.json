@@ -1,0 +1,26 @@
+{
+  "schema": "lenso.source-delivery@1",
+  "repository": "https://github.com/LioRael/lenso-agent.git",
+  "source": "cc27af63f34f28fefebad0b64bffba850ea70c94",
+  "destination": "main",
+  "prior_destination": "8b52c11c67a74c78c6bd40738f741e3969c9aeaf",
+  "candidate": "codex/verify/agent/returned-log-20260930",
+  "required_ci": [
+    {
+      "run_id": 36671876017,
+      "head_sha": "cc27af63f34f28fefebad0b64bffba850ea70c94",
+      "conclusion": "success"
+    },
+    {
+      "run_id": 36671875980,
+      "head_sha": "cc27af63f34f28fefebad0b64bffba850ea70c94",
+      "verify": "success",
+      "publish": "skipped"
+    }
+  ],
+  "landing": "fast_forward_exact_candidate",
+  "remote_readback": "cc27af63f34f28fefebad0b64bffba850ea70c94",
+  "publication": "not_run",
+  "proof_boundary": "fixture Model/task examples updated; production Loop, Connection and public Role byte-equal to 8b52; independent Owner qualification receipt separate",
+  "recorded_at": "2026-09-30T05:20:10.799985+00:00"
+}

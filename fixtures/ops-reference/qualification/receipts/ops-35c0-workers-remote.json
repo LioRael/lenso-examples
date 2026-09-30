@@ -1,0 +1,45 @@
+{
+  "schema": "lenso.ops-cloudflare-qualification.v1",
+  "status": "failed",
+  "account_id": "05ac654d4a24ee5ef1d683440c8c0068",
+  "worker": "lenso-ops-proof-cbe3e53a2365",
+  "events": [
+    {
+      "operation": "logged-in-account",
+      "exit_code": 0
+    },
+    {
+      "operation": "initial-inventory",
+      "exit_code": 0
+    },
+    {
+      "operation": "create-primary",
+      "exit_code": 0
+    },
+    {
+      "operation": "read-primary",
+      "exit_code": 0
+    },
+    {
+      "operation": "setup-primary",
+      "exit_code": 1
+    },
+    {
+      "operation": "cleanup-inventory",
+      "exit_code": 0
+    },
+    {
+      "operation": "delete-lenso-ops-proof-cbe3e53a2365-primary",
+      "exit_code": 0
+    },
+    {
+      "operation": "read-final-inventory",
+      "exit_code": 0
+    }
+  ],
+  "cleanup": {
+    "owned_d1_deleted_and_absent": "confirmed"
+  },
+  "failure_type": "RuntimeError",
+  "uncertain_http_write_replayed": false
+}

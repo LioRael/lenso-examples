@@ -24,6 +24,10 @@ generated Rust bindings for:
 `fixtures/vnext-*` contains executable Plugins and Apps that prove those
 contracts:
 
+- `ops-reference`: an ordinary source App with two configured state Instances,
+  two named request dependencies, real HTTP CAS and idempotency vectors, and
+  clean offline Native and PostgreSQL consumer proofs, and separate local workerd
+  and Cloudflare D1 evidence;
 - `vnext-knowledge-base-app`: an ordinary source App with a browser UI and a
   real HTTP create/read notes path, built and run without App-owned Host or
   Plan documents;

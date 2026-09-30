@@ -1,0 +1,19 @@
+{
+  "schema": "lenso.qualification.receipt.v1",
+  "operation_id": "a34b1ce6071f2be1333f5bee5d06e17ed9c7d0921b6ad929ea12808eb69cc238",
+  "client": {
+    "package": "@modelcontextprotocol/client",
+    "version": "2.2.0",
+    "protocol_version": "2025-11-25"
+  },
+  "same_artifact_redeploy": "passed",
+  "physical_process_restart": "not_asserted",
+  "same_operation_receipt": true,
+  "final_business_state": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "target_replayed": false,
+  "write_calls": 0
+}

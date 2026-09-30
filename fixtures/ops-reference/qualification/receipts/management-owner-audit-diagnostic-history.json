@@ -1,0 +1,19 @@
+{
+  "schema": "lenso.ops-owner-audit-diagnostic-history.v1",
+  "status": "resolved_by_narrow_verifier_fix",
+  "facts_mutated": false,
+  "original_reader_sha256": "a63d241dd0ac1df7cd41266a827f6629278fa0f003d4adf574af5be5b21a769e",
+  "diagnostic_reader_sha256": "a9e0a449eefe84e069e2683f4210bbd789dfd39d2a2e53a2fefc223a965af6be",
+  "observed_failure_stage": "audit_phase_count",
+  "cause": "The requester self-approval denial retains a real human_attempt in addition to the five distinct approved phases. The old verifier incorrectly required the total event count to be five.",
+  "narrow_fix": "Require five unique approved requester/decider phases, independently verify requester-only human_attempt events, and reject duplicate dispatch/completion or receipt/source/actor/digest conflicts.",
+  "focused_root_check_session": 89045,
+  "focused_tests": "passed",
+  "strict": "passed",
+  "immutable_final_reader_sha256": "5261b9294d248e7a1b872f16ecd71fbba1fa3fd3337df2ec10506915a2ac7339",
+  "actual_supplements": {
+    "ops-management-c1-owner-audit-final.json": "b2dca8310c7e1e3dfb26f4423c04b28e0a53bad60893ebd7d95b14579120610b",
+    "ops-management-mcp-prior-owner-audit-final.json": "403e6d8c5872437f8b5372f88bfcb376fccfb1d80acc247f214cb0c2e362e9c3",
+    "ops-management-mcp-write-owner-audit-final.json": "5721795b2f271d128ca97062c8572681414aa3b528b934f9982d566cf6f3d963"
+  }
+}

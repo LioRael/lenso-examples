@@ -1,0 +1,18 @@
+{
+  "original_alice_current_auth": 200,
+  "mcp_alice_current_auth_and_cached_tool": 200,
+  "payload": {
+    "name": "management__78b479bfcc21544bb05c4ce711dc7ab6f4ec1d263f175ea6",
+    "arguments": {
+      "input": {},
+      "expected_revision": null,
+      "idempotency_key": null
+    }
+  },
+  "baseline": {
+    "label": "primary-state",
+    "revision": 2,
+    "value": 49
+  },
+  "credential_values_emitted": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "lenso.agent-host-source-validation.v1",
+  "source_revision": "805947813f15dea43462543c1864de8bbc0bc165",
+  "core_revision": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "registry_only": false,
+  "publication_performed": false,
+  "tracked_source_clean": true,
+  "commands": [
+    "cargo fmt --all -- --check",
+    "cargo clippy --locked -p lenso-agent-management-tools-plugin -p lenso-agent-management-connection-plugin -p lenso-agent-model-fixture-plugin -p lenso-agent-loop-plugin -p lenso-agent-tool-sdk --all-targets -- -D warnings",
+    "cargo build --locked -p lenso-agent-management-connection-plugin --example management_task"
+  ],
+  "status": "passed",
+  "exit_code": 0,
+  "log": "agent-sdk35-8059-strict-example.log",
+  "log_sha256": "1008f8c3a299e4df12aeff846c29b1a005617c1304ae5f7640f0f29f7ef94ae8",
+  "admission_test_receipt": "agent-sdk35-81d2-host-validation.json",
+  "admission_test_reuse_reason": "The only successor change uses explicit default type names and adds already resolved direct adapter dependency edges; admission semantics are unchanged."
+}

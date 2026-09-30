@@ -1,0 +1,25 @@
+quality	Verify public packages independently	﻿2026-09-30T06:22:32.3006350Z ##[group]Run cargo package --locked --workspace --exclude lenso-audit-log-agent-tools-plugin
+quality	Verify public packages independently	2026-09-30T06:22:32.3007689Z ^[[36;1mcargo package --locked --workspace --exclude lenso-audit-log-agent-tools-plugin^[[0m
+quality	Verify public packages independently	2026-09-30T06:22:32.3070655Z shell: /usr/bin/bash -e {0}
+quality	Verify public packages independently	2026-09-30T06:22:32.3070906Z env:
+quality	Verify public packages independently	2026-09-30T06:22:32.3071555Z   LENSO_POSTGRES_TEST_URL: postgres://postgres@localhost:5432/lenso_audit_log_test
+quality	Verify public packages independently	2026-09-30T06:22:32.3072017Z   CARGO_HOME: /home/runner/.cargo
+quality	Verify public packages independently	2026-09-30T06:22:32.3072497Z   CARGO_INCREMENTAL: 0
+quality	Verify public packages independently	2026-09-30T06:22:32.3072721Z   CARGO_TERM_COLOR: always
+quality	Verify public packages independently	2026-09-30T06:22:32.3072948Z   CACHE_ON_FAILURE: false
+quality	Verify public packages independently	2026-09-30T06:22:32.3073165Z ##[endgroup]
+quality	Verify public packages independently	2026-09-30T06:22:32.3792330Z ^[[1m^[[33mwarning^[[0m: patch `lenso-contract-codegen v0.10.1 (https://github.com/LioRael/lenso?rev=f670422953b42cc33b83a9b8cde9a4c74e9f6ceb#f6704229)` was not used in the crate graph
+quality	Verify public packages independently	2026-09-30T06:22:32.3794132Z ^[[1m^[[96mhelp^[[0m: Check that the patched package version and available features are compatible
+quality	Verify public packages independently	2026-09-30T06:22:32.3795178Z       with the dependency requirements. If the patch has a different version from
+quality	Verify public packages independently	2026-09-30T06:22:32.3796019Z       what is locked in the Cargo.lock file, run `cargo update` to use the new
+quality	Verify public packages independently	2026-09-30T06:22:32.3796821Z       version. This may also occur with an optional dependency that is not enabled.
+quality	Verify public packages independently	2026-09-30T06:22:32.3941570Z ^[[1m^[[92m   Packaging^[[0m lenso-capability-audit-log v0.1.1 (/home/runner/work/lenso-audit-log-plugin/lenso-audit-log-plugin/crates/lenso-capability-audit-log)
+quality	Verify public packages independently	2026-09-30T06:22:32.3981347Z ^[[1m^[[92m    Updating^[[0m crates.io index
+quality	Verify public packages independently	2026-09-30T06:22:32.5905150Z ^[[1m^[[91merror^[[0m: failed to prepare local package for uploading
+quality	Verify public packages independently	2026-09-30T06:22:32.5906021Z 
+quality	Verify public packages independently	2026-09-30T06:22:32.5906269Z Caused by:
+quality	Verify public packages independently	2026-09-30T06:22:32.5907231Z   failed to select a version for the requirement `lenso-kernel = "=0.3.12"`
+quality	Verify public packages independently	2026-09-30T06:22:32.5908622Z   candidate versions found which didn't match: 0.3.11, 0.3.9, 0.3.8, ...
+quality	Verify public packages independently	2026-09-30T06:22:32.5909582Z   location searched: crates.io index
+quality	Verify public packages independently	2026-09-30T06:22:32.5911487Z   required by package `lenso-capability-audit-log v0.1.1 (/home/runner/work/lenso-audit-log-plugin/lenso-audit-log-plugin/crates/lenso-capability-audit-log)`
+quality	Verify public packages independently	2026-09-30T06:22:32.5955107Z ##[error]Process completed with exit code 101.

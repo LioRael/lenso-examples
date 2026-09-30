@@ -1,0 +1,36 @@
+{
+  "schema": "lenso.agent-host-source-validation.v1",
+  "source_revision": "81d2a53cb3a57a14fb411cebd808b71122044bcc",
+  "core_revision": "83bf2d94e29ed4fb7878ade88482abcd417c4ba1",
+  "registry_only": false,
+  "publication_performed": false,
+  "commands": [
+    {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test --locked -p lenso-agent-host runtime_admission",
+      "status": "passed",
+      "passed": 2,
+      "filtered": 129
+    },
+    {
+      "command": "cargo check --locked -p lenso-agent-host",
+      "status": "passed"
+    },
+    {
+      "command": "cargo clippy --locked -p lenso-agent-management-tools-plugin -p lenso-agent-management-connection-plugin -p lenso-agent-model-fixture-plugin -p lenso-agent-loop-plugin -p lenso-agent-tool-sdk --all-targets -- -D warnings",
+      "status": "failed",
+      "exit_code": 101,
+      "reason": "default_trait_access at generation.rs:3711: explicit QuickJsLimits and DylibLimits default type required"
+    },
+    {
+      "command": "cargo build --locked -p lenso-agent-management-connection-plugin --example management_task",
+      "status": "not_run_after_prior_failure"
+    }
+  ],
+  "output": "agent-sdk35-81d2-host-validation.log",
+  "output_kind": "tool_output_excerpt_with_RTK_summaries",
+  "completion": "candidate_needs_narrow_strict_lint_correction"
+}

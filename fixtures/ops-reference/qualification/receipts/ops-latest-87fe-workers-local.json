@@ -1,0 +1,108 @@
+{
+  "profile": "workers-d1",
+  "cli_version": "lenso 0.6.5",
+  "cli_sha256": "43d06c9c179abccee5d107a93f76f99b9fbf009077c0b0e2d19eb5d8bbfce5bb",
+  "real_database": false,
+  "persistent_restart": "passed",
+  "auth_and_management": "not_run",
+  "target": "workers_http",
+  "build": {
+    "schema": "lenso.workers-app-build.v1",
+    "target": "workers",
+    "environment": "local-workerd",
+    "profile": "lenso.linked-rust-workers@1",
+    "builder_version": "0.3.2",
+    "compatibility_date": "2026-09-26",
+    "source_digest": "sha256:ebeca8ae409c5d75d6acde446e09c72c78937ae1bb6e3c351f8089b01fa645fb",
+    "plan_digest": "sha256:6c3f0174f744874fdbcbebef15f4156a297dabf21b2fee48dec3f7e48ad63ceb",
+    "plugin_instances": 4,
+    "capability_bindings": 3,
+    "host_wasm_digest": "sha256:eec52a4d6d554764d0496300342d0e91f6991bb0422e903ac7039a27ea192c2e",
+    "host_bindings_digest": "sha256:90e6368284bed50179d6ae03053a599ec7643712709f5ba5e0d1c6e17c0d8ac7",
+    "worker_entry_digest": "sha256:d2ad1974890fd93cb39b18cd30ee361243f3e705f1477a67dcec0fa9d2dc7729",
+    "workers_runtime": {
+      "package": "@lenso/workers-runtime",
+      "version": "0.1.6",
+      "module_digests": {
+        "clock.mjs": "sha256:f8ddb0befe68c65e91a51421ea1fa40a616a4f1b5617c299966d2e758948ce33",
+        "facilities.mjs": "sha256:b096e80dbee638204c5f57f88530a765e2654c5424c9f045b0ae5df62e605f1b",
+        "host.mjs": "sha256:d6315c2105e4f0389789d755a42aa40209e8421d11403b10f79b5a61b754041c",
+        "http.mjs": "sha256:a234f1bc5b0d3cbfec08809edfa400715c0834b6ce8a3c0c3cc1588bfd9cc72b",
+        "runner.mjs": "sha256:a2abb3e199c377918f32f026d495b82d919be3eb73e40fdb936baa3854a1dcc6",
+        "scope.mjs": "sha256:450241c47c4468a37ef932dd24d610c49318d9afc9dc369bf051acac86f38a74"
+      }
+    },
+    "host_facilities": {
+      "grants_digest": "sha256:1adba85cf5fe79dda229aec57b44625e6d6d3d819a0e2671615cc1d5c261aae2",
+      "owner_modules": [
+        {
+          "package_id": "example.ops-state",
+          "slot": "state",
+          "module": "facilities/owner_0.mjs",
+          "digest": "sha256:cd58cc725d91547ec54ef4a214999f101fc124fff5f54694b19de7f57cccc3d1",
+          "owner": null
+        }
+      ]
+    },
+    "host_limits": {
+      "eventLimitMs": 10000,
+      "cleanupTimeoutMs": 1000,
+      "cancellationLimitMs": 1000
+    },
+    "wasm_bindgen": "wasm-bindgen 0.2.127",
+    "state_lifetime": "event",
+    "remote_deployment": "not_run"
+  },
+  "url": "http://127.0.0.1:63418",
+  "infrastructure": "local-workerd",
+  "selections": {
+    "core": {
+      "repository": "https://github.com/LioRael/lenso.git",
+      "revision": "87fe28eceb4d3a7cda1276fbed5a0bd695879937",
+      "native_cli_version": "0.6.5"
+    },
+    "javascript": {
+      "repository": "https://github.com/LioRael/lenso-js.git",
+      "revision": "cb6ef95559ccab64905013148f140c7d727937f7",
+      "runtime_version": "0.1.6"
+    },
+    "published_cli": {
+      "package": "@lenso/cli",
+      "version": "0.17.4",
+      "native_cli_version": "0.6.4"
+    },
+    "published_facade": {
+      "package": "lenso",
+      "version": "0.5.27"
+    },
+    "status": "source_candidates_not_registry_publication"
+  },
+  "cases": [
+    "two_configured_instances",
+    "named_dependency_isolation",
+    "idempotent_result_query",
+    "idempotency_intent_conflict",
+    "stale_revision",
+    "invalid_input",
+    "concurrent_cas_single_commit",
+    "unknown_instance_rejected"
+  ],
+  "restart_cases": [
+    "state_revision_retained",
+    "secondary_isolation",
+    "receipt_query_after_restart",
+    "idempotent_write_after_restart"
+  ],
+  "shutdown": "listener_closed",
+  "shutdown_diagnostics": [
+    {
+      "signal": "SIGINT",
+      "wrapper_exit_code": 143
+    },
+    {
+      "signal": "SIGINT",
+      "wrapper_exit_code": 143
+    }
+  ],
+  "wrangler_version": "4.143.1"
+}

@@ -1,0 +1,11 @@
+{
+  "task_owned_session_id": 97178,
+  "signal": "SIGINT",
+  "session_exit_code": 130,
+  "listener_port": 50988,
+  "listener_closed": true,
+  "owner_calls_completed_before_shutdown": true,
+  "local_d1_stores_preserved": true,
+  "wrapper_process_completed": true,
+  "child_pid_retained": false
+}
