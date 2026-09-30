@@ -545,7 +545,7 @@
     "native_cli_sha256": "c772c839cf9905f3043bb347470f47f1c0096ac7df6fbf7d105c6a961fd8b15b",
     "human": {
       "proof_receipt": {
-        "path": "./receipts/latest-119b-human-native-receipt.json",
+        "path": "./receipts/latest-119b-human-native-proof.json",
         "sha256": "d8644c57d88f69ed7b6713b363c2cdb64ee014e393f41d117c838d48a660b9bf"
       },
       "summary": {
@@ -557,7 +557,7 @@
     },
     "agent": {
       "proof_receipt": {
-        "path": "./receipts/latest-119b-agent-owner-receipt.json",
+        "path": "./receipts/latest-119b-agent-owner-proof.json",
         "sha256": "e263e9b0bc817d7f15f758903fa2f9aa23d1b5b47f09754753ce481ae0ddceb8"
       },
       "summary": {

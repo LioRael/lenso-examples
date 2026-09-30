@@ -68,13 +68,13 @@ passed its 20 cases at Core `b8d1`. It distinguishes revoked Management
 catalog `401/session_required` from the revoked Management Tools HTTP catalog
 `403/management_tool_denied`. MCP RPC denials have separate assertions.
 Those results retain their original executable.
-The fresh [Native Human run](./receipts/latest-119b-human-native-receipt.json)
+The fresh [Native Human run](./receipts/latest-119b-human-native-proof.json)
 passed 23 cases with the actual Core `119b` CLI and ordinary Source App.
 After restart, Bob's retained session remains valid but cannot read Alice's
 operation (`403/operators_required`). A fresh Alice session recovers the exact
 committed response; a separate Bob read confirms the business state remains
 `47/rev1`, without another write.
-The subsequent [Owner-issued Agent run](./receipts/latest-119b-agent-owner-receipt.json)
+The subsequent [Owner-issued Agent run](./receipts/latest-119b-agent-owner-proof.json)
 passed 14 cases and six concurrent Console session probes on that App. Its
 [new executable](./receipts/latest-119b-agent-build-bec995.json) is built from
 the independently selected Agent `bec995` and its own locked library cohort.
