@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "layer": "private-owner-operator-build",
+  "ordinary_source_app": false,
+  "wasm_sha256": "2f0bf468b00b696fcb1c8ce770b76892227fbab4105164424464df33c5a473c8",
+  "cargo_lock_sha256": "e6c50b359564ffb26c5913c86544117c70711e12a96fad5d52d78d3cff13818a",
+  "source_files_sha256": {
+    "Cargo.toml": "e26eb452e498e615f3077adfe72aaf837005a78e2eda60e224ecebd0784d73aa",
+    "Cargo.lock": "e6c50b359564ffb26c5913c86544117c70711e12a96fad5d52d78d3cff13818a",
+    "worker.mjs": "25f41d79765430ccf7bb845f5cb7badba959a5d7cc8875f8db20cca848c6e63b",
+    "build.py": "4bac82f407ac3e665e69c4d5340c6ad6cbed4293d6a73dcb93b45ece949d50f1",
+    "stage_assets.py": "dafd4c2d4ada7013e39b3cd9ed87df652f1eedd15f970f8969ee95c9a4ca5929",
+    "src/access.rs": "7c842778467ca07b4082a5d55e2a99f9720bde11d1a46212e9d7339ba52f13d7",
+    "src/audit.rs": "850ec7e450bee133d31b53d54592bcfee15ed9136ec9a8b5c5ecb8c335f8fe55",
+    "src/audit_proof.rs": "e706f9385c07092e8303a3c2d9c270789c10e2ca9ece556c331ec9649c1151b3",
+    "src/auth.rs": "8dda5d72b167ad5150c544bc9111a4e10f8748df8ddefcaa4834a19b40c8f994",
+    "src/lib.rs": "198790c75b2e90c8bec9abc1612b50ab44872411ea40091e3611477691e87956"
+  },
+  "package_files_sha256": {
+    "lenso_ops_workers_owner_operator.d.ts": "f1cbbb054ed6e8bb0dbc662f35b166cad2dc17754af86b5c63aa71f1c53d473c",
+    "lenso_ops_workers_owner_operator.js": "4afb275fcfc1e8e5fbad1f7f7639e416654cf089d8a07f5bd7ab73ccb08da9dd",
+    "lenso_ops_workers_owner_operator_bg.wasm": "2f0bf468b00b696fcb1c8ce770b76892227fbab4105164424464df33c5a473c8",
+    "lenso_ops_workers_owner_operator_bg.wasm.d.ts": "8fe2602e8f2782720255b36fbc2a6b272860a8dc2935a28ddf962edfcbe2d380"
+  }
+}
