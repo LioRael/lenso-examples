@@ -199,6 +199,9 @@ def run():
     parser.add_argument('--resume-known-profiles', action='store_true',
                         help='Retain completed profile receipts and resume the same prepared facts')
     args = parser.parse_args()
+    lsof = shutil.which('lsof')
+    if lsof is None:
+        parser.error('lsof is required for Native process and listener checks')
     assert not args.resume_known_profiles or args.directory, 'Resuming requires an explicit prepared directory'
     for receipt in [args.api_receipt, args.human_receipt]:
         assert json.loads(receipt.read_text())['shutdown'] == 'passed', 'Finish the prepared owner proof before optional installation checks'
@@ -298,7 +301,7 @@ def run():
                 checks['business_preserved'] = True
             elif name == 'management_no_network':
                 assert url is None and 'lenso.web-ingress/default' not in selected
-                sockets = subprocess.run(['/usr/sbin/lsof', '-Pan', '-p', ','.join(map(str, process_tree_ids)),
+                sockets = subprocess.run([lsof, '-Pan', '-p', ','.join(map(str, process_tree_ids)),
                     '-iTCP', '-sTCP:LISTEN'], capture_output=True, text=True)
                 assert sockets.returncode in [0, 1] and not sockets.stdout.strip(), 'Network listener in Management-only profile'
                 checks['network_surfaces_absent'] = True
