@@ -1,4 +1,6 @@
-# Lenso vNext Examples
+<a id="lenso-vnext-examples"></a>
+
+# Lenso Examples
 
 Executable, product-shaped examples for the current Lenso architecture. This
 repository contains Capability contracts and Plugin compositions; Kernel,
